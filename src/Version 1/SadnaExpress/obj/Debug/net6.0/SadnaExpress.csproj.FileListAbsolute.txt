@@ -28,3 +28,9 @@ C:/Users/Gil Khais/source/repos/SadnaExpress/SadnaExpress/obj/Debug/net6.0/ref/S
 /Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/obj/Debug/net6.0/SadnaExpress.pdb
 /Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/obj/Debug/net6.0/SadnaExpress.genruntimeconfig.cache
 /Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/obj/Debug/net6.0/ref/SadnaExpress.dll
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/bin/Debug/net6.0/log4net.dll
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/bin/Debug/net6.0/System.Configuration.ConfigurationManager.dll
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/bin/Debug/net6.0/System.Security.Cryptography.ProtectedData.dll
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/bin/Debug/net6.0/System.Security.Permissions.dll
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/bin/Debug/net6.0/runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/obj/Debug/net6.0/SadnaExpress.csproj.CopyComplete

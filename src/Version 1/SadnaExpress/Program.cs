@@ -29,13 +29,14 @@ namespace SadnaExpress
         UserController userController = new UserController();
         public static Logger logger = new Logger("");
 
+        private bool tradingSystemOpen = false;
+
         public Dictionary<string, string> Cache = new Dictionary<string, string>();
 
         public Server(string ip, int port)
         {
             IPAddress localAddr = IPAddress.Parse(ip);
             server = new TcpListener(localAddr, port);
-            logger.Info("guest entered the system");
             server.Start();
             Serve();
         }
@@ -44,8 +45,19 @@ namespace SadnaExpress
         {
             try
             {
-                while (true)
+                while (!tradingSystemOpen)
                 {
+                    if (Console.ReadLine() == "Admin Admin")
+                        tradingSystemOpen = true;
+                    else
+                    {
+                        Console.WriteLine("Trading system will run when entering valid password");
+                    }
+                }
+
+                while (tradingSystemOpen)
+                {
+                    logger.Info("Trading system initialized.");
                     TcpClient client = server.AcceptTcpClient();
                     Guest g = new Guest(client);
                     userController.addUser(g);
