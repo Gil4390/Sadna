@@ -1,7 +1,8 @@
 using System.Net;
 
-namespace ConsoleApp1.DomainLayer;
+using SadnaExpress.DomainLayer.Store;
 
+namespace SadnaExpress.DomainLayer.User { 
 public class User
 {
     protected int userId;
@@ -15,7 +16,7 @@ public class User
 
     public int convertToInt(EndPoint ep)
     {
-        string newEP = ep.ToString().Split(":")[1];
+        string newEP = ep.ToString().Split(':')[1];
         int parseId = int.Parse(newEP);
         return parseId;
     }
@@ -25,3 +26,4 @@ public class User
         set => userId = value;
     }
 }
+    }
