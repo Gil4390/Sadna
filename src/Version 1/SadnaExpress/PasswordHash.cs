@@ -11,7 +11,7 @@ public class PasswordHash
     public const int SaltIndex = 1;
     public const int Pbkdf2Index = 2;
 
-    public static string HashPassword(string password)
+    public string HashPassword(string password)
     {
         var cryptoProvider = new RNGCryptoServiceProvider();
         byte[] salt = new byte[SaltByteSize];
@@ -23,7 +23,7 @@ public class PasswordHash
                Convert.ToBase64String(hash);
     }
 
-    public static bool ValidatePassword(string password, string correctHash)
+    public bool ValidatePassword(string password, string correctHash)
     {
         char[] delimiter = { ':' };
         var split = correctHash.Split(delimiter);
@@ -35,7 +35,7 @@ public class PasswordHash
         return SlowEquals(hash, testHash);
     }
 
-    private static bool SlowEquals(byte[] a, byte[] b)
+    private bool SlowEquals(byte[] a, byte[] b)
     {
         var diff = (uint)a.Length ^ (uint)b.Length;
         for (int i = 0; i < a.Length && i < b.Length; i++)
@@ -45,7 +45,7 @@ public class PasswordHash
         return diff == 0;
     }
         
-    private static byte[] GetPbkdf2Bytes(string password, byte[] salt, int iterations, int outputBytes)
+    private byte[] GetPbkdf2Bytes(string password, byte[] salt, int iterations, int outputBytes)
     {
         var pbkdf2 = new Rfc2898DeriveBytes(password, salt);
         pbkdf2.IterationCount = iterations;
