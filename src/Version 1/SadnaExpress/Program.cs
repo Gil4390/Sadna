@@ -8,8 +8,9 @@ using ConsoleApp1.DomainLayer;
 
 namespace SadnaExpress
 {
-    internal class Program
+    public class Program
     {
+        
         static void Main(string[] args)
         {
             Console.WriteLine("Trading system started");
@@ -26,6 +27,7 @@ namespace SadnaExpress
     {
         TcpListener server = null;
         UserController userController = new UserController();
+        public static Logger logger = new Logger("");
 
         public Dictionary<string, string> Cache = new Dictionary<string, string>();
 
@@ -33,6 +35,7 @@ namespace SadnaExpress
         {
             IPAddress localAddr = IPAddress.Parse(ip);
             server = new TcpListener(localAddr, port);
+            logger.Info("guest entered the system");
             server.Start();
             Serve();
         }
@@ -44,8 +47,9 @@ namespace SadnaExpress
                 while (true)
                 {
                     TcpClient client = server.AcceptTcpClient();
-                    Console.WriteLine("new Connection!");
-                    userController.addUser(new Guest(client));
+                    Guest g = new Guest(client);
+                    userController.addUser(g);
+                    logger.Info(g , "guest entered the system");
                     Thread t = new Thread(HandleClient);
                     t.Start(client);
                 }

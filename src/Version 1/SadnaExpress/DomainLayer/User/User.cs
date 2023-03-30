@@ -19,4 +19,9 @@ public class User
         int parseId = int.Parse(newEP);
         return parseId;
     }
+    public int UserId
+    {
+        get => userId;
+        set => userId = value;
+    }
 }
