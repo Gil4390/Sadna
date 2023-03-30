@@ -1,0 +1,15 @@
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/bin/Debug/net7.0/ClientRunner
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/bin/Debug/net7.0/ClientRunner.deps.json
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/bin/Debug/net7.0/ClientRunner.runtimeconfig.json
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/bin/Debug/net7.0/ClientRunner.dll
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/bin/Debug/net7.0/ClientRunner.pdb
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/ClientRunner.csproj.AssemblyReference.cache
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/ClientRunner.GeneratedMSBuildEditorConfig.editorconfig
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/ClientRunner.AssemblyInfoInputs.cache
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/ClientRunner.AssemblyInfo.cs
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/ClientRunner.csproj.CoreCompileInputs.cache
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/ClientRunner.dll
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/refint/ClientRunner.dll
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/ClientRunner.pdb
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/ClientRunner.genruntimeconfig.cache
+/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/obj/Debug/net7.0/ref/ClientRunner.dll

@@ -13,8 +13,6 @@ namespace SadnaExpress
         
         static void Main(string[] args)
         {
-            Console.WriteLine("Trading system started");
-            
             Thread serverThread = new Thread(delegate ()
             {
                 Server myserver = new Server("127.0.0.1", 10011);
@@ -54,14 +52,10 @@ namespace SadnaExpress
                         Console.WriteLine("Trading system will run when entering valid password");
                     }
                 }
-
+                logger.Info("Trading system initialized.");
                 while (tradingSystemOpen)
                 {
-                    logger.Info("Trading system initialized.");
                     TcpClient client = server.AcceptTcpClient();
-                    Guest g = new Guest(client);
-                    userController.addUser(g);
-                    logger.Info(g , "guest entered the system");
                     Thread t = new Thread(HandleClient);
                     t.Start(client);
                 }
@@ -76,7 +70,11 @@ namespace SadnaExpress
         {
 
             TcpClient client = (TcpClient)obj;
+            Guest g = new Guest(client);
+            userController.addUser(g);
+            logger.Info(g , "guest entered the system");
             var stream = client.GetStream();
+
 
             string messageFromClient = "";
             string responseToClient = "";
@@ -84,20 +82,28 @@ namespace SadnaExpress
             int i;
             try
             {
-                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                while (true)
                 {
-                    //transle from bytes to string the message send from the client
-                    messageFromClient = Encoding.ASCII.GetString(bytes, 0, i);
+                    Byte[] reply;
+                    while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                    {
+                        //transle from bytes to string the message send from the client
+                        messageFromClient = Encoding.ASCII.GetString(bytes, 0, i);
 
-                    //create proper response to the client
-                    responseToClient = "Response";
-                    Byte[] reply = System.Text.Encoding.ASCII.GetBytes(responseToClient);
+                        //create proper response to the client
+                        responseToClient = "Response";
+                        reply = System.Text.Encoding.ASCII.GetBytes(responseToClient);
+                        stream.Write(reply, 0, reply.Length);
+                    }
+                    responseToClient = "Check-For-Connection";
+                    reply = System.Text.Encoding.ASCII.GetBytes(responseToClient);
                     stream.Write(reply, 0, reply.Length);
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: "+ e.ToString());
+                Console.WriteLine("Connection lost");
+                userController.removeUser(g);
                 client.Close();
             }
         }

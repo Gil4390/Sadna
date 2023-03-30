@@ -32,7 +32,7 @@ class ClientProgram
             while (!messageToServer.Equals("disconnect"))
             {
                 messageToServer = Console.ReadLine();
-                if (IsValidMessage(messageToServer))
+                if (messageToServer != "")
                 {
                     // Translate the Message into ASCII.
                     data = System.Text.Encoding.ASCII.GetBytes(messageToServer);   
@@ -63,36 +63,5 @@ class ClientProgram
         }
 
         Console.Read();
-    }
-
-    /// <summary>
-    /// The function checks if the string enterd by the client , is valid message to the server.
-    /// There are 2 types of valid massages:
-    /// =>get command: get X
-    /// =>set command: set X int\r\n Y
-    /// </summary>
-    /// <param name="mes">the message , enterd by the client</param>
-    /// <returns></returns>
-    public static bool IsValidMessage(string mes)
-    {
-        string[] splitMessage = mes.Split(" ");
-        if (splitMessage[0].Equals("get"))
-        {
-            //Is get message
-            return splitMessage.Length < 3;
-        }
-        if (splitMessage[0].Equals("set"))
-        {
-            //Is set message
-            int len = 0;
-            for (int i = 3; i < splitMessage.Length; i++)
-            {
-                len += splitMessage[i].Length;
-            }
-
-            len += splitMessage.Length - 4;
-            return splitMessage.Length > 3 && len == int.Parse(splitMessage[2].Split('\\')[0]);
-        }
-        return false;
     }
 }
