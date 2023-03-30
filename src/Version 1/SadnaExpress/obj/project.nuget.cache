@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1PqagAlmEreGv3Cy4EnN3gGeavaSSjW3q6+wAFNEyG4mHFvr9AvvFb4q2UrRryOccYBL5PMZ0b1jMO9+PbJ1KA==",
+  "dgSpecHash": "O8EqKJDluV7rLDw502rlmhHv5OmETAwM6la45oVR6qWIEleZ7UTvpAPYZKQ1YD7RsRL8po5pFRqYFUOvVGQFFA==",
   "success": true,
-  "projectFilePath": "/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/SadnaExpress.csproj",
+  "projectFilePath": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/SadnaExpress.csproj",
   "expectedPackageFiles": [
     "/Users/tal.galmor/.nuget/packages/log4net/2.0.15/log4net.2.0.15.nupkg.sha512",
     "/Users/tal.galmor/.nuget/packages/microsoft.netcore.platforms/2.0.0/microsoft.netcore.platforms.2.0.0.nupkg.sha512",

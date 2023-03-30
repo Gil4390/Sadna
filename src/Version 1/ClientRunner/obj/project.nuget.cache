@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "iFKva31mIsRCQrkSx3OoK18f966sy5O0gl4P12/ezL0Lf7CZQjZZJK4qWpuf4yVZoJz8n5VZeHx15+5q/Vudmg==",
+  "dgSpecHash": "v+ZneKZ7y+eRfm6tM06vfjxrCGvLaJ5kdZ4KpVZ/n0o7dF12ztsZou68rCgVapAY4owtIBh+bAkIHixmA+DnwA==",
   "success": true,
-  "projectFilePath": "/Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/ClientRunner/ClientRunner.csproj",
+  "projectFilePath": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/ClientRunner/ClientRunner.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

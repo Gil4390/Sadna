@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SadnaExpress", "SadnaExpres
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientRunner", "ClientRunner\ClientRunner.csproj", "{D1A72E0B-A0A6-43CB-8A57-D6FFE541873F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{FAD10A87-735D-4526-AD19-7CB73B4F33D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D1A72E0B-A0A6-43CB-8A57-D6FFE541873F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1A72E0B-A0A6-43CB-8A57-D6FFE541873F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1A72E0B-A0A6-43CB-8A57-D6FFE541873F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAD10A87-735D-4526-AD19-7CB73B4F33D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAD10A87-735D-4526-AD19-7CB73B4F33D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAD10A87-735D-4526-AD19-7CB73B4F33D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAD10A87-735D-4526-AD19-7CB73B4F33D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
