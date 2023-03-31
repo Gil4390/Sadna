@@ -18,6 +18,16 @@ namespace SadnaExpress.DomainLayer.Store
             this.itemsInBasket = itemsInBasket;
         }
 
+        internal void addItem(Inventory inv, int stock)
+        {
+            itemsInBasket.Add(inv, stock);
+        }
+
+        internal Store getStore()
+        {
+            return this.store;
+        }
+
         // functions to implement:
 
         // getters
