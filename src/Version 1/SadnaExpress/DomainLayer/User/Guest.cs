@@ -15,7 +15,21 @@ namespace SadnaExpress.DomainLayer.User
             userId = convertToInt(client.Client.RemoteEndPoint);
 
             this.cart = new ShoppingCart(new List<ShoppingBasket>());
-
+            
         }
+
+
+        public ShoppingCart GetShoppingCart()
+        {
+            return this.cart;
+        }
+
+        public bool addInventoryToCart(Inventory inv, int stock)
+        {
+            return this.cart.addInventoryToCart(inv, stock);
+        }
+
+
+
     }
 }
