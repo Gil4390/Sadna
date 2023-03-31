@@ -1,11 +1,21 @@
+using SadnaExpress.DomainLayer.Store;
 using System.Net.Sockets;
 
-namespace ConsoleApp1.DomainLayer;
-
-public class Guest : User
+namespace SadnaExpress.DomainLayer.User
 {
-    public Guest(TcpClient client)
+
+    public class Guest : User
     {
-        userId = convertToInt(client.Client.RemoteEndPoint);
+
+        private ShoppingCart cart;
+
+
+        public Guest(TcpClient client)
+        {
+            userId = convertToInt(client.Client.RemoteEndPoint);
+
+            this.cart = new ShoppingCart(new List<ShoppingBasket>());
+
+        }
     }
 }

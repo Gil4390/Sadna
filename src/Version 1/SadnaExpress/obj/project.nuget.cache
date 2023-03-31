@@ -1,16 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "O8EqKJDluV7rLDw502rlmhHv5OmETAwM6la45oVR6qWIEleZ7UTvpAPYZKQ1YD7RsRL8po5pFRqYFUOvVGQFFA==",
+  "dgSpecHash": "HZpa9nFh8e6kUY7BxdspaKevTOMWI2tBZoYDCaCYj8Gia+Jne7OGXBI/rTa9kOGzUuks01Z1KNlEuF8j7/Rilg==",
   "success": true,
-  "projectFilePath": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/SadnaExpress.csproj",
+  "projectFilePath": "C:\\Users\\DELL\\Desktop\\Sadna-main\\src\\Version 1\\SadnaExpress\\SadnaExpress.csproj",
   "expectedPackageFiles": [
-    "/Users/tal.galmor/.nuget/packages/log4net/2.0.15/log4net.2.0.15.nupkg.sha512",
-    "/Users/tal.galmor/.nuget/packages/microsoft.netcore.platforms/2.0.0/microsoft.netcore.platforms.2.0.0.nupkg.sha512",
-    "/Users/tal.galmor/.nuget/packages/system.configuration.configurationmanager/4.5.0/system.configuration.configurationmanager.4.5.0.nupkg.sha512",
-    "/Users/tal.galmor/.nuget/packages/system.security.accesscontrol/4.5.0/system.security.accesscontrol.4.5.0.nupkg.sha512",
-    "/Users/tal.galmor/.nuget/packages/system.security.cryptography.protecteddata/4.5.0/system.security.cryptography.protecteddata.4.5.0.nupkg.sha512",
-    "/Users/tal.galmor/.nuget/packages/system.security.permissions/4.5.0/system.security.permissions.4.5.0.nupkg.sha512",
-    "/Users/tal.galmor/.nuget/packages/system.security.principal.windows/4.5.0/system.security.principal.windows.4.5.0.nupkg.sha512"
+    "C:\\Users\\DELL\\.nuget\\packages\\log4net\\2.0.15\\log4net.2.0.15.nupkg.sha512"
   ],
   "logs": []
 }

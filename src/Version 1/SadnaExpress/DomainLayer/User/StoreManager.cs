@@ -1,6 +1,8 @@
-namespace ConsoleApp1.DomainLayer;
 
-public class StoreManager
+namespace SadnaExpress.DomainLayer.User
 {
-    
+    public class StoreManager
+    {
+
+    }
 }

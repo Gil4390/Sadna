@@ -1,8 +1,9 @@
-namespace ConsoleApp1.DomainLayer;
-
-public class Member : User
+namespace SadnaExpress.DomainLayer.User
 {
-    public Member()
+    public class Member : User
     {
+        public Member()
+        {
+        }
     }
 }

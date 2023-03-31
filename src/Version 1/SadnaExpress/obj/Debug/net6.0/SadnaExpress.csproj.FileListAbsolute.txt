@@ -34,3 +34,11 @@ C:/Users/Gil Khais/source/repos/SadnaExpress/SadnaExpress/obj/Debug/net6.0/ref/S
 /Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/bin/Debug/net6.0/System.Security.Permissions.dll
 /Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/bin/Debug/net6.0/runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll
 /Users/tal.galmor/RiderProjects/Sadna/src/Version 1/SadnaExpress/SadnaExpress/obj/Debug/net6.0/SadnaExpress.csproj.CopyComplete
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net6.0\SadnaExpress.csproj.AssemblyReference.cache
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net6.0\SadnaExpress.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net6.0\SadnaExpress.AssemblyInfoInputs.cache
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net6.0\SadnaExpress.AssemblyInfo.cs
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net6.0\SadnaExpress.csproj.CoreCompileInputs.cache
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net6.0\SadnaExpress.dll
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net6.0\refint\SadnaExpress.dll
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net6.0\SadnaExpress.pdb

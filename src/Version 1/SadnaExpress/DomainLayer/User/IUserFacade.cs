@@ -1,6 +1,8 @@
-namespace ConsoleApp1.DomainLayer;
 
-public interface IUserFacade
+namespace SadnaExpress.DomainLayer.User
 {
-    
+    public interface IUserFacade
+    {
+
+    }
 }
