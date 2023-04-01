@@ -1,4 +1,3 @@
-using ConsoleApp1.DomainLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +15,16 @@ namespace SadnaExpress.DomainLayer.Store
         {
             this.store = store;
             this.itemsInBasket = itemsInBasket;
+        }
+
+        internal void addItem(Inventory inv, int stock)
+        {
+            itemsInBasket.Add(inv, stock);
+        }
+
+        internal Store getStore()
+        {
+            return this.store;
         }
 
         // functions to implement:
