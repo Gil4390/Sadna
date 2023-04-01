@@ -4,3 +4,10 @@ C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\Sad
 C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.AssemblyInfoInputs.cache
 C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.AssemblyInfo.cs
 C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.csproj.CoreCompileInputs.cache
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\bin\Debug\net4.8\SadnaExpress.exe.config
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\bin\Debug\net4.8\SadnaExpress.exe
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\bin\Debug\net4.8\SadnaExpress.pdb
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\bin\Debug\net4.8\log4net.dll
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.csproj.CopyComplete
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.exe
+C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.pdb

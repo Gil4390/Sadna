@@ -1,6 +1,13 @@
-namespace ConsoleApp1.DomainLayer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public interface IStoreFacade
+namespace SadnaExpress.DomainLayer.Store
 {
-    
+    public interface IStoreFacade
+    {
+
+    }
 }

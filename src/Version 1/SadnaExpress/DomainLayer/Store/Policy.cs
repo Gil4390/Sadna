@@ -1,6 +1,13 @@
-namespace ConsoleApp1.DomainLayer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public class Policy
+namespace SadnaExpress.DomainLayer.Store
 {
-    
+    public class Policy
+    {
+
+    }
 }
