@@ -1,8 +1,6 @@
-
+using ConsoleApp1.DomainLayer;
 
 using SadnaExpress.DomainLayer.User;
-using System;
-using System.IO;
 
 namespace SadnaExpress
 {
@@ -48,10 +46,7 @@ namespace SadnaExpress
                 logger.Close();
             }
         }
-        /// <summary>
-        /// ///////////////////////////////////////////////
-        /// </summary>
-        /// <param name="enter_path"></param>
+
 
         public void init_Logger(string enter_path)
         {

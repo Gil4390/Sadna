@@ -1,5 +1,4 @@
 using SadnaExpress.DomainLayer.Store;
-using System.Collections.Generic;
 using System.Net.Sockets;
 
 namespace SadnaExpress.DomainLayer.User

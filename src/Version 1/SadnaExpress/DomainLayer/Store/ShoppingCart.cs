@@ -1,3 +1,4 @@
+using ConsoleApp1.DomainLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public ShoppingCart(List<ShoppingBasket> baskets)
         {
-            this.baskets = baskets;
+            baskets = baskets;
         }
         
         public bool addInventoryToCart(Inventory inv, int stock)

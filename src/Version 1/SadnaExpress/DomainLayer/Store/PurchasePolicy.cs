@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace ConsoleApp1.DomainLayer;
 
-namespace SadnaExpress.DomainLayer.Store
+public class PurchasePolicy
 {
-    public class PurchasePolicy
-    {
-
-    }
+    
 }
