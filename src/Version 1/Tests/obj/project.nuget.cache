@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LV5/oOVa2nZiiSUcUU+LrwarJ8rqTaAqy6U/3fA5CNA6iShdc/7UHKBBPEhb3LmrxqQzlrihRrUrsM1e6MMgfQ==",
+  "dgSpecHash": "ayhfVdiGBWtYezQWGn7EjSk8+t7UhL0Mk14i056+LSdZfk8wccdM317HAX6bLVWRv1qlA7Y3bb7rYY3ETKr1Eg==",
   "success": true,
-  "projectFilePath": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/Tests/Tests.csproj",
+  "projectFilePath": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/Tests/Tests.csproj",
   "expectedPackageFiles": [
     "/Users/tal.galmor/.nuget/packages/coverlet.collector/3.1.2/coverlet.collector.3.1.2.nupkg.sha512",
     "/Users/tal.galmor/.nuget/packages/microsoft.codecoverage/17.3.2/microsoft.codecoverage.17.3.2.nupkg.sha512",

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/tal.galmor/Desktop/Sadna/src/Version 1/ClientRunner/ClientRunner.csproj": {}
+    "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/ClientRunner/ClientRunner.csproj": {}
   },
   "projects": {
-    "/Users/tal.galmor/Desktop/Sadna/src/Version 1/ClientRunner/ClientRunner.csproj": {
+    "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/ClientRunner/ClientRunner.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/ClientRunner/ClientRunner.csproj",
+        "projectUniqueName": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/ClientRunner/ClientRunner.csproj",
         "projectName": "ClientRunner",
-        "projectPath": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/ClientRunner/ClientRunner.csproj",
+        "projectPath": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/ClientRunner/ClientRunner.csproj",
         "packagesPath": "/Users/tal.galmor/.nuget/packages/",
-        "outputPath": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/ClientRunner/obj/",
+        "outputPath": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/ClientRunner/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/tal.galmor/.nuget/NuGet/NuGet.Config"

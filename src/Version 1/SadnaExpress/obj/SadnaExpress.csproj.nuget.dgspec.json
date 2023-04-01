@@ -1,32 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\DELL\\Desktop\\Sadna-main\\src\\Version 1\\SadnaExpress\\SadnaExpress.csproj": {}
+    "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/SadnaExpress/SadnaExpress.csproj": {}
   },
   "projects": {
-    "C:\\Users\\DELL\\Desktop\\Sadna-main\\src\\Version 1\\SadnaExpress\\SadnaExpress.csproj": {
+    "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/SadnaExpress/SadnaExpress.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\DELL\\Desktop\\Sadna-main\\src\\Version 1\\SadnaExpress\\SadnaExpress.csproj",
+        "projectUniqueName": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/SadnaExpress/SadnaExpress.csproj",
         "projectName": "SadnaExpress",
-        "projectPath": "C:\\Users\\DELL\\Desktop\\Sadna-main\\src\\Version 1\\SadnaExpress\\SadnaExpress.csproj",
-        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\DELL\\Desktop\\Sadna-main\\src\\Version 1\\SadnaExpress\\obj\\",
+        "projectPath": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/SadnaExpress/SadnaExpress.csproj",
+        "packagesPath": "/Users/tal.galmor/.nuget/packages/",
+        "outputPath": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/SadnaExpress/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/tal.galmor/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net4.8"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
+          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -45,17 +39,18 @@
         "net48": {
           "targetAlias": "net4.8",
           "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
+            },
             "log4net": {
               "target": "Package",
               "version": "[2.0.15, )"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win7-x86": {
-          "#import": []
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.202/RuntimeIdentifierGraph.json"
         }
       }
     }

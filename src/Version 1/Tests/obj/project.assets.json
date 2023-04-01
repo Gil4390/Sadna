@@ -3963,11 +3963,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/Tests/Tests.csproj",
+      "projectUniqueName": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/Tests/Tests.csproj",
       "projectName": "Tests",
-      "projectPath": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/Tests/Tests.csproj",
+      "projectPath": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/Tests/Tests.csproj",
       "packagesPath": "/Users/tal.galmor/.nuget/packages/",
-      "outputPath": "/Users/tal.galmor/Desktop/Sadna/src/Version 1/Tests/obj/",
+      "outputPath": "/Users/tal.galmor/Desktop/Sanda/Sadna/src/Version 1/Tests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/tal.galmor/.nuget/NuGet/NuGet.Config"
