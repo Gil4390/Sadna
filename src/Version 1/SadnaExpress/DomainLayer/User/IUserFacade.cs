@@ -2,9 +2,9 @@ namespace SadnaExpress.DomainLayer.User
 {
     public interface IUserFacade
     {
-        void enter();
-        void exit();
-        void register(string email, string firstName, string lastLame, string password);
+        void enter(int id);
+        void exit(int id);
+        void register(int id, string email, string firstName, string lastLame, string password);
         void login(string email, string password);
         void logout();
         void addItemToBag(string storeName, string itemName);

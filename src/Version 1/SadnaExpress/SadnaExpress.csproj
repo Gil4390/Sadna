@@ -11,4 +11,10 @@
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="ServiceLayer\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ServiceLayer\" />
+  </ItemGroup>
 </Project>

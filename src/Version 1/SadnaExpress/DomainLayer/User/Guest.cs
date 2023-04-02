@@ -10,12 +10,9 @@ namespace SadnaExpress.DomainLayer.User
         private ShoppingCart cart;
 
 
-        public Guest(TcpClient client)
+        public Guest(int id): base(id)
         {
-            userId = convertToInt(client.Client.RemoteEndPoint);
-
-            this.cart = new ShoppingCart(new List<ShoppingBasket>());
-            
+            this.cart = new ShoppingCart(new List<ShoppingBasket>());   
         }
 
 
