@@ -35,9 +35,10 @@ namespace SadnaExpress.DomainLayer.User
             return SlowEquals(hash, testHash);
         }
 
-        public string Validate(string password)
+        public bool Validate(string password)
         {
-            throw new System.NotImplementedException();
+            //what is the protocol ? what password is valid ? 
+            return true;
         }
         private bool SlowEquals(byte[] a, byte[] b)
         {

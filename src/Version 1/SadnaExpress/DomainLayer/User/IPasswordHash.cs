@@ -4,7 +4,7 @@ namespace SadnaExpress.DomainLayer.User
     {
         string Hash(string password);
         bool Rehash(string password, string correctHash);
-        string Validate(string password);
+        bool Validate(string password);
 
     }
 }
