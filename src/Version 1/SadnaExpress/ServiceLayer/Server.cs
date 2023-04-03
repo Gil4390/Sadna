@@ -1,3 +1,4 @@
+using SadnaExpress.DomainLayer.User;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -57,8 +58,8 @@ namespace SadnaExpress.ServiceLayer
         {
 
             TcpClient client = (TcpClient)obj;
-            service.enter(int.Parse(client.Client.RemoteEndPoint.ToString().Split(':')[1]));
-
+            Console.WriteLine("Client connected!");
+            int id = service.enter(); // each handler gets a new id, if user loggs in the id will change
             var stream = client.GetStream();
 
 
@@ -74,8 +75,49 @@ namespace SadnaExpress.ServiceLayer
                     while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
                         messageFromClient = Encoding.ASCII.GetString(bytes, 0, i);
+                        Console.WriteLine(messageFromClient);
 
-                        responseToClient = parse(messageFromClient);
+                        //responseToClient = parse(messageFromClient);
+
+
+
+                        string[] split = messageFromClient.Split(' ');
+                        string command_type = split[0];
+
+                        if (command_type == "EXIT")
+                        {
+                            //EXIT
+                            service.exit(id); 
+                            client.Close();
+                            Console.WriteLine("Client exited");
+                        }
+                        else if (command_type == "REGISTER")
+                        {
+                            //REGISTER <email> <firstName> <lastName> <password>
+                            if (split.Length != 5) { throw new Exception("invalid register args"); }
+                            string email = split[1];
+                            string firstName = split[2];
+                            string lastName = split[3];
+                            string password = split[4];
+                            service.register(id, email, firstName, lastName, password);
+
+                        }
+                        else if (command_type == "LOGIN")
+                        {
+                            //LOGIN <email> <password>
+                            if (split.Length != 3) { throw new Exception("invalid login args"); }
+                            string email = split[1];
+                            string password = split[2];
+                            id = service.login(id, email, password);
+                        }
+                        else if (command_type == "LOGOUT")
+                        {
+                            //LOGOUT
+                            id = service.logout(id);
+                        }
+
+
+
                         reply = System.Text.Encoding.ASCII.GetBytes(responseToClient);
                         stream.Write(reply, 0, reply.Length);
                     }
@@ -87,14 +129,13 @@ namespace SadnaExpress.ServiceLayer
             catch (Exception e)
             {
                 Console.WriteLine("Connection lost");
-                service.exit(int.Parse(client.Client.RemoteEndPoint.ToString().Split(':')[1]));
+                service.exit(id);
                 client.Close();
             }
         }
 
         public string parse(string msg)
         {
-            string res = "";
             //Register (username) (password)
             //Login (username) (password)
             //Logout

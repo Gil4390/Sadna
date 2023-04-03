@@ -14,32 +14,9 @@ namespace SadnaExpress.ServiceLayer
             storeFacade = new StoreFacade();
             userFacade = new UserFacade();
         }
-        
-        public void register(int id , string email , string firstName ,  string lastName , string password)
+        public int enter()
         {
-            try
-            {
-                userFacade.Register(id ,email, firstName, lastName, password);
-
-            }
-            catch (Exception e)
-            {
-
-            }
-			
-        }
-        public void enter(int id)
-        {
-            try
-            {
-                userFacade.Enter(id);
-
-            }
-            catch (Exception e)
-            {
-
-            }
-
+            return userFacade.Enter();
         }
         public void exit(int id)
         {
@@ -51,6 +28,44 @@ namespace SadnaExpress.ServiceLayer
             catch (Exception e)
             {
 
+            }
+
+        }
+        public void register(int id, string email, string firstName, string lastName, string password)
+        {
+            try
+            {
+                userFacade.Register(id, email, firstName, lastName, password);
+
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+        public int login(int id, string email, string password)
+        {
+            try
+            {
+                return userFacade.Login(id, email, password);
+
+            }
+            catch (Exception e)
+            {
+                return -1; //need to check this
+            }
+
+        }
+        public int logout(int id)
+        {
+            try
+            {
+                return userFacade.Logout(id);
+
+            }
+            catch (Exception e)
+            {
+                return -1; //need to check this
             }
 
         }

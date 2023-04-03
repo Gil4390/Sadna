@@ -1,0 +1,7 @@
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\Client\bin\Debug\Client.exe
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\Client\bin\Debug\Client.pdb
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\Client\obj\Debug\Client.csproj.AssemblyReference.cache
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\Client\obj\Debug\Client.csproj.SuggestedBindingRedirects.cache
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\Client\obj\Debug\Client.exe
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\Client\obj\Debug\Client.pdb
