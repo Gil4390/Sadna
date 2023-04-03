@@ -11,9 +11,9 @@ namespace SadnaExpress.DomainLayer.Store
         {
             baskets = new List<ShoppingBasket>();
         }
-        public ShoppingCart(List<ShoppingBasket> baskets)
+        public ShoppingCart(List<ShoppingBasket> newbaskets)
         {
-            baskets = baskets;
+            baskets = newbaskets;
         }
         
         public bool addInventoryToCart(Inventory inv, int stock)

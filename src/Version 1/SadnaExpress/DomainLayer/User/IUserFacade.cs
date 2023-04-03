@@ -4,26 +4,26 @@ namespace SadnaExpress.DomainLayer.User
 {
     public interface IUserFacade
     {
-        void enter(int id);
-        void exit(int id);
-        void register(int id, string email, string firstName, string lastLame, string password);
-        void login(string email, string password);
-        void logout();
-        void addItemToBag(string storeName, string itemName);
+        void Enter(int id);
+        void Exit(int id);
+        void Register(int id, string email, string firstName, string lastLame, string password);
+        void Login(int id, string email, string password);
+        void Logout(int id);
+        void AddItemToBag(int id,string storeName, string itemName);
         Dictionary<string,List<string>> getDetailsOnCart();
-        void purchaseCart();
-        void addItemCart(string storeName, string itemName);
-        void removeCart(string storeName, string itemName);
-        void editItemCart(string storeName, string itemName);
-        void openStore(string storeName);
-        void addReview(string storeName, string itemName);
-        void addItemInventory(string storeName, string itemName);
-        void removeItemInventory(string storeName, string itemName);
-        void editItemInventory(string storeName, string itemName);
-        void addOwner(string storeName, string email);
-        void addManager(string storeName, string email);
-        void addPermissionsToManager(string storeName, string email, string Permission);
-        void closeStore(string storeName);
-        void getDetailsOnStore(string storeName);
+        void PurchaseCart(int id);
+        void AddItemCart(int id,string storeName, string itemName);
+        void RemoveCart(int id,string storeName, string itemName);
+        void EditItemCart(int id,string storeName, string itemName);
+        void OpenStore(int id,string storeName);
+        void AddReview(int id,string storeName, string itemName);
+        void AddItemInventory(int id,string storeName, string itemName);
+        void RemoveItemInventory(int id,string storeName, string itemName);
+        void EditItemInventory(int id,string storeName, string itemName);
+        void AddOwner(int id,string storeName, string email);
+        void AddManager(int id,string storeName, string email);
+        void AddPermissionsToManager(int id,string storeName, string email, string Permission);
+        void CloseStore(int id,string storeName);
+        void GetDetailsOnStore(int id,string storeName);
     }
 }
