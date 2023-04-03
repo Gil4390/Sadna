@@ -1,6 +1,7 @@
-namespace ConsoleApp1.DomainLayer;
-
-public class Policy
+namespace SadnaExpress.DomainLayer.Store
 {
-    
+    public class Policy
+    {
+        
+    }
 }

@@ -1,6 +1,0 @@
-C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.csproj.AssemblyReference.cache
-C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.csproj.SuggestedBindingRedirects.cache
-C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.AssemblyInfoInputs.cache
-C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.AssemblyInfo.cs
-C:\Users\DELL\Desktop\Sadna-main\src\Version 1\SadnaExpress\obj\Debug\net4.8\SadnaExpress.csproj.CoreCompileInputs.cache

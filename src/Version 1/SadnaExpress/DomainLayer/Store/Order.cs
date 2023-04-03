@@ -1,6 +1,7 @@
-namespace ConsoleApp1.DomainLayer;
-
-public class Order
+namespace SadnaExpress.DomainLayer.Store
 {
-    
+    public class Order
+    {
+        
+    }
 }

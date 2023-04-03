@@ -1,0 +1,12 @@
+/Users/tal.galmor/RiderProjects/SadnaExpress/SadnaExpress/bin/Debug/SadnaExpress.exe
+/Users/tal.galmor/RiderProjects/SadnaExpress/SadnaExpress/bin/Debug/SadnaExpress.pdb
+/Users/tal.galmor/RiderProjects/SadnaExpress/SadnaExpress/obj/Debug/SadnaExpress.csproj.AssemblyReference.cache
+/Users/tal.galmor/RiderProjects/SadnaExpress/SadnaExpress/obj/Debug/SadnaExpress.csproj.CoreCompileInputs.cache
+/Users/tal.galmor/RiderProjects/SadnaExpress/SadnaExpress/obj/Debug/SadnaExpress.exe
+/Users/tal.galmor/RiderProjects/SadnaExpress/SadnaExpress/obj/Debug/SadnaExpress.pdb
+/Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/bin/Debug/SadnaExpress.exe
+/Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/bin/Debug/SadnaExpress.pdb
+/Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/obj/Debug/SadnaExpress.csproj.AssemblyReference.cache
+/Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/obj/Debug/SadnaExpress.csproj.CoreCompileInputs.cache
+/Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/obj/Debug/SadnaExpress.exe
+/Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/obj/Debug/SadnaExpress.pdb

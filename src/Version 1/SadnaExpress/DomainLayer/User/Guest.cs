@@ -1,21 +1,17 @@
+using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
-using System.Net.Sockets;
 
 namespace SadnaExpress.DomainLayer.User
 {
-
     public class Guest : User
     {
 
         private ShoppingCart cart;
 
 
-        public Guest(TcpClient client)
+        public Guest(int id): base(id)
         {
-            userId = convertToInt(client.Client.RemoteEndPoint);
-
-            this.cart = new ShoppingCart(new List<ShoppingBasket>());
-            
+            this.cart = new ShoppingCart(new List<ShoppingBasket>());   
         }
 
 
@@ -28,8 +24,5 @@ namespace SadnaExpress.DomainLayer.User
         {
             return this.cart.addInventoryToCart(inv, stock);
         }
-
-
-
     }
 }

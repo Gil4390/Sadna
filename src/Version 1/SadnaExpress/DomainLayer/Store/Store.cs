@@ -1,10 +1,6 @@
-using ConsoleApp1.DomainLayer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -12,8 +8,8 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private string name;
         private List<Inventory> itemsInvetory;
-        private StoreFounder storeFounder;
-        private List<StoreOwner> storeOwners;
+        private Member storeFounder;
+        private List<Member> storeOwners;
         private Policy policy;
 
         //                 username, rating 1-5
@@ -22,12 +18,12 @@ namespace SadnaExpress.DomainLayer.Store
         // maybe need to add store discount
 
 
-        public Store(string name, StoreFounder storeFounder)
+        public Store(string name, Member storeFounder)
         {
             this.name = name;
             this.storeFounder = storeFounder;
             this.itemsInvetory = new List<Inventory>();
-            this.storeOwners = new List<StoreOwner>();
+            this.storeOwners = new List<Member>();
             
             //this.policy = new Policy();
             this.storeReview = new Dictionary<string, int>();
@@ -35,7 +31,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         //getters
 
-        public StoreFounder GetStoreFounder()
+        public Member GetStoreFounder()
         {
             return this.storeFounder;
         }
@@ -50,7 +46,7 @@ namespace SadnaExpress.DomainLayer.Store
             return this.policy;
         }
 
-        public List<StoreOwner> GetOwners()
+        public List<Member> GetOwners()
         {
             return this.storeOwners;
         }
@@ -62,13 +58,13 @@ namespace SadnaExpress.DomainLayer.Store
 
 
         // adds new owner to the store
-        public void addOwner(StoreOwner newOwner)
+        public void addOwner(Member newOwner)
         {
             this.storeOwners.Add(newOwner);
         }
 
         // remove owner
-        public void removeOwner(StoreOwner owner)
+        public void removeOwner(Member owner)
         {
             this.storeOwners.Remove(owner);
         }

@@ -1,6 +1,7 @@
-namespace ConsoleApp1.DomainLayer;
-
-public class DiscountPolicy
+namespace SadnaExpress.DomainLayer.Store
 {
-    
+    public class DiscountPolicy
+    {
+        
+    }
 }

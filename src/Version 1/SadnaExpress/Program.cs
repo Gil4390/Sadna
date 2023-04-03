@@ -1,112 +1,82 @@
 ﻿using System;
-using System.Collections;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
+using System.IO;
 using System.Threading;
-using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer;
 
 namespace SadnaExpress
 {
-    public class Program
-    {
+
+    static class Logger
+    { 
+        static StreamWriter logger;
+        static string pathName;
         
-    static void Main(string[] args)
-    {
-        Thread serverThread = new Thread(delegate ()
+        public static void Init (string enter_path)
         {
-            Server myserver = new Server("127.0.0.1", 10011);
-        });
-        serverThread.Start();
-    }
-        
-    }
-    public class Server
-    {
-        TcpListener server = null;
-        UserController userController = new UserController();
-        public static Logger logger = new Logger("");
-
-        private bool tradingSystemOpen = false;
-
-        public Dictionary<string, string> Cache = new Dictionary<string, string>();
-
-        public Server(string ip, int port)
-        {
-            IPAddress localAddr = IPAddress.Parse(ip);
-            server = new TcpListener(localAddr, port);
-            server.Start();
-            Serve();
-        }
-
-        public void Serve()
-        {
+            pathName = enter_path;
+            string directory_path = @"c:\SadnaExpress Log";
             try
             {
-                while (!tradingSystemOpen)
+                if (!Directory.Exists(directory_path))
+                    Directory.CreateDirectory(directory_path);
+
+                using (logger = new StreamWriter(enter_path, true))
                 {
-                    if (Console.ReadLine() == "Admin Admin")
-                        tradingSystemOpen = true;
-                    else
+                    if (File.Exists(enter_path))
                     {
-                        Console.WriteLine("Trading system will run when entering valid password");
+                        logger.WriteLine("!************** Program Started At " + System.DateTime.Now.ToString() + " **************");
                     }
-                }
-                logger.Info("Trading system initialized.");
-                while (tradingSystemOpen)
-                {
-                    TcpClient client = server.AcceptTcpClient();
-                    Thread t = new Thread(HandleClient);
-                    t.Start(client);
+                    logger.Close();
                 }
             }
-            catch (SocketException e)
+            catch (Exception ex)
             {
-                Console.WriteLine("SocketException: "+ e);
-                server.Stop();
+                Console.WriteLine(ex.ToString());
             }
         }
-        public void HandleClient(Object obj)
+
+
+        public static void WriteToLog(string str)
         {
-
-            TcpClient client = (TcpClient)obj;
-            Guest g = new Guest(client);
-            userController.addUser(g);
-            logger.Info(g , "guest entered the system");
-            var stream = client.GetStream();
-
-
-            string messageFromClient = "";
-            string responseToClient = "";
-            Byte[] bytes = new Byte[256];
-            int i;
-            try
+            Console.WriteLine("inserting to log : " + str);
+            using (logger = new StreamWriter(pathName, true))
             {
-                while (true)
-                {
-                    Byte[] reply;
-                    while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
-                    {
-                        //transle from bytes to string the message send from the client
-                        messageFromClient = Encoding.ASCII.GetString(bytes, 0, i);
-
-                        //create proper response to the client
-                        responseToClient = "Response";
-                        reply = System.Text.Encoding.ASCII.GetBytes(responseToClient);
-                        stream.Write(reply, 0, reply.Length);
-                    }
-                    responseToClient = "Check-For-Connection";
-                    reply = System.Text.Encoding.ASCII.GetBytes(responseToClient);
-                    stream.Write(reply, 0, reply.Length);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Connection lost");
-                userController.removeUser(g);
-                client.Close();
+                logger.WriteLine(System.DateTime.Now.ToString() + "   " + str);
+                logger.Close();
             }
         }
-
+        public static void Info(string content)
+        {
+            if (!pathName.Equals(""))
+                File.WriteAllText(pathName, "Logger info|                  " + content);
+        }
+        // public static void Info(User user, string content)
+        // {
+        //     if (!pathName.Equals(""))
+        //         File.WriteAllText(pathName, "Logger info|                  user " + user.UserId + ": " + content);
+        // }
+        // public static void Debug(User user, string content)
+        // {
+        //     if (!pathName.Equals(""))
+        //         File.WriteAllText(pathName, "Logger debug|                  user " + user.UserId + ": " + content);
+        // }
+        // public static void Error(User user, string content)
+        // {
+        //     if (!pathName.Equals(""))
+        //         File.WriteAllText(pathName, "Logger error|                  user " + user.UserId + ": " + content);
+        // }
+    }
+    internal class Program
+    {
+        public static void Main(string[] args)
+        {
+            //Logger.Init("_path");
+            Console.WriteLine("Start!");
+            Thread serverThread = new Thread(delegate ()
+            {
+                Server myserver = new Server("127.0.0.1", 10011);
+            });
+            serverThread.Start();
+        }
     }
 }

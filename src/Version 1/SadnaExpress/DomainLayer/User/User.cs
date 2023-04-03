@@ -1,29 +1,29 @@
 using System.Net;
-
 using SadnaExpress.DomainLayer.Store;
 
-namespace SadnaExpress.DomainLayer.User { 
-public class User
+namespace SadnaExpress.DomainLayer.User
 {
-    protected int userId;
-    protected ShoppingCart shoppingCart;
+    public class User
+    {
+        protected int userId;
+        protected ShoppingCart shoppingCart;
 
-    public User()
-    {
-        shoppingCart = new ShoppingCart();
-        userId = 0;
-    }
+        public User(int id)
+        {
+            shoppingCart = new ShoppingCart();
+            userId = id;
+        }
 
-    public int convertToInt(EndPoint ep)
-    {
-        string newEP = ep.ToString().Split(':')[1];
-        int parseId = int.Parse(newEP);
-        return parseId;
-    }
-    public int UserId
-    {
-        get => userId;
-        set => userId = value;
+        public int convertToInt(EndPoint ep)
+        {
+            string newEP = ep.ToString().Split(':')[1];
+            int parseId = int.Parse(newEP);
+            return parseId;
+        }
+        public int UserId
+        {
+            get => userId;
+            set => userId = value;
+        }
     }
 }
-    }
