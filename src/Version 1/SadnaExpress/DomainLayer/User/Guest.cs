@@ -11,7 +11,7 @@ namespace SadnaExpress.DomainLayer.User
 
         public Guest(int id): base(id)
         {
-            this.cart = new ShoppingCart(new List<ShoppingBasket>());   
+            this.cart = new ShoppingCart();   
         }
 
 

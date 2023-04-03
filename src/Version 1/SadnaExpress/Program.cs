@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 
 namespace SadnaExpress
@@ -50,21 +51,21 @@ namespace SadnaExpress
             if (!pathName.Equals(""))
                 File.WriteAllText(pathName, "Logger info|                  " + content);
         }
-        // public static void Info(User user, string content)
-        // {
-        //     if (!pathName.Equals(""))
-        //         File.WriteAllText(pathName, "Logger info|                  user " + user.UserId + ": " + content);
-        // }
-        // public static void Debug(User user, string content)
-        // {
-        //     if (!pathName.Equals(""))
-        //         File.WriteAllText(pathName, "Logger debug|                  user " + user.UserId + ": " + content);
-        // }
-        // public static void Error(User user, string content)
-        // {
-        //     if (!pathName.Equals(""))
-        //         File.WriteAllText(pathName, "Logger error|                  user " + user.UserId + ": " + content);
-        // }
+        public static void Info(User user, string content)
+        {
+            if (!pathName.Equals(""))
+                File.WriteAllText(pathName, "Logger info|                  user " + user.UserId + ": " + content);
+        }
+        public static void Debug(User user, string content)
+        {
+            if (!pathName.Equals(""))
+                File.WriteAllText(pathName, "Logger debug|                  user " + user.UserId + ": " + content);
+        }
+        public static void Error(User user, string content)
+        {
+            if (!pathName.Equals(""))
+                File.WriteAllText(pathName, "Logger error|                  user " + user.UserId + ": " + content);
+        }
     }
     internal class Program
     {

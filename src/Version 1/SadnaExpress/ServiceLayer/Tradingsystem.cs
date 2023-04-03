@@ -19,7 +19,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                userFacade.register(id ,email, firstName, lastName, password);
+                userFacade.Register(id ,email, firstName, lastName, password);
 
             }
             catch (Exception e)
@@ -32,7 +32,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                userFacade.enter(id);
+                userFacade.Enter(id);
 
             }
             catch (Exception e)
@@ -45,7 +45,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                userFacade.exit(id);
+                userFacade.Exit(id);
 
             }
             catch (Exception e)
