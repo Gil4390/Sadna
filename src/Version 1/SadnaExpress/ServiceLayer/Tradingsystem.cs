@@ -69,5 +69,17 @@ namespace SadnaExpress.ServiceLayer
             }
 
         }
+
+        public void createStore(int id, string storeName)
+        {
+            try
+            {
+                userFacade.OpenStore(id, storeName);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
     }
 }
