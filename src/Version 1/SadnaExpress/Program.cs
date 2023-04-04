@@ -72,7 +72,8 @@ namespace SadnaExpress
         public static void Main(string[] args)
         {
             //Logger.Init("_path");
-            Console.WriteLine("Start!");
+            Console.WriteLine("Server Started!");
+            Console.WriteLine("In order to login enter: Admin Admin");
             Thread serverThread = new Thread(delegate ()
             {
                 Server myserver = new Server("127.0.0.1", 10011);

@@ -10,3 +10,10 @@
 /Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/obj/Debug/SadnaExpress.csproj.CoreCompileInputs.cache
 /Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/obj/Debug/SadnaExpress.exe
 /Users/tal.galmor/Desktop/Sadna/src/Version 1/SadnaExpress/obj/Debug/SadnaExpress.pdb
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\bin\Debug\SadnaExpress.exe
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\bin\Debug\SadnaExpress.pdb
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.csproj.AssemblyReference.cache
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.csproj.SuggestedBindingRedirects.cache
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.csproj.CoreCompileInputs.cache
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.exe
+D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.pdb

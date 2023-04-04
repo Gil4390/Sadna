@@ -4,11 +4,11 @@ namespace SadnaExpress.DomainLayer.User
 {
     public interface IUserFacade
     {
-        void Enter(int id);
+        int Enter();
         void Exit(int id);
         void Register(int id, string email, string firstName, string lastLame, string password);
-        void Login(int id, string email, string password);
-        void Logout(int id);
+        int Login(int id, string email, string password);
+        int Logout(int id);
         void AddItemToBag(int id,string storeName, string itemName);
         Dictionary<string,List<string>> getDetailsOnCart();
         void PurchaseCart(int id);

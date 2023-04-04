@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -6,63 +7,88 @@ namespace SadnaExpress.DomainLayer.User
 {
     public class UserFacade : IUserFacade
     {
-        Dictionary<int, Guest> guests;
-        Dictionary<int, Member> members;
+        //Dictionary<int, Guest> guests;
+        ConcurrentDictionary<int, User> Current_Users;
+        ConcurrentDictionary<int, Member> Members;
+        private int USER_ID = 0;
+
         PasswordHash _ph = new PasswordHash();
 
         public UserFacade()
         {
-            guests = new Dictionary<int, Guest>();
-            members = new Dictionary<int, Member>();
+            //guests = new Dictionary<int, Guest>();
+            Current_Users = new ConcurrentDictionary<int, User>();
+            Members = new ConcurrentDictionary<int, Member>();
         }
 
-        public void Enter(int id)
+        public int Enter()
         {
-            if (guests[id] != null)
-                throw new SadnaException("guests[id] == null","UserFacade","Enter");
-            Guest g = new Guest(id);
-            lock (this)
-            {
-                guests.Add(id , g);
-            }
-            Logger.Info(g ,"Enter the system.");
+            User user = new User(USER_ID);
+            USER_ID++;
+            Current_Users.TryAdd(USER_ID, user);
+
+            Logger.Info(user ,"Enter the system.");
+
+
+            return user.UserId;
         }
 
         public void Exit(int id)
         {
-            if (guests[id] == null)
-                throw new SadnaException("guests[id] != null","UserFacade","Exit");
-            Guest g = guests[id];
-            lock (this)
-            {
-                guests.Remove(id);
-            }
-            Logger.Info(g ,"exited from the system.");
+            User user;
+            Current_Users.TryRemove(id, out user);
+            Logger.Info(user ,"exited from the system.");
         }
 
         public void Register(int id, string email, string firstName, string lastName, string password)
         {
-            if (members[id] != null)
-                throw new SadnaException("guests[id] == null","UserFacade","Enter");
-            if (members[id].Email != email)
-                throw new SadnaException("members[id].Email != email","UserFacade","Enter");
+            if (Current_Users.ContainsKey(id))
+                throw new SadnaException("user with this id already logged in", "UserFacade", "Register");
+
             string hashPassword = _ph.Hash(password);
             Member newMember = new Member(id, email, firstName, lastName, hashPassword);
-            lock (this)
-            {
-                members.Add(id, newMember);
-            }
+            newMember.LoggedIn = false;
+            Members.TryAdd(id, newMember);
+
             Logger.Info(newMember ,"registered with "+email+".");
         }
 
-        public void Login(int id, string email, string password)
+        public int Login(int id, string email, string password)
         {
-            throw new NotImplementedException();
+            foreach (Member member in Members.Values)
+            {
+                if (!member.Email.Equals(email))
+                {
+                    if (!member.Password.Equals(_ph.Hash(password))){ //need to check
+                        throw new SadnaException("wrong password for email", "UserFacade", "Login");
+                    }
+                    else
+                    {
+                        //correct email & password:
+                        member.LoggedIn = true;
+                        User user;
+                        Current_Users.TryRemove(id, out user);
+                        Logger.Info(member, "logged in");
+
+                        return member.UserId;
+                    }
+                }
+            }
+            //eamil not found
+            throw new SadnaException("email dosen't exist", "UserFacade", "Login");
         }
 
-        public void Logout(int id)
+        public int Logout(int id)
         {
-            throw new NotImplementedException();
+            if (!Members.ContainsKey(id))
+                throw new SadnaException("member with id dosen't exist", "UserFacade", "Logout");
+
+            // todo save shopping cart
+
+            Member member = Members[id];
+            member.LoggedIn = false;
+            Logger.Info(member, "logged out");
+            return Enter(); //member logs out and a regular user enters the system instead
         }
 
         public void AddItemToBag(int id, string storeName, string itemName)

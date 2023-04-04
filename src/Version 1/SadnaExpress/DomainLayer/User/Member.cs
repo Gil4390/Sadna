@@ -6,6 +6,7 @@ namespace SadnaExpress.DomainLayer.User
         protected string firstName;
         protected string lastName;
         protected string password;
+        private bool loggedIn;
 
         public Member(int id, string memail, string mfirstName, string mlastLame, string mpassword): base (id)
         {
@@ -36,5 +37,6 @@ namespace SadnaExpress.DomainLayer.User
             get => password;
             set => password = value;
         }
+        public bool LoggedIn { get => loggedIn; set => loggedIn = value; }
     }
 }

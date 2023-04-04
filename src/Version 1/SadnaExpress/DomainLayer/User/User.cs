@@ -25,5 +25,15 @@ namespace SadnaExpress.DomainLayer.User
             get => userId;
             set => userId = value;
         }
+
+        public ShoppingCart GetShoppingCart()
+        {
+            return this.shoppingCart;
+        }
+
+        public bool addInventoryToCart(Inventory inv, int stock)
+        {
+            return this.shoppingCart.addInventoryToCart(inv, stock);
+        }
     }
 }
