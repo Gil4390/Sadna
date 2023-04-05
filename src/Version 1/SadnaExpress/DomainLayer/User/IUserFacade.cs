@@ -6,7 +6,7 @@ namespace SadnaExpress.DomainLayer.User
     {
         int Enter();
         void Exit(int id);
-        void Register(int id, string email, string firstName, string lastLame, string password);
+        bool Register(int id, string email, string firstName, string lastLame, string password);
         int Login(int id, string email, string password);
         int Logout(int id);
         void AddItemToBag(int id,string storeName, string itemName);
@@ -25,5 +25,7 @@ namespace SadnaExpress.DomainLayer.User
         void AddPermissionsToManager(int id,string storeName, string email, string Permission);
         void CloseStore(int id,string storeName);
         void GetDetailsOnStore(int id,string storeName);
+
+        void CleanUp(); // for test
     }
 }

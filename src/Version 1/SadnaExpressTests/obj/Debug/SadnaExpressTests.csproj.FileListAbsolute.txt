@@ -1,0 +1,17 @@
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\obj\Debug\SadnaExpressTests.csproj.AssemblyReference.cache
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\obj\Debug\SadnaExpressTests.csproj.CoreCompileInputs.cache
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\Microsoft.TestPlatform.AdapterUtilities.dll
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\SadnaExpressTests.dll
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\SadnaExpressTests.pdb
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\SadnaExpress.exe
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\SadnaExpress.pdb
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\obj\Debug\SadnaExpressTests.csproj.CopyComplete
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\obj\Debug\SadnaExpressTests.dll
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpressTests\obj\Debug\SadnaExpressTests.pdb

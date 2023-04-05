@@ -17,3 +17,10 @@ D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\obj\Debug\S
 D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.csproj.CoreCompileInputs.cache
 D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.exe
 D:\Gil Khais\SE\Semester 6\סדנא\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.pdb
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.csproj.AssemblyReference.cache
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.csproj.SuggestedBindingRedirects.cache
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.csproj.CoreCompileInputs.cache
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.exe
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpress\obj\Debug\SadnaExpress.pdb
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpress\bin\Debug\SadnaExpress.exe
+C:\Users\DELL\Desktop\sadna\Sadna\src\Version 1\SadnaExpress\bin\Debug\SadnaExpress.pdb

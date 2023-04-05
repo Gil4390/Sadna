@@ -19,6 +19,8 @@ namespace SadnaExpress.DomainLayer.User
             //guests = new Dictionary<int, Guest>();
             Current_Users = new ConcurrentDictionary<int, User>();
             Members = new ConcurrentDictionary<int, Member>();
+
+            //Logger l = Logger.Instance; // just for intializing the logger
         }
 
         public int Enter()
@@ -27,7 +29,7 @@ namespace SadnaExpress.DomainLayer.User
             USER_ID++;
             Current_Users.TryAdd(USER_ID, user);
 
-            Logger.Info(user ,"Enter the system.");
+            Logger.Instance.Info(user ,"Enter the system.");
 
 
             return user.UserId;
@@ -37,10 +39,10 @@ namespace SadnaExpress.DomainLayer.User
         {
             User user;
             Current_Users.TryRemove(id, out user);
-            Logger.Info(user ,"exited from the system.");
+            Logger.Instance.Info(user ,"exited from the system.");
         }
 
-        public void Register(int id, string email, string firstName, string lastName, string password)
+        public bool Register(int id, string email, string firstName, string lastName, string password) // changed function return value
         {
             if (Current_Users.ContainsKey(id))
                 throw new SadnaException("user with this id already logged in", "UserFacade", "Register");
@@ -50,16 +52,17 @@ namespace SadnaExpress.DomainLayer.User
             newMember.LoggedIn = false;
             Members.TryAdd(id, newMember);
 
-            Logger.Info(newMember ,"registered with "+email+".");
+            Logger.Instance.Info(newMember ,"registered with "+email+".");
+            return true;
         }
 
         public int Login(int id, string email, string password)
         {
             foreach (Member member in Members.Values)
             {
-                if (!member.Email.Equals(email))
+                if (member.Email.Equals(email)) //fixed here by radwan
                 {
-                    if (!member.Password.Equals(_ph.Hash(password))){ //need to check
+                    if (member.Password.Equals(_ph.Hash(password))){ //need to check // fixed by radwan
                         throw new SadnaException("wrong password for email", "UserFacade", "Login");
                     }
                     else
@@ -68,7 +71,7 @@ namespace SadnaExpress.DomainLayer.User
                         member.LoggedIn = true;
                         User user;
                         Current_Users.TryRemove(id, out user);
-                        Logger.Info(member, "logged in");
+                        Logger.Instance.Info(member, "logged in");
 
                         return member.UserId;
                     }
@@ -87,7 +90,7 @@ namespace SadnaExpress.DomainLayer.User
 
             Member member = Members[id];
             member.LoggedIn = false;
-            Logger.Info(member, "logged out");
+            Logger.Instance.Info(member, "logged out");
             return Enter(); //member logs out and a regular user enters the system instead
         }
 
@@ -170,5 +173,12 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new NotImplementedException();
         }
+
+        public void CleanUp() // for tests
+        {
+            Current_Users = null;
+            Members = null;
+            USER_ID = 0;
+    }
     }
 }
