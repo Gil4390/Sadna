@@ -25,5 +25,6 @@ namespace SadnaExpress.DomainLayer.User
         void AddPermissionsToManager(int id,string storeName, string email, string Permission);
         void CloseStore(int id,string storeName);
         void GetDetailsOnStore(int id,string storeName);
+        void CleanUp();
     }
 }

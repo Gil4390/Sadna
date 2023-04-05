@@ -27,7 +27,7 @@ namespace SadnaExpress.DomainLayer.User
             USER_ID++;
             Current_Users.TryAdd(USER_ID, user);
 
-            Logger.Info(user ,"Enter the system.");
+            Logger.Instance.Info(user ,"Enter the system.");
 
 
             return user.UserId;
@@ -37,7 +37,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             User user;
             Current_Users.TryRemove(id, out user);
-            Logger.Info(user ,"exited from the system.");
+            Logger.Instance.Info(user ,"exited from the system.");
         }
 
         public void Register(int id, string email, string firstName, string lastName, string password)
@@ -50,7 +50,7 @@ namespace SadnaExpress.DomainLayer.User
             newMember.LoggedIn = false;
             Members.TryAdd(id, newMember);
 
-            Logger.Info(newMember ,"registered with "+email+".");
+            Logger.Instance.Info(newMember ,"registered with "+email+".");
         }
 
         public int Login(int id, string email, string password)
@@ -68,7 +68,7 @@ namespace SadnaExpress.DomainLayer.User
                         member.LoggedIn = true;
                         User user;
                         Current_Users.TryRemove(id, out user);
-                        Logger.Info(member, "logged in");
+                        Logger.Instance.Info(member, "logged in");
 
                         return member.UserId;
                     }
@@ -87,7 +87,7 @@ namespace SadnaExpress.DomainLayer.User
 
             Member member = Members[id];
             member.LoggedIn = false;
-            Logger.Info(member, "logged out");
+            Logger.Instance.Info(member, "logged out");
             return Enter(); //member logs out and a regular user enters the system instead
         }
 
@@ -167,6 +167,11 @@ namespace SadnaExpress.DomainLayer.User
         }
 
         public void GetDetailsOnStore(int id, string storeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CleanUp()
         {
             throw new NotImplementedException();
         }
