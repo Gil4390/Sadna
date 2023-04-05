@@ -7,17 +7,15 @@ namespace SadnaExpress.DomainLayer.Store
     public class Store
     {
         private string name;
-        private List<Inventory> itemsInvetory;
+        private List<Inventory> itemsInventory;
         private Guid storeID;
         private Policy policy;
-        //                 username, rating 1-5
+        //username, rating 1-5
         private Dictionary<string, int> storeReview;
-
         // maybe need to add store discount
-        
         public Store(string name) {
             this.name = name;
-            this.itemsInvetory = new List<Inventory>();
+            this.itemsInventory = new List<Inventory>();
             this.policy = new Policy();
             this.storeReview = new Dictionary<string, int>();
             storeID = new Guid();
@@ -28,7 +26,6 @@ namespace SadnaExpress.DomainLayer.Store
             return this.name;
         }
 
-
         public Policy getPolicy() {
             return this.policy;
         }
@@ -38,9 +35,9 @@ namespace SadnaExpress.DomainLayer.Store
             return this.storeID;
         }
 
-        public List<Inventory> getItemsInvetory()
+        public List<Inventory> getItemsInventory()
         {
-            return this.itemsInvetory;
+            return this.itemsInventory;
         }
 
         
@@ -56,13 +53,13 @@ namespace SadnaExpress.DomainLayer.Store
             }
             Item newItem = new Item(name, category, price);
             Inventory inv = new Inventory(newItem, in_stock, price, policy, this);
-            this.itemsInvetory.Add(inv);
+            this.itemsInventory.Add(inv);
             return true;
         }
 
         public Inventory getItem(String name)
         {
-            foreach (Inventory inv in itemsInvetory)
+            foreach (Inventory inv in itemsInventory)
             {
                 if (inv.getName() == name)
                 {
@@ -74,11 +71,11 @@ namespace SadnaExpress.DomainLayer.Store
 
         public bool deleteItem(string name)
         {
-            foreach (Inventory inv in itemsInvetory)
+            foreach (Inventory inv in itemsInventory)
             {
                 if (inv.getName() == name)
                 {
-                    itemsInvetory.Remove(inv);
+                    itemsInventory.Remove(inv);
                     return true;
                 }
             }

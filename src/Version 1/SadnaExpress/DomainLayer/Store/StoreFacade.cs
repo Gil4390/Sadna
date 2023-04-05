@@ -1,13 +1,14 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class StoreFacade : IStoreFacade
     {
-        private LinkedList<Store> stores;
+        private ConcurrentBag<Store> stores;
         public StoreFacade()
         {
-            stores = new LinkedList<Store>();
+            stores = new ConcurrentBag<Store>();
         }
 
         public Store getStoreByName(string name)
@@ -25,7 +26,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new SadnaException("Store name can not be empty", "StoreFacade", "OpenNewStore");
             if (getStoreByName(storeName) == null) {
                 Store store = new Store(storeName);
-                stores.AddLast(store);
+                stores.Add(store);
                 Logger.Info("store " + storeName + " opened.");
             }
             else
@@ -37,7 +38,7 @@ namespace SadnaExpress.DomainLayer.Store
             Store store = getStoreByName(storeName);
             if (store == null)
                 throw new SadnaException("there is no store with this name", "StoreFacade", "CloseStore");
-            stores.Remove(store);
+            stores.TryTake(out store);
             Logger.Info("store " + storeName + " closed.");
         }
         
