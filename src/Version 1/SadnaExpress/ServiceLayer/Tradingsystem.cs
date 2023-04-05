@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
 {
     public class TradingSystem
     {
+        private ISupplierService supplierService;
+        private IPaymentService paymentService;
         private IStoreFacade storeFacade;
         private IUserFacade userFacade;
 
-        public TradingSystem()
+        public TradingSystem(ISupplierService supplierService, IPaymentService paymentService)
         {
             storeFacade = new StoreFacade();
             userFacade = new UserFacade();
+            this.paymentService = paymentService;
+            this.supplierService = supplierService;
         }
         internal ResponseT<int> enter()
         {
@@ -182,10 +187,37 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
+        public bool checkSupplierConnection()
+        {
+            bool result = this.supplierService.Connect();
+            if (!result)
+            {
+                throw new SadnaException("Supplier Service Connection Failed", "TradingSystem", "checkSupplierConnection");
+            }
+            return result;
+        }
 
         internal Response deleteMember(int id, int userID)
         {
             throw new NotImplementedException();
+        }
+        public bool checkPaymentConnection()
+        {
+            bool result = this.paymentService.Connect();
+            if (!result)
+            {
+                throw new SadnaException("Payment Service Connection Failed", "TradingSystem", "checkSupplierConnection");
+            }
+            return result;
+        }
+
+        public void CleanUp() // for the tests
+        {
+            storeFacade = null;
+            //userFacade = null;
+            userFacade.CleanUp();
+            supplierService = null;
+            paymentService = null;
         }
     }
 }

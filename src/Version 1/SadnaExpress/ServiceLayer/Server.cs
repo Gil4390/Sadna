@@ -1,5 +1,6 @@
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.Services;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -19,9 +20,9 @@ namespace SadnaExpress.ServiceLayer
 
         public Dictionary<string, string> Cache = new Dictionary<string, string>();
 
-        public Server(string ip, int port)
+        public Server(string ip, int port, ISupplierService supplierService, IPaymentService paymentService)
         {
-            service = new TradingSystem();
+            service = new TradingSystem(supplierService, paymentService);
             IPAddress localAddr = IPAddress.Parse(ip);
             server = new TcpListener(localAddr, port);
             server.Start();
