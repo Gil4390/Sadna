@@ -7,7 +7,7 @@ using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
 {
-    public class TradingSystem
+    public class TradingSystem : ITradingSystem
     {
         private ISupplierService supplierService;
         private IPaymentService paymentService;
@@ -21,7 +21,7 @@ namespace SadnaExpress.ServiceLayer
             this.paymentService = paymentService;
             this.supplierService = supplierService;
         }
-        internal ResponseT<int> enter()
+        public ResponseT<int> Enter()
         {
             try
             {
@@ -33,7 +33,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<int>(ex.Message);
             }
         }
-        internal Response exit(int id)
+        public Response Exit(int id)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace SadnaExpress.ServiceLayer
             }
 
         }
-        internal Response register(int id, string email, string firstName, string lastName, string password)
+        public Response Register(int id, string email, string firstName, string lastName, string password)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        internal ResponseT<int> login(int id, string email, string password)
+        public ResponseT<int> Login(int id, string email, string password)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace SadnaExpress.ServiceLayer
             }
 
         }
-        internal ResponseT<int> logout(int id)
+        public ResponseT<int> Logout(int id)
         {
             try
             {
@@ -87,107 +87,107 @@ namespace SadnaExpress.ServiceLayer
 
         }
 
-        internal ResponseT<List<S_Store>> getAllStoreInfo(int id)
+        public ResponseT<List<S_Store>> GetAllStoreInfo(int id)
         {
             //get list of buissnes stores and convert them to service stores
             throw new NotImplementedException();
         }
 
-        internal Response addItemToCart(int id, int itemID, int itemAmount)
+        public Response AddItemToCart(int id, int itemID, int itemAmount)
         {
             throw new NotImplementedException();
         }
 
-        internal Response purchaseCart(int id, string paymentDetails)
+        public Response PurchaseCart(int id, string paymentDetails)
         {
             throw new NotImplementedException();
         }
 
-        internal Response createStore(int id, string storeName)
+        public Response CreateStore(int id, string storeName)
         {
             throw new NotImplementedException();
         }
 
-        internal Response writeReview(int id, int itemID, string review)
+        public Response WriteReview(int id, int itemID, string review)
         {
             throw new NotImplementedException();
         }
 
-        internal Response rateItem(int id, int itemID, int score)
+        public Response RateItem(int id, int itemID, int score)
         {
             throw new NotImplementedException();
         }
 
-        internal Response writeMessageToStore(int id, int storeID, string message)
+        public Response WriteMessageToStore(int id, int storeID, string message)
         {
             throw new NotImplementedException();
         }
 
-        internal Response complainToAdmin(int id, string message)
+        public Response ComplainToAdmin(int id, string message)
         {
             throw new NotImplementedException();
         }
 
-        internal Response getPurchasesInfo(int id)
+        public Response GetPurchasesInfo(int id)
         {
             throw new NotImplementedException();
         }
 
-        internal Response addItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
+        public Response AddItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
         {
             throw new NotImplementedException();
         }
 
-        internal Response removeItemFromStore(int id, int storeID, int itemID)
+        public Response RemoveItemFromStore(int id, int storeID, int itemID)
         {
             throw new NotImplementedException();
         }
 
-        internal Response appointStoreOwner(int id, int storeID, int newUserID)
+        public Response AppointStoreOwner(int id, int storeID, int newUserID)
         {
             throw new NotImplementedException();
         }
 
-        internal Response appointStoreManager(int id, int storeID, int newUserID)
+        public Response AppointStoreManager(int id, int storeID, int newUserID)
         {
             throw new NotImplementedException();
         }
 
-        internal Response removeStoreOwner(int id, int storeID, int userID)
+        public Response RemoveStoreOwner(int id, int storeID, int userID)
         {
             throw new NotImplementedException();
         }
 
-        internal Response removetStoreManager(int id, int storeID, int userID)
+        public Response RemovetStoreManager(int id, int storeID, int userID)
         {
             throw new NotImplementedException();
         }
 
-        internal Response closeStore(int id, int storeID)
+        public Response CloseStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        internal Response reopenStore(int id, int storeID)
+        public Response ReopenStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        internal ResponseT<List<S_Member>> getEmployeeInfoInStore(int id, int storeID)
+        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        internal Response getPurchasesInfo(int id, int storeID)
+        public Response GetPurchasesInfo(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        internal Response deleteStore(int id, int storeID)
+        public Response DeleteStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }
-        public bool checkSupplierConnection()
+        public bool CheckSupplierConnection()
         {
             bool result = this.supplierService.Connect();
             if (!result)
@@ -197,11 +197,11 @@ namespace SadnaExpress.ServiceLayer
             return result;
         }
 
-        internal Response deleteMember(int id, int userID)
+        public Response DeleteMember(int id, int userID)
         {
             throw new NotImplementedException();
         }
-        public bool checkPaymentConnection()
+        public bool CheckPaymentConnection()
         {
             bool result = this.paymentService.Connect();
             if (!result)
@@ -218,6 +218,16 @@ namespace SadnaExpress.ServiceLayer
             userFacade.CleanUp();
             supplierService = null;
             paymentService = null;
+        }
+
+        public void SetPaymentService(IPaymentService paymentService)
+        {
+            this.paymentService = paymentService;
+        }
+
+        public void SetSupplierService(ISupplierService supplierService)
+        {
+            this.supplierService = supplierService;
         }
     }
 }

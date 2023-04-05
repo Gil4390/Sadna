@@ -12,7 +12,12 @@ namespace SadnaExpressTests.Acceptance_Tests
     {
 
 
-        private static TradingSystem tradingsystem;
+        private ProxyBridge _proxyBridge;
+
+        public TradingsystemTest()
+        {
+            _proxyBridge = new ProxyBridge();
+        }
 
         private class Mock_Bad_SupplierService : Mock_SupplierService
         {
@@ -38,46 +43,47 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod()]
         public void TradingSystem_HappyTest()
         {
-            tradingsystem = new TradingSystem(new Mock_SupplierService(), new Mock_PaymentService());
+            _proxyBridge.SetPaymentService(new Mock_PaymentService());
+            _proxyBridge.SetSupplierService(new Mock_SupplierService());
+            _proxyBridge.Register(0, "first123@gmail.com", "first", "last", "First1234");
+          //  Assert.IsTrue(_proxyBridge.Login(0, "first123@gmail.com", "First1234") != -1);
 
-            tradingsystem.register(0, "first123@gmail.com", "first", "last", "First1234");
-            Assert.IsTrue(tradingsystem.login(0, "first123@gmail.com", "First1234") != -1);
-
-            Assert.IsTrue(tradingsystem.checkSupplierConnection());
-            Assert.IsTrue(tradingsystem.checkPaymentConnection());
+            Assert.IsTrue(_proxyBridge.CheckSupplierConnection());
+            Assert.IsTrue(_proxyBridge.CheckPaymentConnection());
         }
 
         [TestMethod()]
         public void TradingSystem_SadTest1()
         {
-            tradingsystem = new TradingSystem(new Mock_Bad_SupplierService(), new Mock_PaymentService());
-            tradingsystem.register(0, "first123@gmail.com", "first", "last", "First1234");
-            Assert.IsTrue(tradingsystem.login(0, "first123@gmail.com", "First1234") != -1);
+            _proxyBridge.SetPaymentService(new Mock_PaymentService());
+            _proxyBridge.SetSupplierService(new Mock_Bad_SupplierService());
+            _proxyBridge.Register(0, "first123@gmail.com", "first", "last", "First1234");
+           // Assert.IsTrue(_proxyBridge.Login(0, "first123@gmail.com", "First1234") != -1);
 
             //Assert.True(tradingsystem.login(0, "first123@gmail.com", "First1234") == -1);
 
-            Assert.ThrowsException<Exception>(() => tradingsystem.checkSupplierConnection());
+            Assert.ThrowsException<Exception>(() => _proxyBridge.CheckSupplierConnection());
             //Assert.False(tradingsystem.checkSupplierConnection());
-            Assert.IsTrue(tradingsystem.checkPaymentConnection());
+            Assert.IsTrue(_proxyBridge.CheckPaymentConnection());
         }
 
         [TestMethod()]
         public void TradingSystem_SadTest2()
         {
-            tradingsystem = new TradingSystem(new Mock_SupplierService(), new Mock_Bad_PaymentService());
+            _proxyBridge.SetPaymentService(new Mock_Bad_PaymentService());
+            _proxyBridge.SetSupplierService(new Mock_SupplierService());
+            _proxyBridge.Register(0, "first123@gmail.com", "first", "last", "First1234");
+           // Assert.IsTrue(_proxyBridge.Login(0, "first123@gmail.com", "First1234") != -1);
 
-            tradingsystem.register(0, "first123@gmail.com", "first", "last", "First1234");
-            Assert.IsTrue(tradingsystem.login(0, "first123@gmail.com", "First1234") != -1);
-
-            Assert.IsTrue(tradingsystem.checkSupplierConnection());
-            Assert.ThrowsException<Exception>(() => tradingsystem.checkPaymentConnection());
+            Assert.IsTrue(_proxyBridge.CheckSupplierConnection());
+            Assert.ThrowsException<Exception>(() => _proxyBridge.CheckPaymentConnection());
             //Assert.False(tradingsystem.checkPaymentConnection());
         }
 
         [TestCleanup]
         public void CleanUp()
         {
-            tradingsystem.CleanUp();
+            _proxyBridge.CleanUp();
         }
 
     }
