@@ -19,27 +19,26 @@ namespace SadnaExpress.DomainLayer.Store
 
             return null;
         }
-        public bool OpenNewStore(string storeName)
+        public void OpenNewStore(string storeName)
         {
-            if (getStoreByName(storeName) == null)
-            {
+            if(storeName.Length == 0)
+                throw new SadnaException("Store name can not be empty", "StoreFacade", "OpenNewStore");
+            if (getStoreByName(storeName) == null) {
                 Store store = new Store(storeName);
                 stores.AddLast(store);
                 Logger.Info("store " + storeName + " opened.");
-                return true;
             }
-
-            return false;
+            else
+                throw new SadnaException("There is already store with the same name", "StoreFacade", "OpenNewStore");
         }
 
-        public bool CloseStore(string storeName)
+        public void CloseStore(string storeName)
         {
             Store store = getStoreByName(storeName);
             if (store == null)
-                return false;
+                throw new SadnaException("there is no store with this name", "StoreFacade", "CloseStore");
             stores.Remove(store);
             Logger.Info("store " + storeName + " closed.");
-            return true;
         }
         
         public void PurchaseItems(string storeName, List<string> itemsName)
