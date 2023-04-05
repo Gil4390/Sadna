@@ -3,82 +3,65 @@ using System.IO;
 using System.Threading;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.Services;
 
 namespace SadnaExpress
 {
-
-    static class Logger
-    { 
-        static StreamWriter logger;
-        static string pathName;
-        
-        public static void Init (string enter_path)
-        {
-            pathName = enter_path;
-            string directory_path = @"c:\SadnaExpress Log";
-            try
-            {
-                if (!Directory.Exists(directory_path))
-                    Directory.CreateDirectory(directory_path);
-
-                using (logger = new StreamWriter(enter_path, true))
-                {
-                    if (File.Exists(enter_path))
-                    {
-                        logger.WriteLine("!************** Program Started At " + System.DateTime.Now.ToString() + " **************");
-                    }
-                    logger.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-        }
-
-
-        public static void WriteToLog(string str)
-        {
-            Console.WriteLine("inserting to log : " + str);
-            using (logger = new StreamWriter(pathName, true))
-            {
-                logger.WriteLine(System.DateTime.Now.ToString() + "   " + str);
-                logger.Close();
-            }
-        }
-        public static void Info(string content)
-        {
-            if (!pathName.Equals(""))
-                File.WriteAllText(pathName, "Logger info|                  " + content);
-        }
-        public static void Info(User user, string content)
-        {
-            if (!pathName.Equals(""))
-                File.WriteAllText(pathName, "Logger info|                  user " + user.UserId + ": " + content);
-        }
-        public static void Debug(User user, string content)
-        {
-            if (!pathName.Equals(""))
-                File.WriteAllText(pathName, "Logger debug|                  user " + user.UserId + ": " + content);
-        }
-        public static void Error(User user, string content)
-        {
-            if (!pathName.Equals(""))
-                File.WriteAllText(pathName, "Logger error|                  user " + user.UserId + ": " + content);
-        }
-    }
     internal class Program
     {
         public static void Main(string[] args)
         {
-            //Logger.Init("_path");
             Console.WriteLine("Server Started!");
             Console.WriteLine("In order to login enter: Admin Admin");
-            Thread serverThread = new Thread(delegate ()
+            Thread serverThread = new Thread(delegate()
             {
-                Server myserver = new Server("127.0.0.1", 10011);
+                Server myserver = new Server("127.0.0.1", 10011,new Mock_SupplierService(), new Mock_PaymentService());
             });
             serverThread.Start();
+        }
+
+        private class Mock_SupplierService : ISupplierService
+        {
+            int shipmentNum = 0;
+            bool isConnected = false;
+
+            public bool Connect()
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool ValidateAddress(string address)
+            {
+                throw new NotImplementedException();
+            }
+
+            public string ShipOrder(string address)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void CancelOrder(string orderNum)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private class Mock_PaymentService : IPaymentService
+        {
+            public bool Connect()
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool ValidatePayment(string payment)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Pay(double amount, string payment)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

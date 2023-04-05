@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -19,9 +20,9 @@ namespace SadnaExpress.ServiceLayer
 
         public Dictionary<string, string> Cache = new Dictionary<string, string>();
 
-        public Server(string ip, int port)
+        public Server(string ip, int port, ISupplierService supplierService, IPaymentService paymentService)
         {
-            service = new TradingSystem();
+            service = new TradingSystem(supplierService, paymentService);
             IPAddress localAddr = IPAddress.Parse(ip);
             server = new TcpListener(localAddr, port);
             server.Start();
