@@ -1,12 +1,12 @@
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.Services;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -26,7 +26,7 @@ namespace SadnaExpress.ServiceLayer
             IPAddress localAddr = IPAddress.Parse(ip);
             server = new TcpListener(localAddr, port);
             server.Start();
-            
+
             Serve();
         }
 
@@ -61,7 +61,8 @@ namespace SadnaExpress.ServiceLayer
 
             TcpClient client = (TcpClient)obj;
             Console.WriteLine("Client connected!");
-            int id = service.enter(); // each handler gets a new id, if user loggs in the id will change
+            ResponseT<int> responseID = service.enter(); // each handler gets a new id, if user loggs in the id will change
+            int id = responseID.Value;
             var stream = client.GetStream();
 
 
@@ -89,7 +90,7 @@ namespace SadnaExpress.ServiceLayer
                         if (command_type == "EXIT")
                         {
                             //EXIT
-                            service.exit(id);
+                            Response response = service.exit(id);
                             client.Close();
                             Console.WriteLine("Client exited");
                         }
@@ -101,7 +102,16 @@ namespace SadnaExpress.ServiceLayer
                             string firstName = split[2];
                             string lastName = split[3];
                             string password = split[4];
-                            service.register(id, email, firstName, lastName, password);
+                            Response response = service.register(id, email, firstName, lastName, password);
+
+                            if (response.ErrorOccured)
+                            {
+                                responseToClient = response.ErrorMessage;
+                            }
+                            else
+                            {
+                                responseToClient = "OK";
+                            }
 
                         }
                         else if (command_type == "LOGIN")
@@ -110,17 +120,37 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid login args"); }
                             string email = split[1];
                             string password = split[2];
-                            id = service.login(id, email, password);
+                            ResponseT<int> response = service.login(id, email, password);
+
+                            if (response.ErrorOccured)
+                            {
+                                responseToClient = response.ErrorMessage;
+                            }
+                            else
+                            {
+                                id = response.Value;
+                                responseToClient = "OK";
+                            }
                         }
                         else if (command_type == "LOGOUT")
                         {
                             //LOGOUT
-                            id = service.logout(id);
+                            ResponseT<int> response = service.logout(id);
+                            if (response.ErrorOccured)
+                            {
+                                responseToClient = response.ErrorMessage;
+                            }
+                            else
+                            {
+                                id = response.Value;
+                                responseToClient = "OK";
+                            }
                         }
                         else if (command_type == "INFO")
                         {
                             //INFO
-                            List<S_Store> stores = service.getAllStoreInfo(id);
+                            ResponseT<List<S_Store>> respone = service.getAllStoreInfo(id);
+                            List<S_Store> stores = respone.Value;
                             //todo generate message to client with all the info and send it to him
                         }
                         else if (command_type == "ADD-ITEM-TO-CART")
@@ -198,7 +228,7 @@ namespace SadnaExpress.ServiceLayer
                             //REMOVE-ITEM <storeID> <itemID>
                             if (split.Length != 3) { throw new Exception("invalid remove item args"); }
                             int storeID = int.Parse(split[1]);
-                            int itemID = int.Parse(split[2]); 
+                            int itemID = int.Parse(split[2]);
                             service.removeItemFromStore(id, storeID, itemID);
                         }
                         else if (command_type == "EDIT-ITEM")
@@ -264,7 +294,8 @@ namespace SadnaExpress.ServiceLayer
                             //EMPLOYEE-INFO <storeID>
                             if (split.Length != 2) { throw new Exception("invalid EMPLOYEE-INFO args"); }
                             int storeID = int.Parse(split[1]);
-                            List<S_Member> members = service.getEmployeeInfoInStore(id, storeID);
+                            ResponseT<List<S_Member>> response = service.getEmployeeInfoInStore(id, storeID);
+                            List<S_Member> employees = response.Value;
                             //todo send the info to client
                         }
                         else if (command_type == "STORE-PURCHASES-INFO")
