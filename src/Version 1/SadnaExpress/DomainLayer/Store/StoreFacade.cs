@@ -25,6 +25,7 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 Store store = new Store(storeName);
                 stores.AddLast(store);
+                Logger.Info("new store opened");
                 return true;
             }
 
