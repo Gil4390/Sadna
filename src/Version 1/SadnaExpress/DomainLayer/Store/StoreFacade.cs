@@ -25,18 +25,23 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 Store store = new Store(storeName);
                 stores.AddLast(store);
-                Logger.Info("new store opened");
+                Logger.Info("store " + storeName + " opened.");
                 return true;
             }
 
             return false;
         }
 
-        public void CloseStore(string storeName)
+        public bool CloseStore(string storeName)
         {
-            throw new System.NotImplementedException();
+            Store store = getStoreByName(storeName);
+            if (store == null)
+                return false;
+            stores.Remove(store);
+            Logger.Info("store " + storeName + " closed.");
+            return true;
         }
-
+        
         public void PurchaseItems(string storeName, List<string> itemsName)
         {
             throw new System.NotImplementedException();

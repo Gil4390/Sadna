@@ -5,7 +5,7 @@ namespace SadnaExpress.DomainLayer.Store
     public interface IStoreFacade
     {
         bool OpenNewStore(string storeName);
-        void CloseStore(string storeName);
+        bool CloseStore(string storeName);
         void PurchaseItems(string storeName, List<string> itemsName);
         void GetStoreHistory(string storeName);
         void AddItem(string storeName, string itemName, string category, int price);
