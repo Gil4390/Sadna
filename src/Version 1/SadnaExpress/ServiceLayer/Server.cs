@@ -1,4 +1,5 @@
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.Response;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,8 @@ namespace SadnaExpress.ServiceLayer
 
             TcpClient client = (TcpClient)obj;
             Console.WriteLine("Client connected!");
-            int id = service.enter(); // each handler gets a new id, if user loggs in the id will change
+            ResponseT<int> responseID=  service.enter(); // each handler gets a new id, if user loggs in the id will change
+            int id = responseID.Value;
             var stream = client.GetStream();
 
 

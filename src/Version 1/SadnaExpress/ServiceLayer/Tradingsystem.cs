@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.Response;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 
 namespace SadnaExpress.ServiceLayer
@@ -16,20 +17,28 @@ namespace SadnaExpress.ServiceLayer
             storeFacade = new StoreFacade();
             userFacade = new UserFacade();
         }
-        public int enter()
+        internal ResponseT<int> enter()
         {
-            return userFacade.Enter();
+            try
+            {
+                int id = userFacade.Enter();
+                return new ResponseT<int>(id);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseT<int>(ex.Message);
+            }
         }
-        public void exit(int id)
+        internal Response exit(int id)
         {
             try
             {
                 userFacade.Exit(id);
-
+                return new Response();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-
+                return new Response(ex.Message);
             }
 
         }
