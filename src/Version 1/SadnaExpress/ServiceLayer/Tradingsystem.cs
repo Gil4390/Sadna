@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
-using SadnaExpress.ServiceLayer.Response;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 
 namespace SadnaExpress.ServiceLayer
@@ -42,154 +41,149 @@ namespace SadnaExpress.ServiceLayer
             }
 
         }
-        public void register(int id, string email, string firstName, string lastName, string password)
+        internal Response register(int id, string email, string firstName, string lastName, string password)
         {
             try
             {
                 userFacade.Register(id, email, firstName, lastName, password);
-
+                return new Response();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-
+                return new Response(ex.Message);
             }
         }
-        public int login(int id, string email, string password)
+        internal ResponseT<int> login(int id, string email, string password)
         {
             try
             {
-                return userFacade.Login(id, email, password);
+                int newID = userFacade.Login(id, email, password);
+                return new ResponseT<int>(id);
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return -1; //need to check this
+                return new ResponseT<int>(ex.Message);
             }
 
         }
-        public int logout(int id)
+        internal ResponseT<int> logout(int id)
         {
             try
             {
-                return userFacade.Logout(id);
+                int newID = userFacade.Logout(id);
+                return new ResponseT<int>(id);
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return -1; //need to check this
+                return new ResponseT<int>(ex.Message);
             }
 
         }
 
-        internal List<S_Store> getAllStoreInfo(int id)
+        internal ResponseT<List<S_Store>> getAllStoreInfo(int id)
         {
             //get list of buissnes stores and convert them to service stores
             throw new NotImplementedException();
         }
 
-        internal void addItemToCart(int id, int itemID, int itemAmount)
+        internal Response addItemToCart(int id, int itemID, int itemAmount)
         {
             throw new NotImplementedException();
         }
 
-        internal void purchaseCart(int id, string paymentDetails)
+        internal Response purchaseCart(int id, string paymentDetails)
         {
             throw new NotImplementedException();
         }
 
-        internal void createStore(int id, string storeName)
-        {
-            try
-            {
-                //todo
-            }
-            catch (Exception e)
-            {
-
-            }
-        }
-
-        internal void writeReview(int id, int itemID, string review)
+        internal Response createStore(int id, string storeName)
         {
             throw new NotImplementedException();
         }
 
-        internal void rateItem(int id, int itemID, int score)
+        internal Response writeReview(int id, int itemID, string review)
         {
             throw new NotImplementedException();
         }
 
-        internal void writeMessageToStore(int id, int storeID, string message)
+        internal Response rateItem(int id, int itemID, int score)
         {
             throw new NotImplementedException();
         }
 
-        internal void complainToAdmin(int id, string message)
+        internal Response writeMessageToStore(int id, int storeID, string message)
         {
             throw new NotImplementedException();
         }
 
-        internal void getPurchasesInfo(int id)
+        internal Response complainToAdmin(int id, string message)
         {
             throw new NotImplementedException();
         }
 
-        internal void addItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
+        internal Response getPurchasesInfo(int id)
         {
             throw new NotImplementedException();
         }
 
-        internal void removeItemFromStore(int id, int storeID, int itemID)
+        internal Response addItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
         {
             throw new NotImplementedException();
         }
 
-        internal void appointStoreOwner(int id, int storeID, int newUserID)
+        internal Response removeItemFromStore(int id, int storeID, int itemID)
         {
             throw new NotImplementedException();
         }
 
-        internal void appointStoreManager(int id, int storeID, int newUserID)
+        internal Response appointStoreOwner(int id, int storeID, int newUserID)
         {
             throw new NotImplementedException();
         }
 
-        internal void removeStoreOwner(int id, int storeID, int userID)
+        internal Response appointStoreManager(int id, int storeID, int newUserID)
         {
             throw new NotImplementedException();
         }
 
-        internal void removetStoreManager(int id, int storeID, int userID)
+        internal Response removeStoreOwner(int id, int storeID, int userID)
         {
             throw new NotImplementedException();
         }
 
-        internal void closeStore(int id, int storeID)
+        internal Response removetStoreManager(int id, int storeID, int userID)
         {
             throw new NotImplementedException();
         }
 
-        internal void reopenStore(int id, int storeID)
+        internal Response closeStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        internal List<S_Member> getEmployeeInfoInStore(int id, int storeID)
+        internal Response reopenStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        internal void getPurchasesInfo(int id, int storeID)
+        internal ResponseT<List<S_Member>> getEmployeeInfoInStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        internal void deleteStore(int id, int storeID)
+        internal Response getPurchasesInfo(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        internal void deleteMember(int id, int userID)
+        internal Response deleteStore(int id, int storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Response deleteMember(int id, int userID)
         {
             throw new NotImplementedException();
         }
