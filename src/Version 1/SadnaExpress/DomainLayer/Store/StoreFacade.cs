@@ -4,16 +4,31 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public class StoreFacade : IStoreFacade
     {
-        Dictionary<int, Store> stores;
-        
+        private LinkedList<Store> stores;
         public StoreFacade()
         {
-            stores = new Dictionary<int, Store>();
+            stores = new LinkedList<Store>();
         }
-        
-        public void OpenNewStore(string storeName)
+
+        public Store getStoreByName(string name)
         {
-            throw new System.NotImplementedException();
+            foreach (Store store in stores) {
+                if (store.getName().Equals(name))
+                    return store;
+            }
+
+            return null;
+        }
+        public bool OpenNewStore(string storeName)
+        {
+            if (getStoreByName(storeName) == null)
+            {
+                Store store = new Store(storeName);
+                stores.AddLast(store);
+                return true;
+            }
+
+            return false;
         }
 
         public void CloseStore(string storeName)

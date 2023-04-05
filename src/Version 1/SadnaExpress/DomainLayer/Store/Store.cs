@@ -8,47 +8,34 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private string name;
         private List<Inventory> itemsInvetory;
-        private Member storeFounder;
-        private List<Member> storeOwners;
+        private Guid storeID;
         private Policy policy;
-
         //                 username, rating 1-5
         private Dictionary<string, int> storeReview;
 
         // maybe need to add store discount
-
-
-        public Store(string name, Member storeFounder)
-        {
+        
+        public Store(string name) {
             this.name = name;
-            this.storeFounder = storeFounder;
             this.itemsInvetory = new List<Inventory>();
-            this.storeOwners = new List<Member>();
-            
-            //this.policy = new Policy();
+            this.policy = new Policy();
             this.storeReview = new Dictionary<string, int>();
+            storeID = new Guid();
         }
 
         //getters
-
-        public Member GetStoreFounder()
-        {
-            return this.storeFounder;
-        }
-        public string getName()
-        {
+        public string getName() {
             return this.name;
         }
 
 
-        public Policy getPolicy()
-        {
+        public Policy getPolicy() {
             return this.policy;
         }
 
-        public List<Member> GetOwners()
+        public Guid getId()
         {
-            return this.storeOwners;
+            return this.storeID;
         }
 
         public List<Inventory> getItemsInvetory()
@@ -56,18 +43,7 @@ namespace SadnaExpress.DomainLayer.Store
             return this.itemsInvetory;
         }
 
-
-        // adds new owner to the store
-        public void addOwner(Member newOwner)
-        {
-            this.storeOwners.Add(newOwner);
-        }
-
-        // remove owner
-        public void removeOwner(Member owner)
-        {
-            this.storeOwners.Remove(owner);
-        }
+        
 
 
         // add new Item to store, if item exists with the same name return false
