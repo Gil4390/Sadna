@@ -1,4 +1,5 @@
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.ServiceObjects;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -87,7 +88,7 @@ namespace SadnaExpress.ServiceLayer
                         if (command_type == "EXIT")
                         {
                             //EXIT
-                            service.exit(id); 
+                            service.exit(id);
                             client.Close();
                             Console.WriteLine("Client exited");
                         }
@@ -115,7 +116,188 @@ namespace SadnaExpress.ServiceLayer
                             //LOGOUT
                             id = service.logout(id);
                         }
-
+                        else if (command_type == "INFO")
+                        {
+                            //INFO
+                            List<S_Store> stores = service.getAllStoreInfo(id);
+                            //todo generate message to client with all the info and send it to him
+                        }
+                        else if (command_type == "ADD-ITEM-TO-CART")
+                        {
+                            //ADD-ITEM-TO-CART <itemID> <amount>
+                            if (split.Length != 3) { throw new Exception("invalid add item to cart args"); }
+                            int itemID = int.Parse(split[1]);
+                            int itemAmount = int.Parse(split[2]);
+                            service.addItemToCart(id, itemID, itemAmount);
+                        }
+                        else if (command_type == "PURCHASE-CART")
+                        {
+                            //PURCHASE-CART <payment details>
+                            if (split.Length != 2) { throw new Exception("invalid purchase cart args"); }
+                            string paymentDetails = split[1];
+                            service.purchaseCart(id, paymentDetails);
+                            //todo send confirmation to client
+                        }
+                        else if (command_type == "CREATE-STORE")
+                        {
+                            //CREATE-STORE <storeName>
+                            if (split.Length != 2) { throw new Exception("invalid store creation args"); }
+                            string storeName = split[1];
+                            service.createStore(id, storeName);
+                        }
+                        else if (command_type == "WRITE-REVIEW")
+                        {
+                            //WRITE-REVIEW <itemID> <review-text>
+                            if (split.Length != 3) { throw new Exception("invalid write review args"); }
+                            int itemID = int.Parse(split[1]);
+                            string review = split[2];
+                            service.writeReview(id, itemID, review);
+                        }
+                        else if (command_type == "RATE-ITEM")
+                        {
+                            //RATE-ITEM <itemID> <score>
+                            if (split.Length != 3) { throw new Exception("invalid rate item args"); }
+                            int itemID = int.Parse(split[1]);
+                            int score = int.Parse(split[2]);
+                            service.rateItem(id, itemID, score);
+                        }
+                        else if (command_type == "WRITE-MESSAGE-TO-STORE")
+                        {
+                            //WRITE-MESSAGE-TO-STORE <storeID> <message>
+                            if (split.Length != 3) { throw new Exception("invalid write message to store args"); }
+                            int storeID = int.Parse(split[1]);
+                            string message = split[2];
+                            service.writeMessageToStore(id, storeID, message);
+                        }
+                        else if (command_type == "COMPLAIN-TO-ADMIN")
+                        {
+                            //COMPLAIN-TO-ADMIN <message>
+                            if (split.Length != 2) { throw new Exception("invalid complain to admin args"); }
+                            string message = split[1];
+                            service.complainToAdmin(id, message);
+                        }
+                        else if (command_type == "PURCHASES-INFO")
+                        {
+                            //PURCHASES-INFO
+                            service.getPurchasesInfo(id);
+                            //todo need to put the info in some service object and send the info to client
+                        }
+                        else if (command_type == "ADD-ITEM")
+                        {
+                            //ADD-ITEM <storeID> <itemName> <itemCat> <itemPrice>
+                            if (split.Length != 5) { throw new Exception("invalid add item args"); }
+                            int storeID = int.Parse(split[1]);
+                            string itemName = split[2];
+                            string itemCategory = split[3];
+                            float itemPrice = float.Parse(split[4]);
+                            service.addItemToStore(id, storeID, itemName, itemCategory, itemPrice);
+                        }
+                        else if (command_type == "REMOVE-ITEM")
+                        {
+                            //REMOVE-ITEM <storeID> <itemID>
+                            if (split.Length != 3) { throw new Exception("invalid remove item args"); }
+                            int storeID = int.Parse(split[1]);
+                            int itemID = int.Parse(split[2]); 
+                            service.removeItemFromStore(id, storeID, itemID);
+                        }
+                        else if (command_type == "EDIT-ITEM")
+                        {
+                            //todo name, price, category....
+                        }
+                        else if (command_type == "POLICY")
+                        {
+                            //todo
+                        }
+                        else if (command_type == "APOINT-STORE-OWNER")
+                        {
+                            //APOINT-STORE-OWNER <storeID> <newUserID>
+                            if (split.Length != 3) { throw new Exception("invalid APOINT-STORE-OWNER args"); }
+                            int storeID = int.Parse(split[1]);
+                            int newUserID = int.Parse(split[2]);
+                            service.appointStoreOwner(id, storeID, newUserID);
+                        }
+                        else if (command_type == "REMOVE-STORE-OWNER")
+                        {
+                            //REMOVE-STORE-OWNER <storeID> <UserID>
+                            if (split.Length != 3) { throw new Exception("invalid REMOVE-STORE-OWNER args"); }
+                            int storeID = int.Parse(split[1]);
+                            int UserID = int.Parse(split[2]);
+                            service.removeStoreOwner(id, storeID, UserID);
+                        }
+                        else if (command_type == "APOINT-STORE-MANAGER")
+                        {
+                            //APOINT-STORE-MANAGER <storeID> <newUserID>
+                            if (split.Length != 3) { throw new Exception("invalid APOINT-STORE-MANAGER args"); }
+                            int storeID = int.Parse(split[1]);
+                            int newUserID = int.Parse(split[2]);
+                            service.appointStoreManager(id, storeID, newUserID);
+                        }
+                        else if (command_type == "REMOVE-STORE-MANAGER")
+                        {
+                            //REMOVE-STORE-MANAGER <storeID> <UserID>
+                            if (split.Length != 3) { throw new Exception("invalid REMOVE-STORE-MANAGER args"); }
+                            int storeID = int.Parse(split[1]);
+                            int UserID = int.Parse(split[2]);
+                            service.removetStoreManager(id, storeID, UserID);
+                        }
+                        else if (command_type == "CHANGE-PERMMISION")
+                        {
+                            //todo
+                        }
+                        else if (command_type == "CLOSE-STORE")
+                        {
+                            //CLOSE-STORE <storeID>
+                            if (split.Length != 2) { throw new Exception("invalid CLOSE-STORE args"); }
+                            int storeID = int.Parse(split[1]);
+                            service.closeStore(id, storeID);
+                        }
+                        else if (command_type == "REOPEN-STORE")
+                        {
+                            //REOPEN-STORE <storeID>
+                            if (split.Length != 2) { throw new Exception("invalid REOPEN-STORE args"); }
+                            int storeID = int.Parse(split[1]);
+                            service.reopenStore(id, storeID);
+                        }
+                        else if (command_type == "EMPLOYEE-INFO")
+                        {
+                            //EMPLOYEE-INFO <storeID>
+                            if (split.Length != 2) { throw new Exception("invalid EMPLOYEE-INFO args"); }
+                            int storeID = int.Parse(split[1]);
+                            List<S_Member> members = service.getEmployeeInfoInStore(id, storeID);
+                            //todo send the info to client
+                        }
+                        else if (command_type == "STORE-PURCHASES-INFO")
+                        {
+                            //STORE-PURCHASES-INFO <storeID>
+                            if (split.Length != 2) { throw new Exception("invalid STORE-PURCHASES-INFO args"); }
+                            int storeID = int.Parse(split[1]);
+                            service.getPurchasesInfo(id, storeID);
+                            //todo send the info to client
+                        }
+                        else if (command_type == "REPLY-COMPLAINT")
+                        {
+                            //todo
+                            //manager and owner?
+                        }
+                        else if (command_type == "DELETE-STORE")
+                        {
+                            //PERMENATLY-CLOSE-STORE <storeID>
+                            if (split.Length != 2) { throw new Exception("invalid DELETE-STORE args"); }
+                            int storeID = int.Parse(split[1]);
+                            service.deleteStore(id, storeID);
+                        }
+                        else if (command_type == "DELETE-MEMBER")
+                        {
+                            //PERMENATLY-CLOSE-STORE <userID>
+                            if (split.Length != 2) { throw new Exception("invalid DELETE-MEMBER args"); }
+                            int userID = int.Parse(split[1]);
+                            service.deleteMember(id, userID);
+                        }
+                        else if (command_type == "SYSTEM-INFO")
+                        {
+                            //SYSTEM-INFO
+                            //todo
+                        }
 
 
                         reply = System.Text.Encoding.ASCII.GetBytes(responseToClient);

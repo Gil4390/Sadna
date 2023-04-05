@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.ServiceObjects;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -68,6 +70,119 @@ namespace SadnaExpress.ServiceLayer
                 return -1; //need to check this
             }
 
+        }
+
+        internal List<S_Store> getAllStoreInfo(int id)
+        {
+            //get list of buissnes stores and convert them to service stores
+            throw new NotImplementedException();
+        }
+
+        internal void addItemToCart(int id, int itemID, int itemAmount)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void purchaseCart(int id, string paymentDetails)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void createStore(int id, string storeName)
+        {
+            try
+            {
+                //todo
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        internal void writeReview(int id, int itemID, string review)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void rateItem(int id, int itemID, int score)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void writeMessageToStore(int id, int storeID, string message)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void complainToAdmin(int id, string message)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void getPurchasesInfo(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void addItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void removeItemFromStore(int id, int storeID, int itemID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void appointStoreOwner(int id, int storeID, int newUserID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void appointStoreManager(int id, int storeID, int newUserID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void removeStoreOwner(int id, int storeID, int userID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void removetStoreManager(int id, int storeID, int userID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void closeStore(int id, int storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void reopenStore(int id, int storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal List<S_Member> getEmployeeInfoInStore(int id, int storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void getPurchasesInfo(int id, int storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void deleteStore(int id, int storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void deleteMember(int id, int userID)
+        {
+            throw new NotImplementedException();
         }
     }
 }
