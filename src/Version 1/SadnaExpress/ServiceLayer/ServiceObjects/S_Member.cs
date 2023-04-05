@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SadnaExpress.ServiceLayer.ServiceObjects
 {
-    internal class S_Member
+    public class S_Member
     {
     }
 }

@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SadnaExpressTests</RootNamespace>
     <AssemblyName>SadnaExpressTests</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
@@ -20,6 +20,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,9 +50,14 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Acceptance Tests\TradingSystem.cs" />
-    <Compile Include="Acceptance Tests\User\LoginTest.cs" />
-    <Compile Include="Acceptance Tests\User\RegisterTest.cs" />
+    <Compile Include="Acceptance Tests\TradingSystemAcceptanceTest.cs" />
+    <Compile Include="Acceptance Tests\User\RegisterAcceptanceTest.cs" />
+    <Compile Include="Acceptance Tests\User\RegisterAcceptanceTest.cs" />
+    <Compile Include="Acceptance Tests\Store\AddStoreAcceptanceTest.cs" />
+    <Compile Include="Acceptance Tests\Purchase\ProductSearchAcceptanceTest.cs" />
+    <Compile Include="Integration Tests\UserIntegrationTest.cs" />
+    <Compile Include="Unit Tests\StoreUnitTest.cs" />
+    <Compile Include="Unit Tests\ShoppingCartUnitTest.cs" />
     <Compile Include="Mocks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

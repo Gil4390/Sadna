@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SadnaExpress.ServiceLayer
 {
-    internal class ResponseT<T> : Response
+    public class ResponseT<T> : Response
     {
         public readonly T Value;
 

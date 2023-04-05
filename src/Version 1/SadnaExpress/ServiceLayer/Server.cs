@@ -61,7 +61,7 @@ namespace SadnaExpress.ServiceLayer
 
             TcpClient client = (TcpClient)obj;
             Console.WriteLine("Client connected!");
-            ResponseT<int> responseID = service.enter(); // each handler gets a new id, if user loggs in the id will change
+            ResponseT<int> responseID = service.Enter(); // each handler gets a new id, if user loggs in the id will change
             int id = responseID.Value;
             var stream = client.GetStream();
 
@@ -90,7 +90,7 @@ namespace SadnaExpress.ServiceLayer
                         if (command_type == "EXIT")
                         {
                             //EXIT
-                            Response response = service.exit(id);
+                            Response response = service.Exit(id);
                             client.Close();
                             Console.WriteLine("Client exited");
                         }
@@ -102,7 +102,7 @@ namespace SadnaExpress.ServiceLayer
                             string firstName = split[2];
                             string lastName = split[3];
                             string password = split[4];
-                            Response response = service.register(id, email, firstName, lastName, password);
+                            Response response = service.Register(id, email, firstName, lastName, password);
 
                             if (response.ErrorOccured)
                             {
@@ -120,7 +120,7 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid login args"); }
                             string email = split[1];
                             string password = split[2];
-                            ResponseT<int> response = service.login(id, email, password);
+                            ResponseT<int> response = service.Login(id, email, password);
 
                             if (response.ErrorOccured)
                             {
@@ -135,7 +135,7 @@ namespace SadnaExpress.ServiceLayer
                         else if (command_type == "LOGOUT")
                         {
                             //LOGOUT
-                            ResponseT<int> response = service.logout(id);
+                            ResponseT<int> response = service.Logout(id);
                             if (response.ErrorOccured)
                             {
                                 responseToClient = response.ErrorMessage;
@@ -149,7 +149,7 @@ namespace SadnaExpress.ServiceLayer
                         else if (command_type == "INFO")
                         {
                             //INFO
-                            ResponseT<List<S_Store>> respone = service.getAllStoreInfo(id);
+                            ResponseT<List<S_Store>> respone = service.GetAllStoreInfo(id);
                             List<S_Store> stores = respone.Value;
                             //todo generate message to client with all the info and send it to him
                         }
@@ -159,14 +159,14 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid add item to cart args"); }
                             int itemID = int.Parse(split[1]);
                             int itemAmount = int.Parse(split[2]);
-                            service.addItemToCart(id, itemID, itemAmount);
+                            service.AddItemToCart(id, itemID, itemAmount);
                         }
                         else if (command_type == "PURCHASE-CART")
                         {
                             //PURCHASE-CART <payment details>
                             if (split.Length != 2) { throw new Exception("invalid purchase cart args"); }
                             string paymentDetails = split[1];
-                            service.purchaseCart(id, paymentDetails);
+                            service.PurchaseCart(id, paymentDetails);
                             //todo send confirmation to client
                         }
                         else if (command_type == "CREATE-STORE")
@@ -174,7 +174,7 @@ namespace SadnaExpress.ServiceLayer
                             //CREATE-STORE <storeName>
                             if (split.Length != 2) { throw new Exception("invalid store creation args"); }
                             string storeName = split[1];
-                            service.createStore(id, storeName);
+                            service.CreateStore(id, storeName);
                         }
                         else if (command_type == "WRITE-REVIEW")
                         {
@@ -182,7 +182,7 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid write review args"); }
                             int itemID = int.Parse(split[1]);
                             string review = split[2];
-                            service.writeReview(id, itemID, review);
+                            service.WriteReview(id, itemID, review);
                         }
                         else if (command_type == "RATE-ITEM")
                         {
@@ -190,7 +190,7 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid rate item args"); }
                             int itemID = int.Parse(split[1]);
                             int score = int.Parse(split[2]);
-                            service.rateItem(id, itemID, score);
+                            service.RateItem(id, itemID, score);
                         }
                         else if (command_type == "WRITE-MESSAGE-TO-STORE")
                         {
@@ -198,19 +198,19 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid write message to store args"); }
                             int storeID = int.Parse(split[1]);
                             string message = split[2];
-                            service.writeMessageToStore(id, storeID, message);
+                            service.WriteMessageToStore(id, storeID, message);
                         }
                         else if (command_type == "COMPLAIN-TO-ADMIN")
                         {
                             //COMPLAIN-TO-ADMIN <message>
                             if (split.Length != 2) { throw new Exception("invalid complain to admin args"); }
                             string message = split[1];
-                            service.complainToAdmin(id, message);
+                            service.ComplainToAdmin(id, message);
                         }
                         else if (command_type == "PURCHASES-INFO")
                         {
                             //PURCHASES-INFO
-                            service.getPurchasesInfo(id);
+                            service.GetPurchasesInfo(id);
                             //todo need to put the info in some service object and send the info to client
                         }
                         else if (command_type == "ADD-ITEM")
@@ -221,7 +221,7 @@ namespace SadnaExpress.ServiceLayer
                             string itemName = split[2];
                             string itemCategory = split[3];
                             float itemPrice = float.Parse(split[4]);
-                            service.addItemToStore(id, storeID, itemName, itemCategory, itemPrice);
+                            service.AddItemToStore(id, storeID, itemName, itemCategory, itemPrice);
                         }
                         else if (command_type == "REMOVE-ITEM")
                         {
@@ -229,7 +229,7 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid remove item args"); }
                             int storeID = int.Parse(split[1]);
                             int itemID = int.Parse(split[2]);
-                            service.removeItemFromStore(id, storeID, itemID);
+                            service.RemoveItemFromStore(id, storeID, itemID);
                         }
                         else if (command_type == "EDIT-ITEM")
                         {
@@ -245,7 +245,7 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid APOINT-STORE-OWNER args"); }
                             int storeID = int.Parse(split[1]);
                             int newUserID = int.Parse(split[2]);
-                            service.appointStoreOwner(id, storeID, newUserID);
+                            service.AppointStoreOwner(id, storeID, newUserID);
                         }
                         else if (command_type == "REMOVE-STORE-OWNER")
                         {
@@ -253,7 +253,7 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid REMOVE-STORE-OWNER args"); }
                             int storeID = int.Parse(split[1]);
                             int UserID = int.Parse(split[2]);
-                            service.removeStoreOwner(id, storeID, UserID);
+                            service.RemoveStoreOwner(id, storeID, UserID);
                         }
                         else if (command_type == "APOINT-STORE-MANAGER")
                         {
@@ -261,7 +261,7 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid APOINT-STORE-MANAGER args"); }
                             int storeID = int.Parse(split[1]);
                             int newUserID = int.Parse(split[2]);
-                            service.appointStoreManager(id, storeID, newUserID);
+                            service.AppointStoreManager(id, storeID, newUserID);
                         }
                         else if (command_type == "REMOVE-STORE-MANAGER")
                         {
@@ -269,7 +269,7 @@ namespace SadnaExpress.ServiceLayer
                             if (split.Length != 3) { throw new Exception("invalid REMOVE-STORE-MANAGER args"); }
                             int storeID = int.Parse(split[1]);
                             int UserID = int.Parse(split[2]);
-                            service.removetStoreManager(id, storeID, UserID);
+                            service.RemovetStoreManager(id, storeID, UserID);
                         }
                         else if (command_type == "CHANGE-PERMMISION")
                         {
@@ -280,21 +280,21 @@ namespace SadnaExpress.ServiceLayer
                             //CLOSE-STORE <storeID>
                             if (split.Length != 2) { throw new Exception("invalid CLOSE-STORE args"); }
                             int storeID = int.Parse(split[1]);
-                            service.closeStore(id, storeID);
+                            service.CloseStore(id, storeID);
                         }
                         else if (command_type == "REOPEN-STORE")
                         {
                             //REOPEN-STORE <storeID>
                             if (split.Length != 2) { throw new Exception("invalid REOPEN-STORE args"); }
                             int storeID = int.Parse(split[1]);
-                            service.reopenStore(id, storeID);
+                            service.ReopenStore(id, storeID);
                         }
                         else if (command_type == "EMPLOYEE-INFO")
                         {
                             //EMPLOYEE-INFO <storeID>
                             if (split.Length != 2) { throw new Exception("invalid EMPLOYEE-INFO args"); }
                             int storeID = int.Parse(split[1]);
-                            ResponseT<List<S_Member>> response = service.getEmployeeInfoInStore(id, storeID);
+                            ResponseT<List<S_Member>> response = service.GetEmployeeInfoInStore(id, storeID);
                             List<S_Member> employees = response.Value;
                             //todo send the info to client
                         }
@@ -303,7 +303,7 @@ namespace SadnaExpress.ServiceLayer
                             //STORE-PURCHASES-INFO <storeID>
                             if (split.Length != 2) { throw new Exception("invalid STORE-PURCHASES-INFO args"); }
                             int storeID = int.Parse(split[1]);
-                            service.getPurchasesInfo(id, storeID);
+                            service.GetPurchasesInfo(id, storeID);
                             //todo send the info to client
                         }
                         else if (command_type == "REPLY-COMPLAINT")
@@ -316,14 +316,14 @@ namespace SadnaExpress.ServiceLayer
                             //PERMENATLY-CLOSE-STORE <storeID>
                             if (split.Length != 2) { throw new Exception("invalid DELETE-STORE args"); }
                             int storeID = int.Parse(split[1]);
-                            service.deleteStore(id, storeID);
+                            service.DeleteStore(id, storeID);
                         }
                         else if (command_type == "DELETE-MEMBER")
                         {
                             //PERMENATLY-CLOSE-STORE <userID>
                             if (split.Length != 2) { throw new Exception("invalid DELETE-MEMBER args"); }
                             int userID = int.Parse(split[1]);
-                            service.deleteMember(id, userID);
+                            service.DeleteMember(id, userID);
                         }
                         else if (command_type == "SYSTEM-INFO")
                         {
@@ -343,7 +343,7 @@ namespace SadnaExpress.ServiceLayer
             catch (Exception e)
             {
                 Console.WriteLine("Connection lost");
-                service.exit(id);
+                service.Exit(id);
                 client.Close();
             }
         }

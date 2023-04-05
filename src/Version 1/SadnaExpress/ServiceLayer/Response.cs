@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SadnaExpress.ServiceLayer
 {
-    internal class Response
+    public class Response
     {
         public readonly string ErrorMessage;
         public bool ErrorOccured { get => ErrorMessage != null; }

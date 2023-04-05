@@ -27,7 +27,7 @@ namespace SadnaExpress.DomainLayer.Store
             if (getStoreByName(storeName) == null) {
                 Store store = new Store(storeName);
                 stores.Add(store);
-                Logger.Info("store " + storeName + " opened.");
+                Logger.Instance.Info("store " + storeName + " opened.");
             }
             else
                 throw new SadnaException("There is already store with the same name", "StoreFacade", "OpenNewStore");
@@ -39,7 +39,7 @@ namespace SadnaExpress.DomainLayer.Store
             if (store == null)
                 throw new SadnaException("there is no store with this name", "StoreFacade", "CloseStore");
             stores.TryTake(out store);
-            Logger.Info("store " + storeName + " closed.");
+            Logger.Instance.Info("store " + storeName + " closed.");
         }
         
         public void PurchaseItems(string storeName, List<string> itemsName)

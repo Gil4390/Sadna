@@ -4,7 +4,7 @@ using System;
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class StoreUnitTest
     {
         [TestMethod]
         public void TestMethod1()
