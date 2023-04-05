@@ -15,13 +15,13 @@ namespace SadnaExpress.ServiceLayer
 
         private bool tradingSystemOpen = false;
 
-        public Tradingsystem service;
+        public TradingSystem service;
 
         public Dictionary<string, string> Cache = new Dictionary<string, string>();
 
         public Server(string ip, int port)
         {
-            service = new Tradingsystem();
+            service = new TradingSystem();
             IPAddress localAddr = IPAddress.Parse(ip);
             server = new TcpListener(localAddr, port);
             server.Start();
