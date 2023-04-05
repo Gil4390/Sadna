@@ -60,9 +60,9 @@ namespace SadnaExpress.DomainLayer.User
         {
             foreach (Member member in Members.Values)
             {
-                if (member.Email.Equals(email)) //fixed here by radwan
+                if (member.Email.Equals(email)) //need to fix
                 {
-                    if (member.Password.Equals(_ph.Hash(password))){ //need to check // fixed by radwan
+                    if (member.Password.Equals(_ph.Hash(password))){ //need to check // need to fix
                         throw new SadnaException("wrong password for email", "UserFacade", "Login");
                     }
                     else
