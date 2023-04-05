@@ -64,7 +64,7 @@
     <Compile Include="ServiceLayer\ServiceObjects\S_Member.cs" />
     <Compile Include="ServiceLayer\ServiceObjects\S_Store.cs" />
     <Compile Include="ServiceLayer\ServiceObjects\S_User.cs" />
-    <Compile Include="ServiceLayer\Tradingsystem.cs" />
+    <Compile Include="ServiceLayer\TradingSystem.cs" />
     <Compile Include="Services\IPaymentService.cs" />
     <Compile Include="Services\ISupplierService.cs" />
   </ItemGroup>

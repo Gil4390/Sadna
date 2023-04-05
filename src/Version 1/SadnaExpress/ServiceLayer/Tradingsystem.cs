@@ -6,12 +6,12 @@ using SadnaExpress.ServiceLayer.ServiceObjects;
 
 namespace SadnaExpress.ServiceLayer
 {
-    public class Tradingsystem
+    public class TradingSystem
     {
         private IStoreFacade storeFacade;
         private IUserFacade userFacade;
         
-        public Tradingsystem()
+        public TradingSystem()
         {
             storeFacade = new StoreFacade();
             userFacade = new UserFacade();
