@@ -6,7 +6,22 @@ using System.Threading.Tasks;
 
 namespace SadnaExpress.ServiceLayer
 {
-    internal class ResponseT
+    internal class ResponseT<T> : Response
     {
+        public readonly T Value;
+
+        internal ResponseT() : base()
+        {
+            Value = default;
+        }
+        internal ResponseT(T value) : base()
+        {
+            Value = value;
+        }
+        internal ResponseT(string message) : base(message)
+        {
+            Value = default;
+        }
+
     }
 }
