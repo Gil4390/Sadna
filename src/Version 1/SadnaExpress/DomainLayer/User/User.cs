@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net;
 using SadnaExpress.DomainLayer.Store;
 
@@ -26,6 +27,11 @@ namespace SadnaExpress.DomainLayer.User
         public bool addInventoryToCart(Inventory inv, int stock)
         {
             return this.shoppingCart.addInventoryToCart(inv, stock);
+        }
+        
+        public virtual bool hasPermissions(int storeID, LinkedList<string> listOfPermissions)
+        {
+            return false;
         }
     }
 }
