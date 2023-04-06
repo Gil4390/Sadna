@@ -17,17 +17,16 @@ namespace SadnaExpressTests.Unit_Tests
     {
         private IUserFacade _userFacade;
         private ConcurrentDictionary<int, Member> members;
-        
-        public UserFacadeUnitTest() 
+
+        [TestInitialize]
+        public void SetUp()
         {
-            int userId=0;
+            int userId = 0;
             int memberid = 0;
             members = new ConcurrentDictionary<int, Member>();
-            members.TryAdd(memberid, new Member(0,"shayk1934@gmail.com", "shay", "kresner", "123"));
-            _userFacade = new UserFacade(new ConcurrentDictionary<int, User>(), members,userId,new PasswordHash());
+            members.TryAdd(memberid, new Member(0, "shayk1934@gmail.com", "shay", "kresner", "123"));
+            _userFacade = new UserFacade(new ConcurrentDictionary<int, User>(), members, userId, new PasswordHash());
         }
-
-        
 
         [TestMethod()]
         public void UserFacadeInitializeTradingSystem_HappyTest() 
