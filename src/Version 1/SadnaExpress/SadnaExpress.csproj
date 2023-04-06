@@ -53,6 +53,8 @@
     <Compile Include="DomainLayer\User\IPasswordHash.cs" />
     <Compile Include="DomainLayer\User\IUserFacade.cs" />
     <Compile Include="DomainLayer\User\Member.cs" />
+    <Compile Include="DomainLayer\User\PromotedMember.cs" />
+    <Compile Include="DomainLayer\User\Permissions.cs" />
     <Compile Include="DomainLayer\User\PasswordHash.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserFacade.cs" />

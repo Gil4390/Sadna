@@ -1,3 +1,5 @@
+using System.Net.Mime;
+
 namespace SadnaExpress.DomainLayer.User
 {
     public class Member : User
@@ -21,9 +23,19 @@ namespace SadnaExpress.DomainLayer.User
             firstName = mfirstName;
             lastName = mfirstName;
             password = mpassword;
+            LoggedIn = false;
+        }
+        public PromotedMember promoteToMember() {
+            return new PromotedMember(UserId, email, firstName, lastName, password);
         }
 
-        
+        public PromotedMember openStore(int storeID)
+        {
+            PromotedMember founder = promoteToMember();
+            founder.createFounder(storeID);
+            founder.LoggedIn = true;
+            return founder;
+        }
         
     }
 }
