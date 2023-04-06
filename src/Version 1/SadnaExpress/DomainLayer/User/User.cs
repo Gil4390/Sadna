@@ -6,7 +6,9 @@ namespace SadnaExpress.DomainLayer.User
     public class User
     {
         protected int userId;
+        public int UserId {get => userId;set => userId = value;}
         protected ShoppingCart shoppingCart;
+        public ShoppingCart ShoppingCart {get => shoppingCart;}
 
         public User(int id)
         {
@@ -19,16 +21,6 @@ namespace SadnaExpress.DomainLayer.User
             string newEP = ep.ToString().Split(':')[1];
             int parseId = int.Parse(newEP);
             return parseId;
-        }
-        public int UserId
-        {
-            get => userId;
-            set => userId = value;
-        }
-
-        public ShoppingCart GetShoppingCart()
-        {
-            return this.shoppingCart;
         }
 
         public bool addInventoryToCart(Inventory inv, int stock)
