@@ -15,6 +15,8 @@ namespace SadnaExpress.ServiceLayer
 
         ResponseT<int> Login(int id, string email, string password);
 
+        ResponseT<int> Logout(int id);
+
         bool CheckSupplierConnection();
 
         bool CheckPaymentConnection();

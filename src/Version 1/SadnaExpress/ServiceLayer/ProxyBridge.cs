@@ -75,5 +75,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.InitializeTradingSystem(id);
         }
+
+        public ResponseT<int> Logout(int id)
+        {
+            return _realBridge.Logout(id);
+        }
     }
 }

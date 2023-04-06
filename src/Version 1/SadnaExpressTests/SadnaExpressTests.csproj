@@ -50,9 +50,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Acceptance Tests\TradingSystemAcceptanceTest.cs" />
-    <Compile Include="Acceptance Tests\User\RegisterAcceptanceTest.cs" />
-    <Compile Include="Acceptance Tests\User\LoginAcceptanceTest.cs" />
+    <Compile Include="Acceptance Tests\System\InitializationOfTradingSystem.cs" />
+    <Compile Include="Acceptance Tests\System\Payment.cs" />
+    <Compile Include="Acceptance Tests\System\Supply.cs" />
+    <Compile Include="Acceptance Tests\TradingSystemAT.cs" />
+    <Compile Include="Acceptance Tests\User\Register.cs" />
+    <Compile Include="Acceptance Tests\User\Login.cs" />
     <Compile Include="Acceptance Tests\Store\AddStoreAcceptanceTest.cs" />
     <Compile Include="Acceptance Tests\Purchase\ProductSearchAcceptanceTest.cs" />
     <Compile Include="Integration Tests\UserIntegrationTest.cs" />

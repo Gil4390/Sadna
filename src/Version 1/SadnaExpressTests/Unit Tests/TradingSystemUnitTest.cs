@@ -14,12 +14,13 @@ namespace SadnaExpressTests.Unit_Tests
     public class TradingSystemUnitTest
     {
         private ITradingSystem _tradingSystem;
-        private int MaximumWaitTime;
+        private int maximumWaitTime;
 
-        public TradingSystemUnitTest() 
+        [TestInitialize]
+        public void SetUp()
         {
             _tradingSystem = new TradingSystem();
-            MaximumWaitTime = _tradingSystem.GetMaximumWaitServiceTime();
+            maximumWaitTime = _tradingSystem.GetMaximumWaitServiceTime();
         }
 
         private class Mock_Bad_SupplierService : Mock_SupplierService
@@ -65,54 +66,86 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod()]
         public void TradingSystemPaymentServiceNoWait_HappyTest()
         {
+            //Arrange
             _tradingSystem.SetPaymentService(new Mock_PaymentService());
             string transactionDetails = "visa card 12345";
 
-            Assert.IsTrue(_tradingSystem.PlacePayment(transactionDetails).Value);
+            //Act
+            bool value = _tradingSystem.PlacePayment(transactionDetails).Value;
+           
+            //Assert
+            Assert.IsTrue(value);
         }
 
         [TestMethod()]
         public void TradingSystemPaymentServiceWait5Sec_HappyTest()
         {
+            //Arrange
             _tradingSystem.SetPaymentService(new Mock_5sec_PaymentService());
             string transactionDetails = "visa card 12345";
 
-            Assert.IsTrue(_tradingSystem.PlacePayment(transactionDetails).Value);
+            //Act
+            bool value = _tradingSystem.PlacePayment(transactionDetails).Value;
+
+            //Assert
+            Assert.IsTrue(value);
         }
 
         [TestMethod()]
         public void TradingSystemPaymentService_BadTest()
         {
+            //Arrange
             _tradingSystem.SetPaymentService(new Mock_Bad_PaymentService());
             string transactionDetails = "visa card 12345";
+
+            //Act & Assert
             Assert.IsFalse(_tradingSystem.PlacePayment(transactionDetails).Value); //operation failes cause it takes to much time- default value for bool is false do responseT returns false
         }
 
         [TestMethod()]
         public void TradingSystemSupplyServiceNoWait_HappyTest()
         {
+            //Arrange
             _tradingSystem.SetSupplierService(new Mock_SupplierService());
             string orderDetails = "red dress";
             string userDetails = "Dina Agapov";
-            Assert.IsTrue(_tradingSystem.PlaceSupply(orderDetails,userDetails).Value);
+
+            //Act
+            bool value = _tradingSystem.PlaceSupply(orderDetails, userDetails).Value;
+
+            //Assert
+            Assert.IsTrue(value);
         }
 
         [TestMethod()]
         public void TradingSystemSupplyServiceWait5Sec_HappyTest()
         {
+            //Arrange
             _tradingSystem.SetSupplierService(new Mock_5sec_SupplierService());
             string orderDetails = "red dress";
             string userDetails = "Dina Agapov";
-            Assert.IsTrue(_tradingSystem.PlaceSupply(orderDetails, userDetails).Value);
+
+            //Act
+            bool value = _tradingSystem.PlaceSupply(orderDetails, userDetails).Value;
+
+            //Assert
+            Assert.IsTrue(value);
         }
 
         [TestMethod()]
         public void TradingSystemSupplyService_BadTest()
         {
+            //Arrange
             _tradingSystem.SetSupplierService(new Mock_Bad_SupplierService());
             string orderDetails = "red dress";
             string userDetails = "Dina Agapov";
-            Assert.IsFalse(_tradingSystem.PlaceSupply(orderDetails, userDetails).Value); //operation failes cause it takes to much time- default value for bool is false do responseT returns false
+
+            //Act
+            bool value = _tradingSystem.PlaceSupply(orderDetails, userDetails).Value;
+            //operation failes cause it takes to much time- default value for bool is false do responseT returns false
+            
+            //Assert
+            Assert.IsFalse(value);
         }
 
         [TestCleanup]
