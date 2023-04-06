@@ -26,6 +26,12 @@ namespace SadnaExpress.ServiceLayer
         void SetPaymentService(IPaymentService paymentService);
 
         void SetSupplierService(ISupplierService supplierService);
+
+        ResponseT<bool> PlacePayment(string transactionDetails);
+
+        ResponseT<bool> PlaceSupply(string orderDetails, string userDetails);
+
+        int GetMaximumWaitServiceTime();
     }
         
 }

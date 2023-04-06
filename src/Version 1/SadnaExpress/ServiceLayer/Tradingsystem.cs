@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
@@ -13,13 +14,22 @@ namespace SadnaExpress.ServiceLayer
         private IPaymentService paymentService;
         private IStoreFacade storeFacade;
         private IUserFacade userFacade;
+        private const int ExternalServiceWaitTimeInSeconds=10000; //10 seconds is 10,000 mili seconds
 
-        public TradingSystem(ISupplierService supplierService, IPaymentService paymentService)
+        public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
+        public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
+
+        public TradingSystem(ISupplierService supplierService=null, IPaymentService paymentService=null)
         {
             storeFacade = new StoreFacade();
             userFacade = new UserFacade();
             this.paymentService = paymentService;
             this.supplierService = supplierService;
+        }
+
+        public int GetMaximumWaitServiceTime()
+        {
+            return ExternalServiceWaitTimeInSeconds;
         }
         public ResponseT<int> Enter()
         {
@@ -46,6 +56,7 @@ namespace SadnaExpress.ServiceLayer
             }
 
         }
+
         public Response Register(int id, string email, string firstName, string lastName, string password)
         {
             try
@@ -58,6 +69,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
+
         public ResponseT<int> Login(int id, string email, string password)
         {
             try
@@ -72,6 +84,7 @@ namespace SadnaExpress.ServiceLayer
             }
 
         }
+
         public ResponseT<int> Logout(int id)
         {
             try
@@ -187,6 +200,7 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
+
         public bool CheckSupplierConnection()
         {
             bool result = this.supplierService.Connect();
@@ -201,6 +215,7 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
+
         public bool CheckPaymentConnection()
         {
             bool result = this.paymentService.Connect();
@@ -213,8 +228,7 @@ namespace SadnaExpress.ServiceLayer
 
         public void CleanUp() // for the tests
         {
-            storeFacade = null;
-            //userFacade = null;
+            storeFacade.CleanUp();
             userFacade.CleanUp();
             supplierService = null;
             paymentService = null;
@@ -228,6 +242,58 @@ namespace SadnaExpress.ServiceLayer
         public void SetSupplierService(ISupplierService supplierService)
         {
             this.supplierService = supplierService;
+        }
+
+        public ResponseT<bool> PlacePayment(string transactionDetails)
+        {
+            try
+            {
+                var task = Task.Run(() =>
+                {
+                    return paymentService.ValidatePayment(transactionDetails);
+                });
+
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(ExternalServiceWaitTimeInSeconds));
+
+                if (isCompletedSuccessfully)
+                {
+                    return new ResponseT<bool>(task.Result);
+                }
+                else
+                {
+                    throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed.");
+                }
+            }
+            catch(Exception ex)
+            {
+                return new ResponseT<bool>(ex.Message);
+            }
+        }
+
+        public ResponseT<bool> PlaceSupply(string orderDetails, string userDetails)
+        {
+            try
+            {
+                var task = Task.Run(() =>
+                {
+                    return supplierService.ShipOrder(orderDetails,userDetails);
+                });
+
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(ExternalServiceWaitTimeInSeconds));
+
+                if (isCompletedSuccessfully)
+                {
+                    return new ResponseT<bool>(task.Result);
+                }
+                else
+                {
+                    throw new TimeoutException("Supply external service action has taken longer than the maximum time allowed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ResponseT<bool>(ex.Message);
+            }
         }
     }
 }

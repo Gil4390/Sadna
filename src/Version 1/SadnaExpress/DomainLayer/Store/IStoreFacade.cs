@@ -19,6 +19,7 @@ namespace SadnaExpress.DomainLayer.Store
         List<Item> GetItemsByItemRating(int rating);
         List<Item> GetItemsByStoreRating(int rating);
         void ReviewItem(string storeName, string itemName, int rating);
+        void CleanUp();
 
     }
 }

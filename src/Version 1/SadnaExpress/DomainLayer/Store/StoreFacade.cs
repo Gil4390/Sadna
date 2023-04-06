@@ -106,5 +106,10 @@ namespace SadnaExpress.DomainLayer.Store
         {
             throw new System.NotImplementedException();
         }
+
+        public void CleanUp()
+        {
+           
+        }
     }
 }

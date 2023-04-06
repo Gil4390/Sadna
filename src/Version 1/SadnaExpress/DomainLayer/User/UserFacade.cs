@@ -173,7 +173,8 @@ namespace SadnaExpress.DomainLayer.User
 
         public void CleanUp()
         {
-            throw new NotImplementedException();
+            Current_Users.Clear();
+            Members.Clear();
         }
     }
 }
