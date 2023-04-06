@@ -36,8 +36,13 @@ namespace SadnaExpress.DomainLayer.User
         public void Exit(int id)
         {
             User user;
-            Current_Users.TryRemove(id, out user);
-            Logger.Instance.Info(user ,"exited from the system.");
+            Member member;
+            if (Current_Users.TryRemove(id, out user))
+                Logger.Instance.Info(user, "exited from the system.");
+            else if (Members.TryRemove(id, out member))
+                Logger.Instance.Info(member ,"exited from the system.");
+            else
+                Logger.Instance.Error("Error with exiting system with this id- "+id);
         }
 
         public void Register(int id, string email, string firstName, string lastName, string password)

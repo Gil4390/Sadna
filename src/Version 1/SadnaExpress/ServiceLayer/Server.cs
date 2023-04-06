@@ -348,31 +348,5 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public string parse(string msg)
-        {
-            //Register (username) (password)
-            //Login (username) (password)
-            //Logout
-            //Exit system
-            //Open store (name) ...
-            //Close store (name) ...
-            //Purchase
-            //Show history (storeName)
-            //Add (itemName) (StoreName)
-            //Remove (itemName) (StoreName)
-            //Edit (itemName) (category)
-            //Edit (itemName) (price)
-            //Get (temName)
-            //Get (category)
-            //Get (keyWords)
-            //Get (minPrice) (maxPrice)
-            //Get (storeName) (rating)
-            //Get (itemName) (rating)
-            //Review (itemName) (Store)
-
-
-            return "";
-        }
-
     }
 }
