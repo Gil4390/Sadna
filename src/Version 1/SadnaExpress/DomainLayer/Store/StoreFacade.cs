@@ -23,21 +23,21 @@ namespace SadnaExpress.DomainLayer.Store
         public void OpenNewStore(string storeName)
         {
             if(storeName.Length == 0)
-                throw new SadnaException("Store name can not be empty", "StoreFacade", "OpenNewStore");
+                Logger.Instance.Error("Store name can not be empty");
             if (getStoreByName(storeName) == null) {
                 Store store = new Store(storeName);
                 stores.Add(store);
                 Logger.Instance.Info("store " + storeName + " opened.");
             }
             else
-                throw new SadnaException("There is already store with the same name", "StoreFacade", "OpenNewStore");
+                Logger.Instance.Error("There is already store with the same name");
         }
 
         public void CloseStore(string storeName)
         {
             Store store = getStoreByName(storeName);
             if (store == null)
-                throw new SadnaException("there is no store with this name", "StoreFacade", "CloseStore");
+                Logger.Instance.Error("there is no store with this name");
             stores.TryTake(out store);
             Logger.Instance.Info("store " + storeName + " closed.");
         }

@@ -192,7 +192,7 @@ namespace SadnaExpress.ServiceLayer
             bool result = this.supplierService.Connect();
             if (!result)
             {
-                throw new SadnaException("Supplier Service Connection Failed", "TradingSystem", "checkSupplierConnection");
+                Logger.Instance.Error("Supplier Service Connection Failed");
             }
             return result;
         }
@@ -206,7 +206,7 @@ namespace SadnaExpress.ServiceLayer
             bool result = this.paymentService.Connect();
             if (!result)
             {
-                throw new SadnaException("Payment Service Connection Failed", "TradingSystem", "checkSupplierConnection");
+                Logger.Instance.Error("Payment Service Connection Failed");
             }
             return result;
         }

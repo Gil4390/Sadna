@@ -52,41 +52,49 @@ namespace SadnaExpress
             }
         }
 
-
-        public void Info(string str)
+        public void init()
         {
             if (instance == null)
             {
                 instance = new Logger("LoggerOutput");
             }
-            Console.WriteLine("inserting to log : " + str);
+        }
+
+        public void Info(string str)
+        {
             using (logger = new StreamWriter(pathName, true))
             {
-                //logger.WriteLine(System.DateTime.Now.ToString() + "   " + str);
-
-                logger.WriteLine("Logger info|                  "+ " time : "+ System.DateTime.Now.ToString() + "   " + str);
-
-
+                logger.WriteLine(System.DateTime.Now.ToString() + "|Logger info|                   " + str);
                 logger.Close();
             }
         }
 
         public void Info(User user, string str)
         {
-            if (instance == null)
-            {
-                instance = new Logger("LoggerOutput");
-            }
-            Console.WriteLine("inserting to log : " + str);
+            init();
             using (logger = new StreamWriter(pathName, true))
             {
-                //logger.WriteLine(System.DateTime.Now.ToString() + "   userId: "+user.UserId+", " + str);
-
-                logger.WriteLine("Logger info|                  user " + user.UserId + " time: " + System.DateTime.Now.ToString() + ", " + str);
-
+                logger.WriteLine(System.DateTime.Now.ToString() + "|Logger info|                  user " + user.UserId + ", " + str);
                 logger.Close();
             }
         }
-
+        public void Error(string str)
+        {
+            init();
+            using (logger = new StreamWriter(pathName, true))
+            {
+                logger.WriteLine(System.DateTime.Now.ToString() + "|Logger error|                 " + str);
+                logger.Close();
+            }
+        }
+        public void Error(User user, string str)
+        {
+            init();
+            using (logger = new StreamWriter(pathName, true))
+            {
+                logger.WriteLine(System.DateTime.Now.ToString() + "|Logger error|                 user " + user.UserId + ", " + str);
+                logger.Close();
+            }
+        }
     }
 }

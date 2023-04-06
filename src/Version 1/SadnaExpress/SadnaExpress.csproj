@@ -62,7 +62,6 @@
 	<Compile Include="ServiceLayer\Response.cs" />
 		<Compile Include="ServiceLayer\ResponseT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SadnaException.cs" />
     <Compile Include="ServiceLayer\Server.cs" />
     <Compile Include="ServiceLayer\ServiceObjects\S_Member.cs" />
     <Compile Include="ServiceLayer\ServiceObjects\S_Store.cs" />

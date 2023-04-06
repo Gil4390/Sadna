@@ -43,7 +43,7 @@ namespace SadnaExpress.DomainLayer.User
         public void Register(int id, string email, string firstName, string lastName, string password)
         {
             if (Current_Users.ContainsKey(id))
-                throw new SadnaException("user with this id already logged in", "UserFacade", "Register");
+                Logger.Instance.Error("user with this id already logged in");
 
             string hashPassword = _ph.Hash(password);
             Member newMember = new Member(id, email, firstName, lastName, hashPassword);
@@ -60,7 +60,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (!member.Email.Equals(email))
                 {
                     if (!member.Password.Equals(_ph.Hash(password))){ //need to check
-                        throw new SadnaException("wrong password for email", "UserFacade", "Login");
+                        Logger.Instance.Error("wrong password for email");
                     }
                     else
                     {
@@ -75,13 +75,14 @@ namespace SadnaExpress.DomainLayer.User
                 }
             }
             //eamil not found
-            throw new SadnaException("email dosen't exist", "UserFacade", "Login");
+            Logger.Instance.Error("email doesn't exist");
+            return -1;
         }
 
         public int Logout(int id)
         {
             if (!Members.ContainsKey(id))
-                throw new SadnaException("member with id dosen't exist", "UserFacade", "Logout");
+                Logger.Instance.Error("member with id dosen't exist");
 
             // todo save shopping cart
 

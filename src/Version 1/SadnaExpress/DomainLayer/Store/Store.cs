@@ -79,7 +79,8 @@ namespace SadnaExpress.DomainLayer.Store
                     return true;
                 }
             }
-            throw new SadnaException("Item removal failed (Item not Found)", "Store", "deleteItem");
+            Logger.Instance.Error("Item removal failed (Item not Found)");
+            return false;
         }
         
         public bool updateItem(string name, string newName, string newCategory, double newPrice, int newIn_stock, Policy newPolicy)
@@ -120,13 +121,14 @@ namespace SadnaExpress.DomainLayer.Store
             int newStock = inv.getInStock() - stock;
             if ( newStock < 0)
             {
-                throw new SadnaException("Not Enough Items in stock to complete this purhcase, please try later!", "Store", "updateStockAfterPurchase");
+                Logger.Instance.Error("Not Enough Items in stock to complete this purhcase, please try later!");
             }
             else
             {
                 inv.setInStock(newStock);
                 return true;
             }
+            return false;
         }
 
 
