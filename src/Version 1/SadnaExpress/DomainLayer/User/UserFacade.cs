@@ -93,9 +93,6 @@ namespace SadnaExpress.DomainLayer.User
             if (!Members.ContainsKey(id))
                 throw new Exception("member with id dosen't exist");
 
-
-            // todo save shopping cart
-
             Member member = Members[id];
             member.LoggedIn = false;
             Logger.Instance.Info(member, "logged out");
