@@ -5,7 +5,7 @@ using System;
 namespace SadnaExpressTests.Acceptance_Tests.User
 {
     [TestClass]
-    public class RegisterTest
+    public class RegisterAcceptanceTest
     {
         private static IUserFacade userFacade;
 

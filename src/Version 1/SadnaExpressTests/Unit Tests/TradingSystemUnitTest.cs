@@ -11,12 +11,12 @@ using static SadnaExpressTests.Mocks;
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass()]
-    public class TradingSystemUnitTests
+    public class TradingSystemUnitTest
     {
         private ITradingSystem _tradingSystem;
         private int MaximumWaitTime;
 
-        public TradingSystemUnitTests() 
+        public TradingSystemUnitTest() 
         {
             _tradingSystem = new TradingSystem();
             MaximumWaitTime = _tradingSystem.GetMaximumWaitServiceTime();

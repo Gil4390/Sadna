@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="Acceptance Tests\TradingSystemAcceptanceTest.cs" />
     <Compile Include="Acceptance Tests\User\RegisterAcceptanceTest.cs" />
-    <Compile Include="Acceptance Tests\User\RegisterAcceptanceTest.cs" />
+    <Compile Include="Acceptance Tests\User\LoginAcceptanceTest.cs" />
     <Compile Include="Acceptance Tests\Store\AddStoreAcceptanceTest.cs" />
     <Compile Include="Acceptance Tests\Purchase\ProductSearchAcceptanceTest.cs" />
     <Compile Include="Integration Tests\UserIntegrationTest.cs" />
@@ -60,7 +60,9 @@
     <Compile Include="Unit Tests\ShoppingCartUnitTest.cs" />
     <Compile Include="Mocks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit Tests\TradingSystemUnitTests.cs" />
+    <Compile Include="Unit Tests\TradingSystemUnitTest.cs" />
+    <Compile Include="Unit Tests\UserFacadeUnitTest.cs" />
+    <Compile Include="Unit Tests\UserUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

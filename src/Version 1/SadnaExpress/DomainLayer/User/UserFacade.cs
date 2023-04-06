@@ -1,3 +1,4 @@
+using SadnaExpress.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,24 +10,31 @@ namespace SadnaExpress.DomainLayer.User
     public class UserFacade : IUserFacade
     {
         //Dictionary<int, Guest> guests;
-        ConcurrentDictionary<int, User> Current_Users;
-        ConcurrentDictionary<int, Member> Members;
+        private ConcurrentDictionary<int, User> current_Users;
+        private ConcurrentDictionary<int, Member> members;
         private int USER_ID = 0;
-
-        PasswordHash _ph = new PasswordHash();
+        private PasswordHash _ph = new PasswordHash();
 
         public UserFacade()
         {
             //guests = new Dictionary<int, Guest>();
-            Current_Users = new ConcurrentDictionary<int, User>();
-            Members = new ConcurrentDictionary<int, Member>();
+            current_Users = new ConcurrentDictionary<int, User>();
+            members = new ConcurrentDictionary<int, Member>();
+        }
+
+        public UserFacade(ConcurrentDictionary<int, User> current_Users, ConcurrentDictionary<int, Member> members, int uSER_ID, PasswordHash ph)
+        {
+            this.current_Users = current_Users;
+            this.members = members;
+            USER_ID = uSER_ID;
+            _ph = ph;
         }
 
         public int Enter()
         {
             User user = new User(USER_ID);
             USER_ID++;
-            Current_Users.TryAdd(USER_ID, user);
+            current_Users.TryAdd(USER_ID, user);
 
             Logger.Instance.Info(user ,"Enter the system.");
 
@@ -38,9 +46,9 @@ namespace SadnaExpress.DomainLayer.User
         {
             User user;
             Member member;
-            if (Current_Users.TryRemove(id, out user))
+            if (current_Users.TryRemove(id, out user))
                 Logger.Instance.Info(user, "exited from the system.");
-            else if (Members.TryRemove(id, out member))
+            else if (members.TryRemove(id, out member))
                 Logger.Instance.Info(member ,"exited from the system.");
             else
             {
@@ -50,21 +58,21 @@ namespace SadnaExpress.DomainLayer.User
 
         public void Register(int id, string email, string firstName, string lastName, string password)
         {
-            if (Current_Users.ContainsKey(id))
+            if (current_Users.ContainsKey(id))
                 throw new Exception("user with this id already logged in");
             
 
             string hashPassword = _ph.Hash(password);
             Member newMember = new Member(id, email, firstName, lastName, hashPassword);
             newMember.LoggedIn = false;
-            Members.TryAdd(id, newMember);
+            members.TryAdd(id, newMember);
 
             Logger.Instance.Info(newMember ,"registered with "+email+".");
         }
 
         public int Login(int id, string email, string password)
         {
-            foreach (Member member in Members.Values)
+            foreach (Member member in members.Values)
             {
                 if (member.Email.Equals(email))
                 {
@@ -76,7 +84,7 @@ namespace SadnaExpress.DomainLayer.User
                         //correct email & password:
                         member.LoggedIn = true;
                         User user;
-                        Current_Users.TryRemove(id, out user);
+                        current_Users.TryRemove(id, out user);
                         Logger.Instance.Info(member, "logged in");
 
                         return member.UserId;
@@ -90,10 +98,10 @@ namespace SadnaExpress.DomainLayer.User
 
         public int Logout(int id)
         {
-            if (!Members.ContainsKey(id))
+            if (!members.ContainsKey(id))
                 throw new Exception("member with id dosen't exist");
 
-            Member member = Members[id];
+            Member member = members[id];
             member.LoggedIn = false;
             Logger.Instance.Info(member, "logged out");
             return Enter(); //member logs out and a regular user enters the system instead
@@ -181,8 +189,28 @@ namespace SadnaExpress.DomainLayer.User
 
         public void CleanUp()
         {
-            Current_Users.Clear();
-            Members.Clear();
+            current_Users.Clear();
+            members.Clear();
+        }
+
+        public bool InitializeTradingSystem(int id)
+        {
+            //functions steps:
+            //1. check that this is id member
+            //2. check that member is log in
+            //3. check that member is system manager
+            //4. check that there is connection to payment and supply services
+
+            if(!members.ContainsKey(id))
+                throw new Exception("member with id dosen't exist");
+
+            if (!members[id].LoggedIn)
+                throw new Exception("To Initialize the trading system member must be logged in");
+
+            //impl of 3- throw error if not
+
+            return true;
+
         }
     }
 }

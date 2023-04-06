@@ -15,7 +15,6 @@ namespace SadnaExpress.ServiceLayer
         private IStoreFacade storeFacade;
         private IUserFacade userFacade;
         private const int ExternalServiceWaitTimeInSeconds=10000; //10 seconds is 10,000 mili seconds
-
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
 
@@ -297,6 +296,22 @@ namespace SadnaExpress.ServiceLayer
                 }
             }
             catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<bool>(ex.Message);
+            }
+        }
+
+        public ResponseT<bool> InitializeTradingSystem(int id)
+        {
+            try
+            {
+                Logger.Instance.Info("User id: " + id + " requested to initialize trading system");
+                userFacade.InitializeTradingSystem(id);
+
+                return new ResponseT<bool>(paymentService.Connect() && supplierService.Connect());
+            }
+            catch(Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
                 return new ResponseT<bool>(ex.Message);
