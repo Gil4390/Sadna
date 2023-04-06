@@ -139,7 +139,9 @@ namespace SadnaExpress.DomainLayer.User
 
         public void OpenStore(int id, int storeID)
         {
-            throw new NotImplementedException();
+            isLogin(id);
+            PromotedMember founder = members[id].openStore(storeID);
+            members[id] = founder;
         }
 
         public void AddReview(int id, int storeID, string itemName)
@@ -211,6 +213,24 @@ namespace SadnaExpress.DomainLayer.User
 
             return true;
 
+        }
+
+        public bool hasPermissions(int id, int storeId, LinkedList<string> permissions)
+        {
+            if (members.ContainsKey(id))
+                if (members[id].hasPermissions(storeId, permissions))
+                    return true;
+            return false;
+        }
+        private void isLogin(int id)
+        {
+            if (members.ContainsKey(id))
+            {
+                if (members[id].LoggedIn)
+                    return;
+                throw new Exception("member need to login");
+            }
+            throw new Exception("User need to register first");
         }
     }
 }

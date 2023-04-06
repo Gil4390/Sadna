@@ -46,20 +46,20 @@ namespace SadnaExpress.DomainLayer.User
             permissionsList.AddLast("system manager permissions");
             permissions.Add(-1, permissionsList); //-1 represent all stores
         }
-        
+
         public override bool hasPermissions(int storeID, LinkedList<string> listOfPermissions)
         {
-            foreach (string permission in listOfPermissions)
+            if (permissions.ContainsKey(storeID))
             {
-                if (permissions.ContainsKey(storeID))
+                foreach (string permission in listOfPermissions)
                 {
                     if (!permissions[storeID].Contains(permission))
                         return false;
                 }
-                    
-            }
-            return true;
-        }
 
+                return true;
+            }
+            return false;
+        }
     }
 }
