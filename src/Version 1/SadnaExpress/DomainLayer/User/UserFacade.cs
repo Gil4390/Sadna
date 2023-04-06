@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 
 namespace SadnaExpress.DomainLayer.User
@@ -42,13 +43,16 @@ namespace SadnaExpress.DomainLayer.User
             else if (Members.TryRemove(id, out member))
                 Logger.Instance.Info(member ,"exited from the system.");
             else
-                Logger.Instance.Error("Error with exiting system with this id- "+id);
+            {
+                throw new Exception("Error with exiting system with this id- " + id);
+            }
         }
 
         public void Register(int id, string email, string firstName, string lastName, string password)
         {
             if (Current_Users.ContainsKey(id))
-                Logger.Instance.Error("user with this id already logged in");
+                throw new Exception("user with this id already logged in");
+            
 
             string hashPassword = _ph.Hash(password);
             Member newMember = new Member(id, email, firstName, lastName, hashPassword);
@@ -65,7 +69,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (!member.Email.Equals(email))
                 {
                     if (!member.Password.Equals(_ph.Hash(password))){ //need to check
-                        Logger.Instance.Error("wrong password for email");
+                        throw new Exception("wrong password for email");
                     }
                     else
                     {
@@ -80,14 +84,15 @@ namespace SadnaExpress.DomainLayer.User
                 }
             }
             //eamil not found
-            Logger.Instance.Error("email doesn't exist");
+            throw new Exception("email doesn't exist");
             return -1;
         }
 
         public int Logout(int id)
         {
             if (!Members.ContainsKey(id))
-                Logger.Instance.Error("member with id dosen't exist");
+                throw new Exception("member with id dosen't exist");
+
 
             // todo save shopping cart
 

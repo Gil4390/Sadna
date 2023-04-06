@@ -40,6 +40,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
+                Logger.Instance.Error(ex.Message);
                 return new ResponseT<int>(ex.Message);
             }
         }
@@ -52,6 +53,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
+                Logger.Instance.Error(ex.Message);
                 return new Response(ex.Message);
             }
 
@@ -66,6 +68,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
+                Logger.Instance.Error(ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -80,6 +83,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
+                Logger.Instance.Error(ex.Message);
                 return new ResponseT<int>(ex.Message);
             }
 
@@ -95,6 +99,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
+                Logger.Instance.Error(ex.Message);
                 return new ResponseT<int>(ex.Message);
             }
 
@@ -266,6 +271,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch(Exception ex)
             {
+                Logger.Instance.Error(ex.Message);
                 return new ResponseT<bool>(ex.Message);
             }
         }
@@ -292,6 +298,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
+                Logger.Instance.Error(ex.Message);
                 return new ResponseT<bool>(ex.Message);
             }
         }
