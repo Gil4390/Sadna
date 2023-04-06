@@ -55,5 +55,20 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.Login(id, email, password);
         }
+
+        public ResponseT<bool> PlacePayment(string transactionDetails)
+        {
+            return _realBridge.PlacePayment(transactionDetails);
+        }
+
+        public ResponseT<bool> PlaceSupply(string orderDetails, string userDetails)
+        {
+            return _realBridge.PlaceSupply(orderDetails, userDetails);
+        }
+
+        public int GetMaximumWaitServiceTime()
+        {
+            return _realBridge.GetMaximumWaitServiceTime();
+        }
     }
 }

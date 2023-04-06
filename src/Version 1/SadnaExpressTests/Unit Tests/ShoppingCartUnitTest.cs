@@ -4,10 +4,10 @@ using System;
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class ShoppingCartUnitTest
     {
         [TestMethod]
-        public void ShoppingCartUnitTest()
+        public void Test()
         {
         }
     }

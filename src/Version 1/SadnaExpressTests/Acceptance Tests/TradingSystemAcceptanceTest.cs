@@ -10,8 +10,6 @@ namespace SadnaExpressTests.Acceptance_Tests
     [TestClass()]
     public class TradingsystemTest
     {
-
-
         private ProxyBridge _proxyBridge;
 
         public TradingsystemTest()

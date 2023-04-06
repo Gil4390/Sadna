@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using SadnaExpress.Services;
@@ -37,6 +38,11 @@ namespace SadnaExpressTests
                 return "test " + shipmentNum;
             }
 
+            public virtual bool ShipOrder(string orderDetails, string userDetails)
+            {
+                shipmentNum++;
+                return true;
+            }
 
             public virtual bool ValidateAddress(string address)
             {
@@ -65,7 +71,7 @@ namespace SadnaExpressTests
 
             }
 
-            public virtual bool ValidatePayment(string payment)
+            public virtual bool ValidatePayment(string transactionDetails)
             {
                 return true;
             }

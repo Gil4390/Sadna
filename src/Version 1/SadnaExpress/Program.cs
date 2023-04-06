@@ -44,6 +44,11 @@ namespace SadnaExpress
             {
                 throw new NotImplementedException();
             }
+
+            public bool ShipOrder(string orderDetails, string userDetails)
+            {
+                return true;
+            }
         }
 
         private class Mock_PaymentService : IPaymentService

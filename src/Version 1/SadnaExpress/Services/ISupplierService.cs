@@ -6,7 +6,7 @@ namespace SadnaExpress.Services
 
         bool ValidateAddress(string address);
 
-        string ShipOrder(string address);
+        bool ShipOrder(string orderDetails, string userDetails);
 
         void CancelOrder(string orderNum);
 
