@@ -60,8 +60,9 @@
     <Compile Include="Unit Tests\ShoppingCartUnitTest.cs" />
     <Compile Include="Mocks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit Tests\TradingSystemUnitTests.cs" />
+    <Compile Include="Unit Tests\TradingSystemUnitTest.cs" />
     <Compile Include="Unit Tests\UserFacadeUnitTest.cs" />
+    <Compile Include="Unit Tests\UserUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
