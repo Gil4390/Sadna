@@ -91,7 +91,7 @@ namespace SadnaExpress.DomainLayer.User
             return Enter(); //member logs out and a regular user enters the system instead
         }
 
-        public void AddItemToBag(int id, string storeName, string itemName)
+        public void AddItemToBag(int id, int storeID, string itemName)
         {
             throw new NotImplementedException();
         }
@@ -106,67 +106,67 @@ namespace SadnaExpress.DomainLayer.User
             throw new NotImplementedException();
         }
 
-        public void AddItemCart(int id, string storeName, string itemName)
+        public void AddItemCart(int id, int storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveCart(int id, string storeName, string itemName)
+        public void RemoveCart(int id, int storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void EditItemCart(int id, string storeName, string itemName)
+        public void EditItemCart(int id, int storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void OpenStore(int id, string storeName)
+        public void OpenStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        public void AddReview(int id, string storeName, string itemName)
+        public void AddReview(int id, int storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void AddItemInventory(int id, string storeName, string itemName)
+        public void AddItemInventory(int id, int storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveItemInventory(int id, string storeName, string itemName)
+        public void RemoveItemInventory(int id, int storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void EditItemInventory(int id, string storeName, string itemName)
+        public void EditItemInventory(int id, int storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void AddOwner(int id, string storeName, string email)
+        public void AddOwner(int id, int storeID, string email)
         {
             throw new NotImplementedException();
         }
 
-        public void AddManager(int id, string storeName, string email)
+        public void AddManager(int id, int storeID, string email)
         {
             throw new NotImplementedException();
         }
 
-        public void AddPermissionsToManager(int id, string storeName, string email, string Permission)
+        public void AddPermissionsToManager(int id, int storeID, string email, string Permission)
         {
             throw new NotImplementedException();
         }
 
-        public void CloseStore(int id, string storeName)
+        public void CloseStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }
 
-        public void GetDetailsOnStore(int id, string storeName)
+        public void GetDetailsOnStore(int id, int storeID)
         {
             throw new NotImplementedException();
         }

@@ -9,22 +9,22 @@ namespace SadnaExpress.DomainLayer.User
         void Register(int id, string email, string firstName, string lastLame, string password);
         int Login(int id, string email, string password);
         int Logout(int id);
-        void AddItemToBag(int id,string storeName, string itemName);
+        void AddItemToBag(int id,int storeID, string itemName);
         Dictionary<string,List<string>> getDetailsOnCart();
         void PurchaseCart(int id);
-        void AddItemCart(int id,string storeName, string itemName);
-        void RemoveCart(int id,string storeName, string itemName);
-        void EditItemCart(int id,string storeName, string itemName);
-        void OpenStore(int id,string storeName);
-        void AddReview(int id,string storeName, string itemName);
-        void AddItemInventory(int id,string storeName, string itemName);
-        void RemoveItemInventory(int id,string storeName, string itemName);
-        void EditItemInventory(int id,string storeName, string itemName);
-        void AddOwner(int id,string storeName, string email);
-        void AddManager(int id,string storeName, string email);
-        void AddPermissionsToManager(int id,string storeName, string email, string Permission);
-        void CloseStore(int id,string storeName);
-        void GetDetailsOnStore(int id,string storeName);
+        void AddItemCart(int id,int storeID, string itemName);
+        void RemoveCart(int id,int storeID, string itemName);
+        void EditItemCart(int id,int storeID, string itemName);
+        void OpenStore(int id,int storeID);
+        void AddReview(int id,int storeID, string itemName);
+        void AddItemInventory(int id,int storeID, string itemName);
+        void RemoveItemInventory(int id,int storeID, string itemName);
+        void EditItemInventory(int id,int storeID, string itemName);
+        void AddOwner(int id,int storeID, string email);
+        void AddManager(int id,int storeID, string email);
+        void AddPermissionsToManager(int id,int storeID, string email, string Permission);
+        void CloseStore(int id,int storeID);
+        void GetDetailsOnStore(int id,int storeID);
         void CleanUp();
     }
 }

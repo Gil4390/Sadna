@@ -46,8 +46,8 @@
     <Compile Include="DomainLayer\Store\Order.cs" />
     <Compile Include="DomainLayer\Store\Policy.cs" />
     <Compile Include="DomainLayer\Store\PurchasePolicy.cs" />
-    <Compile Include="DomainLayer\Store\ShoppingBasket.cs" />
-    <Compile Include="DomainLayer\Store\ShoppingCart.cs" />
+    <Compile Include="DomainLayer\User\ShoppingBasket.cs" />
+    <Compile Include="DomainLayer\User\ShoppingCart.cs" />
     <Compile Include="DomainLayer\Store\Store.cs" />
     <Compile Include="DomainLayer\Store\StoreFacade.cs" />
     <Compile Include="DomainLayer\User\Guest.cs" />
