@@ -70,5 +70,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetMaximumWaitServiceTime();
         }
+
+        public ResponseT<bool> InitializeTradingSystem(int id)
+        {
+            return _realBridge.InitializeTradingSystem(id);
+        }
     }
 }

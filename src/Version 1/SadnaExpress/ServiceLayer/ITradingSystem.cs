@@ -32,6 +32,8 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<bool> PlaceSupply(string orderDetails, string userDetails);
 
         int GetMaximumWaitServiceTime();
+
+        ResponseT<bool> InitializeTradingSystem(int id);
     }
         
 }

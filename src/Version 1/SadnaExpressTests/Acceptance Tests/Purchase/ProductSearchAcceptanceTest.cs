@@ -4,7 +4,7 @@ using System;
 namespace SadnaExpressTests.Acceptance_Tests.Purchase
 {
     [TestClass]
-    public class UnitTest1
+    public class ProductSearchAcceptanceTest
     {
         [TestMethod]
         public void TestMethod1()
