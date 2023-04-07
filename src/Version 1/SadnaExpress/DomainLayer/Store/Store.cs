@@ -9,6 +9,7 @@ namespace SadnaExpress.DomainLayer.Store
         private string name;
         private List<Inventory> itemsInventory;
         private Guid storeID;
+        public Guid StoreID {get=>storeID;}
         private Policy policy;
         //username, rating 1-5
         private Dictionary<string, int> storeReview;
@@ -30,10 +31,7 @@ namespace SadnaExpress.DomainLayer.Store
             return this.policy;
         }
 
-        public Guid getId()
-        {
-            return this.storeID;
-        }
+        
 
         public List<Inventory> getItemsInventory()
         {

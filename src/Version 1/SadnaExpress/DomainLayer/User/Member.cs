@@ -1,3 +1,4 @@
+using System;
 using System.Net.Mime;
 
 namespace SadnaExpress.DomainLayer.User
@@ -29,7 +30,7 @@ namespace SadnaExpress.DomainLayer.User
             return new PromotedMember(UserId, email, firstName, lastName, password);
         }
 
-        public PromotedMember openStore(int storeID)
+        public PromotedMember openNewStore(Guid storeID)
         {
             PromotedMember founder = promoteToMember();
             founder.createFounder(storeID);

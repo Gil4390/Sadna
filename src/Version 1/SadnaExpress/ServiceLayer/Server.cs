@@ -19,6 +19,12 @@ namespace SadnaExpress.ServiceLayer
         {
             service = new TradingSystem(new Mock_SupplierService(), new Mock_PaymentService());
         }
+        private static Guid ToGuid(int value)
+        {
+            byte[] bytes = new byte[16];
+            BitConverter.GetBytes(value).CopyTo(bytes, 0);
+            return new Guid(bytes);
+        }
 
         public void ServeClient(string name , Queue<string> commands)
         {
@@ -175,7 +181,7 @@ namespace SadnaExpress.ServiceLayer
 
                         int storeID = int.Parse(split[1]);
                         string message = split[2];
-                        service.WriteMessageToStore(id, storeID, message);
+                        service.WriteMessageToStore(id, ToGuid(storeID), message);
                     }
                     else if (command_type == "COMPLAIN-TO-ADMIN")
                     {
@@ -206,7 +212,7 @@ namespace SadnaExpress.ServiceLayer
                         string itemName = split[2];
                         string itemCategory = split[3];
                         float itemPrice = float.Parse(split[4]);
-                        service.AddItemToStore(id, storeID, itemName, itemCategory, itemPrice);
+                        service.AddItemToStore(id, ToGuid(storeID), itemName, itemCategory, itemPrice);
                     }
                     else if (command_type == "REMOVE-ITEM")
                     {
@@ -218,7 +224,7 @@ namespace SadnaExpress.ServiceLayer
 
                         int storeID = int.Parse(split[1]);
                         int itemID = int.Parse(split[2]);
-                        service.RemoveItemFromStore(id, storeID, itemID);
+                        service.RemoveItemFromStore(id, ToGuid(storeID), itemID);
                     }
                     else if (command_type == "EDIT-ITEM")
                     {
@@ -237,8 +243,8 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         int storeID = int.Parse(split[1]);
-                        int newUserID = int.Parse(split[2]);
-                        service.AppointStoreOwner(id, storeID, newUserID);
+                        string userEmail = split[2];
+                        service.AppointStoreOwner(id, ToGuid(storeID), userEmail);
                     }
                     else if (command_type == "REMOVE-STORE-OWNER")
                     {
@@ -250,7 +256,7 @@ namespace SadnaExpress.ServiceLayer
 
                         int storeID = int.Parse(split[1]);
                         int UserID = int.Parse(split[2]);
-                        service.RemoveStoreOwner(id, storeID, UserID);
+                        service.RemoveStoreOwner(id, ToGuid(storeID), UserID);
                     }
                     else if (command_type == "APOINT-STORE-MANAGER")
                     {
@@ -262,7 +268,7 @@ namespace SadnaExpress.ServiceLayer
 
                         int storeID = int.Parse(split[1]);
                         int newUserID = int.Parse(split[2]);
-                        service.AppointStoreManager(id, storeID, newUserID);
+                        service.AppointStoreManager(id, ToGuid(storeID), newUserID);
                     }
                     else if (command_type == "REMOVE-STORE-MANAGER")
                     {
@@ -274,7 +280,7 @@ namespace SadnaExpress.ServiceLayer
 
                         int storeID = int.Parse(split[1]);
                         int UserID = int.Parse(split[2]);
-                        service.RemovetStoreManager(id, storeID, UserID);
+                        service.RemovetStoreManager(id, ToGuid(storeID), UserID);
                     }
                     else if (command_type == "CHANGE-PERMMISION")
                     {
@@ -289,7 +295,7 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         int storeID = int.Parse(split[1]);
-                        service.CloseStore(id, storeID);
+                        service.CloseStore(id, ToGuid(storeID));
                     }
                     else if (command_type == "REOPEN-STORE")
                     {
@@ -300,7 +306,7 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         int storeID = int.Parse(split[1]);
-                        service.ReopenStore(id, storeID);
+                        service.ReopenStore(id, ToGuid(storeID));
                     }
                     else if (command_type == "EMPLOYEE-INFO")
                     {
@@ -311,7 +317,7 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         int storeID = int.Parse(split[1]);
-                        ResponseT<List<S_Member>> response = service.GetEmployeeInfoInStore(id, storeID);
+                        ResponseT<List<S_Member>> response = service.GetEmployeeInfoInStore(id, ToGuid(storeID));
                         List<S_Member> employees = response.Value;
                         //todo send the info to client
                     }
@@ -324,7 +330,7 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         int storeID = int.Parse(split[1]);
-                        service.GetPurchasesInfo(id, storeID);
+                        service.GetPurchasesInfo(id, ToGuid(storeID));
                         //todo send the info to client
                     }
                     else if (command_type == "REPLY-COMPLAINT")
@@ -341,7 +347,7 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         int storeID = int.Parse(split[1]);
-                        service.DeleteStore(id, storeID);
+                        service.DeleteStore(id, ToGuid(storeID));
                     }
                     else if (command_type == "DELETE-MEMBER")
                     {
@@ -427,6 +433,7 @@ namespace SadnaExpress.ServiceLayer
             {
                 throw new NotImplementedException();
             }
+            
         }
     }
 }

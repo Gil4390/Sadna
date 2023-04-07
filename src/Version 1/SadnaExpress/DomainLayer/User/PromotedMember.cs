@@ -5,19 +5,19 @@ namespace SadnaExpress.DomainLayer.User
 {
     public class PromotedMember : Member
     {
-        private Dictionary<int, Member> directSupervisor;
-        private Dictionary<int, LinkedList<Member>> appoint;
-        private readonly Dictionary<int, LinkedList<string>> permissions;
+        private Dictionary<Guid, Member> directSupervisor;
+        private Dictionary<Guid, LinkedList<Member>> appoint;
+        private readonly Dictionary<Guid, LinkedList<string>> permissions;
         private readonly Permissions permissionsHolder;
         
         public PromotedMember(int id, string email, string firstName, string lastName, string password):base(id, email, firstName, lastName, password) {
-            directSupervisor = new Dictionary<int,Member>();
-            appoint = new Dictionary<int, LinkedList<Member>>();
-            permissions = new Dictionary<int, LinkedList<string>>();
+            directSupervisor = new Dictionary<Guid,Member>();
+            appoint = new Dictionary<Guid, LinkedList<Member>>();
+            permissions = new Dictionary<Guid, LinkedList<string>>();
             permissionsHolder = Permissions.Instance;
         }
 
-        public void createOwner(int storeID, Member directSupervisor)
+        public void createOwner(Guid storeID, Member directSupervisor)
         {
             this.directSupervisor.Add(storeID, directSupervisor);
             LinkedList<string> permissionsList = new LinkedList<string>();
@@ -25,7 +25,7 @@ namespace SadnaExpress.DomainLayer.User
             permissions.Add(storeID, permissionsList);
         }
 
-        public void createManager(int storeID, Member directSupervisor)
+        public void createManager(Guid storeID, Member directSupervisor)
         {
             this.directSupervisor.Add(storeID, directSupervisor);
             LinkedList<string> permissionsList = new LinkedList<string>();
@@ -33,7 +33,7 @@ namespace SadnaExpress.DomainLayer.User
             permissions.Add(storeID, permissionsList);
         }
 
-        public void createFounder(int storeID)
+        public void createFounder(Guid storeID)
         {
             LinkedList<string> permissionsList = new LinkedList<string>();
             permissionsList.AddLast("founder permissions");
@@ -44,10 +44,10 @@ namespace SadnaExpress.DomainLayer.User
         {
             LinkedList<string> permissionsList = new LinkedList<string>();
             permissionsList.AddLast("system manager permissions");
-            permissions.Add(-1, permissionsList); //-1 represent all stores
+            permissions.Add(Guid.Empty, permissionsList); 
         }
 
-        public override bool hasPermissions(int storeID, LinkedList<string> listOfPermissions)
+        public override bool hasPermissions(Guid storeID, LinkedList<string> listOfPermissions)
         {
             if (permissions.ContainsKey(storeID))
             {
@@ -63,7 +63,7 @@ namespace SadnaExpress.DomainLayer.User
         }
         
         
-        public override PromotedMember addNewOwner(int storeID, Member newOwner)
+        public override PromotedMember AppointStoreOwner(Guid storeID, Member newOwner)
         {
             if (permissions.ContainsKey(storeID))
                 if (permissions[storeID].Contains("owner permissions") ||

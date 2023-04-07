@@ -28,7 +28,7 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
         
-        public PromotedMember addNewOwner(int storeID, PromotedMember directSupervisor, Member newOwner)
+        public PromotedMember addNewOwner(Guid storeID, PromotedMember directSupervisor, Member newOwner)
         {
             LinkedList<string> relevantPermissions = new LinkedList<string>();
             relevantPermissions.AddLast("owner permissions");

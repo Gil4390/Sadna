@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
@@ -5,32 +6,29 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public class StoreFacade : IStoreFacade
     {
-        private ConcurrentBag<Store> stores;
+        private ConcurrentDictionary<Guid, Store> stores;
         public StoreFacade()
         {
-            stores = new ConcurrentBag<Store>();
+            stores = new ConcurrentDictionary<Guid, Store>();
         }
 
         public Store getStoreByName(string name)
         {
-            foreach (Store store in stores) {
+            foreach (Store store in stores.Values) {
                 if (store.getName().Equals(name))
                     return store;
             }
 
             return null;
         }
-        public void OpenNewStore(string storeName)
+        public Guid OpenNewStore(string storeName)
         {
             if(storeName.Length == 0)
                 Logger.Instance.Error("Store name can not be empty");
-            if (getStoreByName(storeName) == null) {
-                Store store = new Store(storeName);
-                stores.Add(store);
-                Logger.Instance.Info("store " + storeName + " opened.");
-            }
-            else
-                Logger.Instance.Error("There is already store with the same name");
+            Store store = new Store(storeName);
+            stores.TryAdd(store.StoreID, store);
+            Logger.Instance.Info("store " + storeName + " opened.");
+            return store.StoreID;
         }
 
         public void CloseStore(string storeName)
@@ -38,7 +36,7 @@ namespace SadnaExpress.DomainLayer.Store
             Store store = getStoreByName(storeName);
             if (store == null)
                 Logger.Instance.Error("there is no store with this name");
-            stores.TryTake(out store);
+            stores.TryRemove(store.StoreID, out store);
             Logger.Instance.Info("store " + storeName + " closed.");
         }
         

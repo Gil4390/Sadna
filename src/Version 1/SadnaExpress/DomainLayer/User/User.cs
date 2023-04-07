@@ -30,12 +30,12 @@ namespace SadnaExpress.DomainLayer.User
             return this.shoppingCart.addInventoryToCart(inv, stock);
         }
         
-        public virtual bool hasPermissions(int storeID, LinkedList<string> listOfPermissions)
+        public virtual bool hasPermissions(Guid storeID, LinkedList<string> listOfPermissions)
         {
             return false;
         }
         
-        public virtual PromotedMember addNewOwner(int storeID, Member newOwner)
+        public virtual PromotedMember AppointStoreOwner(Guid storeID, Member newOwner)
         {
             throw new Exception("The user unauthorised to add new owner");
         }
