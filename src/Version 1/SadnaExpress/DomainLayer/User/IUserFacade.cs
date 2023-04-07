@@ -27,5 +27,6 @@ namespace SadnaExpress.DomainLayer.User
         void GetDetailsOnStore(int id,int storeID);
         bool InitializeTradingSystem(int id);
         void CleanUp();
+        bool hasPermissions(int userId, int i, LinkedList<string> per);
     }
 }
