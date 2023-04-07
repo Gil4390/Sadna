@@ -9,7 +9,7 @@ namespace SadnaExpress.DomainLayer.User
         private Dictionary<Guid, LinkedList<Member>> appoint;
         private readonly Dictionary<Guid, LinkedList<string>> permissions;
         private readonly Permissions permissionsHolder;
-        
+
         /* permissions:
          * owner permissions
          * founder permissions
@@ -19,8 +19,10 @@ namespace SadnaExpress.DomainLayer.User
          * add new owner
          * add new manager
          */
-        public PromotedMember(int id, string email, string firstName, string lastName, string password):base(id, email, firstName, lastName, password) {
-            directSupervisor = new Dictionary<Guid,Member>();
+        public PromotedMember(int id, string email, string firstName, string lastName, string password) : base(id,
+            email, firstName, lastName, password)
+        {
+            directSupervisor = new Dictionary<Guid, Member>();
             appoint = new Dictionary<Guid, LinkedList<Member>>();
             permissions = new Dictionary<Guid, LinkedList<string>>();
             permissionsHolder = Permissions.Instance;
@@ -48,12 +50,12 @@ namespace SadnaExpress.DomainLayer.User
             permissionsList.AddLast("founder permissions");
             permissions.Add(storeID, permissionsList);
         }
-        
+
         public void createSystemManager()
         {
             LinkedList<string> permissionsList = new LinkedList<string>();
             permissionsList.AddLast("system manager permissions");
-            permissions.Add(Guid.Empty, permissionsList); 
+            permissions.Add(Guid.Empty, permissionsList);
         }
 
         public void addAppoint(Guid storeID, Member member)
@@ -65,7 +67,7 @@ namespace SadnaExpress.DomainLayer.User
                 LinkedList<Member> appointList = new LinkedList<Member>();
                 appointList.AddLast(member);
                 appoint.Add(storeID, appointList);
-            } 
+            }
         }
 
         public override bool hasPermissions(Guid storeID, LinkedList<string> listOfPermissions)
@@ -80,6 +82,7 @@ namespace SadnaExpress.DomainLayer.User
 
                 return true;
             }
+
             return false;
         }
 
@@ -87,11 +90,12 @@ namespace SadnaExpress.DomainLayer.User
         {
             if (permissions.ContainsKey(storeID))
                 if (permissions[storeID].Contains("owner permissions") ||
-                    permissions[storeID].Contains("founder permissions")||
+                    permissions[storeID].Contains("founder permissions") ||
                     permissions[storeID].Contains("add new owner"))
                     return permissionsHolder.AppointStoreOwner(storeID, this, newOwner);
             throw new Exception("The member doesn’t have permissions to add new owner");
-        } 
+        }
+
         public override PromotedMember AppointStoreManager(Guid storeID, Member newManager)
         {
             if (permissions.ContainsKey(storeID))
@@ -100,7 +104,8 @@ namespace SadnaExpress.DomainLayer.User
                     permissions[storeID].Contains("add new manager"))
                     return permissionsHolder.AppointStoreManager(storeID, this, newManager);
             throw new Exception("The member doesn’t have permissions to add new manager");
-        } 
+        }
+
         public override void AddStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
             if (permissions.ContainsKey(storeID))
@@ -111,8 +116,10 @@ namespace SadnaExpress.DomainLayer.User
                     permissionsHolder.AddStoreManagerPermissions(storeID, manager, permission);
                     permissions[storeID].AddLast(permission);
                 }
+
             throw new Exception("The member doesn’t have permissions to edit manager's permissions");
         }
+
         public override void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
             if (permissions.ContainsKey(storeID))
@@ -123,7 +130,13 @@ namespace SadnaExpress.DomainLayer.User
                     permissionsHolder.RemoveStoreManagerPermissions(storeID, manager, permission);
                     permissions[storeID].Remove(permission);
                 }
+
             throw new Exception("The member doesn’t have permissions to edit manager's permissions");
+        }
+
+        public override List<Member> GetEmployeeInfoInStore(Guid storeID)
+        {
+            throw new NotImplementedException();
         }
     }
 }

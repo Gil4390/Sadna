@@ -246,6 +246,13 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception($"There isn't a member with {email}");
             members[id].RemoveStoreManagerPermissions(storeID, manager,permission);
         }
+        public List<Member> GetEmployeeInfoInStore(int id, Guid storeID)
+        {
+            isLogin(id);
+            List<Member> employees = members[id].GetEmployeeInfoInStore(storeID);
+            return employees;
+        }
+
         public void CloseStore(int id, Guid storeID)
         {
             throw new NotImplementedException();

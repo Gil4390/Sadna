@@ -50,5 +50,9 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to remove permissions");
         }
+        public virtual List<Member> GetEmployeeInfoInStore(Guid storeID)
+        {
+            throw new Exception("The user unauthorised to add new owner");
+        }
     }
 }
