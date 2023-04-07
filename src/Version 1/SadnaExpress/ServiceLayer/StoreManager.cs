@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
@@ -110,6 +111,10 @@ namespace SadnaExpress.ServiceLayer
         public void CleanUp()
         {
             userFacade.CleanUp();
+        }
+        public ConcurrentDictionary<Guid, Store> GetStores()
+        {
+            return storeFacade.GetStores();
         }
     }
 }

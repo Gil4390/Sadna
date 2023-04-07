@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SadnaExpress.DomainLayer.Store
@@ -21,6 +22,7 @@ namespace SadnaExpress.DomainLayer.Store
         List<Item> GetItemsByStoreRating(int rating);
         void ReviewItem(string storeName, string itemName, int rating);
         void CleanUp();
+        ConcurrentDictionary<Guid, Store> GetStores();
 
     }
 }

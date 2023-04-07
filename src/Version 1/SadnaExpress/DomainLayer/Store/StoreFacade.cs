@@ -109,5 +109,9 @@ namespace SadnaExpress.DomainLayer.Store
         {
            
         }
+        public ConcurrentDictionary<Guid, Store> GetStores()
+        {
+            return stores;
+        }
     }
 }

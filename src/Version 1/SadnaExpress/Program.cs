@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.Services;
@@ -38,12 +39,12 @@ namespace SadnaExpress
             {
                 _server.activateAdmin();
             }
-            public void OpenStore()
+            public void OpenStore(string store_name)
             {
                 Queue<string> commands = new Queue<string>();
                 commands.Enqueue("REGISTER noga@shwrz.io noga shwartz Aa213e");
                 commands.Enqueue("LOGIN noga@shwrz.io Aa213e");
-                commands.Enqueue("CREATE-STORE Noga'Sony");
+                commands.Enqueue("CREATE-STORE "+store_name);
                 RunClient("Noga", commands);
             }
 
@@ -172,7 +173,14 @@ namespace SadnaExpress
                 SetUp();
                 lock (this)
                     StartSystem();
-                OpenStore();
+                OpenStore("Noga'SONY");
+                bool log = false; 
+                foreach (Store s in _server.service.GetStores().Values)
+                    if (s.getName()=="Noga'SONY")
+                        log = true;
+                
+                if (_server.service.GetStores().Count==0 || !log)
+                    Console.WriteLine("-----------Didnt pass in test OpenStoreTest (183)----------");
                 Console.WriteLine("OpenStoreTest passed");
             }
             

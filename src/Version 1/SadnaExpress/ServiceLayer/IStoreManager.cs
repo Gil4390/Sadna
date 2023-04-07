@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.ServiceLayer.ServiceObjects
 {
@@ -24,5 +26,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response CloseStore(int id, int storeID); //4.9
         Response GetPurchasesInfo(int id, int storeID);//4.13 //6.4
         void CleanUp();
+        ConcurrentDictionary<Guid, Store> GetStores();
     }
 }

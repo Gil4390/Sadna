@@ -351,5 +351,9 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetMembers();
         }
+        public ConcurrentDictionary<Guid , Store> GetStores()
+        {
+            return storeManager.GetStores();
+        }
     }
 }
