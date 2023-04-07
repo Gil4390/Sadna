@@ -28,7 +28,7 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
         
-        public PromotedMember addNewOwner(Guid storeID, PromotedMember directSupervisor, Member newOwner)
+        public PromotedMember AppointStoreOwner(Guid storeID, PromotedMember directSupervisor, Member newOwner)
         {
             LinkedList<string> relevantPermissions = new LinkedList<string>();
             relevantPermissions.AddLast("owner permissions");
@@ -36,14 +36,24 @@ namespace SadnaExpress.DomainLayer.User
             relevantPermissions.AddLast("add new owner");
             if (newOwner.hasPermissions(storeID, relevantPermissions))
                 throw new Exception("The member is already store owner");
+            directSupervisor.addAppoint(storeID, newOwner);
             PromotedMember owner = newOwner.promoteToMember();
             owner.createOwner(storeID, directSupervisor);
             return owner;
         }
 
-        public void addNewManager(int storeID, Member directSupervisor, Member newManager)
+        public PromotedMember AppointStoreManager(Guid storeID, PromotedMember directSupervisor, Member newManager)
         {
-            throw new NotImplementedException();
+            LinkedList<string> relevantPermissions = new LinkedList<string>();
+            relevantPermissions.AddLast("owner permissions");
+            relevantPermissions.AddLast("founder permissions");
+            relevantPermissions.AddLast("get store history");
+            if (newManager.hasPermissions(storeID, relevantPermissions))
+                throw new Exception("The member is already store manager");
+            directSupervisor.addAppoint(storeID, newManager);
+            PromotedMember manager = newManager.promoteToMember();
+            manager.createManager(storeID, directSupervisor);
+            return manager;
         }
 
         public void addPermissions(int storeID, Member manager, string newPermission)

@@ -207,9 +207,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.AppointStoreOwner(id, storeID, userEmail);
         }
 
-        public Response AppointStoreManager(int id, Guid storeID, int newUserID)
+        public Response AppointStoreManager(int id, Guid storeID, string newUserEmail)
         {
-            return _realBridge.AppointStoreManager(id, storeID, newUserID);
+            return _realBridge.AppointStoreManager(id, storeID, newUserEmail);
         }
 
         public Response AddStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission)

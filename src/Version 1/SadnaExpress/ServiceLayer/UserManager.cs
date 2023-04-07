@@ -120,9 +120,18 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AppointStoreManager(int id, Guid storeID, int newUserID)
+        public Response AppointStoreManager(int id, Guid storeID, string userEmail)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                userFacade.AppointStoreManager(id, storeID, userEmail);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
         }
 
         public Response AddStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission)

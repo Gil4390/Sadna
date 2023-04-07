@@ -39,6 +39,10 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to add new owner");
         }
+        public virtual PromotedMember AppointStoreManager(Guid storeID, Member newManager)
+        {
+            throw new Exception("The user unauthorised to add new owner");
+        }
 
 
     }

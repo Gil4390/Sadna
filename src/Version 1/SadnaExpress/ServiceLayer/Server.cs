@@ -267,8 +267,8 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         int storeID = int.Parse(split[1]);
-                        int newUserID = int.Parse(split[2]);
-                        service.AppointStoreManager(id, ToGuid(storeID), newUserID);
+                        string newUserEmail = split[2];
+                        service.AppointStoreManager(id, ToGuid(storeID), newUserEmail);
                     }
                     else if (command_type == "REMOVE-STORE-MANAGER")
                     {
