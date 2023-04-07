@@ -33,12 +33,9 @@ namespace SadnaExpress.DomainLayer.User
         public int Enter()
         {
             User user = new User(USER_ID);
-            USER_ID++;
             current_Users.TryAdd(USER_ID, user);
-
+            USER_ID++;
             Logger.Instance.Info(user ,"Enter the system.");
-
-
             return user.UserId;
         }
 
@@ -58,13 +55,11 @@ namespace SadnaExpress.DomainLayer.User
 
         public void Register(int id, string email, string firstName, string lastName, string password)
         {
-            if (current_Users.ContainsKey(id))
+            if (members.ContainsKey(id))
                 throw new Exception("user with this id already logged in");
-            
 
             string hashPassword = _ph.Hash(password);
             Member newMember = new Member(id, email, firstName, lastName, hashPassword);
-            newMember.LoggedIn = false;
             members.TryAdd(id, newMember);
 
             Logger.Instance.Info(newMember ,"registered with "+email+".");
@@ -166,7 +161,19 @@ namespace SadnaExpress.DomainLayer.User
 
         public void AddOwner(int id, int storeID, string email)
         {
-            throw new NotImplementedException();
+            isLogin(id);
+            Member newOwner = null;
+            int newOwnerID = -1;
+            foreach (Member member in members.Values)
+                if (member.Email == email)
+                {
+                    newOwner = member;
+                    newOwnerID = member.UserId;
+                }
+            if (newOwner == null)
+                throw new Exception($"There isn't a member with {email}");
+            PromotedMember owner = members[id].addNewOwner(storeID, newOwner);
+            members[newOwnerID] = owner;
         }
 
         public void AddManager(int id, int storeID, string email)
