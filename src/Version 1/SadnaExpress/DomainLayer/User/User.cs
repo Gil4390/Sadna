@@ -34,7 +34,6 @@ namespace SadnaExpress.DomainLayer.User
         {
             return false;
         }
-        
         public virtual PromotedMember AppointStoreOwner(Guid storeID, Member newOwner)
         {
             throw new Exception("The user unauthorised to add new owner");
@@ -43,7 +42,13 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to add new owner");
         }
-
-
+        public virtual void AddStoreManagerPermissions(Guid storeID, Member manager, string permission)
+        {
+            throw new Exception("The user unauthorised to remove permissions");
+        }
+        public virtual void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
+        {
+            throw new Exception("The user unauthorised to remove permissions");
+        }
     }
 }

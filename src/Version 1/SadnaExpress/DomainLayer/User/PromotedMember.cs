@@ -14,6 +14,7 @@ namespace SadnaExpress.DomainLayer.User
          * owner permissions
          * founder permissions
          * system manager permissions
+         * edit manager permissions
          * get store history
          * add new owner
          * add new manager
@@ -100,5 +101,29 @@ namespace SadnaExpress.DomainLayer.User
                     return permissionsHolder.AppointStoreManager(storeID, this, newManager);
             throw new Exception("The member doesn’t have permissions to add new manager");
         } 
+        public override void AddStoreManagerPermissions(Guid storeID, Member manager, string permission)
+        {
+            if (permissions.ContainsKey(storeID))
+                if (permissions[storeID].Contains("owner permissions") ||
+                    permissions[storeID].Contains("founder permissions") ||
+                    permissions[storeID].Contains("edit manager permissions"))
+                {
+                    permissionsHolder.AddStoreManagerPermissions(storeID, manager, permission);
+                    permissions[storeID].AddLast(permission);
+                }
+            throw new Exception("The member doesn’t have permissions to edit manager's permissions");
+        }
+        public override void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
+        {
+            if (permissions.ContainsKey(storeID))
+                if (permissions[storeID].Contains("owner permissions") ||
+                    permissions[storeID].Contains("founder permissions") ||
+                    permissions[storeID].Contains("edit manager permissions"))
+                {
+                    permissionsHolder.RemoveStoreManagerPermissions(storeID, manager, permission);
+                    permissions[storeID].Remove(permission);
+                }
+            throw new Exception("The member doesn’t have permissions to edit manager's permissions");
+        }
     }
 }

@@ -23,8 +23,8 @@ namespace SadnaExpress.ServiceLayer
         Response AppointStoreOwner(int id, Guid storeID, string userEmail); //4.4
         Response AppointStoreManager(int id, Guid storeID, string userEmail); //4.6
         // 4.7
-        Response AddStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission);
-        Response RemoveStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission);
+        Response AddStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission);
+        Response RemoveStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission);
         ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID); //4.11
         void CleanUp();
         bool InitializeTradingSystem(int id);

@@ -25,7 +25,8 @@ namespace SadnaExpress.DomainLayer.User
         void EditItemInventory(int id,Guid storeID, string itemName);
         void AppointStoreOwner(int id,Guid storeID, string email);
         void AppointStoreManager(int id, Guid storeID, string email);
-        void AddPermissionsToManager(int id,Guid storeID, string email, string Permission);
+        void AddStoreManagerPermissions(int id,Guid storeID, string email, string Permission);
+        void RemoveStoreManagerPermissions(int id,Guid storeID, string email, string Permission);
         void CloseStore(int id,Guid storeID);
         void GetDetailsOnStore(int id,Guid storeID);
         bool InitializeTradingSystem(int id);

@@ -135,14 +135,32 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AddStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission)
+        public Response AddStoreManagerPermissions(int id, Guid storeID,  string userEmail, string permission)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                userFacade.AddStoreManagerPermissions(id, storeID, userEmail, permission);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
         }
 
-        public Response RemoveStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission)
+        public Response RemoveStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                userFacade.RemoveStoreManagerPermissions(id, storeID, userEmail, permission);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
         }
 
         public ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID)

@@ -29,7 +29,6 @@ namespace SadnaExpress.DomainLayer.User
         public PromotedMember promoteToMember() {
             return new PromotedMember(UserId, email, firstName, lastName, password);
         }
-
         public PromotedMember openNewStore(Guid storeID)
         {
             PromotedMember founder = promoteToMember();
@@ -38,5 +37,6 @@ namespace SadnaExpress.DomainLayer.User
             return founder;
         }
         
+
     }
 }

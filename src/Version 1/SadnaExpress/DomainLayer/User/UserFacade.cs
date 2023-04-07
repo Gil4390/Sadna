@@ -222,11 +222,30 @@ namespace SadnaExpress.DomainLayer.User
             members[newOwnerID] = owner;
         }
 
-        public void AddPermissionsToManager(int id, Guid storeID, string email, string Permission)
+        public void AddStoreManagerPermissions(int id, Guid storeID, string email, string permission)
         {
-            throw new NotImplementedException();
-        }
+            isLogin(id);
+            Member manager = null;
+            foreach (Member member in members.Values)
+                if (member.Email == email)
+                    manager = member;
 
+            if (manager == null)
+                throw new Exception($"There isn't a member with {email}");
+            members[id].AddStoreManagerPermissions(storeID, manager, permission);
+        }
+        public void RemoveStoreManagerPermissions(int id, Guid storeID, string email, string permission)
+        {
+            isLogin(id);
+            Member manager = null;
+            foreach (Member member in members.Values)
+                if (member.Email == email)
+                    manager = member;
+
+            if (manager == null)
+                throw new Exception($"There isn't a member with {email}");
+            members[id].RemoveStoreManagerPermissions(storeID, manager,permission);
+        }
         public void CloseStore(int id, Guid storeID)
         {
             throw new NotImplementedException();
