@@ -61,5 +61,15 @@ namespace SadnaExpress.DomainLayer.User
             }
             return false;
         }
+        
+        
+        public override PromotedMember addNewOwner(int storeID, Member newOwner)
+        {
+            if (permissions.ContainsKey(storeID))
+                if (permissions[storeID].Contains("owner permissions") ||
+                    permissions[storeID].Contains("founder permissions"))
+                    return permissionsHolder.addNewOwner(storeID, this, newOwner);
+            throw new Exception("The member doesn’t have permissions to add new owner");
+        } 
     }
 }

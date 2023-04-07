@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using SadnaExpress.DomainLayer.Store;
@@ -33,5 +34,12 @@ namespace SadnaExpress.DomainLayer.User
         {
             return false;
         }
+        
+        public virtual PromotedMember addNewOwner(int storeID, Member newOwner)
+        {
+            throw new Exception("The user unauthorised to add new owner");
+        }
+
+
     }
 }
