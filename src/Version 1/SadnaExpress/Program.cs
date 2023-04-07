@@ -19,7 +19,7 @@ namespace SadnaExpress
         {
             public void Run()
             {
-                Test1();
+                Check_Init_system();
             }
             public void SetUp()
             {
@@ -36,15 +36,17 @@ namespace SadnaExpress
                 Thread client1 = new Thread(() => _server.ServeClient(name,commands));
                 client1.Start();
             }
-
-            public void Test1()
+            /// <summary>
+            /// Use case - check if client can register to the system without admin init it.
+            /// </summary>
+            public void Check_Init_system()
             {
                 SetUp();
-                StartSystem();
                 Queue<string> commands = new Queue<string>();
                 commands.Enqueue("REGISTER tal.galmor@weka.io tal galmor password");
-                commands.Enqueue("LOGIN tal.galmor@weka.io password");
                 RunClient("Elly", commands);
+                if (_server.tradingSystemOpen || _server.service.GetCurrent_Users().ContainsKey(1))
+                    Console.WriteLine("WRONG");
             }
         }
         

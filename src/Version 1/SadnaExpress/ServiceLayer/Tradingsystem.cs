@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer.Store;
@@ -315,6 +316,15 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(ex.Message);
                 return new ResponseT<bool>(ex.Message);
             }
+        }
+
+        public ConcurrentDictionary<int , User> GetCurrent_Users()
+        {
+            return userFacade.GetCurrent_Users();
+        }
+        public ConcurrentDictionary<int , Member> GetMembers()
+        {
+            return userFacade.GetMembers();
         }
     }
 }

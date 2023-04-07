@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SadnaExpress.DomainLayer.User
@@ -28,5 +29,7 @@ namespace SadnaExpress.DomainLayer.User
         bool InitializeTradingSystem(int id);
         void CleanUp();
         bool hasPermissions(int userId, int i, LinkedList<string> per);
+        ConcurrentDictionary<int, User> GetCurrent_Users();
+        ConcurrentDictionary<int, Member> GetMembers();
     }
 }

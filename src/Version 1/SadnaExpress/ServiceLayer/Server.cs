@@ -12,7 +12,7 @@ namespace SadnaExpress.ServiceLayer
 {
     public class Server
     {
-        private bool tradingSystemOpen = false;
+        public bool tradingSystemOpen = false;
         public TradingSystem service;
 
         public Server()

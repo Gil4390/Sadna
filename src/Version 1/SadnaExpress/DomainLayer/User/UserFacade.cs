@@ -263,5 +263,14 @@ namespace SadnaExpress.DomainLayer.User
             }
             throw new Exception("User need to register first");
         }
+
+        public ConcurrentDictionary<int, User> GetCurrent_Users()
+        {
+            return current_Users;
+        }
+        public ConcurrentDictionary<int, Member> GetMembers()
+        {
+            return members;
+        }
     }
 }
