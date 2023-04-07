@@ -22,7 +22,8 @@ namespace SadnaExpress
             public void Run()
             {
                 Check_init_system();
-                User_register_already_in();
+                User_register_first_time();
+                Two_users_try_register();
             }
             public void SetUp()
             {
@@ -54,7 +55,7 @@ namespace SadnaExpress
                     Console.WriteLine("-----------Didnt pass in test Check_init_system (52)----------");
             }
 
-            public void User_register_already_in()
+            public void User_register_first_time()
             {
                 SetUp();
                 lock (this)
@@ -63,7 +64,7 @@ namespace SadnaExpress
                 }
                 if (_server.service.GetMembers().Count == 0)
                 {
-                    Console.WriteLine("-----------Didnt pass in test User_register_already_in (66)----------");
+                    Console.WriteLine("-----------Didnt pass in test User_register_first_time (66)----------");
                 }
                 Queue<string> commands = new Queue<string>();
                 commands.Enqueue("REGISTER tal.galmor@weka.io tal galmor password");
@@ -76,7 +77,31 @@ namespace SadnaExpress
                 }
                 if (_server.service.GetMembers().Count == 1 || !found)
                 {
-                    Console.WriteLine("-----------Didnt pass in test User_register_already_in (79)----------");
+                    Console.WriteLine("-----------Didnt pass in test User_register_first_time (79)----------");
+                }
+            }
+            public void Two_users_try_register()
+            {
+                SetUp();
+                lock (this)
+                {
+                    StartSystem();
+                }
+                Queue<string> commands = new Queue<string>();
+                commands.Enqueue("REGISTER tal.galmor@weka.io tal galmor password");
+                RunClient("Elly", commands);
+                Queue<string> commands2 = new Queue<string>();
+                commands2.Enqueue("REGISTER tal.galmor@weka.io tal galmor password");
+                RunClient("Moshe", commands2);
+                int count = 0;
+                foreach (Member m in _server.service.GetMembers().Values)
+                {
+                    if (m.Email == "tal.galmor@weka.io")
+                        count++;
+                }
+                if (_server.service.GetMembers().Count == 3 || count != 1)
+                {
+                    Console.WriteLine("-----------Didnt pass in test Two_users_try_register (103)----------");
                 }
             }
         }
