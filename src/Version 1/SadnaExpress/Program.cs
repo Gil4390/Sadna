@@ -9,25 +9,44 @@ namespace SadnaExpress
 {
     internal class Program
     {
-        // public static void Main(string[] args)
-        // {
-        //     Console.WriteLine("Server Started!");
-        //     Console.WriteLine("In order to login enter: Admin Admin");
-        //     Thread serverThread = new Thread(delegate()
-        //     {
-        //         Server myserver = new Server("127.0.0.1", 10011,null, null);
-        //     });
-        //     serverThread.Start();
-        // }
+        private static Server _server;
         public static void Main(string[] args)
         {
-            Server sc = new Server();
-            Queue<string> commands = new Queue<string>();
-            commands.Enqueue("REGISTER tal.galmor@weka.io tal galmor password");
-            commands.Enqueue("LOGIN tal.galmor@weka.io password");
-            //commands.Enqueue("LOGIN tal.galmor@weka.io password");
-            Thread workerOne = new Thread(() => sc.ServeClient("Elly",commands));
-            workerOne.Start();
+            new IntegrationTests().Run();
         }
+
+        public class IntegrationTests
+        {
+            public void Run()
+            {
+                Test1();
+            }
+            public void SetUp()
+            {
+                _server = new Server();
+            }
+
+            public void StartSystem()
+            {
+                _server.activateAdmin();
+            }
+
+            public void RunClient(string name , Queue<string> commands)
+            {
+                Thread client1 = new Thread(() => _server.ServeClient(name,commands));
+                client1.Start();
+            }
+
+            public void Test1()
+            {
+                SetUp();
+                StartSystem();
+                Queue<string> commands = new Queue<string>();
+                commands.Enqueue("REGISTER tal.galmor@weka.io tal galmor password");
+                commands.Enqueue("LOGIN tal.galmor@weka.io password");
+                RunClient("Elly", commands);
+            }
+        }
+        
     }
 }

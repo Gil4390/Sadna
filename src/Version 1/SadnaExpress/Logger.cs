@@ -57,7 +57,7 @@ namespace SadnaExpress
             {
                 using (logger = new StreamWriter(pathName, true))
                 {
-                    logger.WriteLine(System.DateTime.Now.ToString() + "|Logger info|                   " + str);
+                    logger.WriteLine(System.DateTime.Now.ToString() + "|Logger info|                  " + str);
                     logger.Close();
                 }
             }

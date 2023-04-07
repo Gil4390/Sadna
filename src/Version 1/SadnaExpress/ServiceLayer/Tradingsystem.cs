@@ -305,7 +305,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                Logger.Instance.Info("User id: " + id + " requested to initialize trading system");
+                Logger.Instance.Info("User id: " + id + "requested to initialize trading system");
                 userFacade.InitializeTradingSystem(id);
 
                 return new ResponseT<bool>(paymentService.Connect() && supplierService.Connect());
