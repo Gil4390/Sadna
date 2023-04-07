@@ -121,11 +121,6 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response CreateStore(int id, string storeName)
-        {
-            throw new NotImplementedException();
-        }
-
         public Response WriteReview(int id, int itemID, string review)
         {
             throw new NotImplementedException();

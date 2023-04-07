@@ -145,7 +145,7 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         string storeName = split[1];
-                        service.CreateStore(id, storeName);
+                        service.OpenNewStore(id, storeName);
                     }
                     else if (command_type == "WRITE-REVIEW")
                     {

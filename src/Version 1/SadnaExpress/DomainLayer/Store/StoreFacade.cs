@@ -12,7 +12,7 @@ namespace SadnaExpress.DomainLayer.Store
             stores = new ConcurrentDictionary<Guid, Store>();
         }
 
-        public Store getStoreByName(string name)
+        public Store GetStoreByName(string name)
         {
             foreach (Store store in stores.Values) {
                 if (store.getName().Equals(name))
@@ -33,7 +33,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void CloseStore(string storeName)
         {
-            Store store = getStoreByName(storeName);
+            Store store = GetStoreByName(storeName);
             if (store == null)
                 Logger.Instance.Error("there is no store with this name");
             stores.TryRemove(store.StoreID, out store);

@@ -70,9 +70,19 @@ namespace SadnaExpress.DomainLayer.User
                         throw new Exception("email already exists");
                 }
                 string hashPassword = _ph.Hash(password);
-                Member newMember = new Member(id, email, firstName, lastName, hashPassword);
-                members.TryAdd(id, newMember);
-                Logger.Instance.Info(newMember ,"registered with "+email+".");
+                if (email.Contains("BGU"))
+                {
+                    Member newMember = new Member(id, email, firstName, lastName, hashPassword);
+                    members.TryAdd(id, newMember);
+                    Logger.Instance.Info(newMember,"registered with "+email+".");
+                }
+                else
+                {
+                    PromotedMember newMember2 = new PromotedMember(id, email, firstName, lastName, hashPassword);
+                    newMember2.createSystemManager();
+                    members.TryAdd(id, newMember2);
+                    Logger.Instance.Info(newMember2 ,"registered with "+email+".");
+                }
             }
         }
 
