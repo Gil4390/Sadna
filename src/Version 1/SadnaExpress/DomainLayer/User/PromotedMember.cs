@@ -10,6 +10,14 @@ namespace SadnaExpress.DomainLayer.User
         private readonly Dictionary<Guid, LinkedList<string>> permissions;
         private readonly Permissions permissionsHolder;
         
+        /* permissions:
+         * owner permissions
+         * founder permissions
+         * system manager permissions
+         * get store history
+         * add new owner
+         * add new manager
+         */
         public PromotedMember(int id, string email, string firstName, string lastName, string password):base(id, email, firstName, lastName, password) {
             directSupervisor = new Dictionary<Guid,Member>();
             appoint = new Dictionary<Guid, LinkedList<Member>>();
@@ -47,6 +55,18 @@ namespace SadnaExpress.DomainLayer.User
             permissions.Add(Guid.Empty, permissionsList); 
         }
 
+        public void addAppoint(Guid storeID, Member member)
+        {
+            if (appoint.ContainsKey(storeID))
+                appoint[storeID].AddLast(member);
+            else
+            {
+                LinkedList<Member> appointList = new LinkedList<Member>();
+                appointList.AddLast(member);
+                appoint.Add(storeID, appointList);
+            } 
+        }
+
         public override bool hasPermissions(Guid storeID, LinkedList<string> listOfPermissions)
         {
             if (permissions.ContainsKey(storeID))
@@ -61,15 +81,24 @@ namespace SadnaExpress.DomainLayer.User
             }
             return false;
         }
-        
-        
+
         public override PromotedMember AppointStoreOwner(Guid storeID, Member newOwner)
         {
             if (permissions.ContainsKey(storeID))
                 if (permissions[storeID].Contains("owner permissions") ||
-                    permissions[storeID].Contains("founder permissions"))
-                    return permissionsHolder.addNewOwner(storeID, this, newOwner);
+                    permissions[storeID].Contains("founder permissions")||
+                    permissions[storeID].Contains("add new owner"))
+                    return permissionsHolder.AppointStoreOwner(storeID, this, newOwner);
             throw new Exception("The member doesn’t have permissions to add new owner");
+        } 
+        public override PromotedMember AppointStoreManager(Guid storeID, Member newManager)
+        {
+            if (permissions.ContainsKey(storeID))
+                if (permissions[storeID].Contains("owner permissions") ||
+                    permissions[storeID].Contains("founder permissions") ||
+                    permissions[storeID].Contains("add new manager"))
+                    return permissionsHolder.AppointStoreManager(storeID, this, newManager);
+            throw new Exception("The member doesn’t have permissions to add new manager");
         } 
     }
 }

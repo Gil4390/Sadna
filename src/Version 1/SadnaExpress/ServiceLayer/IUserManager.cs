@@ -20,7 +20,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Dictionary<string,List<string>>> getDetailsOnCart();
         ResponseT<int> Logout(int id); //3.1
         Response AppointStoreOwner(int id, Guid storeID, string userEmail); //4.4
-        Response AppointStoreManager(int id, Guid storeID, int newUserID); //4.6
+        Response AppointStoreManager(int id, Guid storeID, string userEmail); //4.6
         // 4.7
         Response AddStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission);
         Response RemoveStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission);

@@ -193,9 +193,22 @@ namespace SadnaExpress.DomainLayer.User
             members[newOwnerID] = owner;
         }
 
-        public void AddManager(int id, Guid storeID, string email)
+        public void AppointStoreManager(int id, Guid storeID, string email)
         {
-            throw new NotImplementedException();
+            isLogin(id);
+            Member newOwner = null;
+            int newOwnerID = -1;
+            foreach (Member member in members.Values)
+                if (member.Email == email)
+                {
+                    newOwner = member;
+                    newOwnerID = member.UserId;
+                }
+
+            if (newOwner == null)
+                throw new Exception($"There isn't a member with {email}");
+            PromotedMember owner = members[id].AppointStoreManager(storeID, newOwner);
+            members[newOwnerID] = owner;
         }
 
         public void AddPermissionsToManager(int id, Guid storeID, string email, string Permission)
