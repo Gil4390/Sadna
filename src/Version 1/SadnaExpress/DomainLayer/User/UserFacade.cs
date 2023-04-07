@@ -177,23 +177,20 @@ namespace SadnaExpress.DomainLayer.User
 
         public void AppointStoreOwner(int id, Guid storeID, string email)
         {
-            lock (this)
-            {
-                isLogin(id);
-                Member newOwner = null;
-                int newOwnerID = -1;
-                foreach (Member member in members.Values)
-                    if (member.Email == email)
-                    {
-                        newOwner = member;
-                        newOwnerID = member.UserId;
-                    }
+            isLogin(id);
+            Member newOwner = null;
+            int newOwnerID = -1;
+            foreach (Member member in members.Values)
+                if (member.Email == email)
+                {
+                    newOwner = member;
+                    newOwnerID = member.UserId;
+                }
 
-                if (newOwner == null)
-                    throw new Exception($"There isn't a member with {email}");
-                PromotedMember owner = members[id].AppointStoreOwner(storeID, newOwner);
-                members[newOwnerID] = owner;
-            }
+            if (newOwner == null)
+                throw new Exception($"There isn't a member with {email}");
+            PromotedMember owner = members[id].AppointStoreOwner(storeID, newOwner);
+            members[newOwnerID] = owner;
         }
 
         public void AddManager(int id, Guid storeID, string email)
