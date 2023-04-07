@@ -9,7 +9,6 @@ namespace SadnaExpress.DomainLayer.User
 {
     public class UserFacade : IUserFacade
     {
-        //Dictionary<int, Guest> guests;
         private ConcurrentDictionary<int, User> current_Users;
         private ConcurrentDictionary<int, Member> members;
         private int USER_ID = 0;
@@ -75,7 +74,6 @@ namespace SadnaExpress.DomainLayer.User
                 members.TryAdd(id, newMember);
                 Logger.Instance.Info(newMember ,"registered with "+email+".");
             }
-
         }
 
         public int Login(int id, string email, string password)
@@ -122,11 +120,19 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public void AddItemToBag(int id, int storeID, string itemName)
+        public void AddItemToCart(int id,Guid storeID, int itemID,  int itemAmount)
+        {
+            throw new NotImplementedException();
+        }
+        public void RemoveItemFromCart(int id,Guid storeID, int itemID,  int itemAmount)
         {
             throw new NotImplementedException();
         }
 
+        public void EditItemFromCart(int id, Guid storeID, int itemID, int itemAmount)
+        {
+            throw new NotImplementedException();
+        }
         public Dictionary<string, List<string>> getDetailsOnCart()
         {
             throw new NotImplementedException();
@@ -137,49 +143,39 @@ namespace SadnaExpress.DomainLayer.User
             throw new NotImplementedException();
         }
 
-        public void AddItemCart(int id, int storeID, string itemName)
+        public void EditItemCart(int id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveCart(int id, int storeID, string itemName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void EditItemCart(int id, int storeID, string itemName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OpenStore(int id, int storeID)
+        public void OpenNewStore(int id, Guid storeID)
         {
             isLogin(id);
-            PromotedMember founder = members[id].openStore(storeID);
+            PromotedMember founder = members[id].openNewStore(storeID);
             members[id] = founder;
         }
 
-        public void AddReview(int id, int storeID, string itemName)
+        public void AddReview(int id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void AddItemInventory(int id, int storeID, string itemName)
+        public void AddItemInventory(int id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveItemInventory(int id, int storeID, string itemName)
+        public void RemoveItemInventory(int id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void EditItemInventory(int id, int storeID, string itemName)
+        public void EditItemInventory(int id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void AddOwner(int id, int storeID, string email)
+        public void AppointStoreOwner(int id, Guid storeID, string email)
         {
             lock (this)
             {
@@ -195,27 +191,27 @@ namespace SadnaExpress.DomainLayer.User
 
                 if (newOwner == null)
                     throw new Exception($"There isn't a member with {email}");
-                PromotedMember owner = members[id].addNewOwner(storeID, newOwner);
+                PromotedMember owner = members[id].AppointStoreOwner(storeID, newOwner);
                 members[newOwnerID] = owner;
             }
         }
 
-        public void AddManager(int id, int storeID, string email)
+        public void AddManager(int id, Guid storeID, string email)
         {
             throw new NotImplementedException();
         }
 
-        public void AddPermissionsToManager(int id, int storeID, string email, string Permission)
+        public void AddPermissionsToManager(int id, Guid storeID, string email, string Permission)
         {
             throw new NotImplementedException();
         }
 
-        public void CloseStore(int id, int storeID)
+        public void CloseStore(int id, Guid storeID)
         {
             throw new NotImplementedException();
         }
 
-        public void GetDetailsOnStore(int id, int storeID)
+        public void GetDetailsOnStore(int id, Guid storeID)
         {
             throw new NotImplementedException();
         }
@@ -243,10 +239,9 @@ namespace SadnaExpress.DomainLayer.User
             //impl of 3- throw error if not
 
             return true;
-
         }
 
-        public bool hasPermissions(int id, int storeId, LinkedList<string> permissions)
+        public bool hasPermissions(int id, Guid storeId, LinkedList<string> permissions)
         {
             if (members.ContainsKey(id))
                 if (members[id].hasPermissions(storeId, permissions))

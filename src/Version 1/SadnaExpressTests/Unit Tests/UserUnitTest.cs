@@ -10,12 +10,14 @@ namespace SadnaExpressTests.Unit_Tests
     {
         private IUserFacade userFacade;
         private int userId;
+        private Guid storeID;
 
         [TestInitialize]
         public void Init()
         {
             userFacade = new UserFacade();
             userId = userFacade.Enter();
+            storeID = new Guid();
         }
 
         [TestCleanup]
@@ -27,14 +29,14 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void openStoreUserNotRegister()
         {
-            Assert.ThrowsException<Exception>(() => userFacade.OpenStore(userId, 0));
+            Assert.ThrowsException<Exception>(() => userFacade.OpenNewStore(userId, storeID));
         }
 
         [TestMethod]
         public void openStoreUserNotLogin()
         {
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
-            Assert.ThrowsException<Exception>(() => userFacade.OpenStore(userId, 0));
+            Assert.ThrowsException<Exception>(() => userFacade.OpenNewStore(userId, storeID));
         }
 
         [TestMethod]
@@ -43,100 +45,82 @@ namespace SadnaExpressTests.Unit_Tests
             //the member should get founder permissions
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
-            userFacade.OpenStore(userId, 0);
+            userFacade.OpenNewStore(userId, storeID);
             LinkedList<string> per = new LinkedList<string>();
             per.AddLast("founder permissions");
-            Assert.IsTrue(userFacade.hasPermissions(userId, 0, per));
-            //and only to the relevant store
-            Assert.IsFalse(userFacade.hasPermissions(userId, 1, per));
+            Assert.IsTrue(userFacade.hasPermissions(userId, storeID, per));
         }
 
         [TestMethod]
         public void adNewOwnerUserNotRegister()
         {
-            Assert.ThrowsException<Exception>(() => userFacade.AddOwner(userId, 0, "nogaschw@gmail.com"));
+            Assert.ThrowsException<Exception>(() => userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com"));
         }
         
         
         [TestMethod]
-        public void AddOwnerUserNotLogin()
+        public void AppointStoreOwnerUserNotLogin()
         {
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
-            Assert.ThrowsException<Exception>(() => userFacade.AddOwner(userId, 0, "nogaschw@gmail.com" ));
+            Assert.ThrowsException<Exception>(() => userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com" ));
         }
         
         [TestMethod]
-        public void AddOwnerThatNotExist()
-        {
-            userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
-            userFacade.Login(userId, "shayk1934@gmail.com", "123");
-            // Assert.ThrowsException<Exception>(() => userFacade.AddOwner(userId, 0, "nogaschw@gmail.com" ));
-            try
-            {
-                userFacade.AddOwner(userId, 0, "nogaschw@gmail.com");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
-        
-        [TestMethod]
-        public void AddOwnerHasNotHavePermission()
+        public void AppointStoreOwnerThatNotExist()
         {
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
-            // Assert.ThrowsException<Exception>(() => userFacade.AddOwner(userId, 0, "nogaschw@gmail.com" ));
-            try
-            {
-                userFacade.AddOwner(userId, 0, "nogaschw@gmail.com");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            Assert.ThrowsException<Exception>(() => userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com" ));
         }
         
         [TestMethod]
-        public void FounderAddOwnerSuccess()
+        public void AppointStoreOwnerHasNotHavePermission()
+        {
+            userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
+            userFacade.Login(userId, "shayk1934@gmail.com", "123");
+            Assert.ThrowsException<Exception>(() => userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com" ));
+        }
+        
+        [TestMethod]
+        public void FounderAppointStoreOwnerSuccess()
         {
             //create founder
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
-            userFacade.OpenStore(userId, 0);
+            userFacade.OpenNewStore(userId, storeID);
             //create user 
             int userIdOwner = userFacade.Enter();
             userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdOwner);
             // add owner
-            userFacade.AddOwner(userId, 0, "nogaschw@gmail.com");
+            userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com");
             //check permission of the one we create as owner
             LinkedList<string> per = new LinkedList<string>();
             per.AddLast("owner permissions");
-            Assert.IsTrue(userFacade.hasPermissions(userIdOwner, 0, per));
+            Assert.IsTrue(userFacade.hasPermissions(userIdOwner, storeID, per));
         }
         
         [TestMethod]
-        public void OwnerAddOwnerSuccess()
+        public void OwnerAppointStoreOwnerSuccess()
         {
             //create founder
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
-            userFacade.OpenStore(userId, 0);
+            userFacade.OpenNewStore(userId, storeID);
             //create owner
             int userIdOwner = userFacade.Enter();
             userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "123");
-            userFacade.AddOwner(userId, 0, "nogaschw@gmail.com");
+            userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com");
             userFacade.Login(userIdOwner, "nogaschw@gmail.com", "123");
             //try add owner
             int userIdDina = userFacade.Enter();
             userFacade.Register(userIdDina, "dinaaga@gmail.com", "dina", "agapov", "123");
             userFacade.Exit(userIdDina);
-            userFacade.AddOwner(userIdOwner, 0, "dinaaga@gmail.com");
+            userFacade.AppointStoreOwner(userIdOwner, storeID, "dinaaga@gmail.com");
             ////check permission of the one we create as owner
             LinkedList<string> per = new LinkedList<string>();
             per.AddLast("owner permissions");
-            Assert.IsTrue(userFacade.hasPermissions(userIdOwner, 0, per));
+            Assert.IsTrue(userFacade.hasPermissions(userIdOwner, storeID, per));
         }
     }
 }

@@ -13,16 +13,16 @@ namespace SadnaExpress.ServiceLayer
     {
         private ISupplierService supplierService;
         private IPaymentService paymentService;
-        private IStoreFacade storeFacade;
-        private IUserFacade userFacade;
+        private IStoreManager storeManager;
+        private IUserManager userManager;
         private const int ExternalServiceWaitTimeInSeconds=10000; //10 seconds is 10,000 mili seconds
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
 
         public TradingSystem(ISupplierService supplierService=null, IPaymentService paymentService=null)
         {
-            storeFacade = new StoreFacade();
-            userFacade = new UserFacade();
+            storeManager = new StoreManager();
+            userManager = new UserManager();
             this.paymentService = paymentService;
             this.supplierService = supplierService;
         }
@@ -33,84 +33,85 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<int> Enter()
         {
-            try
-            {
-                int id = userFacade.Enter();
-                return new ResponseT<int>(id);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
-            }
+            return userManager.Enter();
         }
         public Response Exit(int id)
         {
-            try
-            {
-                userFacade.Exit(id);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new Response(ex.Message);
-            }
-
+            return userManager.Exit(id);
         }
 
         public Response Register(int id, string email, string firstName, string lastName, string password)
         {
-            try
-            {
-                userFacade.Register(id, email, firstName, lastName, password);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new Response(ex.Message);
-            }
+            return userManager.Register(id, email, firstName, lastName, password);
         }
 
         public ResponseT<int> Login(int id, string email, string password)
         {
-            try
-            {
-                int newID = userFacade.Login(id, email, password);
-                return new ResponseT<int>(id);
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
-            }
-
+            return userManager.Login(id, email, password);
         }
 
         public ResponseT<int> Logout(int id)
         {
-            try
-            {
-                int newID = userFacade.Logout(id);
-                return new ResponseT<int>(id);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
-            }
-
+            return userManager.Logout(id);
         }
 
         public ResponseT<List<S_Store>> GetAllStoreInfo(int id)
         {
-            //get list of buissnes stores and convert them to service stores
+            //get list of business stores and convert them to service stores
+            throw new NotImplementedException();
+        }
+
+        public Response OpenNewStore(int id, string storeName)
+        {
+            return storeManager.OpenNewStore(id, storeName);
+        }
+        
+        public ResponseT<List<S_Item>> GetItemsByName(int id, string itemName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<S_Item>> GetItemsByCategory(int id, string category)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<S_Item>> GetItemsByKeysWord(int id, string keyWords)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<S_Item>> GetItemsByPrices(int id, int minPrice, int maxPrice)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<S_Item>> GetItemsByItemRating(int id, int rating)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<S_Item>> GetItemsByStoreRating(int id, int rating)
+        {
             throw new NotImplementedException();
         }
 
         public Response AddItemToCart(int id, int itemID, int itemAmount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response RemoveItemFromCart(int id, int itemID, int itemAmount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response EditItemFromCart(int id, int itemID, int itemAmount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<Dictionary<string, List<string>>> getDetailsOnCart()
         {
             throw new NotImplementedException();
         }
@@ -135,7 +136,7 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response WriteMessageToStore(int id, int storeID, string message)
+        public Response WriteMessageToStore(int id, Guid storeID, string message)
         {
             throw new NotImplementedException();
         }
@@ -150,57 +151,87 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response AddItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
+        public Response AddItemToStore(int id, Guid storeID, string itemName, string itemCategory, float itemPrice)
         {
             throw new NotImplementedException();
         }
 
-        public Response RemoveItemFromStore(int id, int storeID, int itemID)
+        public Response RemoveItemFromStore(int id, int itemID)
         {
             throw new NotImplementedException();
         }
 
-        public Response AppointStoreOwner(int id, int storeID, int newUserID)
+        public Response EditItemCategory(string storeName, string itemName, string category)
         {
             throw new NotImplementedException();
         }
 
-        public Response AppointStoreManager(int id, int storeID, int newUserID)
+        public Response EditItemPrice(string storeName, string itemName, int price)
         {
             throw new NotImplementedException();
         }
 
-        public Response RemoveStoreOwner(int id, int storeID, int userID)
+        public Response RemoveItemFromStore(int id, Guid storeID, int itemID)
         {
             throw new NotImplementedException();
         }
 
-        public Response RemovetStoreManager(int id, int storeID, int userID)
+        public Response AppointStoreOwner(int id, Guid storeID, string userEmail)
+        {
+            return userManager.AppointStoreOwner(id, storeID, userEmail);
+        }
+
+        public Response AppointStoreManager(int id, Guid storeID, int newUserID)
         {
             throw new NotImplementedException();
         }
 
-        public Response CloseStore(int id, int storeID)
+        public Response AddStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission)
         {
             throw new NotImplementedException();
         }
 
-        public Response ReopenStore(int id, int storeID)
+        public Response RemoveStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission)
         {
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, int storeID)
+        public Response RemoveStoreManager(int id, Guid storeID, int userID)
         {
             throw new NotImplementedException();
         }
 
-        public Response GetPurchasesInfo(int id, int storeID)
+        public Response RemoveStoreOwner(int id, Guid storeID, int userID)
         {
             throw new NotImplementedException();
         }
 
-        public Response DeleteStore(int id, int storeID)
+        public Response RemovetStoreManager(int id, Guid storeID, int userID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response CloseStore(int id, Guid storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response ReopenStore(int id, Guid storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response GetPurchasesInfo(int id, Guid storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response DeleteStore(int id, Guid storeID)
         {
             throw new NotImplementedException();
         }
@@ -232,8 +263,8 @@ namespace SadnaExpress.ServiceLayer
 
         public void CleanUp() // for the tests
         {
-            storeFacade.CleanUp();
-            userFacade.CleanUp();
+            storeManager.CleanUp();
+            userManager.CleanUp();
             supplierService = null;
             paymentService = null;
         }
@@ -306,9 +337,8 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                Logger.Instance.Info("User id: " + id + "requested to initialize trading system");
-                userFacade.InitializeTradingSystem(id);
-
+                Logger.Instance.Info("User id: " + id + " requested to initialize trading system");
+                userManager.InitializeTradingSystem(id);
                 return new ResponseT<bool>(paymentService.Connect() && supplierService.Connect());
             }
             catch(Exception ex)
@@ -320,11 +350,11 @@ namespace SadnaExpress.ServiceLayer
 
         public ConcurrentDictionary<int , User> GetCurrent_Users()
         {
-            return userFacade.GetCurrent_Users();
+            return userManager.GetCurrent_Users();
         }
         public ConcurrentDictionary<int , Member> GetMembers()
         {
-            return userFacade.GetMembers();
+            return userManager.GetMembers();
         }
     }
 }

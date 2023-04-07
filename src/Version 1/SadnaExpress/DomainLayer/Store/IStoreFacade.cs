@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public interface IStoreFacade
     {
-        void OpenNewStore(string storeName);
+        Guid OpenNewStore(string storeName);
         void CloseStore(string storeName);
         void PurchaseItems(string storeName, List<string> itemsName);
         void GetStoreHistory(string storeName);
