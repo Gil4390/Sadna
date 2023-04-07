@@ -212,14 +212,14 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.AppointStoreManager(id, storeID, newUserEmail);
         }
 
-        public Response AddStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission)
+        public Response AddStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission)
         {
-            return _realBridge.AddStoreManagerPermissions(id, storeID, newUserID, permission);
+            return _realBridge.AddStoreManagerPermissions(id, storeID, userEmail, permission);
         }
 
-        public Response RemoveStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission)
+        public Response RemoveStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission)
         {
-            return _realBridge.RemoveStoreManagerPermissions(id, storeID, newUserID, permission);
+            return _realBridge.RemoveStoreManagerPermissions(id, storeID, userEmail, permission);
         }
 
         public Response RemoveStoreManager(int id, Guid storeID, int userID)

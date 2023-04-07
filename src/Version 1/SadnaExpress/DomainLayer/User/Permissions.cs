@@ -56,14 +56,22 @@ namespace SadnaExpress.DomainLayer.User
             return manager;
         }
 
-        public void addPermissions(int storeID, Member manager, string newPermission)
+        public void AddStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
-            throw new NotImplementedException();
+            LinkedList<string> relevantPermissions = new LinkedList<string>();
+            relevantPermissions.AddLast("owner permissions");
+            relevantPermissions.AddLast("founder permissions");
+            relevantPermissions.AddLast(permission);
+            if (manager.hasPermissions(storeID, relevantPermissions))
+                throw new Exception("The member has the permission");
         }
-        
-        public void deletePermissions(int storeID, Member manager)
+
+        public void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
-            throw new NotImplementedException();
+            LinkedList<string> relevantPermissions = new LinkedList<string>();
+            relevantPermissions.AddLast(permission);
+            if (manager.hasPermissions(storeID, relevantPermissions))
+                throw new Exception("The member don't have the permission");
         }
 
         public void closeStore(int storeID)

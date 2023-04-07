@@ -169,5 +169,41 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com");
             Assert.ThrowsException<Exception>(()=>userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com"));
         }
+        [TestMethod]
+        public void AddStoreManagerPermissionsSuccess()
+        {
+            //create founder
+            userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
+            userFacade.Login(userId, "shayk1934@gmail.com", "123");
+            //create user 
+            int userIdManager = userFacade.Enter();
+            userFacade.Register(userIdManager, "nogaschw@gmail.com", "noga", "schwartz", "123");
+            userFacade.Exit(userIdManager);
+            userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com");
+            // add permission
+            userFacade.AddStoreManagerPermissions(userId, storeID, "nogaschw@gmail.com", "add new manager");
+            //check permission 
+            LinkedList<string> per = new LinkedList<string>();
+            per.AddLast("add new manager");
+            Assert.IsTrue(userFacade.hasPermissions(userIdManager, storeID, per));        
+        }
+        [TestMethod]
+        public void RemoveStoreManagerPermissionsSuccess()
+        {
+            //create founder
+            userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
+            userFacade.Login(userId, "shayk1934@gmail.com", "123");
+            //create user 
+            int userIdManager = userFacade.Enter();
+            userFacade.Register(userIdManager, "nogaschw@gmail.com", "noga", "schwartz", "123");
+            userFacade.Exit(userIdManager);
+            userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com");
+            // add permission
+            userFacade.RemoveStoreManagerPermissions(userId, storeID, "nogaschw@gmail.com", "get store history");
+            //check permission 
+            LinkedList<string> per = new LinkedList<string>();
+            per.AddLast("get store history");
+            Assert.IsFalse(userFacade.hasPermissions(userIdManager, storeID, per));        
+        }
     }
 }

@@ -48,8 +48,8 @@ namespace SadnaExpress.ServiceLayer
         Response RemoveStoreOwner(int id, Guid storeID, int userID); //4.5 (not in this version)
         Response AppointStoreManager(int id, Guid storeID, string userEmail); //4.6
         // 4.7
-        Response AddStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission);
-        Response RemoveStoreManagerPermissions(int id, Guid storeID, int newUserID, string permission);
+        Response AddStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission);
+        Response RemoveStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission);
         Response RemoveStoreManager(int id, Guid storeID, int userID); //4.8 (not in this version)
         Response CloseStore(int id, Guid storeID); //4.9
         Response ReopenStore(int id, Guid storeID); //4.10 (not in this version)
