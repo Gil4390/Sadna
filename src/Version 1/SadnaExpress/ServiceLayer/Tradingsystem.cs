@@ -94,7 +94,6 @@ namespace SadnaExpress.ServiceLayer
             {
                 int newID = userFacade.Logout(id);
                 return new ResponseT<int>(id);
-
             }
             catch (Exception ex)
             {

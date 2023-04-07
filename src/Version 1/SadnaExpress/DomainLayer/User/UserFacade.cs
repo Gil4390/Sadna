@@ -32,74 +32,94 @@ namespace SadnaExpress.DomainLayer.User
 
         public int Enter()
         {
-            User user = new User(USER_ID);
-            current_Users.TryAdd(USER_ID, user);
-            USER_ID++;
-            Logger.Instance.Info(user ,"Enter the system.");
-            return user.UserId;
+            lock (this)
+            {
+                User user = new User(USER_ID);
+                current_Users.TryAdd(USER_ID, user);
+                USER_ID++;
+                Logger.Instance.Info(user ,"Enter the system.");
+                return user.UserId;
+            }
         }
 
         public void Exit(int id)
         {
-            User user;
-            Member member;
-            if (current_Users.TryRemove(id, out user))
-                Logger.Instance.Info(user, "exited from the system.");
-            else if (members.TryRemove(id, out member))
-                Logger.Instance.Info(member ,"exited from the system.");
-            else
+            lock (this)
             {
-                throw new Exception("Error with exiting system with this id- " + id);
+                User user;
+                Member member;
+                if (current_Users.TryRemove(id, out user))
+                    Logger.Instance.Info(user, "exited from the system.");
+                else if (members.TryRemove(id, out member))
+                    Logger.Instance.Info(member, "exited from the system.");
+                else
+                {
+                    throw new Exception("Error with exiting system with this id- " + id);
+                }
             }
         }
 
         public void Register(int id, string email, string firstName, string lastName, string password)
         {
-            if (members.ContainsKey(id))
-                throw new Exception("user with this id already logged in");
+            lock (this)
+            {
+                if (members.ContainsKey(id))
+                    throw new Exception("user with this id already logged in");
+                foreach (Member m in members.Values)
+                {
+                    if (m.Email == email)
+                        throw new Exception("email already exists");
+                }
+                string hashPassword = _ph.Hash(password);
+                Member newMember = new Member(id, email, firstName, lastName, hashPassword);
+                members.TryAdd(id, newMember);
+                Logger.Instance.Info(newMember ,"registered with "+email+".");
+            }
 
-            string hashPassword = _ph.Hash(password);
-            Member newMember = new Member(id, email, firstName, lastName, hashPassword);
-            members.TryAdd(id, newMember);
-
-            Logger.Instance.Info(newMember ,"registered with "+email+".");
         }
 
         public int Login(int id, string email, string password)
         {
-            foreach (Member member in members.Values)
+            lock (this)
             {
-                if (member.Email.Equals(email))
+                foreach (Member member in members.Values)
                 {
-                    if (!_ph.Rehash(password,member.Password)){ 
-                        throw new Exception("wrong password for email");
-                    }
-                    else
+                    if (member.Email.Equals(email))
                     {
-                        //correct email & password:
-                        member.LoggedIn = true;
-                        User user;
-                        current_Users.TryRemove(id, out user);
-                        Logger.Instance.Info(member, "logged in");
+                        if (!_ph.Rehash(password, member.Password))
+                        {
+                            throw new Exception("wrong password for email");
+                        }
+                        else
+                        {
+                            //correct email & password:
+                            member.LoggedIn = true;
+                            User user;
+                            current_Users.TryRemove(id, out user);
+                            Logger.Instance.Info(member, "logged in");
 
-                        return member.UserId;
+                            return member.UserId;
+                        }
                     }
                 }
+
+                //eamil not found
+                throw new Exception("email doesn't exist");
             }
-            //eamil not found
-            throw new Exception("email doesn't exist");
-            return -1;
         }
 
         public int Logout(int id)
         {
-            if (!members.ContainsKey(id))
-                throw new Exception("member with id dosen't exist");
+            lock (this)
+            {
+                if (!members.ContainsKey(id))
+                    throw new Exception("member with id dosen't exist");
 
-            Member member = members[id];
-            member.LoggedIn = false;
-            Logger.Instance.Info(member, "logged out");
-            return Enter(); //member logs out and a regular user enters the system instead
+                Member member = members[id];
+                member.LoggedIn = false;
+                Logger.Instance.Info(member, "logged out");
+                return Enter(); //member logs out and a regular user enters the system instead
+            }
         }
 
         public void AddItemToBag(int id, int storeID, string itemName)
@@ -161,19 +181,23 @@ namespace SadnaExpress.DomainLayer.User
 
         public void AddOwner(int id, int storeID, string email)
         {
-            isLogin(id);
-            Member newOwner = null;
-            int newOwnerID = -1;
-            foreach (Member member in members.Values)
-                if (member.Email == email)
-                {
-                    newOwner = member;
-                    newOwnerID = member.UserId;
-                }
-            if (newOwner == null)
-                throw new Exception($"There isn't a member with {email}");
-            PromotedMember owner = members[id].addNewOwner(storeID, newOwner);
-            members[newOwnerID] = owner;
+            lock (this)
+            {
+                isLogin(id);
+                Member newOwner = null;
+                int newOwnerID = -1;
+                foreach (Member member in members.Values)
+                    if (member.Email == email)
+                    {
+                        newOwner = member;
+                        newOwnerID = member.UserId;
+                    }
+
+                if (newOwner == null)
+                    throw new Exception($"There isn't a member with {email}");
+                PromotedMember owner = members[id].addNewOwner(storeID, newOwner);
+                members[newOwnerID] = owner;
+            }
         }
 
         public void AddManager(int id, int storeID, string email)
