@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 
@@ -29,5 +30,6 @@ namespace SadnaExpress.ServiceLayer
         bool InitializeTradingSystem(int id);
         ConcurrentDictionary<int, User> GetCurrent_Users();
         ConcurrentDictionary<int, Member> GetMembers();
+        ResponseT<ShoppingCart> ShowShoppingCart(int id);
     }
 }

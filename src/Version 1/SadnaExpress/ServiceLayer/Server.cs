@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -364,6 +365,20 @@ namespace SadnaExpress.ServiceLayer
                     {
                         //SYSTEM-INFO
                         //todo
+                    }
+                    else if (command_type == "SHOW SHOPPING CART")
+                    {
+                        
+                        ResponseT<ShoppingCart> response = service.ShowShoppingCart(id);
+
+                        if (response.ErrorOccured)
+                        {
+                            Console.WriteLine(id + " - " + response.ErrorMessage);
+                        }
+                        else
+                        { 
+                            Console.WriteLine(id + " - " + response.Value);
+                        }
                     }
                 }
             }

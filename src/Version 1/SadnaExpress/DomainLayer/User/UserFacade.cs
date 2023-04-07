@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
+using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -286,6 +287,14 @@ namespace SadnaExpress.DomainLayer.User
         public ConcurrentDictionary<int, Member> GetMembers()
         {
             return members;
+        }
+        public ShoppingCart ShowShoppingCart(int id)
+        {
+            isLogin(id);
+            if (current_Users.ContainsKey(id))
+                return current_Users[id].ShoppingCart;
+            
+            return members[id].ShoppingCart;
         }
     }
 }

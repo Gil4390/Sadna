@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -32,5 +33,6 @@ namespace SadnaExpress.DomainLayer.User
         ConcurrentDictionary<int, User> GetCurrent_Users();
         ConcurrentDictionary<int, Member> GetMembers();
         bool hasPermissions(int userId, Guid storeID, LinkedList<string> per);
+        ShoppingCart ShowShoppingCart(int id);
     }
 }

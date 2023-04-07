@@ -343,6 +343,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public ResponseT<ShoppingCart> ShowShoppingCart(int id)
+        {
+            return userManager.ShowShoppingCart(id);
+        }
+
         public ConcurrentDictionary<int , User> GetCurrent_Users()
         {
             return userManager.GetCurrent_Users();

@@ -27,7 +27,8 @@ namespace SadnaExpress
                 Two_users_try_register();
                 Login_wrong_password();
                 Login_logout_and_login();
-                OpenStoreTest();
+                Open_store_test();
+                Open_store_already_in();
             }
             public void SetUp()
             {
@@ -167,8 +168,7 @@ namespace SadnaExpress
                 else
                     Console.WriteLine("Test Login_logout_and_login passed");
             }
-
-            public void OpenStoreTest()
+            public void Open_store_test()
             {
                 SetUp();
                 lock (this)
@@ -183,8 +183,59 @@ namespace SadnaExpress
                     Console.WriteLine("-----------Didnt pass in test OpenStoreTest (183)----------");
                 Console.WriteLine("OpenStoreTest passed");
             }
-            
-            
+
+            public void Open_store_already_in()
+            {
+                SetUp();
+                lock (this)
+                    StartSystem();
+                OpenStore("Noga'SONY");
+                bool log = false; 
+                foreach (Store s in _server.service.GetStores().Values)
+                    if (s.getName()=="Noga'SONY")
+                        log = true;
+                
+                if (_server.service.GetStores().Count==0 || !log)
+                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (198)----------");
+                
+                Queue<string> commands = new Queue<string>();
+                commands.Enqueue("LOGIN noga@shwrz.io Aa213e");
+                commands.Enqueue("CREATE-STORE Noga'SONY");
+                int count = 0;
+                foreach (Store s in _server.service.GetStores().Values)
+                    if (s.getName() == "Noga'SONY")
+                        count++;
+                
+                if (_server.service.GetStores().Count==2 || count != 1)
+                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (209)----------");
+                Console.WriteLine("Open_store_already_in passed");
+            }
+            public void Open_store_then_close()
+            {
+                SetUp();
+                lock (this)
+                    StartSystem();
+                OpenStore("Noga'SONY");
+                bool log = false; 
+                foreach (Store s in _server.service.GetStores().Values)
+                    if (s.getName()=="Noga'SONY")
+                        log = true;
+                
+                if (_server.service.GetStores().Count==0 || !log)
+                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (198)----------");
+                
+                Queue<string> commands = new Queue<string>();
+                commands.Enqueue("LOGIN noga@shwrz.io Aa213e");
+                commands.Enqueue("CREATE-STORE Noga'SONY");
+                int count = 0;
+                foreach (Store s in _server.service.GetStores().Values)
+                    if (s.getName() == "Noga'SONY")
+                        count++;
+                
+                if (_server.service.GetStores().Count==2 || count != 1)
+                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (209)----------");
+                Console.WriteLine("Open_store_already_in passed");
+            }
         }
         
     }

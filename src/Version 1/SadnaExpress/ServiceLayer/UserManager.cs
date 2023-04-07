@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 
@@ -165,6 +166,19 @@ namespace SadnaExpress.ServiceLayer
         public ConcurrentDictionary<int , Member> GetMembers()
         {
             return userFacade.GetMembers();
+        }
+        public ResponseT<ShoppingCart> ShowShoppingCart(int id)
+        {
+            try
+            {
+                ShoppingCart sc = userFacade.ShowShoppingCart(id);
+                return new ResponseT<ShoppingCart>(sc);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<ShoppingCart>(ex.Message);
+            }
         }
     }
 }
