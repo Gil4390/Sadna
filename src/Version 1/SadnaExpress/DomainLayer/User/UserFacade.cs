@@ -76,7 +76,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 if (member.Email.Equals(email))
                 {
-                    if (!member.Password.Equals(_ph.Hash(password))){ //need to check
+                    if (!_ph.Rehash(password,member.Password)){ 
                         throw new Exception("wrong password for email");
                     }
                     else

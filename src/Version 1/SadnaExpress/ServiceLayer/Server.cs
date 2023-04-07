@@ -17,9 +17,7 @@ namespace SadnaExpress.ServiceLayer
         private bool tradingSystemOpen = false;
 
         public TradingSystem service;
-
-        public Dictionary<string, string> Cache = new Dictionary<string, string>();
-
+        
         public Server(string ip, int port, ISupplierService supplierService, IPaymentService paymentService)
         {
             service = new TradingSystem(supplierService, paymentService);
