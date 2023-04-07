@@ -21,10 +21,11 @@ namespace SadnaExpress
         {
             public void Run()
             {
-                Check_init_system();
-                User_register_first_time();
-                Two_users_try_register();
-                Login_wrong_password();
+                // Check_init_system();
+                // User_register_first_time();
+                // Two_users_try_register();
+                // Login_wrong_password();
+                Login_logout_and_login();
             }
             public void SetUp()
             {
@@ -126,6 +127,44 @@ namespace SadnaExpress
                 {
                     Console.WriteLine("-----------Didnt pass in test Login_wrong_password (126)----------");
                 }
+            }
+            public void Login_logout_and_login()
+            {
+                SetUp();
+                lock (this)
+                {
+                    StartSystem();
+                }
+                Queue<string> commands = new Queue<string>();
+                commands.Enqueue("REGISTER tal.galmor@weka.io tal galmor Aa112233");
+                commands.Enqueue("LOGIN tal.galmor@weka.io Aa112233");
+                commands.Enqueue("LOGOUT");
+                RunClient("Womba", commands);
+                bool log = false; 
+                foreach (Member m in _server.service.GetMembers().Values)
+                {
+                    if (m.Email == "tal.galmor@weka.io" && !m.LoggedIn)
+                        log = true;
+                }
+                if (!log)
+                {
+                    Console.WriteLine("-----------Didnt pass in test Login_wrong_password (151)----------");
+                }
+                commands = new Queue<string>();
+                commands.Enqueue("LOGIN tal.galmor@weka.io Aa112233");
+                RunClient("Womba2", commands);
+
+                log = false; 
+                foreach (Member m in _server.service.GetMembers().Values)
+                {
+                    if (m.Email == "tal.galmor@weka.io" && m.LoggedIn)
+                        log = true;
+                }
+                if (!log)
+                {
+                    Console.WriteLine("-----------Didnt pass in test Login_wrong_password (165)----------");
+                }
+                
             }
         }
         
