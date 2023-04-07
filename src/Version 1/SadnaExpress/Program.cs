@@ -24,6 +24,7 @@ namespace SadnaExpress
                 Check_init_system();
                 User_register_first_time();
                 Two_users_try_register();
+                Login_wrong_password();
             }
             public void SetUp()
             {
@@ -102,6 +103,28 @@ namespace SadnaExpress
                 if (_server.service.GetMembers().Count == 3 || count != 1)
                 {
                     Console.WriteLine("-----------Didnt pass in test Two_users_try_register (103)----------");
+                }
+            }
+            public void Login_wrong_password()
+            {
+                SetUp();
+                lock (this)
+                {
+                    StartSystem();
+                }
+                Queue<string> commands = new Queue<string>();
+                commands.Enqueue("REGISTER tal.galmor@weka.io tal galmor password");
+                commands.Enqueue("LOGIN tal.galmor@weka.io password1");
+                RunClient("Elly", commands);
+                bool log = false;
+                foreach (Member m in _server.service.GetMembers().Values)
+                {
+                    if (m.Email == "tal.galmor@weka.io" && m.LoggedIn)
+                        log = true;
+                }
+                if (log)
+                {
+                    Console.WriteLine("-----------Didnt pass in test Login_wrong_password (126)----------");
                 }
             }
         }
