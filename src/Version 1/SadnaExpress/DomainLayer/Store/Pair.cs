@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace SadnaExpress.DomainLayer.Store
 {
-    public class ourNewPair<T, U>
+    public class Pair<T, U>
     {
-        public ourNewPair()
+        public Pair()
         {
 
         }
 
-        public ourNewPair(T first, U second)
+        public Pair(T first, U second)
         {
             this.First = first;
             this.Second = second;

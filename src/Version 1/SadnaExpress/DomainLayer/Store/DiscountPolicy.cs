@@ -20,9 +20,9 @@ namespace SadnaExpress.DomainLayer.Store
                 return true;
             }
 
-            public override ourNewPair<int, int> GetDiscount()
+            public override Pair<int, int> GetDiscount()
             {
-                return new ourNewPair<int, int>(stockD, discount);
+                return new Pair<int, int>(stockD, discount);
             }
         }
 
