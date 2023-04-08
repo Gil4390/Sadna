@@ -30,7 +30,7 @@ namespace SadnaExpress.DomainLayer.User
             return this.shoppingCart.addInventoryToCart(inv, stock);
         }
         
-        public virtual bool hasPermissions(Guid storeID, LinkedList<string> listOfPermissions)
+        public virtual bool hasPermissions(Guid storeID, List<string> listOfPermissions)
         {
             return false;
         }
@@ -50,7 +50,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to remove permissions");
         }
-        public virtual List<Member> GetEmployeeInfoInStore(Guid storeID)
+        public virtual List<PromotedMember> GetEmployeeInfoInStore(Guid storeID)
         {
             throw new Exception("The user unauthorised to add new owner");
         }

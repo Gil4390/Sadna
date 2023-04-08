@@ -167,7 +167,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                List<Member> employees = userFacade.GetEmployeeInfoInStore(id, storeID);
+                List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(id, storeID);
                 return new ResponseT<List<S_Member>>();
             }
             catch (Exception ex)

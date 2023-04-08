@@ -17,7 +17,7 @@ namespace SadnaExpressTests.Unit_Tests
         {
             userFacade = new UserFacade();
             userId = userFacade.Enter();
-            storeID = new Guid();
+            storeID = Guid.NewGuid();
         }
 
         [TestCleanup]
@@ -46,41 +46,45 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
             userFacade.OpenNewStore(userId, storeID);
-            LinkedList<string> per = new LinkedList<string>();
-            per.AddLast("founder permissions");
+            List<string> per = new List<string>();
+            per.Add("founder permissions");
             Assert.IsTrue(userFacade.hasPermissions(userId, storeID, per));
         }
 
         [TestMethod]
         public void adNewOwnerUserNotRegister()
         {
-            Assert.ThrowsException<Exception>(() => userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com"));
+            Assert.ThrowsException<Exception>(() =>
+                userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com"));
         }
-        
-        
+
+
         [TestMethod]
         public void AppointStoreOwnerUserNotLogin()
         {
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
-            Assert.ThrowsException<Exception>(() => userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com" ));
+            Assert.ThrowsException<Exception>(() =>
+                userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com"));
         }
-        
+
         [TestMethod]
         public void AppointStoreOwnerThatNotExist()
         {
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
-            Assert.ThrowsException<Exception>(() => userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com" ));
+            Assert.ThrowsException<Exception>(() =>
+                userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com"));
         }
-        
+
         [TestMethod]
         public void AppointStoreOwnerHasNotHavePermission()
         {
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
-            Assert.ThrowsException<Exception>(() => userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com" ));
+            Assert.ThrowsException<Exception>(() =>
+                userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com"));
         }
-        
+
         [TestMethod]
         public void FounderAppointStoreOwnerSuccess()
         {
@@ -95,11 +99,11 @@ namespace SadnaExpressTests.Unit_Tests
             // add owner
             userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com");
             //check permission of the one we create as owner
-            LinkedList<string> per = new LinkedList<string>();
-            per.AddLast("owner permissions");
+            List<string> per = new List<string>();
+            per.Add("owner permissions");
             Assert.IsTrue(userFacade.hasPermissions(userIdOwner, storeID, per));
         }
-        
+
         [TestMethod]
         public void OwnerAppointStoreOwnerSuccess()
         {
@@ -118,11 +122,12 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Exit(userIdDina);
             userFacade.AppointStoreOwner(userIdOwner, storeID, "dinaaga@gmail.com");
             ////check permission of the one we create as owner
-            LinkedList<string> per = new LinkedList<string>();
-            per.AddLast("owner permissions");
+            List<string> per = new List<string>();
+            per.Add("owner permissions");
             Assert.IsTrue(userFacade.hasPermissions(userIdOwner, storeID, per));
         }
-        
+
+        [TestMethod]
         public void FounderAppointStoreManagerSuccess()
         {
             //create founder
@@ -136,11 +141,12 @@ namespace SadnaExpressTests.Unit_Tests
             // add owner
             userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com");
             //check permission of the one we create as owner
-            LinkedList<string> per = new LinkedList<string>();
-            per.AddLast("get store history");
+            List<string> per = new List<string>();
+            per.Add("get store history");
             Assert.IsTrue(userFacade.hasPermissions(userIdOwner, storeID, per));
         }
-        
+
+        [TestMethod]
         public void AppointStoreManagerThatAlreadyStoreManage()
         {
             //create founder
@@ -153,9 +159,11 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Exit(userIdOwner);
             // add owner
             userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com");
-            Assert.ThrowsException<Exception>(()=>userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com"));
+            Assert.ThrowsException<Exception>(() =>
+                userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com"));
         }
-        
+
+        [TestMethod]
         public void AppointStoreManagerWithOutPermissions()
         {
             //create founder
@@ -166,8 +174,8 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdOwner);
             // add owner
-            userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com");
-            Assert.ThrowsException<Exception>(()=>userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com"));
+            Assert.ThrowsException<Exception>(() =>
+                userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com"));
         }
         [TestMethod]
         public void AddStoreManagerPermissionsSuccess()
@@ -175,17 +183,32 @@ namespace SadnaExpressTests.Unit_Tests
             //create founder
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
+            userFacade.OpenNewStore(userId, storeID);
             //create user 
             int userIdManager = userFacade.Enter();
             userFacade.Register(userIdManager, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdManager);
             userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com");
-            // add permission
+            // remove permission
             userFacade.AddStoreManagerPermissions(userId, storeID, "nogaschw@gmail.com", "add new manager");
             //check permission 
-            LinkedList<string> per = new LinkedList<string>();
-            per.AddLast("add new manager");
+            List<string> per = new List<string>();
+            per.Add("add new manager");
             Assert.IsTrue(userFacade.hasPermissions(userIdManager, storeID, per));        
+        }
+        [TestMethod]
+        public void RemoveStoreManagerPermissionsFromMemberFail()
+        {
+            //create founder
+            userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
+            userFacade.Login(userId, "shayk1934@gmail.com", "123");
+            userFacade.OpenNewStore(userId, storeID);
+            //create user 
+            int userIdManager = userFacade.Enter();
+            userFacade.Register(userIdManager, "nogaschw@gmail.com", "noga", "schwartz", "123");
+            userFacade.Exit(userIdManager);
+            // remove permission fail
+            Assert.ThrowsException<Exception>(() =>userFacade.RemoveStoreManagerPermissions(userId, storeID, "nogaschw@gmail.com", "get store history"));
         }
         [TestMethod]
         public void RemoveStoreManagerPermissionsSuccess()
@@ -193,6 +216,7 @@ namespace SadnaExpressTests.Unit_Tests
             //create founder
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
+            userFacade.OpenNewStore(userId, storeID);
             //create user 
             int userIdManager = userFacade.Enter();
             userFacade.Register(userIdManager, "nogaschw@gmail.com", "noga", "schwartz", "123");
@@ -201,8 +225,8 @@ namespace SadnaExpressTests.Unit_Tests
             // add permission
             userFacade.RemoveStoreManagerPermissions(userId, storeID, "nogaschw@gmail.com", "get store history");
             //check permission 
-            LinkedList<string> per = new LinkedList<string>();
-            per.AddLast("get store history");
+            List<string> per = new List<string>();
+            per.Add("get store history");
             Assert.IsFalse(userFacade.hasPermissions(userIdManager, storeID, per));        
         }
     }

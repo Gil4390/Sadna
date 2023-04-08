@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SadnaExpress.DomainLayer.User
 {
     public class PromotedMember : Member
     {
-        private Dictionary<Guid, Member> directSupervisor;
-        private Dictionary<Guid, LinkedList<Member>> appoint;
-        private readonly Dictionary<Guid, LinkedList<string>> permissions;
+        private ConcurrentDictionary<Guid, PromotedMember> directSupervisor;
+        private ConcurrentDictionary<Guid, List<PromotedMember>> appoint;
+        private readonly ConcurrentDictionary<Guid, List<string>> permissions;
         private readonly Permissions permissionsHolder;
 
         /* permissions:
@@ -18,74 +19,87 @@ namespace SadnaExpress.DomainLayer.User
          * get store history
          * add new owner
          * add new manager
+         * get employees info
          */
         public PromotedMember(int id, string email, string firstName, string lastName, string password) : base(id,
             email, firstName, lastName, password)
         {
-            directSupervisor = new Dictionary<Guid, Member>();
-            appoint = new Dictionary<Guid, LinkedList<Member>>();
-            permissions = new Dictionary<Guid, LinkedList<string>>();
+            directSupervisor = new ConcurrentDictionary<Guid, PromotedMember>();
+            appoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
+            permissions = new ConcurrentDictionary<Guid, List<string>>();
             permissionsHolder = Permissions.Instance;
         }
 
-        public void createOwner(Guid storeID, Member directSupervisor)
+        public void createOwner(Guid storeID, PromotedMember directSupervisor)
         {
-            this.directSupervisor.Add(storeID, directSupervisor);
-            LinkedList<string> permissionsList = new LinkedList<string>();
-            permissionsList.AddLast("owner permissions");
-            permissions.Add(storeID, permissionsList);
+            this.directSupervisor.TryAdd(storeID, directSupervisor);
+            List<string> permissionsList = new List<string>();
+            List<PromotedMember> appointList = new List<PromotedMember>();
+            permissionsList.Add("owner permissions");
+            permissions.TryAdd(storeID, permissionsList);
+            appoint.TryAdd(storeID, appointList);
         }
 
-        public void createManager(Guid storeID, Member directSupervisor)
+        public void createManager(Guid storeID, PromotedMember directSupervisor)
         {
-            this.directSupervisor.Add(storeID, directSupervisor);
-            LinkedList<string> permissionsList = new LinkedList<string>();
-            permissionsList.AddLast("get store history");
-            permissions.Add(storeID, permissionsList);
+            this.directSupervisor.TryAdd(storeID, directSupervisor);
+            List<string> permissionsList = new List<string>();
+            List<PromotedMember> appointList = new List<PromotedMember>();
+            permissionsList.Add("get store history");
+            permissions.TryAdd(storeID, permissionsList);
+            appoint.TryAdd(storeID, appointList);
         }
 
         public void createFounder(Guid storeID)
         {
-            LinkedList<string> permissionsList = new LinkedList<string>();
-            permissionsList.AddLast("founder permissions");
-            permissions.Add(storeID, permissionsList);
+            List<string> permissionsList = new List<string>();
+            List<PromotedMember> appointList = new List<PromotedMember>();
+            permissionsList.Add("founder permissions");
+            permissions.TryAdd(storeID, permissionsList);
+            directSupervisor.TryAdd(storeID, null);
+            appoint.TryAdd(storeID, appointList);
         }
 
         public void createSystemManager()
         {
-            LinkedList<string> permissionsList = new LinkedList<string>();
-            permissionsList.AddLast("system manager permissions");
-            permissions.Add(Guid.Empty, permissionsList);
+            List<string> permissionsList = new List<string>();
+            permissionsList.Add("system manager permissions");
+            permissions.TryAdd(Guid.Empty, permissionsList);
         }
 
-        public void addAppoint(Guid storeID, Member member)
+        public void addAppoint(Guid storeID, PromotedMember member)
         {
-            if (appoint.ContainsKey(storeID))
-                appoint[storeID].AddLast(member);
-            else
-            {
-                LinkedList<Member> appointList = new LinkedList<Member>();
-                appointList.AddLast(member);
-                appoint.Add(storeID, appointList);
-            }
+            appoint[storeID].Add(member);
         }
 
-        public override bool hasPermissions(Guid storeID, LinkedList<string> listOfPermissions)
+        public override bool hasPermissions(Guid storeID, List<string> listOfPermissions)
         {
             if (permissions.ContainsKey(storeID))
             {
                 foreach (string permission in listOfPermissions)
                 {
-                    if (!permissions[storeID].Contains(permission))
-                        return false;
+                    if (permissions[storeID].Contains(permission))
+                        return true;
                 }
-
-                return true;
             }
-
             return false;
         }
-
+        public List<PromotedMember> getAppoint(Guid storeID)
+        {
+            return appoint[storeID];
+        }
+        public PromotedMember getDirectManager(Guid storeID)
+        {
+            return directSupervisor[storeID];
+        }
+        public void addPermission(Guid storeID, string per)
+        {
+            permissions[storeID].Add(per);
+        }
+        public void removePermission(Guid storeID, string per)
+        {
+            permissions[storeID].Remove(per);
+        }
         public override PromotedMember AppointStoreOwner(Guid storeID, Member newOwner)
         {
             if (permissions.ContainsKey(storeID))
@@ -114,9 +128,8 @@ namespace SadnaExpress.DomainLayer.User
                     permissions[storeID].Contains("edit manager permissions"))
                 {
                     permissionsHolder.AddStoreManagerPermissions(storeID, manager, permission);
-                    permissions[storeID].AddLast(permission);
+                    return;
                 }
-
             throw new Exception("The member doesn’t have permissions to edit manager's permissions");
         }
 
@@ -129,14 +142,17 @@ namespace SadnaExpress.DomainLayer.User
                 {
                     permissionsHolder.RemoveStoreManagerPermissions(storeID, manager, permission);
                     permissions[storeID].Remove(permission);
+                    return;
                 }
-
             throw new Exception("The member doesn’t have permissions to edit manager's permissions");
         }
-
-        public override List<Member> GetEmployeeInfoInStore(Guid storeID)
+        public override List<PromotedMember> GetEmployeeInfoInStore(Guid storeID)
         {
-            throw new NotImplementedException();
+            if (permissions[storeID].Contains("owner permissions") ||
+                permissions[storeID].Contains("founder permissions") ||
+                permissions[storeID].Contains("get employees info"))
+                return permissionsHolder.GetEmployeeInfoInStore(storeID, this);
+            throw new Exception("The member doesn’t have permissions to get employees info");
         }
     }
 }

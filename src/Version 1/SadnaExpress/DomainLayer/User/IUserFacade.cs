@@ -29,12 +29,12 @@ namespace SadnaExpress.DomainLayer.User
         void RemoveStoreManagerPermissions(int id,Guid storeID, string email, string Permission);
         void CloseStore(int id,Guid storeID);
         void GetDetailsOnStore(int id,Guid storeID);
-        List<Member> GetEmployeeInfoInStore(int id, Guid storeID);
+        List<PromotedMember> GetEmployeeInfoInStore(int id, Guid storeID);
         bool InitializeTradingSystem(int id);
         void CleanUp();
         ConcurrentDictionary<int, User> GetCurrent_Users();
         ConcurrentDictionary<int, Member> GetMembers();
-        bool hasPermissions(int userId, Guid storeID, LinkedList<string> per);
+        bool hasPermissions(int userId, Guid storeID, List<string> per);
         ShoppingCart ShowShoppingCart(int id);
     }
 }
