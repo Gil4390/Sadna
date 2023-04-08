@@ -341,18 +341,18 @@ namespace SadnaExpress.ServiceLayer
                     }
                     else if (command_type == "DELETE-STORE")
                     {
-                        //PERMENATLY-CLOSE-STORE <storeID>
+                        //DELETE-STORE <storeID>
                         if (split.Length != 2)
                         {
                             throw new Exception("invalid DELETE-STORE args");
                         }
-
-                        int storeID = int.Parse(split[1]);
-                        service.DeleteStore(id, ToGuid(storeID));
+                        
+                        Guid storeID = Guid.Parse(split[1]);
+                        service.DeleteStore(id, storeID);
                     }
                     else if (command_type == "DELETE-MEMBER")
                     {
-                        //PERMENATLY-CLOSE-STORE <userID>
+                        //DELETE-MEMBER <userID>
                         if (split.Length != 2)
                         {
                             throw new Exception("invalid DELETE-MEMBER args");

@@ -23,7 +23,10 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response RemoveItemFromStore(int id, int itemID);
         Response EditItemCategory(string storeID, string itemName, string category);
         Response EditItemPrice(string storeID, string itemName, int price); 
-        Response CloseStore(int id, int storeID); //4.9
+        Response CloseStore(int id, Guid storeID); //4.9
+        Response DeleteStore(int id, Guid storeID); 
+        Response ReopenStore(int id, Guid storeID);
+
         Response GetPurchasesInfo(int id, int storeID);//4.13 //6.4
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();

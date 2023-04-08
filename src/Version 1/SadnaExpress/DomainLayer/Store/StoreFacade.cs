@@ -11,11 +11,11 @@ namespace SadnaExpress.DomainLayer.Store
         {
             stores = new ConcurrentDictionary<Guid, Store>();
         }
-
-        public Store GetStoreByName(string name)
+        
+        public Store GetStoreByID(Guid id)
         {
             foreach (Store store in stores.Values) {
-                if (store.getName().Equals(name))
+                if (store.StoreId == id)
                     return store;
             }
 
@@ -31,13 +31,31 @@ namespace SadnaExpress.DomainLayer.Store
             return store.StoreID;
         }
 
-        public void CloseStore(string storeName)
+        public void CloseStore(int id , Guid storeId)
         {
-            Store store = GetStoreByName(storeName);
+            Store store = GetStoreByID(storeId);
+            if (store == null)
+                Logger.Instance.Error("there is no store with this name");
+            //
+            store.Active = false;
+            Logger.Instance.Info("store " + store.getName() + " closed.");
+        }
+        public void ReopenStore(int id , Guid storeId)
+        {
+            Store store = GetStoreByID(storeId);
+            if (store == null)
+                Logger.Instance.Error("there is no store with this name");
+            //
+            store.Active = true;
+            Logger.Instance.Info("store " + store.getName() + " reopen.");
+        }
+        public void DeleteStore(int id , Guid storeId)
+        {
+            Store store = GetStoreByID(storeId);
             if (store == null)
                 Logger.Instance.Error("there is no store with this name");
             stores.TryRemove(store.StoreID, out store);
-            Logger.Instance.Info("store " + storeName + " closed.");
+            Logger.Instance.Info("store " + store.getName() + " deleted.");
         }
         
         public void PurchaseItems(string storeName, List<string> itemsName)

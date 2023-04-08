@@ -11,6 +11,8 @@ namespace SadnaExpress.DomainLayer.Store
         private Guid storeID;
         public Guid StoreID {get=>storeID;}
         private Policy policy;
+
+        private bool active;
         //username, rating 1-5
         private Dictionary<string, int> storeReview;
         // maybe need to add store discount
@@ -19,12 +21,19 @@ namespace SadnaExpress.DomainLayer.Store
             this.itemsInventory = new List<Inventory>();
             this.policy = new Policy();
             this.storeReview = new Dictionary<string, int>();
-            storeID = new Guid();
+            storeID = Guid.NewGuid();
+            active = true;
         }
 
         //getters
         public string getName() {
             return this.name;
+        }
+
+        public Guid StoreId
+        {
+            get => storeID;
+            set => storeID = value;
         }
 
         public Policy getPolicy() {
@@ -136,6 +145,10 @@ namespace SadnaExpress.DomainLayer.Store
 
         }
 
-
+        public bool Active
+        {
+            get => active;
+            set => active = value;
+        }
     }
 }

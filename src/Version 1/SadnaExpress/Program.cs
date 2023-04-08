@@ -22,20 +22,35 @@ namespace SadnaExpress
         {
             public void Run()
             {
+                SystemTests();
+                UserTests();
+                StoreTests();
+            }
+
+            public void SystemTests()
+            {
                 Check_init_system();
+                //Test for check external serivces
+            }
+            public void UserTests()
+            {
                 User_register_first_time();
                 Two_users_try_register();
                 Login_wrong_password();
                 Login_logout_and_login();
+            }
+            public void StoreTests()
+            {
                 Open_store_test();
                 Open_store_already_in();
+                //Not completed.
+                //Open_store_then_delete();
+                //Open_store_then_close_then_reopen();
             }
             public void SetUp()
             {
                 _server = new Server();
             }
-
-
             public void StartSystem()
             {
                 _server.activateAdmin();
@@ -65,7 +80,7 @@ namespace SadnaExpress
                 commands.Enqueue("REGISTER tal.galmor@weka.io tal galmor password");
                 RunClient("Elly", commands);
                 if (_server.tradingSystemOpen || _server.service.GetCurrent_Users().ContainsKey(1))
-                    Console.WriteLine("-----------Didnt pass in test Check_init_system (52)----------");
+                    Console.WriteLine("-----------Didnt pass in test Check_init_system (81)----------");
                 Console.WriteLine("Test Check_init_system passed");
             }
 
@@ -76,7 +91,7 @@ namespace SadnaExpress
                     StartSystem();
                 
                 if (_server.service.GetMembers().Count == 0)
-                    Console.WriteLine("-----------Didnt pass in test User_register_first_time (66)----------");
+                    Console.WriteLine("-----------Didnt pass in test User_register_first_time (92)----------");
                 
                 Queue<string> commands = new Queue<string>();
                 commands.Enqueue("REGISTER tal.galmor@weka.io tal galmor password");
@@ -86,7 +101,7 @@ namespace SadnaExpress
                     if (m.Email == "tal.galmor@weka.io")
                         found = true;
                 if (_server.service.GetMembers().Count == 1 || !found)
-                    Console.WriteLine("-----------Didnt pass in test User_register_first_time (79)----------");
+                    Console.WriteLine("-----------Didnt pass in test User_register_first_time (102)----------");
                 else
                     Console.WriteLine("Test User_register_first_time passed");
                 
@@ -109,7 +124,7 @@ namespace SadnaExpress
                         count++;
                 
                 if (_server.service.GetMembers().Count == 3 || count != 1)
-                    Console.WriteLine("-----------Didnt pass in test Two_users_try_register (103)----------");
+                    Console.WriteLine("-----------Didnt pass in test Two_users_try_register (125)----------");
                 else
                     Console.WriteLine("Test Two_users_try_register passed");
             }
@@ -128,7 +143,7 @@ namespace SadnaExpress
                         log = true;
                 
                 if (log)
-                    Console.WriteLine("-----------Didnt pass in test Login_wrong_password (126)----------");
+                    Console.WriteLine("-----------Didnt pass in test Login_wrong_password (144)----------");
                 
                 else
                     Console.WriteLine("Test Login_wrong_password passed");
@@ -151,7 +166,7 @@ namespace SadnaExpress
                         log = true;
                 
                 if (!log)
-                    Console.WriteLine("-----------Didnt pass in test Login_wrong_password (151)----------");
+                    Console.WriteLine("-----------Didnt pass in test Login_wrong_password (167)----------");
                 
                 commands = new Queue<string>();
                 commands.Enqueue("LOGIN tal.galmor@weka.io Aa112233");
@@ -163,7 +178,7 @@ namespace SadnaExpress
                         log = true;
                 
                 if (!log)
-                    Console.WriteLine("-----------Didnt pass in test Login_wrong_password (165)----------");
+                    Console.WriteLine("-----------Didnt pass in test Login_wrong_password (179)----------");
                 
                 else
                     Console.WriteLine("Test Login_logout_and_login passed");
@@ -180,7 +195,7 @@ namespace SadnaExpress
                         log = true;
                 
                 if (_server.service.GetStores().Count==0 || !log)
-                    Console.WriteLine("-----------Didnt pass in test OpenStoreTest (183)----------");
+                    Console.WriteLine("-----------Didnt pass in test OpenStoreTest (196)----------");
                 Console.WriteLine("OpenStoreTest passed");
             }
 
@@ -196,7 +211,7 @@ namespace SadnaExpress
                         log = true;
                 
                 if (_server.service.GetStores().Count==0 || !log)
-                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (198)----------");
+                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (212)----------");
                 
                 Queue<string> commands = new Queue<string>();
                 commands.Enqueue("LOGIN noga@shwrz.io Aa213e");
@@ -207,34 +222,53 @@ namespace SadnaExpress
                         count++;
                 
                 if (_server.service.GetStores().Count==2 || count != 1)
-                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (209)----------");
+                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (223)----------");
                 Console.WriteLine("Open_store_already_in passed");
             }
-            public void Open_store_then_close()
+            public void Open_store_then_delete()
+            {
+                SetUp();
+                lock (this)
+                    StartSystem();
+                Queue<string> commands = new Queue<string>();
+                commands.Enqueue("REGISTER noga@shwrz.io noga shwartz Aa213e");
+                commands.Enqueue("LOGIN noga@shwrz.io Aa213e");
+                commands.Enqueue("CREATE-STORE New-Store-Of-Noga");
+                RunClient("Noga", commands);
+                Guid id = new Guid();
+                foreach (Store s in _server.service.GetStores().Values)
+                    if (s.getName() == "New-Store-Of-Noga")
+                        id = s.StoreID;
+                if (id.CompareTo(new Guid())==0)
+                    Console.WriteLine("-----------Didnt pass in test Open_store_then_close (245)----------");
+                
+                commands = new Queue<string>();
+                commands.Enqueue("LOGIN noga@shwrz.io Aa213e");
+                commands.Enqueue("DELETE-STORE " + id);
+                RunClient("Noga", commands);
+                bool log = false;
+                foreach (Store s in _server.service.GetStores().Values)
+                    if (s.getName() == "Noga'SONY")
+                        log = true;
+                if (_server.service.GetStores().Count==1 || log)
+                    Console.WriteLine("-----------Didnt pass in test Open_store_then_close (245)----------");
+                Console.WriteLine("Open_store_then_close passed");
+            }
+            public void Open_store_then_close_then_reopen()
             {
                 SetUp();
                 lock (this)
                     StartSystem();
                 OpenStore("Noga'SONY");
-                bool log = false; 
+                Guid id = new Guid();
                 foreach (Store s in _server.service.GetStores().Values)
-                    if (s.getName()=="Noga'SONY")
-                        log = true;
-                
-                if (_server.service.GetStores().Count==0 || !log)
-                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (198)----------");
-                
+                    if (s.getName() == "New-Store-Of-Noga")
+                        id = s.StoreID;
                 Queue<string> commands = new Queue<string>();
                 commands.Enqueue("LOGIN noga@shwrz.io Aa213e");
-                commands.Enqueue("CREATE-STORE Noga'SONY");
-                int count = 0;
-                foreach (Store s in _server.service.GetStores().Values)
-                    if (s.getName() == "Noga'SONY")
-                        count++;
+                commands.Enqueue("CLOSE-STORE "+id);
                 
-                if (_server.service.GetStores().Count==2 || count != 1)
-                    Console.WriteLine("-----------Didnt pass in test Open_store_already_in (209)----------");
-                Console.WriteLine("Open_store_already_in passed");
+
             }
         }
         

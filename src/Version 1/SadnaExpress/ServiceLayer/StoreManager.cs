@@ -98,9 +98,44 @@ namespace SadnaExpress.ServiceLayer
             throw new System.NotImplementedException();
         }
 
-        public Response CloseStore(int id, int storeID)
+        public Response CloseStore(int id, Guid storeID)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                storeFacade.CloseStore(id, storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
+        public Response DeleteStore(int id, Guid storeID)
+        {
+            try
+            {
+                storeFacade.DeleteStore(id, storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
+        public Response ReopenStore(int id, Guid storeID)
+        {
+            try
+            {
+                storeFacade.ReopenStore(id, storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
         }
 
         public Response GetPurchasesInfo(int id, int storeID)
@@ -116,5 +151,6 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeFacade.GetStores();
         }
+        
     }
 }
