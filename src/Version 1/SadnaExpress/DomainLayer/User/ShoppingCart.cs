@@ -11,49 +11,68 @@ namespace SadnaExpress.DomainLayer.Store
         {
             baskets = new List<ShoppingBasket>();
         }
-        public ShoppingCart(List<ShoppingBasket> newbaskets)
+
+
+        public List<ShoppingBasket> GetShoppingBaskets()
         {
-            baskets = newbaskets;
+            return this.baskets;
         }
-        
-        public bool addInventoryToCart(Inventory inv, int stock)
+
+        public ShoppingBasket GetShoppingBasketByStore(string store)
         {
-            // add product to existing basket from the same store
-            foreach (ShoppingBasket sb in baskets)
+            foreach (ShoppingBasket basket in baskets)
             {
-                if (sb.getStore() == inv.getStore())
+                if (basket.GetStore().Equals(store))
                 {
-                    sb.addItem(inv, stock);
-                    return true;
+                    return basket;
                 }
             }
-
-            // no basket store match this item then add new basket and the item to it 
-            ShoppingBasket b = new ShoppingBasket(inv.getStore(), new Dictionary<Inventory, int>());
-            b.addItem(inv, stock);
-            this.baskets.Add(b);
-            return true;
-
+            return null;
         }
 
-        // functions to implement
+        public bool AddBasket(ShoppingBasket basket)
+        {
+            foreach (ShoppingBasket b in baskets)
+            {
+                if (b.GetStore() == basket.GetStore())
+                    return false;
+            }
+            baskets.Add(basket);
+            return true;
+        }
 
-        // getters
+        public bool RemoveBasket(ShoppingBasket basket)
+        {
+            return baskets.Remove(basket);
+        }
+
+        public bool AddItemToBasket(string storeName, int itemId, int stock)
+        {
+            foreach (ShoppingBasket b in baskets)
+            {
+                if (b.GetStore() == storeName)
+                {
+                    return b.AddItem(itemId, stock);
+                }
+            }
+            ShoppingBasket newOne = new ShoppingBasket(storeName);
+            newOne.AddItem(itemId, stock);
+            baskets.Add(newOne);
+            return true;
+        }
 
 
-        // add / remove basket
-
-        // add / remove items
-
-        //  purchase basket
-
-        // purchase items
-
-        // get num of items
-
-        // edit stock of item
-
-        // save items for purchase
+        public bool RemoveItemFromBasket(string storeName, int itemId)
+        {
+            foreach (ShoppingBasket b in baskets)
+            {
+                if (b.GetStore() == storeName)
+                {
+                    return b.RemoveItem(itemId);
+                }
+            }
+            return false;
+        }
 
 
 

@@ -1,43 +1,86 @@
+using System;
 using System.Collections.Generic;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class ShoppingBasket
     {
-        private Store store;
-        private Dictionary<Inventory,int> itemsInBasket;
+        private string store;
+        //                 itemId, stockSelected
+        private Dictionary<int,int> itemsInBasket;
 
-        public ShoppingBasket(Store store, Dictionary<Inventory, int> itemsInBasket)
+        public ShoppingBasket(string store)
         {
             this.store = store;
-            this.itemsInBasket = itemsInBasket;
+            this.itemsInBasket = new Dictionary<int, int>();
         }
 
-        internal void addItem(Inventory inv, int stock)
+        public bool AddItem(int itemId, int stock)
         {
-            itemsInBasket.Add(inv, stock);
+            if (stock < 0)
+                return false;
+
+            List<Inventory> storeInventory = ((Store)DomainFacade.Instance.GetStore(store)).getItemsInventory();
+
+            foreach (Inventory item in storeInventory)
+            {
+                if (item.GetId() == itemId)
+                {
+                    if (item.getInStock() > stock)
+                    {
+                        if (itemsInBasket.ContainsKey(itemId))
+                        {
+                            itemsInBasket[itemId] += stock;
+                        }
+                        else
+                        {
+                            itemsInBasket.Add(itemId, stock);
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        throw new Exception("cant add item to shopping basket with stock more that the store can provide!");
+                    }
+                }
+            }
+            throw new Exception("tried to add item to shopping basket that is not in the store of this shopping basket");
+            return false;
         }
 
-        internal Store getStore()
+
+        public bool RemoveItem(int itemId)
+        {
+            return itemsInBasket.Remove(itemId);
+        }
+
+        public bool EditAmount(int itemId, int newStock)
+        {
+            if (newStock < 0)
+                return false;
+            if (newStock == 0)
+                return RemoveItem(itemId);
+            if (itemsInBasket.ContainsKey(itemId))
+            {
+                int abs = itemsInBasket[itemId] - newStock;
+                if (abs < 0)
+                    abs = abs * -1;
+                return AddItem(itemId, abs);
+            }
+            return false;
+        }
+
+        public string GetStore()
         {
             return this.store;
         }
 
-        // functions to implement:
-
-        // getters
-
-        // setters
-
-        // add Item
-
-        // delete Item
-
-        // edit stock in basket
-
-        // get items numbers in basket
-
-        // find item in basket
+        public int GetItemStock(int itemId)
+        {
+            if (itemsInBasket.ContainsKey(itemId))
+                return itemsInBasket[itemId];
+            throw new Exception("Failure here!");
+        }
 
 
     }
