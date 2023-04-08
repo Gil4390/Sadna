@@ -2,6 +2,8 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public class Item
     {
+        private static int _id = 0;
+        private int id;
         private string name;
         private string category;
         private double price;
@@ -11,6 +13,9 @@ namespace SadnaExpress.DomainLayer.Store
             this.name = name;
             this.category = category;
             this.price = price;
+
+            this.id = _id;
+            _id++;
         }
 
         //setters
@@ -43,6 +48,11 @@ namespace SadnaExpress.DomainLayer.Store
         public double getPrice()
         {
             return price;
+        }
+
+        public int GetId()
+        {
+            return this.id;
         }
     }
 }

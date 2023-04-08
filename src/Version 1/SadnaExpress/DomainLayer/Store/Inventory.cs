@@ -8,24 +8,19 @@ namespace SadnaExpress.DomainLayer.Store
         private double price;
         private int in_stock;
         private Policy policy;
-        private Store store;
+        private DiscountPolicy discount;
+        //private Store store;
         // maybe need to add discount
 
-        //         username, description
-        Dictionary<string, string> reviews;
-        //         username, description
-        Dictionary<string, int> reviewsRating;
 
-
-        public Inventory(Item item, int in_stock, double price, Policy policy, Store store)
+        public Inventory(Item item, int in_stock, double price, DiscountPolicy dPolicy)
         {
             this.item = item;
             this.in_stock = in_stock;
             this.price = price;
-            this.policy = policy;
-            this.store = store;
-            this.reviews = new Dictionary<string, string>();
-            this.reviewsRating = new Dictionary<string, int>();
+            this.policy = null;
+            this.discount = dPolicy;
+            
         }
 
         //getters
@@ -39,10 +34,7 @@ namespace SadnaExpress.DomainLayer.Store
             return this.policy;
         }
 
-        public Store getStore()
-        {
-            return this.store;
-        }
+        
         public int getInStock()
         {
             return this.in_stock;
@@ -64,14 +56,9 @@ namespace SadnaExpress.DomainLayer.Store
             return item.getCategory();
         }
 
-        public Dictionary<string, string> getReviews()
+        public int GetId()
         {
-            return this.reviews;
-        }
-
-        public Dictionary<string, int> getReviewsRating()
-        {
-            return this.reviewsRating;
+            return item.GetId();
         }
 
         // setters 
@@ -85,10 +72,7 @@ namespace SadnaExpress.DomainLayer.Store
             this.policy = newPolicy;
         }
 
-        public void setStore(Store newStore)
-        {
-            this.store = newStore;
-        }
+        
         public void setInStock(int newIn_stock)
         {
             this.in_stock = newIn_stock;
@@ -100,10 +84,14 @@ namespace SadnaExpress.DomainLayer.Store
         }
 
 
-        public void addReview(string username, string descreption, int rating)
+        public void addInStock(int newInStock)
         {
-            this.reviews.Add(username, descreption);
-            this.reviewsRating.Add(username, rating);
+            this.in_stock += newInStock;
+        }
+
+        public void removeInStock(int delInStock)
+        {
+            this.in_stock -= delInStock;
         }
 
     }
