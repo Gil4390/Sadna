@@ -240,7 +240,7 @@ namespace SadnaExpress
                     if (s.getName() == "New-Store-Of-Noga")
                         id = s.StoreID;
                 if (id.CompareTo(new Guid())==0)
-                    Console.WriteLine("-----------Didnt pass in test Open_store_then_close (245)----------");
+                    Console.WriteLine("-----------Didnt pass in test Open_store_then_delete (245)----------");
                 
                 commands = new Queue<string>();
                 commands.Enqueue("LOGIN noga@shwrz.io Aa213e");
@@ -251,8 +251,8 @@ namespace SadnaExpress
                     if (s.getName() == "Noga'SONY")
                         log = true;
                 if (_server.service.GetStores().Count==1 || log)
-                    Console.WriteLine("-----------Didnt pass in test Open_store_then_close (245)----------");
-                Console.WriteLine("Open_store_then_close passed");
+                    Console.WriteLine("-----------Didnt pass in test Open_store_then_delete (254)----------");
+                Console.WriteLine("Open_store_then_delete passed");
             }
             public void Open_store_then_close_then_reopen()
             {
@@ -267,6 +267,15 @@ namespace SadnaExpress
                 Queue<string> commands = new Queue<string>();
                 commands.Enqueue("LOGIN noga@shwrz.io Aa213e");
                 commands.Enqueue("CLOSE-STORE "+id);
+                commands.Enqueue("REOPEN-STORE "+id);
+                RunClient("Noga", commands);
+                bool log = false;
+                foreach (Store s in _server.service.GetStores().Values)
+                    if (s.getName() == "Noga'SONY" && !s.Active)
+                        log = true;
+                if (_server.service.GetStores().Count==1 || log)
+                    Console.WriteLine("-----------Didnt pass in test Open_store_then_close_then_reopen (277)----------");
+                Console.WriteLine("Open_store_then_close_then_reopen passed");
                 
 
             }
