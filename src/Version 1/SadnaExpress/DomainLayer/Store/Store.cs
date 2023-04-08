@@ -1,25 +1,44 @@
 using System;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.User;
+using static SadnaExpress.DomainLayer.Store.PurchasePolicy;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class Store
     {
         private string name;
+        private int founderId;
         private List<Inventory> itemsInventory;
         private Guid storeID;
         public Guid StoreID {get=>storeID;}
-        private Policy policy;
-        //username, rating 1-5
-        private Dictionary<string, int> storeReview;
-        // maybe need to add store discount
-        public Store(string name) {
+
+        private List<Policy> storePolicy;
+
+
+        /// <summary>
+        ///  for each owner id list of owners id he assigned after him
+        /// </summary>
+        Dictionary<int, List<string>> owners;
+
+        /// <summary>
+        ///  for each manager list of permissions he will do
+        /// </summary>
+        Dictionary<string, List<string>> managers;
+
+
+        public Store(string name, int founderId) {
             this.name = name;
             this.itemsInventory = new List<Inventory>();
-            this.policy = new Policy();
-            this.storeReview = new Dictionary<string, int>();
+
             storeID = new Guid();
+            this.founderId = founderId;
+            this.owners = new Dictionary<int, List<string>>();
+            this.owners.Add(founderId, new List<string>());
+            this.storePolicy = new List<Policy>();
+            this.storePolicy.Add(new NoPurchasePolicy());
+            //this.discount = new NoDiscount();
+            // founder first one
         }
 
         //getters
@@ -27,22 +46,24 @@ namespace SadnaExpress.DomainLayer.Store
             return this.name;
         }
 
-        public Policy getPolicy() {
-            return this.policy;
+        public List<Policy> getPolicy() {
+            return this.storePolicy;
         }
 
-        
+
+        public Guid getId()
+        {
+            return this.storeID;
+        }
 
         public List<Inventory> getItemsInventory()
         {
             return this.itemsInventory;
         }
 
-        
-
 
         // add new Item to store, if item exists with the same name return false
-        public bool addItem(string name, string category, double price, int in_stock, Policy policy)
+        public bool addItem(string name, string category, double price, int in_stock, DiscountPolicy dPolicy)
         {
             Inventory exists = getItem(name);
             if (exists != null)
@@ -50,7 +71,7 @@ namespace SadnaExpress.DomainLayer.Store
                 return false;
             }
             Item newItem = new Item(name, category, price);
-            Inventory inv = new Inventory(newItem, in_stock, price, policy, this);
+            Inventory inv = new Inventory(newItem, in_stock, price, dPolicy);
             this.itemsInventory.Add(inv);
             return true;
         }
@@ -67,6 +88,36 @@ namespace SadnaExpress.DomainLayer.Store
             return null;
         }
 
+
+        public bool AddStock(int id, int addedStock)
+        {
+            foreach (Inventory inv in itemsInventory)
+            {
+                if (inv.GetId() == id)
+                {
+                    inv.addInStock(addedStock);
+                    return true;
+                }
+            }
+            Logger.Instance.Error("Item removal failed (Item not Found)");
+            return false;
+        }
+
+        public bool RemoveStock(int id, int removedStock)
+        {
+            foreach (Inventory inv in itemsInventory)
+            {
+                if (inv.GetId() == id)
+                {
+                    inv.removeInStock(removedStock);
+                    return true;
+                }
+            }
+            Logger.Instance.Error("Item removal failed (Item not Found)");
+            return false;
+        }
+
+
         public bool deleteItem(string name)
         {
             foreach (Inventory inv in itemsInventory)
@@ -80,12 +131,12 @@ namespace SadnaExpress.DomainLayer.Store
             Logger.Instance.Error("Item removal failed (Item not Found)");
             return false;
         }
-        
+
         public bool updateItem(string name, string newName, string newCategory, double newPrice, int newIn_stock, Policy newPolicy)
         {
             Inventory inventoryitem = getItem(name);
 
-            if(newName.Equals(""))
+            if (newName.Equals(""))
             {
                 return false;
             }
@@ -94,7 +145,7 @@ namespace SadnaExpress.DomainLayer.Store
                 return false;
             }
 
-            if(newPrice <= 0)
+            if (newPrice <= 0)
             {
                 return false;
             }
@@ -104,6 +155,7 @@ namespace SadnaExpress.DomainLayer.Store
                 return false;
             }
 
+
             inventoryitem.setPrice(newPrice);
             inventoryitem.setInStock(newIn_stock);
             inventoryitem.setPolicy(newPolicy);
@@ -112,29 +164,20 @@ namespace SadnaExpress.DomainLayer.Store
             return true;
         }
 
-
-        // this function handles stock updates for the store after a purchase
-        public bool updateStockAfterPurchase(Inventory inv, int stock)
+        public bool HasPermissionToAdd(int id)
         {
-            int newStock = inv.getInStock() - stock;
-            if ( newStock < 0)
-            {
-                Logger.Instance.Error("Not Enough Items in stock to complete this purhcase, please try later!");
-            }
-            else
-            {
-                inv.setInStock(newStock);
+            if (id == this.founderId)
                 return true;
-            }
-            return false;
+            throw new NotImplementedException();
         }
 
 
-        public void addStoreReview(string username, int rating)
-        {
-            this.storeReview.Add(username, rating);
+        // need to implement owners functions
 
-        }
+
+        // need to implement managers functions
+
+
 
 
     }
