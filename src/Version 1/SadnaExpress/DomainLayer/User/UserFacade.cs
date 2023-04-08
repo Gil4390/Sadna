@@ -207,19 +207,19 @@ namespace SadnaExpress.DomainLayer.User
         public void AppointStoreManager(int id, Guid storeID, string email)
         {
             isLogin(id);
-            Member newOwner = null;
-            int newOwnerID = -1;
+            Member newManager = null;
+            int newManagerID = -1;
             foreach (Member member in members.Values)
                 if (member.Email == email)
                 {
-                    newOwner = member;
-                    newOwnerID = member.UserId;
+                    newManager = member;
+                    newManagerID = member.UserId;
                 }
 
-            if (newOwner == null)
+            if (newManager == null)
                 throw new Exception($"There isn't a member with {email}");
-            PromotedMember owner = members[id].AppointStoreManager(storeID, newOwner);
-            members[newOwnerID] = owner;
+            PromotedMember manager = members[id].AppointStoreManager(storeID, newManager);
+            members[newManagerID] = manager;
         }
 
         public void AddStoreManagerPermissions(int id, Guid storeID, string email, string permission)
@@ -229,7 +229,6 @@ namespace SadnaExpress.DomainLayer.User
             foreach (Member member in members.Values)
                 if (member.Email == email)
                     manager = member;
-
             if (manager == null)
                 throw new Exception($"There isn't a member with {email}");
             members[id].AddStoreManagerPermissions(storeID, manager, permission);
@@ -246,6 +245,13 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception($"There isn't a member with {email}");
             members[id].RemoveStoreManagerPermissions(storeID, manager,permission);
         }
+        public List<PromotedMember> GetEmployeeInfoInStore(int id, Guid storeID)
+        {
+            isLogin(id);
+            List<PromotedMember> employees = members[id].GetEmployeeInfoInStore(storeID);
+            return employees;
+        }
+
         public void CloseStore(int id, Guid storeID)
         {
             throw new NotImplementedException();
@@ -281,7 +287,7 @@ namespace SadnaExpress.DomainLayer.User
             return true;
         }
 
-        public bool hasPermissions(int id, Guid storeId, LinkedList<string> permissions)
+        public bool hasPermissions(int id, Guid storeId, List<string> permissions)
         {
             if (members.ContainsKey(id))
                 if (members[id].hasPermissions(storeId, permissions))

@@ -22,7 +22,7 @@ namespace SadnaExpress.DomainLayer.User
             userId = id;
             email = memail;
             firstName = mfirstName;
-            lastName = mfirstName;
+            lastName = mlastLame;
             password = mpassword;
             LoggedIn = false;
         }
@@ -36,7 +36,5 @@ namespace SadnaExpress.DomainLayer.User
             founder.LoggedIn = true;
             return founder;
         }
-        
-
     }
 }

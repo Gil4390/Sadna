@@ -218,7 +218,7 @@ namespace SadnaExpress.ServiceLayer
 
         public ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID)
         {
-            throw new NotImplementedException();
+            return userManager.GetEmployeeInfoInStore(id, storeID);
         }
 
         public Response GetPurchasesInfo(int id, Guid storeID)

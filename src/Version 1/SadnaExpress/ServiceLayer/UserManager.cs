@@ -165,7 +165,16 @@ namespace SadnaExpress.ServiceLayer
 
         public ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(id, storeID);
+                return new ResponseT<List<S_Member>>();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<List<S_Member>>(ex.Message);
+            }
         }
 
         public void CleanUp()
