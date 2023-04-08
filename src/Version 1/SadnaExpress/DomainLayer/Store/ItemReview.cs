@@ -9,22 +9,22 @@ namespace SadnaExpress.DomainLayer.Store
     public class ItemReview
     {
         private string username;
-        private int storeId;
+        private string storeName;
         private int itemId;
         private int rating;
         private string description;
 
-        public ItemReview(string username, int storeId, int itemId, int rating, string description)
+        public ItemReview(string username, string storeName, int itemId, int rating, string description)
         {
             this.username = username;
-            this.storeId = storeId;
+            this.storeName = storeName;
             this.itemId = itemId;
             this.rating = rating;
             this.description = description;
         }
 
         public string Username { get => username; set => username = value; }
-        public int StoreId { get => storeId; set => storeId = value; }
+        public string StoreName { get => storeName; set => storeName = value; }
 
         public int ItemId { get => itemId; set => itemId = value; }
         public int Rating { get => rating; set => rating = value; }
