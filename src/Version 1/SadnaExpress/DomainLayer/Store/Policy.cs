@@ -12,7 +12,7 @@ namespace SadnaExpress.DomainLayer.Store
             return false;
         }
 
-        public virtual newPair<int, int> GetDiscount()
+        public virtual ourNewPair<int, int> GetDiscount()
         {
             return null;
         }
