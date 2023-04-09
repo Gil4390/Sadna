@@ -260,6 +260,30 @@ namespace SadnaExpress.DomainLayer.User
             return employees;
         }
 
+        public void UpdateFirst(int id, string newFirst)
+        {
+            isLogin(id);
+            if (!members.ContainsKey(id))
+                throw new Exception("member with id dosen't exist");
+            members[id].FirstName = newFirst;
+        }
+
+        public void UpdateLast(int id, string newLast)
+        {
+            isLogin(id);
+            if (!members.ContainsKey(id))
+                throw new Exception("member with id dosen't exist");
+            members[id].LastName = newLast;
+        }
+
+        public void UpdatePassword(int id, string newPassword)
+        {
+            isLogin(id);
+            if (!members.ContainsKey(id))
+                throw new Exception("member with id dosen't exist");
+            members[id].Password = _ph.Hash(newPassword);
+        }
+
         public void CloseStore(int id, Guid storeID)
         {
             throw new NotImplementedException();

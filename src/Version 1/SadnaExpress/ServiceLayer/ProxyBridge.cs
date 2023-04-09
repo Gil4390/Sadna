@@ -266,5 +266,20 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.DeleteMember(id, userID);
         }
+
+        public ResponseT<int> UpdateFirst(int id, string newFirst)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<int> UpdateLast(int id, string newLast)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<int> UpdatePassword(int id, string newPassword)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

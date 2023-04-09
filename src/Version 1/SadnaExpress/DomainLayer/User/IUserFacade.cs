@@ -30,6 +30,9 @@ namespace SadnaExpress.DomainLayer.User
         void CloseStore(int id,Guid storeID);
         void GetDetailsOnStore(int id,Guid storeID);
         List<PromotedMember> GetEmployeeInfoInStore(int id, Guid storeID);
+        void UpdateFirst(int id, string newFirst);
+        void UpdateLast(int id, string newLast);
+        void UpdatePassword(int id, string newPassword);
         bool InitializeTradingSystem(int id);
         void CleanUp();
         ConcurrentDictionary<int, User> GetCurrent_Users();

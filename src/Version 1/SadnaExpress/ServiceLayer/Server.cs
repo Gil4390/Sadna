@@ -380,6 +380,43 @@ namespace SadnaExpress.ServiceLayer
                             Console.WriteLine(id + " - " + response.Value);
                         }
                     }
+                    else if (command_type == "UPDATE")
+                    {
+                        int idx = 0;
+                        string updateField = "";
+                        ResponseT<int> response = new ResponseT<int>();
+                        foreach (string s in split)
+                        {
+                            if (idx != 0 && idx % 2 == 0)
+                            {
+                                updateField = s;
+                            }
+                            else if (idx != 0 && idx % 2 != 0)
+                            {
+                                if (s == "FIRST")
+                                {
+                                    response = service.UpdateFirst(id , s);
+                                }
+                                else if (s == "LAST")
+                                {
+                                    response = service.UpdateLast(id , s);
+                                }
+                                else if (s == "PASSWORD")
+                                {
+                                    response = service.UpdatePassword(id , s);
+                                }
+                            }
+                        }
+
+                        if (response.ErrorOccured)
+                        {
+                            Console.WriteLine(id + " - " + response.ErrorMessage);
+                        }
+                        else
+                        { 
+                            Console.WriteLine(id + " - " + response.Value);
+                        }
+                    }
                 }
             }
             else

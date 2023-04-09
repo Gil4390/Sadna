@@ -67,5 +67,8 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<bool> InitializeTradingSystem(int id);
         Response DeleteStore(int id, Guid storeID);
         Response DeleteMember(int id, int userID);
+        ResponseT<int> UpdateFirst(int id, string newFirst);
+        ResponseT<int> UpdateLast(int id, string newLast);
+        ResponseT<int> UpdatePassword(int id, string newPassword);
     }
 }

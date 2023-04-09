@@ -246,6 +246,21 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
+        public ResponseT<int> UpdateFirst(int id, string newFirst)
+        {
+            return storeManager.UpdateFirst(id, newFirst);
+        }
+
+        public ResponseT<int> UpdateLast(int id, string newLast)
+        {
+            return storeManager.UpdateLast(id, newLast);
+        }
+
+        public ResponseT<int> UpdatePassword(int id, string newPassword)
+        {
+            return storeManager.UpdatePassword(id, newPassword);
+        }
+
         public bool CheckPaymentConnection()
         {
             bool result = this.paymentService.Connect();
