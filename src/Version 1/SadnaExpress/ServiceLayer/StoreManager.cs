@@ -29,7 +29,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                Guid storeID = storeFacade.OpenNewStore(id,storeName);
+                Guid storeID = storeFacade.OpenNewStore(storeName);
                 userFacade.OpenNewStore(id,storeID);
                 return new ResponseT<Guid>(storeID);
             }
@@ -43,7 +43,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                storeFacade.CloseStore(id,storeID);
+                storeFacade.CloseStore(storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
@@ -56,7 +56,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                storeFacade.DeleteStore(id,storeID);
+                storeFacade.DeleteStore(storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                storeFacade.ReopenStore(id,storeID);
+                storeFacade.ReopenStore(storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
@@ -82,7 +82,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                storeFacade.GetStorePurchases(id,storeID);
+                storeFacade.GetStorePurchases(storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
