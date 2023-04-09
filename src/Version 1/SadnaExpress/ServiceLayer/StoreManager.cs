@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 
+
 namespace SadnaExpress.ServiceLayer
 {
     public class StoreManager: IStoreManager
