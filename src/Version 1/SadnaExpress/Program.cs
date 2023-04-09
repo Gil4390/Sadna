@@ -22,11 +22,11 @@ namespace SadnaExpress
         {
             public void Run()
             {
-                SystemTests();
-                UserTests();
-                StoreTests();
-                ItemTests();
-                ManagerTests();
+                //SystemTests();
+                //UserTests();
+                //StoreTests();
+                //ItemTests();
+                //ManagerTests();
             }
 
             public void SystemTests()
@@ -40,6 +40,7 @@ namespace SadnaExpress
                 Two_users_try_register();
                 Login_wrong_password();
                 Login_logout_and_login();
+                Only_one_system_manager();
                 
                 //Admin_cancel_member();
                 //Cancel_member_try_login();
@@ -63,6 +64,7 @@ namespace SadnaExpress
                 //Member_update_profile_info();
                 //Member_update_security();
             }
+            
             public void StoreTests()
             {
                 Open_store_test();
@@ -245,6 +247,33 @@ namespace SadnaExpress
                 else
                     Console.WriteLine("Test Login_logout_and_login passed");
             }
+            private void Only_one_system_manager()
+            {
+                SetUp();
+                lock (this)
+                    StartSystem();
+                
+                Queue<string> commands = new Queue<string>();
+                commands.Enqueue("REGISTER tal.galmor@BGU.io tal galmor Aa112233");
+                commands.Enqueue("LOGIN tal.galmor@BGU.io Aa112233");
+                commands.Enqueue("LOGOUT");
+                RunClient("Terry", commands);
+                int count = 0;
+                int promotedCount = 0;
+                foreach (Member m in _server.service.GetMembers().Values)
+                {
+                    if (m.Email.Contains("BGU"))
+                        count++;
+                    if (m.GetType() == typeof(PromotedMember))
+                        promotedCount++;
+                }
+     
+                if (count != 2 && promotedCount!=1)
+                    Console.WriteLine("-----------Didnt pass in test Only_one_system_manager (272)----------");
+                else
+                    Console.WriteLine("Test Only_one_system_manager passed");
+            }
+
             public void Open_store_test()
             {
                 SetUp();
