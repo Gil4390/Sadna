@@ -23,7 +23,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                Guid storeID = storeFacade.OpenNewStore(storeName);
+                Guid storeID = storeFacade.OpenNewStore(id,storeName);
                 userFacade.OpenNewStore(id,storeID);
                 return new ResponseT<Guid>(storeID);
             }
@@ -33,11 +33,11 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response CloseStore(Guid storeID)
+        public Response CloseStore(int id ,Guid storeID)
         {
             try
             {
-                storeFacade.CloseStore(storeID);
+                storeFacade.CloseStore(id,storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
@@ -46,11 +46,11 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response DeleteStore(Guid storeID)
+        public Response DeleteStore(int id ,Guid storeID)
         {
             try
             {
-                storeFacade.DeleteStore(storeID);
+                storeFacade.DeleteStore(id,storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
@@ -59,11 +59,11 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response ReopenStore(Guid storeID)
+        public Response ReopenStore(int id ,Guid storeID)
         {
             try
             {
-                storeFacade.ReopenStore(storeID);
+                storeFacade.ReopenStore(id,storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
@@ -72,7 +72,19 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        
+        public Response GetPurchasesInfo(int id ,Guid storeID)
+        {
+            try
+            {
+                storeFacade.GetStorePurchases(id,storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
         public Response AddItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
         {
             throw new System.NotImplementedException();
@@ -103,23 +115,7 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new System.NotImplementedException();
         }
-
-   
-
-    
-        public Response GetPurchasesInfo(Guid storeID)
-        {
-            try
-            {
-                storeFacade.GetStorePurchases(storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
+        
         public ResponseT<List<S_Store>> GetAllStoreInfo(int id)
         {
             throw new System.NotImplementedException();

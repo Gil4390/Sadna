@@ -25,7 +25,7 @@ namespace SadnaExpress.DomainLayer.Store
 
             return null;
         }
-        public Guid OpenNewStore(string storeName)
+        public Guid OpenNewStore(int id,string storeName)
         {
             if(storeName.Length == 0)
                 throw new Exception("Store name can not be empty");
@@ -35,7 +35,7 @@ namespace SadnaExpress.DomainLayer.Store
             return store.StoreID;
         }
 
-        public void CloseStore(Guid storeId)
+        public void CloseStore(int id,Guid storeId)
         {
             Store store = GetStoreByID(storeId);
             if (store == null)
@@ -44,7 +44,7 @@ namespace SadnaExpress.DomainLayer.Store
             store.Active = false;
             Logger.Instance.Info("store " + store.getName() + " closed.");
         }
-        public void ReopenStore(Guid storeId)
+        public void ReopenStore(int id,Guid storeId)
         {
             Store store = GetStoreByID(storeId);
             if (store == null)
@@ -53,7 +53,7 @@ namespace SadnaExpress.DomainLayer.Store
             store.Active = true;
             Logger.Instance.Info("store " + store.getName() + " reopen.");
         }
-        public void DeleteStore(Guid storeId)
+        public void DeleteStore(int id,Guid storeId)
         {
             Store store = GetStoreByID(storeId);
             if (store == null)
@@ -62,7 +62,7 @@ namespace SadnaExpress.DomainLayer.Store
             Logger.Instance.Info("store " + store.getName() + " deleted.");
         }
         
-        public LinkedList<Order> GetStorePurchases(Guid storeId)
+        public LinkedList<Order> GetStorePurchases(int id,Guid storeId)
         {
             if (!storeOrders.ContainsKey(storeId))
                 throw new Exception("Store with this id does not exist");

@@ -27,7 +27,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void openStoreWithOutName()
         {
-            Assert.ThrowsException<Exception>(() => storeFacade.OpenNewStore(""));
+            Assert.ThrowsException<Exception>(() => storeFacade.OpenNewStore(0,""));
         }
         
         

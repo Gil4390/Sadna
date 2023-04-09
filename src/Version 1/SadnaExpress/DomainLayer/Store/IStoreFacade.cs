@@ -6,11 +6,11 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public interface IStoreFacade
     {
-        Guid OpenNewStore(string storeName);
-        void CloseStore(Guid storeId);
-        void DeleteStore(Guid storeId);
-        void ReopenStore(Guid storeId);
-        LinkedList<Order> GetStorePurchases(Guid storeId);
+        Guid OpenNewStore(int id,string storeName);
+        void CloseStore(int id,Guid storeId);
+        void DeleteStore(int id,Guid storeId);
+        void ReopenStore(int id,Guid storeId);
+        LinkedList<Order> GetStorePurchases(int id,Guid storeId);
 
         void AddItemToStore(string storeName, string itemName, string category, int price);
         void WriteReview(string storeName, string itemName, int rating);
