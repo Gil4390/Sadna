@@ -67,7 +67,6 @@ namespace SadnaExpress
             {
                 Open_store_test();
                 Open_store_already_in();
-                //Not completed.
                 //Open_store_then_delete();
                 //Open_store_then_close_then_reopen();
                 //Member_review_store();

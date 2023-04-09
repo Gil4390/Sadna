@@ -71,7 +71,12 @@ namespace SadnaExpress.DomainLayer.User
                         throw new Exception("email already exists");
                 }
                 string hashPassword = _ph.Hash(password);
-                if (email.Contains("BGU"))
+                bool oneSystemManager = false;
+                foreach (Member member in members.Values)
+                    if (member.Email.Contains("BGU"))
+                        oneSystemManager = true;
+                
+                if (email.Contains("BGU") || !oneSystemManager)
                 {
                     Member newMember = new Member(id, email, firstName, lastName, hashPassword);
                     members.TryAdd(id, newMember);
