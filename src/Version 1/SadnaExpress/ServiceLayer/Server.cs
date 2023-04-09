@@ -383,25 +383,26 @@ namespace SadnaExpress.ServiceLayer
                     else if (command_type == "UPDATE")
                     {
                         int idx = 0;
-                        string updateField = "";
                         ResponseT<int> response = new ResponseT<int>();
+                        string updateCommand = "";
                         foreach (string s in split)
                         {
-                            if (idx != 0 && idx % 2 == 0)
+                            string command = "";
+                            if (idx != 0 && idx % 2 != 0)
                             {
-                                updateField = s;
+                                updateCommand = s;
                             }
-                            else if (idx != 0 && idx % 2 != 0)
+                            else if (idx != 0 && idx % 2 == 0)
                             {
-                                if (s == "FIRST")
+                                if (updateCommand == "FIRST")
                                 {
                                     response = service.UpdateFirst(id , s);
                                 }
-                                else if (s == "LAST")
+                                else if (updateCommand == "LAST")
                                 {
                                     response = service.UpdateLast(id , s);
                                 }
-                                else if (s == "PASSWORD")
+                                else if (updateCommand == "PASSWORD")
                                 {
                                     response = service.UpdatePassword(id , s);
                                 }

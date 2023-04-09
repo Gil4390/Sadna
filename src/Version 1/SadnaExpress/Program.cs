@@ -43,15 +43,15 @@ namespace SadnaExpress
                 Only_one_system_manager();
                 
                 Guest_get_info_stores_and_items_in();
-                Guest_serach_items_success();
-                Guest_serach_items_fail();
+                Guest_search_items_success();
+                Guest_search_items_fail();
                 Guest_save_items_on_cart();
                 Guest_show_shopping_cart();
                 Guest_purchase_cart_success();
 
                 
-                Member_serach_items_success();
-                Member_serach_items_fail();
+                Member_search_items_success();
+                Member_search_items_fail();
                 Member_save_items_on_cart();
                 Member_show_shopping_cart();
 
@@ -76,7 +76,7 @@ namespace SadnaExpress
                 Member_rating_store();
                 Member_send_msg_store();
                 Get_employees_info();
-                Get_purcahses_hsitory_info();
+                Get_purchases_history_info();
 
             }
             
@@ -396,12 +396,26 @@ namespace SadnaExpress
                     Console.WriteLine("-----------Didnt pass in test Member_update_profile_info (395)----------");
                 else
                     Console.WriteLine("Member_update_profile_info passed");
-
-
             }
             private void Member_update_security()
             {
-                throw new NotImplementedException();
+                SetUp();
+                lock (this)
+                    StartSystem();
+                Queue<string> commands = new Queue<string>();
+                commands.Enqueue("REGISTER net@cyprus.io neta barzily password1");
+                commands.Enqueue("LOGIN net@cyprus.io password1");
+                commands.Enqueue("SECURITY Q what is you cat name A Titi");
+                RunClient("Neta", commands);
+                foreach (Member m in _server.service.GetMembers().Values)
+                    if (m.Email == "net@cyprus.io")
+                    {
+                        if (m.SecurityQuestions.Count > 0)
+                            Console.WriteLine("-----------Didnt pass in test Member_update_security (416)----------");
+                        else
+                            Console.WriteLine("Member_update_security passed");
+                    }
+
             }
 
             private void Member_get_info_purchase_history()
@@ -429,12 +443,12 @@ namespace SadnaExpress
                 throw new NotImplementedException();
             }
 
-            private void Member_serach_items_fail()
+            private void Member_search_items_fail()
             {
                 throw new NotImplementedException();
             }
 
-            private void Member_serach_items_success()
+            private void Member_search_items_success()
             {
                 throw new NotImplementedException();
             }
@@ -454,16 +468,16 @@ namespace SadnaExpress
                 throw new NotImplementedException();
             }
 
-            private void Guest_serach_items_fail()
+            private void Guest_search_items_fail()
             {
                 throw new NotImplementedException();
             }
 
-            private void Guest_serach_items_success()
+            private void Guest_search_items_success()
             {
                 throw new NotImplementedException();
             }
-            private void Get_purcahses_hsitory_info()
+            private void Get_purchases_history_info()
             {
                 throw new NotImplementedException();
             }

@@ -266,6 +266,8 @@ namespace SadnaExpress.DomainLayer.User
             if (!members.ContainsKey(id))
                 throw new Exception("member with id dosen't exist");
             members[id].FirstName = newFirst;
+            Logger.Instance.Info(members[id],"First name updated");
+
         }
 
         public void UpdateLast(int id, string newLast)
@@ -274,6 +276,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!members.ContainsKey(id))
                 throw new Exception("member with id dosen't exist");
             members[id].LastName = newLast;
+            Logger.Instance.Info(members[id],"Last name updated");
         }
 
         public void UpdatePassword(int id, string newPassword)
@@ -282,6 +285,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!members.ContainsKey(id))
                 throw new Exception("member with id dosen't exist");
             members[id].Password = _ph.Hash(newPassword);
+            Logger.Instance.Info(members[id],"Password updated");
         }
 
         public void CloseStore(int id, Guid storeID)
@@ -350,8 +354,16 @@ namespace SadnaExpress.DomainLayer.User
             isLogin(id);
             if (current_Users.ContainsKey(id))
                 return current_Users[id].ShoppingCart;
-            
             return members[id].ShoppingCart;
+        }
+
+        public void SetSecurityQA(int id, string q, string a)
+        {
+            isLogin(id);
+            if (!members.ContainsKey(id))
+                throw new Exception("member with id dosen't exist");
+            members[id].SetSecurityQA(q,_ph.Hash(a));
+            Logger.Instance.Info(members[id],"Security Q&A set");
         }
     }
 }

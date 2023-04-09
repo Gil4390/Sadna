@@ -207,5 +207,19 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<ShoppingCart>(ex.Message);
             }
         }
+
+        public ResponseT<int> SetSecurityQA(int id, string q, string a)
+        {
+            try
+            {
+                userFacade.SetSecurityQA(id,q,a);
+                return new ResponseT<int>(id);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<int>(ex.Message);
+            }
+        }
     }
 }

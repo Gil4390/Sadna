@@ -39,5 +39,6 @@ namespace SadnaExpress.DomainLayer.User
         ConcurrentDictionary<int, Member> GetMembers();
         bool hasPermissions(int userId, Guid storeID, List<string> per);
         ShoppingCart ShowShoppingCart(int id);
+        void SetSecurityQA(int id,string q, string a);
     }
 }

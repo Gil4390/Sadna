@@ -281,5 +281,10 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
+
+        public ResponseT<int> SetSecurityQA(int id,string q, string a)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

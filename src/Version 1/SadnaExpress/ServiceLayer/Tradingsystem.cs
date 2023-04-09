@@ -261,6 +261,11 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.UpdatePassword(id, newPassword);
         }
 
+        public ResponseT<int> SetSecurityQA(int id,string q, string a)
+        {
+            return userManager.SetSecurityQA(id,q,a);
+        }
+
         public bool CheckPaymentConnection()
         {
             bool result = this.paymentService.Connect();

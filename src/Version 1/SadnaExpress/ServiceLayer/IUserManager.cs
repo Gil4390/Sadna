@@ -34,5 +34,6 @@ namespace SadnaExpress.ServiceLayer
         ConcurrentDictionary<int, User> GetCurrent_Users();
         ConcurrentDictionary<int, Member> GetMembers();
         ResponseT<ShoppingCart> ShowShoppingCart(int id);
+        ResponseT<int> SetSecurityQA(int id,string q, string a);
     }
 }

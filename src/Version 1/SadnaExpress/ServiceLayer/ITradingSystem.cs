@@ -70,5 +70,6 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<int> UpdateFirst(int id, string newFirst);
         ResponseT<int> UpdateLast(int id, string newLast);
         ResponseT<int> UpdatePassword(int id, string newPassword);
+        ResponseT<int> SetSecurityQA(int id,string q, string a);
     }
 }
