@@ -25,6 +25,8 @@ namespace SadnaExpress
                 SystemTests();
                 UserTests();
                 StoreTests();
+                ItemTests();
+                ManagerTests();
             }
 
             public void SystemTests()
@@ -38,6 +40,28 @@ namespace SadnaExpress
                 Two_users_try_register();
                 Login_wrong_password();
                 Login_logout_and_login();
+                
+                //Admin_cancel_member();
+                //Cancel_member_try_login();
+                //Guest_get_info_stores_and_items_in();
+                //Guest_serach_items_success();
+                //Guest_serach_items_fail();
+                //Guest_save_items_on_cart();
+                //Guest_show_shopping_cart();
+                //Guest_purchase_cart_success();
+
+                
+                //Member_serach_items_success();
+                //Member_serach_items_fail();
+                //Member_save_items_on_cart();
+                //Member_show_shopping_cart();
+
+                
+                //Member_get_info_stores_and_items_in();
+                //Member_rating_item();
+                //Member_get_info_purchase_history();
+                //Member_update_profile_info();
+                //Member_update_security();
             }
             public void StoreTests()
             {
@@ -46,6 +70,45 @@ namespace SadnaExpress
                 //Not completed.
                 //Open_store_then_delete();
                 //Open_store_then_close_then_reopen();
+                //Member_review_store();
+                //Member_rating_store();
+                //Member_send_msg_store();
+                //Get_employees_info();
+                //Get_purcahses_hsitory_info();
+
+            }
+            
+            public void ItemTests()
+            { 
+                //Guest_purchase_same_items_same_time();
+                
+                //Member_purchase_cart_success();
+                //Member_purchase_cart_fail();
+                //Member_purchase_same_items_same_time();
+  
+            }
+            
+            public void ManagerTests()
+            { 
+                //Manager_show_inventory();
+                //Manager_change_good_policy();
+                //Manager_change_bad_policy();
+                //Manager_change_good_discount();
+                //Manager_change_bad_discount();
+                //Manager_appoint_manager();
+                //Manager_appoint_manager_appoint_manager();
+                //Manager_appoint_self();
+                //Manager_unappoint_manager();
+                //Manager_unappoint_self();
+                //Manager_unappoint_illigel_manager();
+                
+                //Manager_appoint_store_manager();
+                //Manager_appoint_store_manager();
+                //Manager_unappoint_illigel_store_manager();
+                
+                //Manager_change_premission_good();
+                //Manager_change_premission_bad();
+                
             }
             public void SetUp()
             {
