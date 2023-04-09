@@ -12,14 +12,17 @@ namespace SadnaExpress.DomainLayer.User
     {
         private ConcurrentDictionary<int, User> current_Users;
         private ConcurrentDictionary<int, Member> members;
+        private ConcurrentDictionary<int, LinkedList<Order>> userOrders;
         private int USER_ID = 0;
         private PasswordHash _ph = new PasswordHash();
+        
 
         public UserFacade()
         {
             //guests = new Dictionary<int, Guest>();
             current_Users = new ConcurrentDictionary<int, User>();
             members = new ConcurrentDictionary<int, Member>();
+            userOrders = new ConcurrentDictionary<int, LinkedList<Order>>();
         }
 
         public UserFacade(ConcurrentDictionary<int, User> current_Users, ConcurrentDictionary<int, Member> members, int uSER_ID, PasswordHash ph)

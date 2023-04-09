@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 
+
 namespace SadnaExpress.ServiceLayer
 {
     public class StoreManager: IStoreManager
@@ -16,6 +17,104 @@ namespace SadnaExpress.ServiceLayer
         {
             userFacade = new UserFacade();
             storeFacade = new StoreFacade();
+            
+        }
+        
+        public ResponseT<Guid> OpenNewStore(int id, string storeName)
+        {
+            try
+            {
+                Guid storeID = storeFacade.OpenNewStore(id,storeName);
+                userFacade.OpenNewStore(id,storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
+        public Response CloseStore(int id ,Guid storeID)
+        {
+            try
+            {
+                storeFacade.CloseStore(id,storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
+        public Response DeleteStore(int id ,Guid storeID)
+        {
+            try
+            {
+                storeFacade.DeleteStore(id,storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
+        public Response ReopenStore(int id ,Guid storeID)
+        {
+            try
+            {
+                storeFacade.ReopenStore(id,storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
+        public Response GetPurchasesInfo(int id ,Guid storeID)
+        {
+            try
+            {
+                storeFacade.GetStorePurchases(id,storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
+        public Response AddItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Response PurchaseItems(int id, string paymentDetails)
+        {
+            throw new System.NotImplementedException();
+        }
+
+
+        public Response WriteReview(int id, int itemID, string review)
+        {
+            throw new System.NotImplementedException();
+        }
+
+    
+
+        public Response RemoveItemFromStore(int id, int itemID)
+        {
+            throw new System.NotImplementedException();
+        }
+        public Response EditItemPrice(string storeID, string itemName, int price)
+        {
+            throw new System.NotImplementedException();
+        }
+        public Response EditItemCategory(string storeID, string itemName, string category)
+        {
+            throw new System.NotImplementedException();
         }
         
         public ResponseT<List<S_Store>> GetAllStoreInfo(int id)
@@ -52,97 +151,6 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new System.NotImplementedException();
         }
-
-        public Response PurchaseCart(int id, string paymentDetails)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ResponseT<Guid> OpenNewStore(int id, string storeName)
-        {
-            try
-            {
-                Guid storeID = storeFacade.OpenNewStore(storeName);
-                userFacade.OpenNewStore(id,storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-
-        public Response WriteReview(int id, int itemID, string review)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Response AddItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Response RemoveItemFromStore(int id, int itemID)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Response EditItemCategory(string storeID, string itemName, string category)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Response EditItemPrice(string storeID, string itemName, int price)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Response CloseStore(int id, Guid storeID)
-        {
-            try
-            {
-                storeFacade.CloseStore(id, storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-        public Response DeleteStore(int id, Guid storeID)
-        {
-            try
-            {
-                storeFacade.DeleteStore(id, storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-        public Response ReopenStore(int id, Guid storeID)
-        {
-            try
-            {
-                storeFacade.ReopenStore(id, storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-
-        public Response GetPurchasesInfo(int id, int storeID)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void CleanUp()
         {
             userFacade.CleanUp();

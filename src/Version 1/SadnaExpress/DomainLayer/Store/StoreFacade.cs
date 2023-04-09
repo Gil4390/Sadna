@@ -7,31 +7,35 @@ namespace SadnaExpress.DomainLayer.Store
     public class StoreFacade : IStoreFacade
     {
         private ConcurrentDictionary<Guid, Store> stores;
+        private ConcurrentDictionary<Guid, LinkedList<Order>> storeOrders;
+
         public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
+            storeOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();
+
         }
         
         public Store GetStoreByID(Guid id)
         {
             foreach (Store store in stores.Values) {
-                if (store.StoreId == id)
+                if (store.StoreId.Equals(id))
                     return store;
             }
 
             return null;
         }
-        public Guid OpenNewStore(string storeName)
+        public Guid OpenNewStore(int id,string storeName)
         {
             if(storeName.Length == 0)
-                Logger.Instance.Error("Store name can not be empty");
+                throw new Exception("Store name can not be empty");
             Store store = new Store(storeName);
             stores.TryAdd(store.StoreID, store);
             Logger.Instance.Info("store " + storeName + " opened.");
             return store.StoreID;
         }
 
-        public void CloseStore(int id , Guid storeId)
+        public void CloseStore(int id,Guid storeId)
         {
             Store store = GetStoreByID(storeId);
             if (store == null)
@@ -40,7 +44,7 @@ namespace SadnaExpress.DomainLayer.Store
             store.Active = false;
             Logger.Instance.Info("store " + store.getName() + " closed.");
         }
-        public void ReopenStore(int id , Guid storeId)
+        public void ReopenStore(int id,Guid storeId)
         {
             Store store = GetStoreByID(storeId);
             if (store == null)
@@ -49,7 +53,7 @@ namespace SadnaExpress.DomainLayer.Store
             store.Active = true;
             Logger.Instance.Info("store " + store.getName() + " reopen.");
         }
-        public void DeleteStore(int id , Guid storeId)
+        public void DeleteStore(int id,Guid storeId)
         {
             Store store = GetStoreByID(storeId);
             if (store == null)
@@ -58,22 +62,31 @@ namespace SadnaExpress.DomainLayer.Store
             Logger.Instance.Info("store " + store.getName() + " deleted.");
         }
         
+        public LinkedList<Order> GetStorePurchases(int id,Guid storeId)
+        {
+            if (!storeOrders.ContainsKey(storeId))
+                throw new Exception("Store with this id does not exist");
+            Logger.Instance.Info("store " + GetStoreByID(storeId).getName() + " got his purchases info.");
+            return storeOrders[storeId];
+        }
         public void PurchaseItems(string storeName, List<string> itemsName)
+        {   
+            throw new System.NotImplementedException();
+
+        }
+
+        public void GetAllStoreInfo(string storeName)
+        {
+            throw new System.NotImplementedException();
+
+        }
+
+        public void AddItemToStore(string storeName, string itemName, string category, int price)
         {
             throw new System.NotImplementedException();
         }
 
-        public void GetStoreHistory(string storeName)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void AddItem(string storeName, string itemName, string category, int price)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void RemoveItem(string storeName, string itemName, string category, int price)
+        public void RemoveItemFromStore(string storeName, string itemName, string category, int price)
         {
             throw new System.NotImplementedException();
         }
@@ -87,6 +100,8 @@ namespace SadnaExpress.DomainLayer.Store
         {
             throw new System.NotImplementedException();
         }
+
+    
 
         public List<Item> GetItemsByName(string itemName)
         {
@@ -118,7 +133,7 @@ namespace SadnaExpress.DomainLayer.Store
             throw new System.NotImplementedException();
         }
 
-        public void ReviewItem(string storeName, string itemName, int rating)
+        public void WriteReview(string storeName, string itemName, int rating)
         {
             throw new System.NotImplementedException();
         }
