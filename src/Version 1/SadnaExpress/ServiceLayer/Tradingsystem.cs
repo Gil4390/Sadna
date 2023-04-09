@@ -208,12 +208,12 @@ namespace SadnaExpress.ServiceLayer
 
         public Response CloseStore(int id, Guid storeID)
         {
-            return storeManager.CloseStore(id, storeID);
+            return storeManager.CloseStore(storeID);
         }
 
         public Response ReopenStore(int id, Guid storeID)
         {
-            return storeManager.ReopenStore(id, storeID);
+            return storeManager.ReopenStore(storeID);
         }
 
         public ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID)
@@ -228,7 +228,7 @@ namespace SadnaExpress.ServiceLayer
 
         public Response DeleteStore(int id, Guid storeID)
         {
-            return storeManager.DeleteStore(id, storeID);
+            return storeManager.DeleteStore(storeID);
         }
 
         public bool CheckSupplierConnection()

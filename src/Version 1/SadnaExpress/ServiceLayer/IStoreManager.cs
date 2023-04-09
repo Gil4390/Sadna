@@ -8,11 +8,12 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
     public interface IStoreManager
     {
         ResponseT<Guid> OpenNewStore(int id, string storeName); //3.2
-        Response CloseStore(int id, Guid storeID); //4.9
-        Response DeleteStore(int id, Guid storeID); 
-        Response ReopenStore(int id, Guid storeID);
+        Response CloseStore(Guid storeID); //4.9
+        Response DeleteStore(Guid storeID); 
+        Response ReopenStore(Guid storeID);
         Response GetPurchasesInfo(Guid storeID);//4.13 //6.4
 
+        
         Response AddItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice);
 
         Response PurchaseItems(int id, string paymentDetails); //2.5

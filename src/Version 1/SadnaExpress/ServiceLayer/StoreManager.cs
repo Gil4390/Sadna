@@ -33,11 +33,11 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response CloseStore(int id, Guid storeID)
+        public Response CloseStore(Guid storeID)
         {
             try
             {
-                storeFacade.CloseStore(id, storeID);
+                storeFacade.CloseStore(storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
@@ -46,11 +46,11 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response DeleteStore(int id, Guid storeID)
+        public Response DeleteStore(Guid storeID)
         {
             try
             {
-                storeFacade.DeleteStore(id, storeID);
+                storeFacade.DeleteStore(storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
@@ -59,11 +59,11 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response ReopenStore(int id, Guid storeID)
+        public Response ReopenStore(Guid storeID)
         {
             try
             {
-                storeFacade.ReopenStore(id, storeID);
+                storeFacade.ReopenStore(storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)

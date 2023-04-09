@@ -28,14 +28,14 @@ namespace SadnaExpress.DomainLayer.Store
         public Guid OpenNewStore(string storeName)
         {
             if(storeName.Length == 0)
-                Logger.Instance.Error("Store name can not be empty");
+                throw new Exception("Store name can not be empty");
             Store store = new Store(storeName);
             stores.TryAdd(store.StoreID, store);
             Logger.Instance.Info("store " + storeName + " opened.");
             return store.StoreID;
         }
 
-        public void CloseStore(int id , Guid storeId)
+        public void CloseStore(Guid storeId)
         {
             Store store = GetStoreByID(storeId);
             if (store == null)
@@ -44,7 +44,7 @@ namespace SadnaExpress.DomainLayer.Store
             store.Active = false;
             Logger.Instance.Info("store " + store.getName() + " closed.");
         }
-        public void ReopenStore(int id , Guid storeId)
+        public void ReopenStore(Guid storeId)
         {
             Store store = GetStoreByID(storeId);
             if (store == null)
@@ -53,7 +53,7 @@ namespace SadnaExpress.DomainLayer.Store
             store.Active = true;
             Logger.Instance.Info("store " + store.getName() + " reopen.");
         }
-        public void DeleteStore(int id , Guid storeId)
+        public void DeleteStore(Guid storeId)
         {
             Store store = GetStoreByID(storeId);
             if (store == null)
