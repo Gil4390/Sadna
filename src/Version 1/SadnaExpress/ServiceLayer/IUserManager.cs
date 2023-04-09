@@ -26,6 +26,9 @@ namespace SadnaExpress.ServiceLayer
         Response AddStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission);
         Response RemoveStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission);
         ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID); //4.11
+        
+        
+        /// add function for get user purchases - dina/noga
         void CleanUp();
         bool InitializeTradingSystem(int id);
         ConcurrentDictionary<int, User> GetCurrent_Users();
