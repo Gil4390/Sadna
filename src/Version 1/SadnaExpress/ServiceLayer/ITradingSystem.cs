@@ -56,14 +56,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID);  //4.11
         Response GetPurchasesInfo(int id, Guid storeID);//4.13 //6.4
         //???????
-        bool CheckSupplierConnection();
-        bool CheckPaymentConnection();
         void CleanUp();
-        void SetPaymentService(IPaymentService paymentService);
-        void SetSupplierService(ISupplierService supplierService);
-        ResponseT<bool> PlacePayment(string transactionDetails);
-        ResponseT<bool> PlaceSupply(string orderDetails, string userDetails);
-        int GetMaximumWaitServiceTime();
         ResponseT<bool> InitializeTradingSystem(int id);
         Response DeleteStore(int id, Guid storeID);
         Response DeleteMember(int id, int userID);

@@ -5,7 +5,7 @@ using SadnaExpress.ServiceLayer;
 namespace SadnaExpressTests.Integration_Tests
 {
     [TestClass]
-    public class EmployeeIntegrationTests
+    public class EmployeeAT
     {
         private Server _server;
         
