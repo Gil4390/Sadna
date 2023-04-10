@@ -7,25 +7,74 @@ using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.Services;
 
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading;
+using Timer = System.Timers.Timer;
+using static SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using System.Collections;
+using System.Diagnostics;
+using System.Net;
+
 namespace SadnaExpress.ServiceLayer
 {
     public class TradingSystem : ITradingSystem
     {
         private ISupplierService supplierService;
         private IPaymentService paymentService;
-        private IStoreManager storeManager;
-        private IUserManager userManager;
+        private static IStoreManager storeManager;
+        private static IUserManager userManager;
         private const int ExternalServiceWaitTimeInSeconds=10000; //10 seconds is 10,000 mili seconds
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
 
-        public TradingSystem(ISupplierService supplierService=null, IPaymentService paymentService=null)
+        // lock object for saving items 
+        private static readonly object stockChange = new object();
+        // fields for the saved items
+        // list for saved items  <userId   <itemsId selected in Cart>>
+        private static Dictionary<int, List<Pair<Guid, List<int>>>> savedItems = new Dictionary<int, List<Pair<Guid, List<int>>>>();
+        private static Dictionary<int, Dictionary<Guid, List<Pair<int, int>>>> savedItemsRestore = new Dictionary<int, Dictionary<Guid, List<Pair<int, int>>>>();
+        private static Dictionary<int, Timer> savedTimer = new Dictionary<int, Timer>();
+        private static Dictionary<int, bool> savedPurchaseResult = new Dictionary<int, bool>();
+        private static Queue<int> savedItemsUserId = new Queue<int>();
+
+
+        // lock object for the instance
+        private static readonly object lockInstance = new object();
+        private static TradingSystem instance = null;
+        
+        private TradingSystem(ISupplierService supplierService=null, IPaymentService paymentService=null)
         {
-            storeManager = new StoreManager();
             userManager = new UserManager();
+            //storeManager = new StoreManager();
+            storeManager = new StoreManager(userManager.GetUserFacade());
+
             this.paymentService = paymentService;
             this.supplierService = supplierService;
         }
+
+        public static TradingSystem Instance
+        {
+            get
+            {
+                lock (lockInstance)
+                {
+                    if (instance == null)
+                    {
+                        instance = new TradingSystem();
+                    }
+                    return instance;
+                }
+            }
+        }
+
+        public int GetAvailableQuantity(Guid storeId, int itemId)
+        {
+            return storeManager.GetStoreById(storeId).getItemsInventory().getItemQuantityById(itemId);
+        }
+
 
         public int GetMaximumWaitServiceTime()
         {
@@ -61,7 +110,7 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response OpenNewStore(int id, string storeName)
+        public ResponseT<Guid> OpenNewStore(int id, string storeName)
         {
             return storeManager.OpenNewStore(id, storeName);
         }
@@ -96,14 +145,14 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response AddItemToCart(int id, int itemID, int itemAmount)
+        public Response AddItemToCart(int id, Guid storeID, int itemID, int itemAmount)
         {
-            throw new NotImplementedException();
+            return userManager.AddItemToCart(id, storeID, itemID, itemAmount);
         }
 
-        public Response RemoveItemFromCart(int id, int itemID, int itemAmount)
+        public Response RemoveItemFromCart(int id, Guid storeID, int itemID)
         {
-            throw new NotImplementedException();
+            return userManager.RemoveItemFromCart(id, storeID, itemID);
         }
 
         public Response EditItemFromCart(int id, int itemID, int itemAmount)
@@ -112,11 +161,6 @@ namespace SadnaExpress.ServiceLayer
         }
 
         public ResponseT<Dictionary<string, List<string>>> getDetailsOnCart()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Response PurchaseCart(int id, string paymentDetails)
         {
             throw new NotImplementedException();
         }
@@ -146,14 +190,56 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response AddItemToStore(int id, Guid storeID, string itemName, string itemCategory, float itemPrice)
+        public Response AddItemToStore(int id, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
-            throw new NotImplementedException();
+            // TODO : todo check if user can add item to this store
+            try
+            {
+                bool hasPemissionToAddItem = true;
+                if (!hasPemissionToAddItem)
+                    throw new Exception("Cannot add item to store, userid: " + id + " don't have pemission to add items");
+
+                //if (!storeManager.GetStoreById(storeID).addItem(itemName, itemCategory, itemPrice, quantity))
+                //{
+                //    throw new Exception("Failed to add new item to store");
+                //}
+
+                storeManager.AddItemToStore(storeID, itemName, itemCategory, itemPrice, quantity);
+
+
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response();
+            }
+
         }
 
-        public Response RemoveItemFromStore(int id, int itemID)
+        public Response RemoveItemFromStore(int id, Guid storeID, int itemID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool hasPemissionToAddItem = true;
+                if (!hasPemissionToAddItem)
+                    throw new Exception("Cannot add item to store, userid: " + id + " don't have pemission to add items");
+
+                //if (!storeManager.GetStoreById(storeID).addItem(itemName, itemCategory, itemPrice, quantity))
+                //{
+                //    throw new Exception("Failed to add new item to store");
+                //}
+
+                storeManager.RemoveItemFromStore(storeID, itemID);
+
+
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response();
+            }
         }
 
         public Response EditItemCategory(string storeName, string itemName, string category)
@@ -166,10 +252,6 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response RemoveItemFromStore(int id, Guid storeID, int itemID)
-        {
-            throw new NotImplementedException();
-        }
 
         public Response AppointStoreOwner(int id, Guid storeID, string userEmail)
         {
@@ -380,5 +462,139 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetStores();
         }
+
+
+        /////////////////////////////////////////// function for saving items for users
+        private static void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            // check after timer passes
+            lock (stockChange)
+            {
+                int id = savedItemsUserId.Dequeue();
+                if (savedPurchaseResult[id] == false)
+                {
+                    // need to restore stock failed Purchase
+                    foreach (Guid storeId in savedItemsRestore[id].Keys)
+                    {
+                        foreach (Pair<int, int> storeItem in savedItemsRestore[id][storeId])
+                        {
+                            storeManager.GetStoreById(storeId).AddQuantity(storeItem.First, storeItem.Second);
+                        }
+                    }
+                    Logger.Instance.Error("No Purchase Success after saving items for 2 minutes!");
+                }
+                savedItemsRestore[id] = new Dictionary<Guid, List<Pair<int, int>>>();
+
+
+            }
+        }
+
+        /////////////////////////////////////////////////// List of pairs of storename, and items 
+        public void UpdateSavedItemsList(int id, List<Pair<Guid, List<int>>> itemsIds)
+        {
+            lock (stockChange)
+            {
+                if (savedItems.ContainsKey(id))
+                    savedItems[id] = itemsIds;
+                else
+                {
+                    savedItems.Add(id, itemsIds);
+                }
+
+                if (savedTimer.ContainsKey(id))
+                {
+                    savedTimer[id] = new Timer(120 * 1000); // 1000 = 1 sec
+
+                }
+                else
+                {
+                    savedTimer.Add(id, new Timer(120 * 1000));
+                }
+
+                if (savedItemsRestore.ContainsKey(id))
+                {
+                    //savedItemsRestore[id] = new Dictionary<string, List<Pair<int, int>>>();
+                    // restore stock to original and then update based on new selection in cart
+                    foreach (Guid storeId in savedItemsRestore[id].Keys)
+                    {
+                        foreach (Pair<int, int> storeItem in savedItemsRestore[id][storeId])
+                        {
+                            storeManager.GetStoreById(storeId).AddQuantity(storeItem.First, storeItem.Second);
+                        }
+                    }
+
+                }
+                //else
+                //{
+                savedItemsRestore.Add(id, new Dictionary<Guid, List<Pair<int, int>>>());
+                //}
+
+                // get user shopping cart inventory and stock and reduce all stock and save the reduced value
+                ShoppingCart cart = userManager.GetShoppingCartById(id).Value;
+                foreach (ShoppingBasket basket in cart.GetShoppingBaskets())
+                {
+                    foreach (Pair<Guid, List<int>> item in itemsIds)
+                    {
+                        if (item.First.Equals(basket.GetStoreId()))
+                        {
+                            foreach (int itemId in item.Second)
+                            {
+
+                                if (savedItemsRestore[id].ContainsKey(basket.GetStoreId()))
+                                {
+
+                                }
+                                else
+                                {
+                                    storeManager.GetStoreById(basket.GetStoreId()).RemoveQuantity(itemId, basket.GetItemStock(itemId));
+
+                                    if (savedItemsRestore[id].ContainsKey(basket.GetStoreId()))
+                                    {
+                                        savedItemsRestore[id][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
+                                    }
+                                    else
+                                    {
+                                        savedItemsRestore[id].Add(basket.GetStoreId(), new List<Pair<int, int>>());
+                                        savedItemsRestore[id][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+
+                savedItemsUserId.Enqueue(id);
+                savedTimer[id].Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
+                savedTimer[id].Start();
+
+                if (savedPurchaseResult.ContainsKey(id))
+                    savedPurchaseResult[id] = false;
+                else
+                    savedPurchaseResult.Add(id, false);
+
+            }
+        }
+
+
+
+
+        public Response PurchaseCart(int id, string paymentDetails)
+        {
+            // need ToDo implement this function, not implemented yet
+
+            //for tests:
+            // option 1 :demonstrates succesfull purchase
+            // need to update this field after succsesful purchase
+            savedPurchaseResult[id] = true;
+            return new Response();
+            // option 2
+            //if purchase failed then do not update this field :
+            //savedPurchaseResult[id] because its current value is false
+
+            //throw new NotImplementedException();
+        }
+
+
     }
 }

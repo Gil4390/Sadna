@@ -27,7 +27,9 @@ namespace SadnaExpress.DomainLayer.User
 
         public bool addInventoryToCart(Inventory inv, int stock)
         {
-            return this.shoppingCart.addInventoryToCart(inv, stock);
+            //return this.shoppingCart.addInventoryToCart(inv, stock);
+            return false;
+            // todo : check if this function is needed 
         }
         
         public virtual bool hasPermissions(Guid storeID, List<string> listOfPermissions)
@@ -54,5 +56,16 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to add new owner");
         }
+
+        public void AddItemToCart(Guid storeID, int itemID, int itemAmount)
+        {
+            this.shoppingCart.AddItemToBasket(storeID, itemID, itemAmount);
+        }
+
+        public void RemoveItemFromCart(Guid storeID, int itemID)
+        {
+            this.shoppingCart.RemoveItemFromBasket(storeID, itemID);
+        }
+
     }
 }

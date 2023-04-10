@@ -18,7 +18,8 @@ namespace SadnaExpress.ServiceLayer
 
         public Server()
         {
-            service = new TradingSystem(new Mock_SupplierService(), new Mock_PaymentService());
+            //service = new TradingSystem(new Mock_SupplierService(), new Mock_PaymentService());
+            service = TradingSystem.Instance;
         }
         private static Guid ToGuid(int value)
         {
@@ -116,14 +117,14 @@ namespace SadnaExpress.ServiceLayer
                     else if (command_type == "ADD-ITEM-TO-CART")
                     {
                         //ADD-ITEM-TO-CART <itemID> <amount>
-                        if (split.Length != 3)
+                        if (split.Length != 4)
                         {
                             throw new Exception("invalid add item to cart args");
                         }
-
-                        int itemID = int.Parse(split[1]);
-                        int itemAmount = int.Parse(split[2]);
-                        service.AddItemToCart(id, itemID, itemAmount);
+                        int storeID = int.Parse(split[1]);
+                        int itemID = int.Parse(split[2]);
+                        int itemAmount = int.Parse(split[3]);
+                        service.AddItemToCart(id, ToGuid(storeID),itemID, itemAmount);
                     }
                     else if (command_type == "PURCHASE-CART")
                     {
@@ -204,7 +205,7 @@ namespace SadnaExpress.ServiceLayer
                     else if (command_type == "ADD-ITEM")
                     {
                         //ADD-ITEM <storeID> <itemName> <itemCat> <itemPrice>
-                        if (split.Length != 5)
+                        if (split.Length != 6)
                         {
                             throw new Exception("invalid add item args");
                         }
@@ -212,8 +213,9 @@ namespace SadnaExpress.ServiceLayer
                         int storeID = int.Parse(split[1]);
                         string itemName = split[2];
                         string itemCategory = split[3];
-                        float itemPrice = float.Parse(split[4]);
-                        service.AddItemToStore(id, ToGuid(storeID), itemName, itemCategory, itemPrice);
+                        double itemPrice = double.Parse(split[4]);
+                        int quantity = int.Parse(split[5]);
+                        service.AddItemToStore(id, ToGuid(storeID), itemName, itemCategory, itemPrice, quantity);
                     }
                     else if (command_type == "REMOVE-ITEM")
                     {

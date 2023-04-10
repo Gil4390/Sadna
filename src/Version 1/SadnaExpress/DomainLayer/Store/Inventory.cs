@@ -4,107 +4,120 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public class Inventory
     {
-        private Item item;
-        private double price;
-        private int in_stock;
-        private Policy policy;
-        private Store store;
-        // maybe need to add discount
-
-        //         username, description
-        Dictionary<string, string> reviews;
-        //         username, description
-        Dictionary<string, int> reviewsRating;
+        private Dictionary<Item, int> items_quantity;
 
 
-        public Inventory(Item item, int in_stock, double price, Policy policy, Store store)
+        public Inventory()
         {
-            this.item = item;
-            this.in_stock = in_stock;
-            this.price = price;
-            this.policy = policy;
-            this.store = store;
-            this.reviews = new Dictionary<string, string>();
-            this.reviewsRating = new Dictionary<string, int>();
+            this.items_quantity = new Dictionary<Item, int>();
         }
 
         //getters
 
-        public Item getItem()
+        public Dictionary<Item, int> getItems()
         {
-            return this.item;
+            return this.items_quantity;
         }
-        public Policy getPolicy()
+        
+        public bool AddItem(Item item, int quantity)
         {
-            return this.policy;
-        }
-
-        public Store getStore()
-        {
-            return this.store;
-        }
-        public int getInStock()
-        {
-            return this.in_stock;
-        }
-
-        public double getPrice()
-        {
-            return this.price;
+            if (this.items_quantity.ContainsKey(item))
+                return false;
+            this.items_quantity.Add(item, quantity);
+            return true;
         }
 
 
-        public string getName()
+        public bool RemoveItem(Item item)
         {
-            return item.getName();
-        }
-
-        public string getCategory()
-        {
-            return item.getCategory();
-        }
-
-        public Dictionary<string, string> getReviews()
-        {
-            return this.reviews;
-        }
-
-        public Dictionary<string, int> getReviewsRating()
-        {
-            return this.reviewsRating;
-        }
-
-        // setters 
-
-        public void setItem(Item newItem)
-        {
-            this.item = newItem;
-        }
-        public void setPolicy(Policy newPolicy)
-        {
-            this.policy = newPolicy;
-        }
-
-        public void setStore(Store newStore)
-        {
-            this.store = newStore;
-        }
-        public void setInStock(int newIn_stock)
-        {
-            this.in_stock = newIn_stock;
-        }
-
-        public void setPrice(double newPrice)
-        {
-            this.price = newPrice;
+            return this.items_quantity.Remove(item);
         }
 
 
-        public void addReview(string username, string descreption, int rating)
+        public bool AddQuantity(Item item, int quantity)
         {
-            this.reviews.Add(username, descreption);
-            this.reviewsRating.Add(username, rating);
+            if (this.items_quantity.ContainsKey(item))
+            {
+                this.items_quantity[item] += quantity;
+                return true;
+            }
+            return false;
         }
+
+        public bool RemoveQuantity(Item item, int quantity)
+        {
+            if (this.items_quantity.ContainsKey(item))
+            {
+                this.items_quantity[item] -= quantity;
+                return true;
+            }
+            return false;
+        }
+
+        
+
+        public bool EditItem(Item item, string name, string category, double price)
+        {
+            if (this.items_quantity.ContainsKey(item))
+            {
+                item.setPrice(price);
+                item.setName(name);
+                item.setCategory(category);
+                return true;
+            }
+            return false;
+        }
+
+        public bool ItemExistsById(int itemId)
+        {
+            foreach (Item item in this.items_quantity.Keys)
+            {
+                if (item.getId().Equals(itemId))
+                    return true;
+            }
+            return false;
+
+        }
+
+        public bool ItemExistsByName(string itemName)
+        {
+            foreach (Item item in this.items_quantity.Keys)
+            {
+                if (item.getName().Equals(itemName))
+                    return true;
+            }
+            return false;
+
+        }
+
+        public Item getItemByName(string itemName)
+        {
+            foreach (Item item in this.items_quantity.Keys)
+            {
+                if (item.getName().Equals(itemName))
+                    return item;
+            }
+            return null;
+        }
+
+        public Item getItemById(int itemId)
+        {
+            foreach (Item item in this.items_quantity.Keys)
+            {
+                if (item.getId().Equals(itemId))
+                    return item;
+            }
+            return null;
+        }
+
+        public int getItemQuantityById(int itemId)
+        {
+            Item item = getItemById(itemId);
+            if (item == null)
+                return -1;
+            return this.items_quantity[item];
+        }
+
 
     }
 }

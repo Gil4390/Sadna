@@ -87,7 +87,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.Logout(id);
         }
 
-        public Response OpenNewStore(int id, string storeName)
+        public ResponseT<Guid> OpenNewStore(int id, string storeName)
         {
             return _realBridge.OpenNewStore(id, storeName);
         }
@@ -127,15 +127,15 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetItemsByStoreRating(id, rating);
         }
 
-        public Response AddItemToCart(int id, int itemID, int itemAmount)
-        {
-            return _realBridge.AddItemToCart(id, itemID, itemAmount);
-        }
+        //public Response AddItemToCart(int id, int itemID, int itemAmount)
+        //{
+        //    return _realBridge.AddItemToCart(id, itemID, itemAmount);
+        //}
 
-        public Response RemoveItemFromCart(int id, int itemID, int itemAmount)
-        {
-            return _realBridge.RemoveItemFromCart(id, itemID, itemAmount);
-        }
+        //public Response RemoveItemFromCart(int id, int itemID, int itemAmount)
+        //{
+        //    return _realBridge.RemoveItemFromCart(id, itemID, itemAmount);
+        //}
 
         public Response EditItemFromCart(int id, int itemID, int itemAmount)
         {
@@ -177,15 +177,15 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetPurchasesInfo(id);
         }
 
-        public Response AddItemToStore(int id, Guid storeID, string itemName, string itemCategory, float itemPrice)
-        {
-            return _realBridge.AddItemToStore(id, storeID, itemName, itemCategory, itemPrice);
-        }
+        //public Response AddItemToStore(int id, Guid storeID, string itemName, string itemCategory, float itemPrice)
+        //{
+        //    return _realBridge.AddItemToStore(id, storeID, itemName, itemCategory, itemPrice);
+        //}
 
-        public Response RemoveItemFromStore(int id, int itemID)
-        {
-            return _realBridge.RemoveItemFromStore(id, itemID);
-        }
+        //public Response RemoveItemFromStore(int id, int itemID)
+        //{
+        //    return _realBridge.RemoveItemFromStore(id, itemID);
+        //}
 
         public Response EditItemCategory(string storeName, string itemName, string category)
         {
@@ -195,11 +195,6 @@ namespace SadnaExpress.ServiceLayer
         public Response EditItemPrice(string storeName, string itemName, int price)
         {
             return _realBridge.EditItemPrice( storeName,  itemName, price);
-        }
-
-        public Response RemoveItemFromStore(int id, Guid storeID, int itemID)
-        {
-            return _realBridge.RemoveItemFromStore(id, itemID);
         }
 
         public Response AppointStoreOwner(int id, Guid storeID, string userEmail)
@@ -286,5 +281,25 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
+
+        public Response AddItemToCart(int id, Guid storeID, int itemID, int itemAmount)
+        {
+            return _realBridge.AddItemToCart(id, storeID, itemID, itemAmount);
+        }
+
+        public Response RemoveItemFromCart(int id, Guid storeID, int itemID)
+        {
+            return (_realBridge.RemoveItemFromCart(id, storeID, itemID));
+        }
+
+        public Response AddItemToStore(int id, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            return _realBridge.AddItemToStore(id, storeID, itemName, itemCategory, itemPrice, quantity);
+        }
+        public Response RemoveItemFromStore(int id, Guid storeID, int itemID)
+        {
+            return _realBridge.RemoveItemFromStore(id, storeID, itemID);
+        }
+
     }
 }

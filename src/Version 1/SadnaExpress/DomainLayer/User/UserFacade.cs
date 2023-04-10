@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using SadnaExpress.DomainLayer.Store;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -141,11 +142,33 @@ namespace SadnaExpress.DomainLayer.User
 
         public void AddItemToCart(int id,Guid storeID, int itemID,  int itemAmount)
         {
-            throw new NotImplementedException();
+            if (current_Users.ContainsKey(id))
+            {
+                current_Users[id].AddItemToCart(storeID, itemID, itemAmount);
+            }
+            else if (members.ContainsKey(id))
+            {
+                members[id].AddItemToCart(storeID, itemID, itemAmount);
+            }
+            else
+            {
+                throw new Exception("no cart available for user that is not in the list of users!");
+            }
         }
-        public void RemoveItemFromCart(int id,Guid storeID, int itemID,  int itemAmount)
+        public void RemoveItemFromCart(int id,Guid storeID, int itemID)
         {
-            throw new NotImplementedException();
+            if (current_Users.ContainsKey(id))
+            {
+                current_Users[id].RemoveItemFromCart(storeID, itemID);
+            }
+            else if (members.ContainsKey(id))
+            {
+                members[id].RemoveItemFromCart(storeID, itemID);
+            }
+            else
+            {
+                throw new Exception("no cart available for user that is not in the list of users!");
+            }
         }
 
         public void EditItemFromCart(int id, Guid storeID, int itemID, int itemAmount)
@@ -364,6 +387,19 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception("member with id dosen't exist");
             members[id].SetSecurityQA(q,_ph.Hash(a));
             Logger.Instance.Info(members[id],"Security Q&A set");
+        }
+
+        public ShoppingCart GetShoppingCartById(int id)
+        {
+            if (current_Users.ContainsKey(id))
+            {
+                return current_Users[id].ShoppingCart;
+            }
+            else if (members.ContainsKey(id))
+            {
+                return members[id].ShoppingCart;
+            }
+            throw new Exception("no cart for this user id");
         }
     }
 }

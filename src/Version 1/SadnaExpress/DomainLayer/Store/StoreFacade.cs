@@ -75,20 +75,27 @@ namespace SadnaExpress.DomainLayer.Store
 
         }
 
+        public Store GetStoreById(Guid storeId)
+        {
+            if(stores.ContainsKey(storeId))
+                return stores[storeId];
+            throw new Exception("there is no store with this id");
+        }
+
         public void GetAllStoreInfo(string storeName)
         {
             throw new System.NotImplementedException();
 
         }
 
-        public void AddItemToStore(string storeName, string itemName, string category, int price)
+        public void AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
-            throw new System.NotImplementedException();
+            GetStoreById(storeID).addItem(itemName, itemCategory, itemPrice, quantity);
         }
 
-        public void RemoveItemFromStore(string storeName, string itemName, string category, int price)
+        public void RemoveItemFromStore(Guid storeID, int itemId)
         {
-            throw new System.NotImplementedException();
+            GetStoreById(storeID).RemoveItemById(itemId);
         }
 
         public void EditItemCategory(string storeName, string itemName, string category)

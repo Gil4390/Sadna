@@ -7,20 +7,20 @@ namespace SadnaExpress.DomainLayer.Store
     public class Store
     {
         private string name;
-        private List<Inventory> itemsInventory;
+        private Inventory itemsInventory;
         private Guid storeID;
         public Guid StoreID {get=>storeID;}
-        private Policy policy;
+        //private Policy policy; // not for this version
 
         private bool active;
-        //username, rating 1-5
-        private Dictionary<string, int> storeReview;
-        // maybe need to add store discount
+
+        private int storeRating;
+        
         public Store(string name) {
             this.name = name;
-            this.itemsInventory = new List<Inventory>();
-            this.policy = new Policy();
-            this.storeReview = new Dictionary<string, int>();
+            this.itemsInventory = new Inventory();
+            //this.policy = new Policy();
+            this.storeRating = 0;
             storeID = Guid.NewGuid();
             active = true;
         }
@@ -36,114 +36,108 @@ namespace SadnaExpress.DomainLayer.Store
             set => storeID = value;
         }
 
-        public Policy getPolicy() {
-            return this.policy;
-        }
-
         
 
-        public List<Inventory> getItemsInventory()
+        public Inventory getItemsInventory()
         {
             return this.itemsInventory;
         }
 
-        
+
 
 
         // add new Item to store, if item exists with the same name return false
-        public bool addItem(string name, string category, double price, int in_stock, Policy policy)
+        public bool addItem(string name, string category, double price, int quantity)
         {
-            Inventory exists = getItem(name);
-            if (exists != null)
+            if (this.itemsInventory.ItemExistsByName(name))
             {
                 return false;
             }
             Item newItem = new Item(name, category, price);
-            Inventory inv = new Inventory(newItem, in_stock, price, policy, this);
-            this.itemsInventory.Add(inv);
+            
+            this.itemsInventory.AddItem(newItem, quantity);
             return true;
         }
 
-        public Inventory getItem(String name)
-        {
-            foreach (Inventory inv in itemsInventory)
-            {
-                if (inv.getName() == name)
-                {
-                    return inv;
-                }
-            }
-            return null;
-        }
-
-        public bool deleteItem(string name)
-        {
-            foreach (Inventory inv in itemsInventory)
-            {
-                if (inv.getName() == name)
-                {
-                    itemsInventory.Remove(inv);
-                    return true;
-                }
-            }
-            Logger.Instance.Error("Item removal failed (Item not Found)");
-            return false;
-        }
         
-        public bool updateItem(string name, string newName, string newCategory, double newPrice, int newIn_stock, Policy newPolicy)
+
+
+        public bool AddQuantity(int itemID, int addedQuantity)
         {
-            Inventory inventoryitem = getItem(name);
-
-            if(newName.Equals(""))
+            bool result = this.itemsInventory.AddQuantity(this.itemsInventory.getItemById(itemID), addedQuantity);
+            if (!result)
             {
+                Logger.Instance.Error("Item removal failed (Item not Found)");
                 return false;
             }
-            if (newCategory.Equals(""))
+            return true;
+
+        }
+
+        public bool RemoveQuantity(int itemId, int removedQuantity)
+        {
+            bool result = this.itemsInventory.RemoveQuantity(this.itemsInventory.getItemById(itemId), removedQuantity);
+            if (!result)
             {
+                Logger.Instance.Error("Item removal failed (Item not Found)");
                 return false;
             }
-
-            if(newPrice <= 0)
-            {
-                return false;
-            }
-
-            if (newIn_stock < 0)
-            {
-                return false;
-            }
-
-            inventoryitem.setPrice(newPrice);
-            inventoryitem.setInStock(newIn_stock);
-            inventoryitem.setPolicy(newPolicy);
-            inventoryitem.setItem(new Item(newName, newCategory, newPrice));
-
             return true;
         }
 
 
-        // this function handles stock updates for the store after a purchase
-        public bool updateStockAfterPurchase(Inventory inv, int stock)
+        public bool EditItem(int itemId, string name, string category, double price)
         {
-            int newStock = inv.getInStock() - stock;
-            if ( newStock < 0)
-            {
-                Logger.Instance.Error("Not Enough Items in stock to complete this purhcase, please try later!");
-            }
-            else
-            {
-                inv.setInStock(newStock);
-                return true;
-            }
-            return false;
+            Item item = this.itemsInventory.getItemById(itemId);
+            if (item.Equals(null))
+                return false;
+
+            if (name.Equals(""))
+                return false;
+            if (category.Equals(""))
+                return false;
+            if (price < 0)
+                return false;
+
+
+            if (this.itemsInventory.ItemExistsByName(name))
+                return false;
+
+            item.setName(name);
+            item.setCategory(category);
+            item.setPrice(price);
+
+            return true;
+        }
+
+        public bool RemoveItemById(int itemId)
+        {
+            return this.itemsInventory.RemoveItem(this.itemsInventory.getItemById(itemId));
+        }
+
+        public bool RemoveItemByName(string itemName)
+        {
+            return this.itemsInventory.RemoveItem(this.itemsInventory.getItemByName(itemName));
+        }
+
+        public int getStoreRating()
+        {
+            return this.storeRating;
+        }
+
+        public void setStoreRating(int rating)
+        {
+            this.storeRating = rating;
+        }
+
+        public void setItemRating(int id, int rating)
+        {
+            Item item = this.itemsInventory.getItemById(id);
+            if(!item.Equals(null))
+                item.setRating(rating);
         }
 
 
-        public void addStoreReview(string username, int rating)
-        {
-            this.storeReview.Add(username, rating);
-
-        }
 
         public bool Active
         {

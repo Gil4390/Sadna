@@ -15,7 +15,47 @@ namespace SadnaExpress
         private static Server _server;
         public static void Main(string[] args)
         {
-            new IntegrationTests().Run();
+            //new IntegrationTests().Run();
+
+
+            // first test success throwed exception cant add item and stock to cart with more amount of 
+
+            //TradingSystem domain = TradingSystem.Instance;
+            //TradingSystem.Instance.Register(0, "asdqwe@gmail.com", "First", "Userqwe", "Asdqwe123");
+            //TradingSystem.Instance.Register(1, "zxcasd@gmail.com", "Second", "Userxzc", "Zxcqwe123");
+
+            //TradingSystem.Instance.Login(0, "asdqwe@gmail.com", "Asdqwe123");
+            //Guid storeId = TradingSystem.Instance.OpenNewStore(0, "FirstStore").Value;
+            //TradingSystem.Instance.AddItemToStore(0, storeId, "apple", "fruits", 5.99, 3);
+            //TradingSystem.Instance.AddItemToCart(1, storeId, 0, 4);
+
+            //Console.ReadLine();
+
+            /////////////////////////////////////////////////////////////////
+            // second test: successful purchase or failed purchase
+
+            TradingSystem domain = TradingSystem.Instance;
+            TradingSystem.Instance.Register(0, "asdqwe@gmail.com", "First", "Userqwe", "Asdqwe123");
+            TradingSystem.Instance.Register(1, "zxcasd@gmail.com", "Second", "Userxzc", "Zxcqwe123");
+
+            TradingSystem.Instance.Login(0, "asdqwe@gmail.com", "Asdqwe123");
+            Guid storeId = TradingSystem.Instance.OpenNewStore(0, "FirstStore").Value;
+
+            TradingSystem.Instance.AddItemToStore(0, storeId, "apple", "fruits", 5.99, 3);
+
+            TradingSystem.Instance.AddItemToCart(1, storeId, 0, 2);
+
+            List<Pair<Guid, List<int>>> itemIds = new List<Pair<Guid, List<int>>>();
+            List<int> items = new List<int>();
+            items.Add(0);
+            itemIds.Add(new Pair<Guid, List<int>>( storeId, items));
+            TradingSystem.Instance.UpdateSavedItemsList(1, itemIds);
+
+            // put the line below as comment if you want to check if stock is restored after failed purchase attempt must wait for 2 min
+            // uncommint the line below if you want to check that stock is not restored because of successfull purchase
+            //DomainMediator.Instance.PurchaseCart(1, "Credit and Visa"); 
+            Console.ReadLine();
+
         }
 
         public class IntegrationTests

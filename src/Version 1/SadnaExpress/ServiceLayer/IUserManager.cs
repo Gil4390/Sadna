@@ -9,14 +9,16 @@ namespace SadnaExpress.ServiceLayer
 {
     public interface IUserManager
     {
+        // get function
+        IUserFacade GetUserFacade();
         //all users actions
         ResponseT<int> Enter(); //1.1
         Response Exit(int id); //1.2
         Response Register(int id, string email, string firstName, string lastName, string password); //1.3
         ResponseT<int> Login(int id, string email, string password); //1.4
-        Response AddItemToCart(int id, int itemID, int itemAmount); //2.3
+        Response AddItemToCart(int id, Guid storeID, int itemID, int itemAmount); //2.3
         //2.4
-        Response RemoveItemFromCart(int id, int itemID,  int itemAmount);
+        Response RemoveItemFromCart(int id, Guid storeID, int itemID);
         Response EditItemFromCart(int id, int itemID,  int itemAmount);
         ResponseT<Dictionary<string,List<string>>> getDetailsOnCart();
         ResponseT<int> Logout(int id); //3.1
@@ -35,5 +37,6 @@ namespace SadnaExpress.ServiceLayer
         ConcurrentDictionary<int, Member> GetMembers();
         ResponseT<ShoppingCart> ShowShoppingCart(int id);
         ResponseT<int> SetSecurityQA(int id,string q, string a);
+        ResponseT<ShoppingCart> GetShoppingCartById(int id);
     }
 }
