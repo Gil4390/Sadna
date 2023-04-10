@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.ServiceLayer;
+using System.Threading.Tasks;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -15,22 +17,26 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<int, LinkedList<Order>> userOrders;
         private int USER_ID = 0;
         private PasswordHash _ph = new PasswordHash();
-        
+        private IPaymentService paymentService;
+        public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
+        private const int MaxPaymentServiceWaitTime = 10000; //10 seconds is 10,000 mili seconds
 
-        public UserFacade()
+        public UserFacade(IPaymentService paymentService=null)
         {
             //guests = new Dictionary<int, Guest>();
             current_Users = new ConcurrentDictionary<int, User>();
             members = new ConcurrentDictionary<int, Member>();
             userOrders = new ConcurrentDictionary<int, LinkedList<Order>>();
+            this.paymentService = paymentService;
         }
 
-        public UserFacade(ConcurrentDictionary<int, User> current_Users, ConcurrentDictionary<int, Member> members, int uSER_ID, PasswordHash ph)
+        public UserFacade(ConcurrentDictionary<int, User> current_Users, ConcurrentDictionary<int, Member> members, int uSER_ID, PasswordHash ph, IPaymentService paymentService=null)
         {
             this.current_Users = current_Users;
             this.members = members;
             USER_ID = uSER_ID;
             _ph = ph;
+            this.paymentService = paymentService;
         }
 
         public int Enter()
@@ -120,7 +126,7 @@ namespace SadnaExpress.DomainLayer.User
                     }
                 }
 
-                //eamil not found
+                //email not found
                 throw new Exception("email doesn't exist");
             }
         }
@@ -302,6 +308,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             current_Users.Clear();
             members.Clear();
+            paymentService = null;
         }
 
         public bool InitializeTradingSystem(int id)
@@ -311,16 +318,12 @@ namespace SadnaExpress.DomainLayer.User
             //2. check that member is log in
             //3. check that member is system manager
             //4. check that there is connection to payment and supply services
-
-            if(!members.ContainsKey(id))
-                throw new Exception("member with id dosen't exist");
-
-            if (!members[id].LoggedIn)
-                throw new Exception("To Initialize the trading system member must be logged in");
-
+            isLogin(id);
+        
             //impl of 3- throw error if not
+            
 
-            return true;
+            return paymentService.Connect(); //should add a check for supply service connection
         }
 
         public bool hasPermissions(int id, Guid storeId, List<string> permissions)
@@ -364,6 +367,40 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception("member with id dosen't exist");
             members[id].SetSecurityQA(q,_ph.Hash(a));
             Logger.Instance.Info(members[id],"Security Q&A set");
+        }
+
+        public void SetPaymentService(IPaymentService paymentService)
+        {
+            this.paymentService = paymentService;
+        }
+
+        public bool PlacePayment(string transactionDetails)
+        {
+            try
+            {
+                Logger.Instance.Info(nameof(paymentService)+": request to preform a payment with details : "+transactionDetails);
+
+                var task = Task.Run(() =>
+                {
+                    return paymentService.ValidatePayment(transactionDetails);
+                });
+
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxPaymentServiceWaitTime));
+
+                if (isCompletedSuccessfully)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return false;
+            }
         }
     }
 }

@@ -17,16 +17,6 @@ namespace SadnaExpress.ServiceLayer
             _realBridge = Implemantation;
         }
 
-        public bool CheckPaymentConnection()
-        {
-            return _realBridge.CheckPaymentConnection();
-        }
-
-        public bool CheckSupplierConnection()
-        {
-            return _realBridge.CheckSupplierConnection();
-        }
-
         public void CleanUp()
         {
             _realBridge.CleanUp();
@@ -60,21 +50,6 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<int> Login(int id, string email, string password)
         {
             return _realBridge.Login(id, email, password);
-        }
-
-        public ResponseT<bool> PlacePayment(string transactionDetails)
-        {
-            return _realBridge.PlacePayment(transactionDetails);
-        }
-
-        public ResponseT<bool> PlaceSupply(string orderDetails, string userDetails)
-        {
-            return _realBridge.PlaceSupply(orderDetails, userDetails);
-        }
-
-        public int GetMaximumWaitServiceTime()
-        {
-            return _realBridge.GetMaximumWaitServiceTime();
         }
 
         public ResponseT<bool> InitializeTradingSystem(int id)

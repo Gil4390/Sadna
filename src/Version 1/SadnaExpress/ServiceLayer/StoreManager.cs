@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
-
+using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -12,11 +12,11 @@ namespace SadnaExpress.ServiceLayer
     {
         private IStoreFacade storeFacade;
         private IUserFacade userFacade;
-        
-        public StoreManager()
+       
+        public StoreManager(IUserFacade userFacade, IStoreFacade storeFacade)
         {
-            userFacade = new UserFacade();
-            storeFacade = new StoreFacade();
+            this.userFacade = userFacade;
+            this.storeFacade = storeFacade;
             
         }
 

@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.Services;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -40,5 +41,8 @@ namespace SadnaExpress.DomainLayer.User
         bool hasPermissions(int userId, Guid storeID, List<string> per);
         ShoppingCart ShowShoppingCart(int id);
         void SetSecurityQA(int id,string q, string a);
+        void SetPaymentService(IPaymentService paymentService);
+        bool PlacePayment(string transactionDetails);
+
     }
 }

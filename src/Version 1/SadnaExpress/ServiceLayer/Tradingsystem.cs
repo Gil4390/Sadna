@@ -11,26 +11,19 @@ namespace SadnaExpress.ServiceLayer
 {
     public class TradingSystem : ITradingSystem
     {
-        private ISupplierService supplierService;
-        private IPaymentService paymentService;
         private IStoreManager storeManager;
         private IUserManager userManager;
-        private const int ExternalServiceWaitTimeInSeconds=10000; //10 seconds is 10,000 mili seconds
-        public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
-        public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
+       
 
         public TradingSystem(ISupplierService supplierService=null, IPaymentService paymentService=null)
         {
-            storeManager = new StoreManager();
-            userManager = new UserManager();
-            this.paymentService = paymentService;
-            this.supplierService = supplierService;
+            IUserFacade userFacade = new UserFacade(paymentService);
+            IStoreFacade storeFacade = new StoreFacade(supplierService);
+            storeManager = new StoreManager(userFacade, storeFacade);
+            userManager = new UserManager(userFacade);
+           
         }
 
-        public int GetMaximumWaitServiceTime()
-        {
-            return ExternalServiceWaitTimeInSeconds;
-        }
         public ResponseT<int> Enter()
         {
             return userManager.Enter();
@@ -231,16 +224,6 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.DeleteStore(id,storeID);
         }
 
-        public bool CheckSupplierConnection()
-        {
-            bool result = this.supplierService.Connect();
-            if (!result)
-            {
-                Logger.Instance.Error("Supplier Service Connection Failed");
-            }
-            return result;
-        }
-
         public Response DeleteMember(int id, int userID)
         {
             throw new NotImplementedException();
@@ -266,101 +249,10 @@ namespace SadnaExpress.ServiceLayer
             return userManager.SetSecurityQA(id,q,a);
         }
 
-        public bool CheckPaymentConnection()
-        {
-            bool result = this.paymentService.Connect();
-            if (!result)
-            {
-                Logger.Instance.Error("Payment Service Connection Failed");
-            }
-            return result;
-        }
-
         public void CleanUp() // for the tests
         {
             storeManager.CleanUp();
             userManager.CleanUp();
-            supplierService = null;
-            paymentService = null;
-        }
-
-        public void SetPaymentService(IPaymentService paymentService)
-        {
-            this.paymentService = paymentService;
-        }
-
-        public void SetSupplierService(ISupplierService supplierService)
-        {
-            this.supplierService = supplierService;
-        }
-
-        public ResponseT<bool> PlacePayment(string transactionDetails)
-        {
-            try
-            {
-                var task = Task.Run(() =>
-                {
-                    return paymentService.ValidatePayment(transactionDetails);
-                });
-
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(ExternalServiceWaitTimeInSeconds));
-
-                if (isCompletedSuccessfully)
-                {
-                    return new ResponseT<bool>(task.Result);
-                }
-                else
-                {
-                    throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed.");
-                }
-            }
-            catch(Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<bool>(ex.Message);
-            }
-        }
-
-        public ResponseT<bool> PlaceSupply(string orderDetails, string userDetails)
-        {
-            try
-            {
-                var task = Task.Run(() =>
-                {
-                    return supplierService.ShipOrder(orderDetails,userDetails);
-                });
-
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(ExternalServiceWaitTimeInSeconds));
-
-                if (isCompletedSuccessfully)
-                {
-                    return new ResponseT<bool>(task.Result);
-                }
-                else
-                {
-                    throw new TimeoutException("Supply external service action has taken longer than the maximum time allowed.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<bool>(ex.Message);
-            }
-        }
-
-        public ResponseT<bool> InitializeTradingSystem(int id)
-        {
-            try
-            {
-                Logger.Instance.Info("User id: " + id + " requested to initialize trading system");
-                userManager.InitializeTradingSystem(id);
-                return new ResponseT<bool>(paymentService.Connect() && supplierService.Connect());
-            }
-            catch(Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<bool>(ex.Message);
-            }
         }
 
         public ResponseT<ShoppingCart> ShowShoppingCart(int id)
@@ -379,6 +271,21 @@ namespace SadnaExpress.ServiceLayer
         public ConcurrentDictionary<Guid , Store> GetStores()
         {
             return storeManager.GetStores();
+        }
+
+        public void SetPaymentService(IPaymentService paymentService)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetSupplierService(ISupplierService supplierService)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<bool> InitializeTradingSystem(int id)
+        {
+            return userManager.InitializeTradingSystem(id);
         }
     }
 }
