@@ -79,7 +79,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public override bool Equals(object obj)
         {
-            return obj is ShoppingBasket && this.storeId.Equals((Guid)obj);
+            return obj is ShoppingBasket && this.storeId.Equals(((ShoppingBasket)obj).GetStoreId());
         }
 
 
