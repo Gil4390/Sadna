@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class Store
     {
-        private string name;
+        private string storeName;
         private Inventory itemsInventory;
         private Guid storeID;
         public Guid StoreID {get=>storeID;}
@@ -17,7 +18,7 @@ namespace SadnaExpress.DomainLayer.Store
         private int storeRating;
         
         public Store(string name) {
-            this.name = name;
+            this.storeName = name;
             this.itemsInventory = new Inventory();
             //this.policy = new Policy();
             this.storeRating = 0;
@@ -27,7 +28,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         //getters
         public string getName() {
-            return this.name;
+            return this.storeName;
         }
 
         public Guid StoreId
@@ -85,28 +86,38 @@ namespace SadnaExpress.DomainLayer.Store
             return true;
         }
 
-
-        public bool EditItem(int itemId, string name, string category, double price)
+        public bool EditItemName(int itemId, string name)
         {
             Item item = this.itemsInventory.getItemById(itemId);
             if (item.Equals(null))
                 return false;
-
             if (name.Equals(""))
+                return false;
+            if (this.itemsInventory.ItemExistsByName(name))
+                return false;
+            item.setName(name);
+            return true;
+        }
+
+        public bool EditItemCategory(int itemId, string category)
+        {
+            Item item = this.itemsInventory.getItemById(itemId);
+            if (item.Equals(null))
                 return false;
             if (category.Equals(""))
                 return false;
+            item.setCategory(category);
+            return true;
+        }
+
+        public bool EditItemPrice(int itemId, double price)
+        {
+            Item item = this.itemsInventory.getItemById(itemId);
+            if (item.Equals(null))
+                return false;
             if (price < 0)
                 return false;
-
-
-            if (this.itemsInventory.ItemExistsByName(name))
-                return false;
-
-            item.setName(name);
-            item.setCategory(category);
             item.setPrice(price);
-
             return true;
         }
 

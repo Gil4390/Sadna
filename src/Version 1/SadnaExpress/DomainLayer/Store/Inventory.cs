@@ -1,36 +1,38 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class Inventory
     {
-        private Dictionary<Item, int> items_quantity;
+        private ConcurrentDictionary<Item, int> items_quantity;
 
 
         public Inventory()
         {
-            this.items_quantity = new Dictionary<Item, int>();
+            this.items_quantity = new ConcurrentDictionary<Item, int>();
         }
 
         //getters
 
-        public Dictionary<Item, int> getItems()
+        public ConcurrentDictionary<Item, int> getItems()
         {
             return this.items_quantity;
         }
         
         public bool AddItem(Item item, int quantity)
         {
-            if (this.items_quantity.ContainsKey(item))
-                return false;
-            this.items_quantity.Add(item, quantity);
-            return true;
+            bool result = this.items_quantity.TryAdd(item, quantity);
+            return result;
         }
 
 
         public bool RemoveItem(Item item)
         {
-            return this.items_quantity.Remove(item);
+            int removed = 0;
+            bool result = false;
+            result = this.items_quantity.TryRemove(item, out removed);
+            return result;
         }
 
 

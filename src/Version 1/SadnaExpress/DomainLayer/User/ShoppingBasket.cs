@@ -17,37 +17,21 @@ namespace SadnaExpress.DomainLayer.Store
             itemsInBasket = new Dictionary<int, int>();
         }
 
-        public int getAvailableItemQuantity(int itemId)
-        {
-            return TradingSystem.Instance.GetAvailableQuantity(this.storeId, itemId);
-        }
-
         public bool AddItem(int itemId, int quantity)
         {
             if (quantity < 0)
                 return false;
-
-            int storeItemAvailableQuantity = getAvailableItemQuantity(itemId);
-
-            if (storeItemAvailableQuantity > quantity)
+            
+            if (itemsInBasket.ContainsKey(itemId))
             {
-                if (itemsInBasket.ContainsKey(itemId))
-                {
-                    itemsInBasket[itemId] += quantity;
-                }
-                else
-                {
-                    itemsInBasket.Add(itemId, quantity);
-                }
-                return true;
+                itemsInBasket[itemId] += quantity;
             }
             else
             {
-                throw new Exception("cant add item to shopping basket with stock more that the store can provide!");
+                itemsInBasket.Add(itemId, quantity);
             }
 
-            throw new Exception("tried to add item to shopping basket that is not in the store of this shopping basket");
-            return false;
+            return true;
         }
 
     
@@ -75,19 +59,9 @@ namespace SadnaExpress.DomainLayer.Store
             else if (quantity == 0)
                 RemoveItem(itemId);
             else if (itemsInBasket.ContainsKey(itemId))
-            {
-                int storeItemAvailableQuantity = getAvailableItemQuantity(itemId);
-                if(storeItemAvailableQuantity > quantity)
-                {
-                    itemsInBasket[itemId] = quantity;
-                }
-                else
-                {
-                    throw new Exception("cant edit quantity in basket because store doesnt have the availble quantity of this item");
-                }
-            }
-            throw new Exception("cant edit quantity of item that is not in the basket");
-
+                itemsInBasket[itemId] = quantity;
+            else 
+                throw new Exception("cant edit quantity of item that is not in the basket");
         }
 
         public Guid GetStoreId()

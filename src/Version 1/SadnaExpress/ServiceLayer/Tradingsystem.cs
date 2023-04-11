@@ -147,7 +147,22 @@ namespace SadnaExpress.ServiceLayer
 
         public Response AddItemToCart(int id, Guid storeID, int itemID, int itemAmount)
         {
-            return userManager.AddItemToCart(id, storeID, itemID, itemAmount);
+            // first check if store can provide the itemAmount
+            try
+            {
+                int storeQuantity = GetAvailableQuantity(storeID, itemID);
+                if (storeQuantity < itemAmount)
+                {
+                    Logger.Instance.Error("cant add item to shopping basket with quantity more than the store can provide!");
+                    return new Response();
+                }
+                return userManager.AddItemToCart(id, storeID, itemID, itemAmount);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error("tried to add item to shopping basket from a diffrent Store!");
+                return new Response(ex.Message);
+            }
         }
 
         public Response RemoveItemFromCart(int id, Guid storeID, int itemID)
