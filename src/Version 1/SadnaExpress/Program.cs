@@ -45,15 +45,7 @@ namespace SadnaExpress
 
             TradingSystem.Instance.AddItemToCart(1, storeId, 0, 2);
 
-            List<Pair<Guid, List<int>>> itemIds = new List<Pair<Guid, List<int>>>();
-            List<int> items = new List<int>();
-            items.Add(0);
-            itemIds.Add(new Pair<Guid, List<int>>( storeId, items));
-            TradingSystem.Instance.UpdateSavedItemsList(1, itemIds);
-
-            // put the line below as comment if you want to check if stock is restored after failed purchase attempt must wait for 2 min
-            // uncommint the line below if you want to check that stock is not restored because of successfull purchase
-            //DomainMediator.Instance.PurchaseCart(1, "Credit and Visa"); 
+            TradingSystem.Instance.PurchaseCart(1, "Credit and Visa");
             Console.ReadLine();
 
         }
