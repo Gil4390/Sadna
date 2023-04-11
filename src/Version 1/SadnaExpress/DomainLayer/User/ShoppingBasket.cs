@@ -39,7 +39,7 @@ namespace SadnaExpress.DomainLayer.Store
         // return:
         // 0 - failure 
         // 1 - success
-        // 2 basket is not empty so need to remove basket
+        // 2 - basket is now empty so need to remove basket
         public int RemoveItem(int itemId)
         {
             bool result = itemsInBasket.Remove(itemId);
@@ -80,6 +80,11 @@ namespace SadnaExpress.DomainLayer.Store
         public override bool Equals(object obj)
         {
             return obj is ShoppingBasket && this.storeId.Equals(((ShoppingBasket)obj).GetStoreId());
+        }
+
+        public Dictionary<int,int> GetItemsInBasket()
+        {
+            return itemsInBasket;
         }
 
 

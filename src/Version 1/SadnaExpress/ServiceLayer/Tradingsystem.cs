@@ -34,7 +34,6 @@ namespace SadnaExpress.ServiceLayer
         private static readonly object stockChange = new object();
         // fields for the saved items
         // list for saved items  <userId   <itemsId selected in Cart>>
-        private static Dictionary<int, List<Pair<Guid, List<int>>>> savedItems = new Dictionary<int, List<Pair<Guid, List<int>>>>();
         private static Dictionary<int, Dictionary<Guid, List<Pair<int, int>>>> savedItemsRestore = new Dictionary<int, Dictionary<Guid, List<Pair<int, int>>>>();
         private static Dictionary<int, Timer> savedTimer = new Dictionary<int, Timer>();
         private static Dictionary<int, bool> savedPurchaseResult = new Dictionary<int, bool>();
@@ -498,96 +497,55 @@ namespace SadnaExpress.ServiceLayer
                     }
                     Logger.Instance.Error("No Purchase Success after saving items for 2 minutes!");
                 }
-                savedItemsRestore[id] = new Dictionary<Guid, List<Pair<int, int>>>();
-
-
+                //savedItemsRestore[id] = new Dictionary<Guid, List<Pair<int, int>>>();
+                savedItemsRestore.Remove(id);
             }
         }
 
-        /////////////////////////////////////////////////// List of pairs of storename, and items 
-        public void UpdateSavedItemsList(int id, List<Pair<Guid, List<int>>> itemsIds)
+
+
+        public void SaveCartItems(int id)
         {
             lock (stockChange)
             {
-                if (savedItems.ContainsKey(id))
-                    savedItems[id] = itemsIds;
-                else
-                {
-                    savedItems.Add(id, itemsIds);
-                }
-
                 if (savedTimer.ContainsKey(id))
-                {
                     savedTimer[id] = new Timer(120 * 1000); // 1000 = 1 sec
-
-                }
                 else
-                {
                     savedTimer.Add(id, new Timer(120 * 1000));
-                }
 
-                if (savedItemsRestore.ContainsKey(id))
-                {
-                    //savedItemsRestore[id] = new Dictionary<string, List<Pair<int, int>>>();
-                    // restore stock to original and then update based on new selection in cart
-                    foreach (Guid storeId in savedItemsRestore[id].Keys)
-                    {
-                        foreach (Pair<int, int> storeItem in savedItemsRestore[id][storeId])
-                        {
-                            storeManager.GetStoreById(storeId).AddQuantity(storeItem.First, storeItem.Second);
-                        }
-                    }
-
-                }
-                //else
-                //{
-                savedItemsRestore.Add(id, new Dictionary<Guid, List<Pair<int, int>>>());
-                //}
-
+                if(savedItemsRestore.ContainsKey(id))
+                    savedItemsRestore[id] = new Dictionary<Guid, List<Pair<int, int>>>();
+                else
+                    savedItemsRestore.Add(id, new Dictionary<Guid, List<Pair<int, int>>>());
                 // get user shopping cart inventory and stock and reduce all stock and save the reduced value
                 ShoppingCart cart = userManager.GetShoppingCartById(id).Value;
                 foreach (ShoppingBasket basket in cart.GetShoppingBaskets())
                 {
-                    foreach (Pair<Guid, List<int>> item in itemsIds)
+                    Store store = storeManager.GetStoreById(basket.GetStoreId());
+                    Dictionary<int, int> itemsInBasket = basket.GetItemsInBasket();
+                    foreach (int itemId in itemsInBasket.Keys)
                     {
-                        if (item.First.Equals(basket.GetStoreId()))
+                        store.RemoveQuantity(itemId, itemsInBasket[itemId]);
+
+                        if (savedItemsRestore[id].ContainsKey(basket.GetStoreId()))
                         {
-                            foreach (int itemId in item.Second)
-                            {
-
-                                if (savedItemsRestore[id].ContainsKey(basket.GetStoreId()))
-                                {
-
-                                }
-                                else
-                                {
-                                    storeManager.GetStoreById(basket.GetStoreId()).RemoveQuantity(itemId, basket.GetItemStock(itemId));
-
-                                    if (savedItemsRestore[id].ContainsKey(basket.GetStoreId()))
-                                    {
-                                        savedItemsRestore[id][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
-                                    }
-                                    else
-                                    {
-                                        savedItemsRestore[id].Add(basket.GetStoreId(), new List<Pair<int, int>>());
-                                        savedItemsRestore[id][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
-                                    }
-
-                                }
-                            }
+                            savedItemsRestore[id][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
+                        }
+                        else
+                        {
+                            savedItemsRestore[id].Add(basket.GetStoreId(), new List<Pair<int, int>>());
+                            savedItemsRestore[id][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
                         }
                     }
+                    savedItemsUserId.Enqueue(id);
+                    savedTimer[id].Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
+                    savedTimer[id].Start();
+
+                    if (savedPurchaseResult.ContainsKey(id))
+                        savedPurchaseResult[id] = false;
+                    else
+                        savedPurchaseResult.Add(id, false);
                 }
-
-                savedItemsUserId.Enqueue(id);
-                savedTimer[id].Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
-                savedTimer[id].Start();
-
-                if (savedPurchaseResult.ContainsKey(id))
-                    savedPurchaseResult[id] = false;
-                else
-                    savedPurchaseResult.Add(id, false);
-
             }
         }
 
@@ -596,12 +554,13 @@ namespace SadnaExpress.ServiceLayer
 
         public Response PurchaseCart(int id, string paymentDetails)
         {
+            SaveCartItems(id);
             // need ToDo implement this function, not implemented yet
 
             //for tests:
             // option 1 :demonstrates succesfull purchase
             // need to update this field after succsesful purchase
-            savedPurchaseResult[id] = true;
+            //savedPurchaseResult[id] = true;
             return new Response();
             // option 2
             //if purchase failed then do not update this field :
