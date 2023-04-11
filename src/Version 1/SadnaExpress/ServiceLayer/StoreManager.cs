@@ -19,6 +19,12 @@ namespace SadnaExpress.ServiceLayer
             storeFacade = new StoreFacade();
             
         }
+        public StoreManager(IUserFacade uf , IStoreFacade sf)
+        {
+            userFacade = uf;
+            storeFacade = sf;
+            
+        }
 
         public Response PurchaseCart(int id, string paymentDetails)
         {
@@ -141,48 +147,7 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new System.NotImplementedException();
         }
-
-        public ResponseT<int> UpdateFirst(int id, string newFirst)
-        {
-            try
-            {
-                userFacade.UpdateFirst(id, newFirst);
-                return new ResponseT<int>(id);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
-            }
-        }
-
-        public ResponseT<int> UpdateLast(int id, string newLast)
-        {
-            try
-            {
-                userFacade.UpdateLast(id, newLast);
-                return new ResponseT<int>(id);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
-            }
-        }
-
-        public ResponseT<int> UpdatePassword(int id, string newPassword)
-        {
-            try
-            {
-                userFacade.UpdatePassword(id, newPassword);
-                return new ResponseT<int>(id);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
-            }
-        }
+        
 
         public Response GetPurchasesInfo(int id, int storeID)
         {

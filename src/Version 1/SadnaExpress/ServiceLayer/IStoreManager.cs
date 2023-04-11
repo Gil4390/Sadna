@@ -26,9 +26,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response CloseStore(int id, Guid storeID); //4.9
         Response DeleteStore(int id, Guid storeID); 
         Response ReopenStore(int id, Guid storeID);
-        ResponseT<int> UpdateFirst(int id, string newFirst);
-        ResponseT<int> UpdateLast(int id, string newLast);
-        ResponseT<int> UpdatePassword(int id,string newPassword);
 
         Response GetPurchasesInfo(int id, int storeID);//4.13 //6.4
         void CleanUp();

@@ -330,12 +330,12 @@ namespace SadnaExpress.DomainLayer.User
                     return true;
             return false;
         }
-        private void isLogin(int id)
+        public bool isLogin(int id)
         {
             if (members.ContainsKey(id))
             {
                 if (members[id].LoggedIn)
-                    return;
+                    return true;
                 throw new Exception("member need to login");
             }
             throw new Exception("User need to register first");

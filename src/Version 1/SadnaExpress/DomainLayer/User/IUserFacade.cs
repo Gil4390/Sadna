@@ -40,5 +40,6 @@ namespace SadnaExpress.DomainLayer.User
         bool hasPermissions(int userId, Guid storeID, List<string> per);
         ShoppingCart ShowShoppingCart(int id);
         void SetSecurityQA(int id,string q, string a);
+        bool isLogin(int idx);
     }
 }
