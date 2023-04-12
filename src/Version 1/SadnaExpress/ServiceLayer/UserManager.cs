@@ -306,7 +306,7 @@ namespace SadnaExpress.ServiceLayer
             {
                 userFacade.UpdatePassword(id, newPassword);
                 return new ResponseT<int>(id);
-                return new ResponseT<int>(ex.Message);
+                
             }
             catch (Exception ex)
             {

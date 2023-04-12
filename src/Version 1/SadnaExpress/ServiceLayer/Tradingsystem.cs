@@ -54,13 +54,13 @@ namespace SadnaExpress.ServiceLayer
             this.paymentService = paymentService;
             this.supplierService = supplierService;
         }
-        public TradingSystem(IUserManager userManager , IStoreManager storeManager, ISupplierService supplierService=null, IPaymentService paymentService=null)
-        {
-            this.storeManager = storeManager;
-            this.userManager = userManager;
-            this.paymentService = paymentService;
-            this.supplierService = supplierService;
-        }
+        //public TradingSystem(IUserManager userManager , IStoreManager storeManager, ISupplierService supplierService=null, IPaymentService paymentService=null)
+        //{
+        //    this.storeManager = storeManager;
+        //    this.userManager = userManager;
+        //    this.paymentService = paymentService;
+        //    this.supplierService = supplierService;
+        //}
 
         public static TradingSystem Instance
         {
