@@ -30,53 +30,53 @@ namespace SadnaExpress.DomainLayer.Store
             return null;
         }
 
-        public bool AddBasket(ShoppingBasket basket)
+        public void AddBasket(ShoppingBasket basket)
         {
             foreach (ShoppingBasket b in baskets)
             {
                 if (b.Equals(basket))
-                    return false;
+                    throw new Exception("Failed to add basket (this basket already exists in the cart)");
             }
             baskets.Add(basket);
-            return true;
         }
 
-        public bool RemoveBasket(ShoppingBasket basket)
+        public void RemoveBasket(ShoppingBasket basket)
         {
-            return baskets.Remove(basket);
+            baskets.Remove(basket);
         }
 
-        public bool AddItemToBasket(Guid storeId, int itemId, int stock)
+        public void AddItemToBasket(Guid storeId, int itemId, int stock)
         {
+            bool addShoppingBasket = true;
             foreach (ShoppingBasket b in baskets)
             {
                 if (b.GetStoreId().Equals(storeId))
                 {
-                    return b.AddItem(itemId, stock);
+                    b.AddItem(itemId, stock);
+                    addShoppingBasket = false;
                 }
             }
-            ShoppingBasket newOne = new ShoppingBasket(storeId);
-            newOne.AddItem(itemId, stock);
-            baskets.Add(newOne);
-            return true;
+            if (addShoppingBasket)
+            {
+                ShoppingBasket newOne = new ShoppingBasket(storeId);
+                newOne.AddItem(itemId, stock);
+                baskets.Add(newOne);
+            }
         }
 
 
-        public bool RemoveItemFromBasket(Guid storeId, int itemId)
+        public void RemoveItemFromBasket(Guid storeId, int itemId)
         {
             foreach (ShoppingBasket b in baskets)
             {
                 if (b.GetStoreId().Equals(storeId))
                 {
-                    int result = b.RemoveItem(itemId);
-                    if (result == 0)
-                        return false;
-                    if (result == 2)
+                    b.RemoveItem(itemId);
+                    int amount = b.GetItemsCount();
+                    if (amount.Equals(0))
                         this.RemoveBasket(b);
-                    return true;
                 }
             }
-            return false;
         }
 
 

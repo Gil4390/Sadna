@@ -12,8 +12,6 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
-using Timer = System.Timers.Timer;
-using static SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using System.Collections;
 using System.Diagnostics;
 using System.Net;
@@ -33,11 +31,9 @@ namespace SadnaExpress.ServiceLayer
         // lock object for saving items 
         private static readonly object stockChange = new object();
         // fields for the saved items
+
         // list for saved items  <userId   <itemsId selected in Cart>>
         private static Dictionary<int, Dictionary<Guid, List<Pair<int, int>>>> savedItemsRestore = new Dictionary<int, Dictionary<Guid, List<Pair<int, int>>>>();
-        private static Dictionary<int, Timer> savedTimer = new Dictionary<int, Timer>();
-        private static Dictionary<int, bool> savedPurchaseResult = new Dictionary<int, bool>();
-        private static Queue<int> savedItemsUserId = new Queue<int>();
 
 
         // lock object for the instance
@@ -477,43 +473,13 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetStores();
         }
 
-
-        /////////////////////////////////////////// function for saving items for users
-        private static void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        public Response PurchaseCart(int id, string paymentDetails)
         {
-            // check after timer passes
+            bool purchaseSuccess = false;
+            // saving items for userid cart items on purchase cart action
             lock (stockChange)
             {
-                int id = savedItemsUserId.Dequeue();
-                if (savedPurchaseResult[id] == false)
-                {
-                    // need to restore stock failed Purchase
-                    foreach (Guid storeId in savedItemsRestore[id].Keys)
-                    {
-                        foreach (Pair<int, int> storeItem in savedItemsRestore[id][storeId])
-                        {
-                            storeManager.GetStoreById(storeId).AddQuantity(storeItem.First, storeItem.Second);
-                        }
-                    }
-                    Logger.Instance.Error("No Purchase Success after saving items for 2 minutes!");
-                }
-                //savedItemsRestore[id] = new Dictionary<Guid, List<Pair<int, int>>>();
-                savedItemsRestore.Remove(id);
-            }
-        }
-
-
-
-        public void SaveCartItems(int id)
-        {
-            lock (stockChange)
-            {
-                if (savedTimer.ContainsKey(id))
-                    savedTimer[id] = new Timer(120 * 1000); // 1000 = 1 sec
-                else
-                    savedTimer.Add(id, new Timer(120 * 1000));
-
-                if(savedItemsRestore.ContainsKey(id))
+                if (savedItemsRestore.ContainsKey(id))
                     savedItemsRestore[id] = new Dictionary<Guid, List<Pair<int, int>>>();
                 else
                     savedItemsRestore.Add(id, new Dictionary<Guid, List<Pair<int, int>>>());
@@ -537,36 +503,37 @@ namespace SadnaExpress.ServiceLayer
                             savedItemsRestore[id][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
                         }
                     }
-                    savedItemsUserId.Enqueue(id);
-                    savedTimer[id].Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
-                    savedTimer[id].Start();
+                }
+                Logger.Instance.Info("PurhcaseCart, saving store items for userid: " + id);
+            }
+            /////////////////////////// end of saving items implementation
 
-                    if (savedPurchaseResult.ContainsKey(id))
-                        savedPurchaseResult[id] = false;
-                    else
-                        savedPurchaseResult.Add(id, false);
+            // todo: need to implement purchase cart action and
+            // update bool purchaseSuccess to the purchase result
+
+
+
+
+
+
+
+            // in case of purchase failure restore store items quantity
+            if (purchaseSuccess.Equals(false))
+            {
+                lock (stockChange)
+                {
+                    foreach (Guid storeId in savedItemsRestore[id].Keys)
+                    {
+                        foreach (Pair<int, int> storeItem in savedItemsRestore[id][storeId])
+                        {
+                            storeManager.GetStoreById(storeId).AddQuantity(storeItem.First, storeItem.Second);
+                        }
+                    }
+                    Logger.Instance.Info("Purchase Failed restored saved store items for userid: "+id);
+                    savedItemsRestore.Remove(id);
                 }
             }
-        }
-
-
-
-
-        public Response PurchaseCart(int id, string paymentDetails)
-        {
-            SaveCartItems(id);
-            // need ToDo implement this function, not implemented yet
-
-            //for tests:
-            // option 1 :demonstrates succesfull purchase
-            // need to update this field after succsesful purchase
-            //savedPurchaseResult[id] = true;
             return new Response();
-            // option 2
-            //if purchase failed then do not update this field :
-            //savedPurchaseResult[id] because its current value is false
-
-            //throw new NotImplementedException();
         }
 
 

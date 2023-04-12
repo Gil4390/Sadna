@@ -16,12 +16,11 @@ namespace SadnaExpress.DomainLayer.Store
             this.storeId = store;
             itemsInBasket = new Dictionary<int, int>();
         }
-
-        public bool AddItem(int itemId, int quantity)
+        
+        public void AddItem(int itemId, int quantity)
         {
             if (quantity < 0)
-                return false;
-            
+                throw new Exception("cant add item with negative quantity");
             if (itemsInBasket.ContainsKey(itemId))
             {
                 itemsInBasket[itemId] += quantity;
@@ -30,26 +29,15 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 itemsInBasket.Add(itemId, quantity);
             }
-
-            return true;
         }
 
-    
-
-        // return:
-        // 0 - failure 
-        // 1 - success
-        // 2 - basket is now empty so need to remove basket
-        public int RemoveItem(int itemId)
+        public void RemoveItem(int itemId)
         {
             bool result = itemsInBasket.Remove(itemId);
-            if(result)
+            if(!result)
             {
-                if (itemsInBasket.Keys.Count.Equals(0))
-                    return 2;
-                return 1;
+                throw new Exception("ItemId not in basket");
             }
-            return 0;
         }
 
         public void EditQuantity(int itemId, int quantity)
@@ -85,6 +73,11 @@ namespace SadnaExpress.DomainLayer.Store
         public Dictionary<int,int> GetItemsInBasket()
         {
             return itemsInBasket;
+        }
+
+        public int GetItemsCount()
+        { 
+            return itemsInBasket.Count; 
         }
 
 
