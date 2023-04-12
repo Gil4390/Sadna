@@ -12,12 +12,12 @@ namespace SadnaExpress.DomainLayer.Store
         void ReopenStore(Guid storeId);
         LinkedList<Order> GetStorePurchases(Guid storeId);
 
-        void AddItemToStore(string storeName, string itemName, string category, int price);
+        void AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
         void WriteReview(string storeName, string itemName, int rating);
 
         void PurchaseItems(string storeName, List<string> itemsName);
 
-        void RemoveItemFromStore(string storeName, string itemName, string category, int price);
+        void RemoveItemFromStore(Guid storeID, int itemId);
         void EditItemCategory(string storeName, string itemName, string category);
         void EditItemPrice(string storeName, string itemName, int price);
 
@@ -31,8 +31,6 @@ namespace SadnaExpress.DomainLayer.Store
         List<Item> GetItemsByStoreRating(int rating);
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
-        
-        
-
+        Store GetStoreById(Guid storeId);
     }
 }

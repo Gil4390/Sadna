@@ -1,59 +1,83 @@
+using System;
 using System.Collections.Generic;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class ShoppingCart
     {
-        private List<ShoppingBasket> baskets;
+        private HashSet<ShoppingBasket> baskets;
         // list for saved items
 
         public ShoppingCart()
         {
-            baskets = new List<ShoppingBasket>();
+            baskets = new HashSet<ShoppingBasket>();
         }
-        public ShoppingCart(List<ShoppingBasket> newbaskets)
+        public HashSet<ShoppingBasket> GetShoppingBaskets()
         {
-            baskets = newbaskets;
+            return this.baskets;
         }
-        
-        public bool addInventoryToCart(Inventory inv, int stock)
+
+
+        public ShoppingBasket GetShoppingBasketByStore(Guid store)
         {
-            // add product to existing basket from the same store
-            foreach (ShoppingBasket sb in baskets)
-            {
-                if (sb.getStore() == inv.getStore())
+            foreach (ShoppingBasket basket in baskets)
+            {       
+                if (basket.GetStoreId().Equals(store))
                 {
-                    sb.addItem(inv, stock);
-                    return true;
+                    return basket;
                 }
             }
-
-            // no basket store match this item then add new basket and the item to it 
-            ShoppingBasket b = new ShoppingBasket(inv.getStore(), new Dictionary<Inventory, int>());
-            b.addItem(inv, stock);
-            this.baskets.Add(b);
-            return true;
-
+            return null;
         }
 
-        // functions to implement
+        public void AddBasket(ShoppingBasket basket)
+        {
+            foreach (ShoppingBasket b in baskets)
+            {
+                if (b.Equals(basket))
+                    throw new Exception("Failed to add basket (this basket already exists in the cart)");
+            }
+            baskets.Add(basket);
+        }
 
-        // getters
+        public void RemoveBasket(ShoppingBasket basket)
+        {
+            baskets.Remove(basket);
+        }
+
+        public void AddItemToBasket(Guid storeId, int itemId, int stock)
+        {
+            bool addShoppingBasket = true;
+            foreach (ShoppingBasket b in baskets)
+            {
+                if (b.GetStoreId().Equals(storeId))
+                {
+                    b.AddItem(itemId, stock);
+                    addShoppingBasket = false;
+                }
+            }
+            if (addShoppingBasket)
+            {
+                ShoppingBasket newOne = new ShoppingBasket(storeId);
+                newOne.AddItem(itemId, stock);
+                baskets.Add(newOne);
+            }
+        }
 
 
-        // add / remove basket
-
-        // add / remove items
-
-        //  purchase basket
-
-        // purchase items
-
-        // get num of items
-
-        // edit stock of item
-
-        // save items for purchase
+        public void RemoveItemFromBasket(Guid storeId, int itemId)
+        {
+            foreach (ShoppingBasket b in baskets)
+            {
+                if (b.GetStoreId().Equals(storeId))
+                {
+                    b.RemoveItem(itemId);
+                    int amount = b.GetItemsCount();
+                    if (amount.Equals(0))
+                        this.RemoveBasket(b);
+                }
+            }
+        }
 
 
 

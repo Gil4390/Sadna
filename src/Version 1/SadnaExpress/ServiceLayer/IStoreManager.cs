@@ -19,8 +19,8 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<Guid> OpenNewStore(int id, string storeName); //3.2
         Response WriteReview(int id, int itemID, string review); //3.3
         //4.1
-        Response AddItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice);
-        Response RemoveItemFromStore(int id, int itemID);
+        Response AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
+        Response RemoveItemFromStore(Guid storeID, int itemID);
         Response EditItemCategory(string storeID, string itemName, string category);
         Response EditItemPrice(string storeID, string itemName, int price); 
         Response CloseStore(int id, Guid storeID); //4.9
@@ -30,5 +30,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response GetPurchasesInfo(int id, int storeID);//4.13 //6.4
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
+        
+        Store GetStoreById(Guid storeId);
     }
 }

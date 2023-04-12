@@ -13,7 +13,7 @@ namespace SadnaExpress.DomainLayer.User
         int Login(int id, string email, string password);
         int Logout(int id);
         void AddItemToCart(int id,Guid storeID, int itemID,  int itemAmount);
-        void RemoveItemFromCart(int id,Guid storeID, int itemID,  int itemAmount);
+        void RemoveItemFromCart(int id,Guid storeID, int itemID);
         void EditItemFromCart(int id,Guid storeID, int itemID,  int itemAmount);
         Dictionary<string,List<string>> getDetailsOnCart();
         void PurchaseCart(int id);
@@ -40,6 +40,10 @@ namespace SadnaExpress.DomainLayer.User
         bool hasPermissions(int userId, Guid storeID, List<string> per);
         ShoppingCart ShowShoppingCart(int id);
         void SetSecurityQA(int id,string q, string a);
+
+        ShoppingCart GetShoppingCartById(int id);
+
         bool isLogin(int idx);
+
     }
 }

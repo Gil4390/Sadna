@@ -1,33 +1,34 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class Store
     {
-        private string name;
-        private List<Inventory> itemsInventory;
+        private string storeName;
+        private Inventory itemsInventory;
         private Guid storeID;
         public Guid StoreID {get=>storeID;}
-        private Policy policy;
+        //private Policy policy; // not for this version
 
         private bool active;
-        //username, rating 1-5
-        private Dictionary<string, int> storeReview;
-        // maybe need to add store discount
+
+        private int storeRating;
+        
         public Store(string name) {
-            this.name = name;
-            this.itemsInventory = new List<Inventory>();
-            this.policy = new Policy();
-            this.storeReview = new Dictionary<string, int>();
+            this.storeName = name;
+            this.itemsInventory = new Inventory();
+            //this.policy = new Policy();
+            this.storeRating = 0;
             storeID = Guid.NewGuid();
             active = true;
         }
 
         //getters
         public string getName() {
-            return this.name;
+            return this.storeName;
         }
 
         public Guid StoreId
@@ -36,113 +37,66 @@ namespace SadnaExpress.DomainLayer.Store
             set => storeID = value;
         }
 
-        public Policy getPolicy() {
-            return this.policy;
-        }
 
-        
-
-        public List<Inventory> getItemsInventory()
+        public Inventory getItemsInventory()
         {
             return this.itemsInventory;
         }
 
-        
-
-
         // add new Item to store, if item exists with the same name return false
-        public bool addItem(string name, string category, double price, int in_stock, Policy policy)
+        public void addItem(string name, string category, double price, int quantity)
         {
-            Inventory exists = getItem(name);
-            if (exists != null)
-            {
-                return false;
-            }
-            Item newItem = new Item(name, category, price);
-            Inventory inv = new Inventory(newItem, in_stock, price, policy, this);
-            this.itemsInventory.Add(inv);
-            return true;
+            this.itemsInventory.AddItem(name, category, price, quantity);
         }
 
-        public Inventory getItem(String name)
+        public void AddQuantity(int itemID, int addedQuantity)
         {
-            foreach (Inventory inv in itemsInventory)
-            {
-                if (inv.getName() == name)
-                {
-                    return inv;
-                }
-            }
-            return null;
+            this.itemsInventory.AddQuantity(this.itemsInventory.getItemById(itemID), addedQuantity);
         }
 
-        public bool deleteItem(string name)
+        public void RemoveQuantity(int itemId, int removedQuantity)
         {
-            foreach (Inventory inv in itemsInventory)
-            {
-                if (inv.getName() == name)
-                {
-                    itemsInventory.Remove(inv);
-                    return true;
-                }
-            }
-            Logger.Instance.Error("Item removal failed (Item not Found)");
-            return false;
-        }
-        
-        public bool updateItem(string name, string newName, string newCategory, double newPrice, int newIn_stock, Policy newPolicy)
-        {
-            Inventory inventoryitem = getItem(name);
-
-            if(newName.Equals(""))
-            {
-                return false;
-            }
-            if (newCategory.Equals(""))
-            {
-                return false;
-            }
-
-            if(newPrice <= 0)
-            {
-                return false;
-            }
-
-            if (newIn_stock < 0)
-            {
-                return false;
-            }
-
-            inventoryitem.setPrice(newPrice);
-            inventoryitem.setInStock(newIn_stock);
-            inventoryitem.setPolicy(newPolicy);
-            inventoryitem.setItem(new Item(newName, newCategory, newPrice));
-
-            return true;
+            this.itemsInventory.RemoveQuantity(this.itemsInventory.getItemById(itemId), removedQuantity);
         }
 
-
-        // this function handles stock updates for the store after a purchase
-        public bool updateStockAfterPurchase(Inventory inv, int stock)
+        public void EditItemName(int itemId, string name)
         {
-            int newStock = inv.getInStock() - stock;
-            if ( newStock < 0)
-            {
-                Logger.Instance.Error("Not Enough Items in stock to complete this purhcase, please try later!");
-            }
-            else
-            {
-                inv.setInStock(newStock);
-                return true;
-            }
-            return false;
+            this.itemsInventory.getItemById(itemId);
         }
 
-
-        public void addStoreReview(string username, int rating)
+        public void EditItemCategory(int itemId, string category)
         {
-            this.storeReview.Add(username, rating);
+            this.itemsInventory.EditItemCategory(itemId,category);
+        }
 
+        public void EditItemPrice(int itemId, double price)
+        {
+            this.itemsInventory.EditItemPrice(itemId,price);
+        }
+
+        public void RemoveItemById(int itemId)
+        {
+            this.itemsInventory.RemoveItem(this.itemsInventory.getItemById(itemId));
+        }
+
+        public void RemoveItemByName(string itemName)
+        {
+            this.itemsInventory.RemoveItem(this.itemsInventory.getItemByName(itemName));
+        }
+
+        public int getStoreRating()
+        {
+            return this.storeRating;
+        }
+
+        public void setStoreRating(int rating)
+        {
+            this.storeRating = rating;
+        }
+
+        public void setItemRating(int id, int rating)
+        {
+            this.itemsInventory.setItemRating(id, rating);
         }
 
         public bool Active

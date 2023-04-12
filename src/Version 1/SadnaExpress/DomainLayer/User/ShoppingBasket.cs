@@ -1,43 +1,84 @@
+using SadnaExpress.ServiceLayer;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class ShoppingBasket
     {
-        private Store store;
-        private Dictionary<Inventory,int> itemsInBasket;
+        private Guid storeId;
+        //                itemId, quantity Selected
+        private Dictionary<int, int> itemsInBasket;
 
-        public ShoppingBasket(Store store, Dictionary<Inventory, int> itemsInBasket)
+        public ShoppingBasket(Guid store)
         {
-            this.store = store;
-            this.itemsInBasket = itemsInBasket;
+            this.storeId = store;
+            itemsInBasket = new Dictionary<int, int>();
+        }
+        
+        public void AddItem(int itemId, int quantity)
+        {
+            if (quantity < 0)
+                throw new Exception("cant add item with negative quantity");
+            if (itemsInBasket.ContainsKey(itemId))
+            {
+                itemsInBasket[itemId] += quantity;
+            }
+            else
+            {
+                itemsInBasket.Add(itemId, quantity);
+            }
         }
 
-        internal void addItem(Inventory inv, int stock)
+        public void RemoveItem(int itemId)
         {
-            itemsInBasket.Add(inv, stock);
+            bool result = itemsInBasket.Remove(itemId);
+            if(!result)
+            {
+                throw new Exception("ItemId not in basket");
+            }
         }
 
-        internal Store getStore()
+        public void EditQuantity(int itemId, int quantity)
         {
-            return this.store;
+            if (quantity < 0)
+                throw new Exception("cant edit quantity with negative value");
+            else if (quantity == 0)
+                RemoveItem(itemId);
+            else if (itemsInBasket.ContainsKey(itemId))
+                itemsInBasket[itemId] = quantity;
+            else 
+                throw new Exception("cant edit quantity of item that is not in the basket");
         }
 
-        // functions to implement:
+        public Guid GetStoreId()
+        {
+            return this.storeId;
+        }
 
-        // getters
+        public int GetItemStock(int itemId)
+        {
+            if (itemsInBasket.ContainsKey(itemId))
+                return itemsInBasket[itemId];
+            throw new Exception("Failure here!");
+        }
 
-        // setters
 
-        // add Item
+        public override bool Equals(object obj)
+        {
+            return obj is ShoppingBasket && this.storeId.Equals(((ShoppingBasket)obj).GetStoreId());
+        }
 
-        // delete Item
+        public Dictionary<int,int> GetItemsInBasket()
+        {
+            return itemsInBasket;
+        }
 
-        // edit stock in basket
-
-        // get items numbers in basket
-
-        // find item in basket
+        public int GetItemsCount()
+        { 
+            return itemsInBasket.Count; 
+        }
 
 
     }

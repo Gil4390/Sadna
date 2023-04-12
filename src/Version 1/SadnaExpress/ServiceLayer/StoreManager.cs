@@ -15,7 +15,7 @@ namespace SadnaExpress.ServiceLayer
         
         public StoreManager()
         {
-            userFacade = new UserFacade();
+            //userFacade = new UserFacade(); // this is causing problems now we have 2 userFacades
             storeFacade = new StoreFacade();
             
         }
@@ -25,6 +25,14 @@ namespace SadnaExpress.ServiceLayer
             storeFacade = sf;
             
         }
+
+        public StoreManager(IUserFacade userFacade)
+        {
+            this.userFacade = userFacade;
+            storeFacade = new StoreFacade();
+
+        }
+
 
         public Response PurchaseCart(int id, string paymentDetails)
         {
@@ -97,9 +105,18 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response AddItemToStore(int id, int storeID, string itemName, string itemCategory, float itemPrice)
+        public Response AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                storeFacade.AddItemToStore(storeID, itemName, itemCategory, itemPrice, quantity);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
         }
 
         public Response PurchaseItems(int id, string paymentDetails)
@@ -115,9 +132,18 @@ namespace SadnaExpress.ServiceLayer
 
     
 
-        public Response RemoveItemFromStore(int id, int itemID)
+        public Response RemoveItemFromStore(Guid storeID, int itemID)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                storeFacade.RemoveItemFromStore(storeID, itemID);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
         }
         public Response EditItemPrice(string storeID, string itemName, int price)
         {
@@ -176,6 +202,12 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeFacade.GetStores();
         }
-        
+
+
+        public Store GetStoreById(Guid storeId)
+        {
+            return storeFacade.GetStoreById(storeId);
+        }
+
     }
 }

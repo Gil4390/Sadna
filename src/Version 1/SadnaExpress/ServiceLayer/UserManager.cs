@@ -11,10 +11,15 @@ namespace SadnaExpress.ServiceLayer
     {
         private IUserFacade userFacade;
         
-        public UserManager(IUserFacade uf)
+
+        public IUserFacade GetUserFacade()
         {
-            userFacade = uf;
+            return userFacade;
         }
+        //public UserManager(IUserFacade uf)
+        //{
+        //    userFacade = uf;
+        //}
         public UserManager()
         {
             userFacade = new UserFacade();
@@ -76,14 +81,34 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AddItemToCart(int id, int itemID, int itemAmount)
-        {   
-            throw new System.NotImplementedException();
+        public Response AddItemToCart(int id, Guid storeID, int itemID, int itemAmount)
+        {
+            try
+            {
+               userFacade.AddItemToCart(id, storeID, itemID, itemAmount);
+                return new Response();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
         }
 
-        public Response RemoveItemFromCart(int id, int itemID, int itemAmount)
+        public Response RemoveItemFromCart(int id, Guid storeID, int itemID)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                userFacade.RemoveItemFromCart(id, storeID, itemID);
+                return new Response();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
         }
 
         public Response EditItemFromCart(int id, int itemID, int itemAmount)
@@ -226,7 +251,22 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public bool  isLogin(int idx)
+
+        public ResponseT<ShoppingCart> GetShoppingCartById(int id)
+        {
+            try
+            {
+                ShoppingCart Cart = userFacade.GetShoppingCartById(id);
+                return new ResponseT<ShoppingCart>(Cart);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<ShoppingCart>(ex.Message);
+            }
+        }
+
+      public bool  isLogin(int idx)
         {
             return userFacade.isLogin(idx);
         }
@@ -266,6 +306,7 @@ namespace SadnaExpress.ServiceLayer
             {
                 userFacade.UpdatePassword(id, newPassword);
                 return new ResponseT<int>(id);
+                return new ResponseT<int>(ex.Message);
             }
             catch (Exception ex)
             {

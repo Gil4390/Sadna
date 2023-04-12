@@ -25,14 +25,14 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<S_Item>> GetItemsByPrices(int id, int minPrice, int maxPrice);
         ResponseT<List<S_Item>> GetItemsByItemRating(int id, int rating);
         ResponseT<List<S_Item>> GetItemsByStoreRating(int id, int rating);
-        Response AddItemToCart(int id, int itemID, int itemAmount); //2.3
+        Response AddItemToCart(int id, Guid storeID, int itemID, int itemAmount); //2.3
         //2.4
-        Response RemoveItemFromCart(int id, int itemID,  int itemAmount);
+        Response RemoveItemFromCart(int id, Guid storeID, int itemID);
         Response EditItemFromCart(int id, int itemID,  int itemAmount);
         ResponseT<Dictionary<string,List<string>>> getDetailsOnCart();
         Response PurchaseCart(int id, string paymentDetails); //2.5
         ResponseT<int> Logout(int id); //3.1
-        Response OpenNewStore(int id, string storeName); //3.2
+        ResponseT<Guid> OpenNewStore(int id, string storeName); //3.2
         Response WriteReview(int id, int itemID, string review); //3.3
         Response RateItem(int id, int itemID, int score); //3.4 (not in this version)
         Response WriteMessageToStore(int id, Guid storeID, string message); //3.5  (not in this version)
@@ -40,8 +40,8 @@ namespace SadnaExpress.ServiceLayer
         Response GetPurchasesInfo(int id); //3.7 (not in this version)
         //3.8 and 3.9 (not in this version)
         //4.1
-        Response AddItemToStore(int id, Guid storeID, string itemName, string itemCategory, float itemPrice);
-        Response RemoveItemFromStore(int id, int itemID);
+        Response AddItemToStore(int id, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
+        Response RemoveItemFromStore(int id, Guid storeID, int itemID);
         Response EditItemCategory(string storeName, string itemName, string category);
         Response EditItemPrice(string storeName, string itemName, int price); 
         Response AppointStoreOwner(int id, Guid storeID, string userEmail); //4.4
