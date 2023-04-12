@@ -11,10 +11,15 @@ namespace SadnaExpress.ServiceLayer
     {
         private IUserFacade userFacade;
         
+
         public IUserFacade GetUserFacade()
         {
             return userFacade;
         }
+        //public UserManager(IUserFacade uf)
+        //{
+        //    userFacade = uf;
+        //}
         public UserManager()
         {
             userFacade = new UserFacade();
@@ -246,6 +251,7 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+
         public ResponseT<ShoppingCart> GetShoppingCartById(int id)
         {
             try
@@ -257,6 +263,55 @@ namespace SadnaExpress.ServiceLayer
             {
                 Logger.Instance.Error(ex.Message);
                 return new ResponseT<ShoppingCart>(ex.Message);
+            }
+        }
+
+      public bool  isLogin(int idx)
+        {
+            return userFacade.isLogin(idx);
+        }
+
+
+        public ResponseT<int> UpdateFirst(int id, string newFirst)
+        {
+            try
+            {
+                userFacade.UpdateFirst(id, newFirst);
+                return new ResponseT<int>(id);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<int>(ex.Message);
+            }
+        }
+
+        public ResponseT<int> UpdateLast(int id, string newLast)
+        {
+            try
+            {
+                userFacade.UpdateLast(id, newLast);
+                return new ResponseT<int>(id);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<int>(ex.Message);
+            }
+        }
+
+        public ResponseT<int> UpdatePassword(int id, string newPassword)
+        {
+            try
+            {
+                userFacade.UpdatePassword(id, newPassword);
+                return new ResponseT<int>(id);
+                return new ResponseT<int>(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<int>(ex.Message);
             }
         }
     }

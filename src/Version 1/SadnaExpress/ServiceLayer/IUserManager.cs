@@ -37,6 +37,13 @@ namespace SadnaExpress.ServiceLayer
         ConcurrentDictionary<int, Member> GetMembers();
         ResponseT<ShoppingCart> ShowShoppingCart(int id);
         ResponseT<int> SetSecurityQA(int id,string q, string a);
+
         ResponseT<ShoppingCart> GetShoppingCartById(int id);
+
+        bool isLogin(int idx);
+        ResponseT<int> UpdateFirst(int id, string newFirst);
+        ResponseT<int> UpdateLast(int id, string newLast);
+        ResponseT<int> UpdatePassword(int id,string newPassword);
+
     }
 }

@@ -22,8 +22,13 @@ namespace SadnaExpress.ServiceLayer
     {
         private ISupplierService supplierService;
         private IPaymentService paymentService;
+
         private static IStoreManager storeManager;
         private static IUserManager userManager;
+
+        //private IStoreManager storeManager;
+        //public IUserManager userManager;
+
         private const int ExternalServiceWaitTimeInSeconds=10000; //10 seconds is 10,000 mili seconds
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
@@ -46,6 +51,13 @@ namespace SadnaExpress.ServiceLayer
             //storeManager = new StoreManager();
             storeManager = new StoreManager(userManager.GetUserFacade());
 
+            this.paymentService = paymentService;
+            this.supplierService = supplierService;
+        }
+        public TradingSystem(IUserManager userManager , IStoreManager storeManager, ISupplierService supplierService=null, IPaymentService paymentService=null)
+        {
+            this.storeManager = storeManager;
+            this.userManager = userManager;
             this.paymentService = paymentService;
             this.supplierService = supplierService;
         }
@@ -337,20 +349,19 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
-
         public ResponseT<int> UpdateFirst(int id, string newFirst)
         {
-            return storeManager.UpdateFirst(id, newFirst);
+            return userManager.UpdateFirst(id, newFirst);
         }
 
         public ResponseT<int> UpdateLast(int id, string newLast)
         {
-            return storeManager.UpdateLast(id, newLast);
+            return userManager.UpdateLast(id, newLast);
         }
 
         public ResponseT<int> UpdatePassword(int id, string newPassword)
         {
-            return storeManager.UpdatePassword(id, newPassword);
+            return userManager.UpdatePassword(id, newPassword);
         }
 
         public ResponseT<int> SetSecurityQA(int id,string q, string a)
@@ -473,6 +484,7 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetStores();
         }
 
+
         public Response PurchaseCart(int id, string paymentDetails)
         {
             bool purchaseSuccess = false;
@@ -536,6 +548,10 @@ namespace SadnaExpress.ServiceLayer
             return new Response();
         }
 
+        public bool isLogin(int idx)
+        {
+            return userManager.isLogin(idx);
+        }
 
     }
 }

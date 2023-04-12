@@ -18,8 +18,17 @@ namespace SadnaExpress.ServiceLayer
 
         public Server()
         {
+
             //service = new TradingSystem(new Mock_SupplierService(), new Mock_PaymentService());
             service = TradingSystem.Instance;
+
+            //UserFacade uf = new UserFacade();
+            //StoreFacade sf = new StoreFacade();
+            //UserManager um = new UserManager(uf);
+            //StoreManager sm = new StoreManager(uf,sf);
+            //service = new TradingSystem(um,sm,new Mock_SupplierService(), new Mock_PaymentService());
+            //service = new TradingSystem(new Mock_SupplierService(), new Mock_PaymentService());
+
         }
         private static Guid ToGuid(int value)
         {
