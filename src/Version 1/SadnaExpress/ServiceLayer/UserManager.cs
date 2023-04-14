@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -16,13 +17,15 @@ namespace SadnaExpress.ServiceLayer
         {
             return userFacade;
         }
-        //public UserManager(IUserFacade uf)
-        //{
-        //    userFacade = uf;
-        //}
+
+        public UserManager(IUserFacade uf)
+        {
+            userFacade = uf;
+        }
+
         public UserManager()
         {
-            userFacade = new UserFacade();
+            this.userFacade = new UserFacade();
         }
         public ResponseT<int> Enter()
         {
@@ -211,9 +214,21 @@ namespace SadnaExpress.ServiceLayer
             userFacade.CleanUp();
         }
 
-        public bool InitializeTradingSystem(int id)
+        public ResponseT<bool> InitializeTradingSystem(int id)
         {
-            return userFacade.InitializeTradingSystem(id);
+            try
+            {
+                Logger.Instance.Info("User id: " + id + " requested to initialize trading system");
+
+                return new ResponseT<bool>(userFacade.InitializeTradingSystem(id));
+                
+               // return new ResponseT<bool>(paymentService.Connect() && supplierService.Connect());
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<bool>(ex.Message);
+            }
         }
         public ConcurrentDictionary<int , User> GetCurrent_Users()
         {

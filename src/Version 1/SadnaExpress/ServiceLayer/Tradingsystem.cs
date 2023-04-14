@@ -20,19 +20,8 @@ namespace SadnaExpress.ServiceLayer
 {
     public class TradingSystem : ITradingSystem
     {
-        private ISupplierService supplierService;
-        private IPaymentService paymentService;
-
-        private static IStoreManager storeManager;
-        private static IUserManager userManager;
-
-        //private IStoreManager storeManager;
-        //public IUserManager userManager;
-
-        private const int ExternalServiceWaitTimeInSeconds=10000; //10 seconds is 10,000 mili seconds
-        public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
-        public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
-
+        private IStoreManager storeManager;
+        private IUserManager userManager;
         // lock object for saving items 
         private static readonly object stockChange = new object();
         // fields for the saved items
@@ -47,20 +36,12 @@ namespace SadnaExpress.ServiceLayer
 
         public TradingSystem(ISupplierService supplierService=null, IPaymentService paymentService=null)
         {
-            userManager = new UserManager();
-            //storeManager = new StoreManager();
-            storeManager = new StoreManager(userManager.GetUserFacade());
-
-            this.paymentService = paymentService;
-            this.supplierService = supplierService;
+            IUserFacade userFacade = new UserFacade(paymentService);
+            IStoreFacade storeFacade = new StoreFacade(supplierService);
+            storeManager = new StoreManager(userFacade, storeFacade);
+            userManager = new UserManager(userFacade);
+           
         }
-        //public TradingSystem(IUserManager userManager , IStoreManager storeManager, ISupplierService supplierService=null, IPaymentService paymentService=null)
-        //{
-        //    this.storeManager = storeManager;
-        //    this.userManager = userManager;
-        //    this.paymentService = paymentService;
-        //    this.supplierService = supplierService;
-        //}
 
         public static TradingSystem Instance
         {
@@ -85,7 +66,7 @@ namespace SadnaExpress.ServiceLayer
 
         public int GetMaximumWaitServiceTime()
         {
-            return ExternalServiceWaitTimeInSeconds;
+            return 10000;
         }
         public ResponseT<int> Enter()
         {
@@ -109,6 +90,20 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<int> Logout(int id)
         {
             return userManager.Logout(id);
+        }
+
+        public ResponseT<bool> InitializeTradingSystem(int id)
+        {
+            try
+            {
+                Logger.Instance.Info("User id: " + id + " requested to initialize trading system");
+                return userManager.InitializeTradingSystem(id);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<bool>(ex.Message);
+            }
         }
 
         public ResponseT<List<S_Store>> GetAllStoreInfo(int id)
@@ -335,16 +330,6 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.DeleteStore(id,storeID);
         }
 
-        public bool CheckSupplierConnection()
-        {
-            bool result = this.supplierService.Connect();
-            if (!result)
-            {
-                Logger.Instance.Error("Supplier Service Connection Failed");
-            }
-            return result;
-        }
-
         public Response DeleteMember(int id, int userID)
         {
             throw new NotImplementedException();
@@ -369,103 +354,13 @@ namespace SadnaExpress.ServiceLayer
             return userManager.SetSecurityQA(id,q,a);
         }
 
-        public bool CheckPaymentConnection()
-        {
-            bool result = this.paymentService.Connect();
-            if (!result)
-            {
-                Logger.Instance.Error("Payment Service Connection Failed");
-            }
-            return result;
-        }
-
         public void CleanUp() // for the tests
         {
             storeManager.CleanUp();
             userManager.CleanUp();
-            supplierService = null;
-            paymentService = null;
         }
 
-        public void SetPaymentService(IPaymentService paymentService)
-        {
-            this.paymentService = paymentService;
-        }
-
-        public void SetSupplierService(ISupplierService supplierService)
-        {
-            this.supplierService = supplierService;
-        }
-
-        public ResponseT<bool> PlacePayment(string transactionDetails)
-        {
-            try
-            {
-                var task = Task.Run(() =>
-                {
-                    return paymentService.ValidatePayment(transactionDetails);
-                });
-
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(ExternalServiceWaitTimeInSeconds));
-
-                if (isCompletedSuccessfully)
-                {
-                    return new ResponseT<bool>(task.Result);
-                }
-                else
-                {
-                    throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed.");
-                }
-            }
-            catch(Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<bool>(ex.Message);
-            }
-        }
-
-        public ResponseT<bool> PlaceSupply(string orderDetails, string userDetails)
-        {
-            try
-            {
-                var task = Task.Run(() =>
-                {
-                    return supplierService.ShipOrder(orderDetails,userDetails);
-                });
-
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(ExternalServiceWaitTimeInSeconds));
-
-                if (isCompletedSuccessfully)
-                {
-                    return new ResponseT<bool>(task.Result);
-                }
-                else
-                {
-                    throw new TimeoutException("Supply external service action has taken longer than the maximum time allowed.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<bool>(ex.Message);
-            }
-        }
-
-        public ResponseT<bool> InitializeTradingSystem(int id)
-        {
-            try
-            {
-                Logger.Instance.Info("User id: " + id + " requested to initialize trading system");
-                userManager.InitializeTradingSystem(id);
-                return new ResponseT<bool>(paymentService.Connect() && supplierService.Connect());
-            }
-            catch(Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<bool>(ex.Message);
-            }
-        }
-
+     
         public ResponseT<ShoppingCart> ShowShoppingCart(int id)
         {
             return userManager.ShowShoppingCart(id);
@@ -482,6 +377,11 @@ namespace SadnaExpress.ServiceLayer
         public ConcurrentDictionary<Guid , Store> GetStores()
         {
             return storeManager.GetStores();
+        }
+
+        public void SetPaymentService(IPaymentService paymentService)
+        {
+            throw new NotImplementedException();
         }
 
 

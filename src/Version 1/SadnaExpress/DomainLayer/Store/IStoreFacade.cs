@@ -1,3 +1,4 @@
+using SadnaExpress.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -31,6 +32,13 @@ namespace SadnaExpress.DomainLayer.Store
         List<Item> GetItemsByStoreRating(int rating);
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
+        void SetSupplierService(ISupplierService supplierService);
+        bool PlaceSupply(string orderDetails, string userDetails);
+
+
+
+
+
         Store GetStoreById(Guid storeId);
     }
 }
