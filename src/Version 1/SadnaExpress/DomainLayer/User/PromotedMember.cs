@@ -21,6 +21,8 @@ namespace SadnaExpress.DomainLayer.User
          * add new owner
          * add new manager
          * get employees info
+         * get store purchases
+         * get all stores purchases
          */
         public PromotedMember(int id, string email, string firstName, string lastName, string password) : base(id,
             email, firstName, lastName, password)
