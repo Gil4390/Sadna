@@ -8,10 +8,10 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private int userID;
         private Guid storeID;
-        private LinkedList<Item> listItems;
+        private LinkedList<String> listItems;
         private double price;
 
-        public Order(int userID, Guid storeId,LinkedList<Item> listItems,double price)
+        public Order(int userID, Guid storeId,LinkedList<String> listItems,double price)
         {
             this.userID = userID;
             storeID = storeId;
@@ -28,7 +28,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return storeID;
         }
-        public LinkedList<Item> getListItems()
+        public LinkedList<String> getListItems()
         {
             return listItems;
         }
