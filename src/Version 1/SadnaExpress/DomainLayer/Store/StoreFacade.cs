@@ -3,6 +3,7 @@ using SadnaExpress.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SadnaExpress.DomainLayer.Store
@@ -25,10 +26,9 @@ namespace SadnaExpress.DomainLayer.Store
         public Store GetStoreByID(Guid id)
         {
             foreach (Store store in stores.Values) {
-                if (store.StoreId.Equals(id))
+                if (store.StoreID.Equals(id))
                     return store;
             }
-
             return null;
         }
         public Guid OpenNewStore(string storeName)
@@ -48,7 +48,7 @@ namespace SadnaExpress.DomainLayer.Store
                 Logger.Instance.Error("there is no store with this name");
             //
             store.Active = false;
-            Logger.Instance.Info("store " + store.getName() + " closed.");
+            Logger.Instance.Info("store " + store.StoreName + " closed.");
         }
         public void ReopenStore(Guid storeId)
         {
@@ -57,7 +57,7 @@ namespace SadnaExpress.DomainLayer.Store
                 Logger.Instance.Error("there is no store with this name");
             //
             store.Active = true;
-            Logger.Instance.Info("store " + store.getName() + " reopen.");
+            Logger.Instance.Info("store " + store.StoreName + " reopen.");
         }
         public void DeleteStore(Guid storeId)
         {
@@ -65,14 +65,14 @@ namespace SadnaExpress.DomainLayer.Store
             if (store == null)
                 Logger.Instance.Error("there is no store with this name");
             stores.TryRemove(store.StoreID, out store);
-            Logger.Instance.Info("store " + store.getName() + " deleted.");
+            Logger.Instance.Info("store " + store.StoreName + " deleted.");
         }
         
         public LinkedList<Order> GetStorePurchases(Guid storeId)
         {
             if (!storeOrders.ContainsKey(storeId))
                 throw new Exception("Store with this id does not exist");
-            Logger.Instance.Info("store " + GetStoreByID(storeId).getName() + " got his purchases info.");
+            Logger.Instance.Info("store " + GetStoreByID(storeId).StoreName + " got his purchases info.");
             return storeOrders[storeId];
         }
         public void PurchaseItems(string storeName, List<string> itemsName)
@@ -113,39 +113,42 @@ namespace SadnaExpress.DomainLayer.Store
         {
             throw new System.NotImplementedException();
         }
-
-    
-
-        public List<Item> GetItemsByName(string itemName)
+        
+        public List<Item> GetItemsByName(string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
-            throw new System.NotImplementedException();
+            List<Item> allItems = new List<Item>(); 
+            foreach (Store store in stores.Values)
+            {
+                if (ratingStore != -1 && store.StoreRating != ratingStore)
+                    continue;
+                Item item = store.GetItemsByName(itemName, minPrice, maxPrice, category, ratingItem);
+                if (item != null)
+                    allItems.Add(item);
+            }
+            return allItems;
         }
-
-        public List<Item> GetItemsByCategory(string category)
+        public List<Item> GetItemsByCategory(string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
         {
-            throw new System.NotImplementedException();
+            List<Item> allItems = new List<Item>(); 
+            foreach (Store store in stores.Values)
+            {
+                if (ratingStore != -1 && store.StoreRating != ratingStore)
+                    continue;
+                allItems.AddRange(store.GetItemsByCategory(category, minPrice, maxPrice, ratingItem));
+            }
+            return allItems;
         }
-
-        public List<Item> GetItemsByKeysWord(string keyWords)
+        public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
-            throw new System.NotImplementedException();
+            List<Item> allItems = new List<Item>(); 
+            foreach (Store store in stores.Values)
+            {
+                if (ratingStore != -1 && store.StoreRating != ratingStore)
+                    continue;
+                allItems.AddRange(store.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category));
+            }
+            return allItems;
         }
-
-        public List<Item> GetItemsByPrices(int minPrice, int maxPrice)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public List<Item> GetItemsByItemRating(int rating)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public List<Item> GetItemsByStoreRating(int rating)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void WriteReview(string storeName, string itemName, int rating)
         {
             throw new System.NotImplementedException();

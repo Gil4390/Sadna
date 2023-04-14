@@ -9,7 +9,7 @@ namespace SadnaExpressTests.Unit_Tests
     public class UserUnitTest
     {
         private IUserFacade userFacade;
-        private int userId;
+        private Guid userId;
         private Guid storeID;
 
         [TestInitialize]
@@ -93,7 +93,7 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
             userFacade.OpenNewStore(userId, storeID);
             //create user 
-            int userIdOwner = userFacade.Enter();
+            Guid userIdOwner = userFacade.Enter();
             userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdOwner);
             // add owner
@@ -112,12 +112,12 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
             userFacade.OpenNewStore(userId, storeID);
             //create owner
-            int userIdOwner = userFacade.Enter();
+            Guid userIdOwner = userFacade.Enter();
             userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.AppointStoreOwner(userId, storeID, "nogaschw@gmail.com");
             userFacade.Login(userIdOwner, "nogaschw@gmail.com", "123");
             //try add owner
-            int userIdDina = userFacade.Enter();
+            Guid userIdDina = userFacade.Enter();
             userFacade.Register(userIdDina, "dinaaga@gmail.com", "dina", "agapov", "123");
             userFacade.Exit(userIdDina);
             userFacade.AppointStoreOwner(userIdOwner, storeID, "dinaaga@gmail.com");
@@ -135,7 +135,7 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
             userFacade.OpenNewStore(userId, storeID);
             //create user 
-            int userIdOwner = userFacade.Enter();
+            Guid userIdOwner = userFacade.Enter();
             userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdOwner);
             // add owner
@@ -154,7 +154,7 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
             userFacade.OpenNewStore(userId, storeID);
             //create user 
-            int userIdOwner = userFacade.Enter();
+            Guid userIdOwner = userFacade.Enter();
             userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdOwner);
             // add owner
@@ -170,7 +170,7 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Register(userId, "shayk1934@gmail.com", "shay", "kresner", "123");
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
             //create user 
-            int userIdOwner = userFacade.Enter();
+            Guid userIdOwner = userFacade.Enter();
             userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdOwner);
             // add owner
@@ -185,7 +185,7 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
             userFacade.OpenNewStore(userId, storeID);
             //create user 
-            int userIdManager = userFacade.Enter();
+            Guid userIdManager = userFacade.Enter();
             userFacade.Register(userIdManager, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdManager);
             userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com");
@@ -204,7 +204,7 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
             userFacade.OpenNewStore(userId, storeID);
             //create user 
-            int userIdManager = userFacade.Enter();
+            Guid userIdManager = userFacade.Enter();
             userFacade.Register(userIdManager, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdManager);
             // remove permission fail
@@ -218,7 +218,7 @@ namespace SadnaExpressTests.Unit_Tests
             userFacade.Login(userId, "shayk1934@gmail.com", "123");
             userFacade.OpenNewStore(userId, storeID);
             //create user 
-            int userIdManager = userFacade.Enter();
+            Guid userIdManager = userFacade.Enter();
             userFacade.Register(userIdManager, "nogaschw@gmail.com", "noga", "schwartz", "123");
             userFacade.Exit(userIdManager);
             userFacade.AppointStoreManager(userId, storeID, "nogaschw@gmail.com");

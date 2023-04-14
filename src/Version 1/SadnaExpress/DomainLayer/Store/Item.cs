@@ -1,70 +1,28 @@
+using System;
+
 namespace SadnaExpress.DomainLayer.Store
 {
     public class Item
     {
-        private static int _id = 0;
-        private int id;
+        private Guid itemID;
+        public Guid ItemID {get=>itemID;}
+
         private string name;
+        public string Name {get => name; set => name = value;}
         private string category;
+        public string Category {get => category; set => category = value;}
         private double price;
+        public double Price {get => price; set => price = value;}
         private int rating;
+        public int Rating {get => rating; set => rating = value;}
 
         public Item(string name, string category, double price)
         {
             this.name = name;
             this.category = category;
             this.price = price;
-            this.rating = 0;
-            this.id = _id;
-            _id++;
+            rating = 0;
+            itemID = Guid.NewGuid(); 
         }
-
-        //setters
-        public void setName(string name)
-        {
-            this.name = name;
-        }
-
-        public void setCategory(string category)
-        {
-            this.category = category;
-        }
-
-        public void setPrice(double price)
-        {
-            this.price = price;
-        }
-
-        //getters 
-        public string getName()
-        {
-            return name;
-        }
-
-        public string getCategory()
-        {
-            return category;
-        }
-
-        public double getPrice()
-        {
-            return price;
-        }
-
-        public void setRating(int rating)
-        {
-            this.rating = rating;
-        }
-
-        public int getItemRating()
-        {
-            return this.rating;
-        }
-
-        public int getId()
-        {
-            return this.id;
-        }
-
     }
 }

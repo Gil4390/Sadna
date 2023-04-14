@@ -23,7 +23,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
-            int userId = 0;
+            Guid userId = new Guid();
             int memberid = 0;
             members = new ConcurrentDictionary<int, Member>();
             members.TryAdd(memberid, new Member(0, "shayk1934@gmail.com", "shay", "kresner", "123"));
