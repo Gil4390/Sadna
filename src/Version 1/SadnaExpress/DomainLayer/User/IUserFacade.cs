@@ -8,46 +8,46 @@ namespace SadnaExpress.DomainLayer.User
 {
     public interface IUserFacade
     {
-        int Enter();
-        void Exit(int id);
-        void Register(int id, string email, string firstName, string lastLame, string password);
-        int Login(int id, string email, string password);
-        int Logout(int id);
-        void AddItemToCart(int id,Guid storeID, int itemID,  int itemAmount);
-        void RemoveItemFromCart(int id,Guid storeID, int itemID);
-        void EditItemFromCart(int id,Guid storeID, int itemID,  int itemAmount);
+        Guid Enter();
+        void Exit(Guid userID);
+        void Register(Guid userID, string email, string firstName, string lastLame, string password);
+        Guid Login(Guid userID, string email, string password);
+        Guid Logout(Guid userID);
+        void AddItemToCart(Guid userID,Guid storeID, int itemID,  int itemAmount);
+        void RemoveItemFromCart(Guid userID,Guid storeID, int itemID);
+        void EditItemFromCart(Guid userID,Guid storeID, int itemID,  int itemAmount);
         Dictionary<string,List<string>> getDetailsOnCart();
-        void PurchaseCart(int id);
-        void EditItemCart(int id,Guid storeID, string itemName);
-        void OpenNewStore(int id,Guid storeID);
-        void AddReview(int id,Guid storeID, string itemName);
-        void AddItemInventory(int id,Guid storeID, string itemName);
-        void RemoveItemInventory(int id,Guid storeID, string itemName);
-        void EditItemInventory(int id,Guid storeID, string itemName);
-        void AppointStoreOwner(int id,Guid storeID, string email);
-        void AppointStoreManager(int id, Guid storeID, string email);
-        void AddStoreManagerPermissions(int id,Guid storeID, string email, string Permission);
-        void RemoveStoreManagerPermissions(int id,Guid storeID, string email, string Permission);
-        void CloseStore(int id,Guid storeID);
-        void GetDetailsOnStore(int id,Guid storeID);
-        List<PromotedMember> GetEmployeeInfoInStore(int id, Guid storeID);
-        void UpdateFirst(int id, string newFirst);
-        void UpdateLast(int id, string newLast);
-        void UpdatePassword(int id, string newPassword);
-        bool InitializeTradingSystem(int id);
+        void PurchaseCart(Guid userID);
+        void EditItemCart(Guid userID,Guid storeID, string itemName);
+        void OpenNewStore(Guid userID,Guid storeID);
+        void AddReview(Guid userID,Guid storeID, string itemName);
+        void AddItemInventory(Guid userID,Guid storeID, string itemName);
+        void RemoveItemInventory(Guid userID,Guid storeID, string itemName);
+        void EditItemInventory(Guid userID,Guid storeID, string itemName);
+        void AppointStoreOwner(Guid userID,Guid storeID, string email);
+        void AppointStoreManager(Guid userID, Guid storeID, string email);
+        void AddStoreManagerPermissions(Guid userID,Guid storeID, string email, string Permission);
+        void RemoveStoreManagerPermissions(Guid userID,Guid storeID, string email, string Permission);
+        void CloseStore(Guid userID,Guid storeID);
+        void GetDetailsOnStore(Guid userID,Guid storeID);
+        List<PromotedMember> GetEmployeeInfoInStore(Guid userID, Guid storeID);
+        void UpdateFirst(Guid userID, string newFirst);
+        void UpdateLast(Guid userID, string newLast);
+        void UpdatePassword(Guid userID, string newPassword);
+        bool InitializeTradingSystem(Guid userID);
         void CleanUp();
-        ConcurrentDictionary<int, User> GetCurrent_Users();
-        ConcurrentDictionary<int, Member> GetMembers();
-        bool hasPermissions(int userId, Guid storeID, List<string> per);
-        ShoppingCart ShowShoppingCart(int id);
-        void SetSecurityQA(int id,string q, string a);
+        ConcurrentDictionary<Guid, User> GetCurrent_Users();
+        ConcurrentDictionary<Guid, Member> GetMembers();
+        bool hasPermissions(Guid userId, Guid storeID, List<string> per);
+        ShoppingCart ShowShoppingCart(Guid userID);
+        void SetSecurityQA(Guid userID,string q, string a);
         void SetPaymentService(IPaymentService paymentService);
         bool PlacePayment(string transactionDetails);
 
 
-        ShoppingCart GetShoppingCartById(int id);
+        ShoppingCart GetShoppingCartById(Guid userID);
 
-        bool isLogin(int idx);
+        bool isLoggedIn(Guid userID);
 
     }
 }

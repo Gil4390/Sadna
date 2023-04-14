@@ -27,7 +27,7 @@ namespace SadnaExpress.ServiceLayer
         // fields for the saved items
 
         // list for saved items  <userId   <itemsId selected in Cart>>
-        private static Dictionary<int, Dictionary<Guid, List<Pair<int, int>>>> savedItemsRestore = new Dictionary<int, Dictionary<Guid, List<Pair<int, int>>>>();
+        private static Dictionary<Guid, Dictionary<Guid, List<Pair<int, int>>>> savedItemsRestore = new Dictionary<Guid, Dictionary<Guid, List<Pair<int, int>>>>();
 
 
         // lock object for the instance
@@ -68,36 +68,36 @@ namespace SadnaExpress.ServiceLayer
         {
             return 10000;
         }
-        public ResponseT<int> Enter()
+        public ResponseT<Guid> Enter()
         {
             return userManager.Enter();
         }
-        public Response Exit(int id)
+        public Response Exit(Guid userID)
         {
-            return userManager.Exit(id);
+            return userManager.Exit(userID);
         }
 
-        public Response Register(int id, string email, string firstName, string lastName, string password)
+        public Response Register(Guid userID, string email, string firstName, string lastName, string password)
         {
-            return userManager.Register(id, email, firstName, lastName, password);
+            return userManager.Register(userID, email, firstName, lastName, password);
         }
 
-        public ResponseT<int> Login(int id, string email, string password)
+        public ResponseT<Guid> Login(Guid userID, string email, string password)
         {
-            return userManager.Login(id, email, password);
+            return userManager.Login(userID, email, password);
         }
 
-        public ResponseT<int> Logout(int id)
+        public ResponseT<Guid> Logout(Guid userID)
         {
-            return userManager.Logout(id);
+            return userManager.Logout(userID);
         }
 
-        public ResponseT<bool> InitializeTradingSystem(int id)
+        public ResponseT<bool> InitializeTradingSystem(Guid userID)
         {
             try
             {
-                Logger.Instance.Info("User id: " + id + " requested to initialize trading system");
-                return userManager.InitializeTradingSystem(id);
+                Logger.Instance.Info("User id: " + userID + " requested to initialize trading system");
+                return userManager.InitializeTradingSystem(userID);
             }
             catch (Exception ex)
             {
@@ -106,48 +106,48 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<S_Store>> GetAllStoreInfo(int id)
+        public ResponseT<List<S_Store>> GetAllStoreInfo(Guid userID)
         {
             //get list of business stores and convert them to service stores
             throw new NotImplementedException();
         }
 
-        public ResponseT<Guid> OpenNewStore(int id, string storeName)
+        public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
-            return storeManager.OpenNewStore(id, storeName);
+            return storeManager.OpenNewStore(userID, storeName);
         }
         
-        public ResponseT<List<S_Item>> GetItemsByName(int id, string itemName)
+        public ResponseT<List<S_Item>> GetItemsByName(Guid userID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByCategory(int id, string category)
+        public ResponseT<List<S_Item>> GetItemsByCategory(Guid userID, string category)
         {
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByKeysWord(int id, string keyWords)
+        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid userID, string keyWords)
         {
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByPrices(int id, int minPrice, int maxPrice)
+        public ResponseT<List<S_Item>> GetItemsByPrices(Guid userID, int minPrice, int maxPrice)
         {
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByItemRating(int id, int rating)
+        public ResponseT<List<S_Item>> GetItemsByItemRating(Guid userID, int rating)
         {
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByStoreRating(int id, int rating)
+        public ResponseT<List<S_Item>> GetItemsByStoreRating(Guid userID, int rating)
         {
             throw new NotImplementedException();
         }
 
-        public Response AddItemToCart(int id, Guid storeID, int itemID, int itemAmount)
+        public Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount)
         {
             // first check if store can provide the itemAmount
             try
@@ -158,7 +158,7 @@ namespace SadnaExpress.ServiceLayer
                     Logger.Instance.Error("cant add item to shopping basket with quantity more than the store can provide!");
                     return new Response();
                 }
-                return userManager.AddItemToCart(id, storeID, itemID, itemAmount);
+                return userManager.AddItemToCart(userID, storeID, itemID, itemAmount);
             }
             catch (Exception ex)
             {
@@ -167,12 +167,12 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response RemoveItemFromCart(int id, Guid storeID, int itemID)
+        public Response RemoveItemFromCart(Guid userID, Guid storeID, int itemID)
         {
-            return userManager.RemoveItemFromCart(id, storeID, itemID);
+            return userManager.RemoveItemFromCart(userID, storeID, itemID);
         }
 
-        public Response EditItemFromCart(int id, int itemID, int itemAmount)
+        public Response EditItemFromCart(Guid userID, int itemID, int itemAmount)
         {
             throw new NotImplementedException();
         }
@@ -182,39 +182,39 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response WriteReview(int id, int itemID, string review)
+        public Response WriteReview(Guid userID, int itemID, string review)
         {
             throw new NotImplementedException();
         }
 
-        public Response RateItem(int id, int itemID, int score)
+        public Response RateItem(Guid userID, int itemID, int score)
         {
             throw new NotImplementedException();
         }
 
-        public Response WriteMessageToStore(int id, Guid storeID, string message)
+        public Response WriteMessageToStore(Guid userID, Guid storeID, string message)
         {
             throw new NotImplementedException();
         }
 
-        public Response ComplainToAdmin(int id, string message)
+        public Response ComplainToAdmin(Guid userID, string message)
         {
             throw new NotImplementedException();
         }
 
-        public Response GetPurchasesInfo(int id)
+        public Response GetPurchasesInfo(Guid userID)
         {
             throw new NotImplementedException();
         }
 
-        public Response AddItemToStore(int id, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
+        public Response AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
             // TODO : todo check if user can add item to this store
             try
             {
                 bool hasPemissionToAddItem = true;
                 if (!hasPemissionToAddItem)
-                    throw new Exception("Cannot add item to store, userid: " + id + " don't have pemission to add items");
+                    throw new Exception("Cannot add item to store, userid: " + userID + " don't have pemission to add items");
 
                 //if (!storeManager.GetStoreById(storeID).addItem(itemName, itemCategory, itemPrice, quantity))
                 //{
@@ -234,13 +234,13 @@ namespace SadnaExpress.ServiceLayer
 
         }
 
-        public Response RemoveItemFromStore(int id, Guid storeID, int itemID)
+        public Response RemoveItemFromStore(Guid userID, Guid storeID, int itemID)
         {
             try
             {
                 bool hasPemissionToAddItem = true;
                 if (!hasPemissionToAddItem)
-                    throw new Exception("Cannot add item to store, userid: " + id + " don't have pemission to add items");
+                    throw new Exception("Cannot add item to store, userid: " + userID + " don't have pemission to add items");
 
                 //if (!storeManager.GetStoreById(storeID).addItem(itemName, itemCategory, itemPrice, quantity))
                 //{
@@ -270,88 +270,88 @@ namespace SadnaExpress.ServiceLayer
         }
 
 
-        public Response AppointStoreOwner(int id, Guid storeID, string userEmail)
+        public Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
-            return userManager.AppointStoreOwner(id, storeID, userEmail);
+            return userManager.AppointStoreOwner(userID, storeID, userEmail);
         }
 
-        public Response AppointStoreManager(int id, Guid storeID, string userEmail)
+        public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {
-            return userManager.AppointStoreOwner(id, storeID, userEmail);
+            return userManager.AppointStoreOwner(userID, storeID, userEmail);
         }
 
-        public Response AddStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission)
+        public Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
         {
-            return userManager.AddStoreManagerPermissions(id, storeID, userEmail, permission);
+            return userManager.AddStoreManagerPermissions(userID, storeID, userEmail, permission);
         }
 
-        public Response RemoveStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission)
+        public Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
         {
-            return userManager.RemoveStoreManagerPermissions(id, storeID, userEmail, permission);
+            return userManager.RemoveStoreManagerPermissions(userID, storeID, userEmail, permission);
         }
 
-        public Response RemoveStoreManager(int id, Guid storeID, int userID)
+        public Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2)
         {
             throw new NotImplementedException();
         }
 
-        public Response RemoveStoreOwner(int id, Guid storeID, int userID)
+        public Response RemoveStoreOwner(Guid userID1, Guid storeID, Guid userID2)
         {
             throw new NotImplementedException();
         }
 
-        public Response RemovetStoreManager(int id, Guid storeID, int userID)
+        public Response RemovetStoreManager(Guid userID1, Guid storeID, Guid userID2)
         {
             throw new NotImplementedException();
         }
 
-        public Response CloseStore(int id, Guid storeID)
+        public Response CloseStore(Guid userID, Guid storeID)
         {
-            return storeManager.CloseStore(id,storeID);
+            return storeManager.CloseStore(userID,storeID);
         }
 
-        public Response ReopenStore(int id, Guid storeID)
+        public Response ReopenStore(Guid userID, Guid storeID)
         {
-            return storeManager.ReopenStore(id,storeID);
+            return storeManager.ReopenStore(userID,storeID);
         }
 
-        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID)
+        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
-            return userManager.GetEmployeeInfoInStore(id, storeID);
+            return userManager.GetEmployeeInfoInStore(userID, storeID);
         }
 
-        public Response GetPurchasesInfo(int id, Guid storeID)
+        public Response GetPurchasesInfo(Guid userID, Guid storeID)
         {
             throw new NotImplementedException();
         }
 
-        public Response DeleteStore(int id, Guid storeID)
+        public Response DeleteStore(Guid userID, Guid storeID)
         {
-            return storeManager.DeleteStore(id,storeID);
+            return storeManager.DeleteStore(userID, storeID);
         }
 
-        public Response DeleteMember(int id, int userID)
+        public Response DeleteMember(Guid userID1, Guid userID2)
         {
             throw new NotImplementedException();
         }
-        public ResponseT<int> UpdateFirst(int id, string newFirst)
+        public ResponseT<Guid> UpdateFirst(Guid userID, string newFirst)
         {
-            return userManager.UpdateFirst(id, newFirst);
+            return userManager.UpdateFirst(userID, newFirst);
         }
 
-        public ResponseT<int> UpdateLast(int id, string newLast)
+        public ResponseT<Guid> UpdateLast(Guid userID, string newLast)
         {
-            return userManager.UpdateLast(id, newLast);
+            return userManager.UpdateLast(userID, newLast);
         }
 
-        public ResponseT<int> UpdatePassword(int id, string newPassword)
+        public ResponseT<Guid> UpdatePassword(Guid userID, string newPassword)
         {
-            return userManager.UpdatePassword(id, newPassword);
+            return userManager.UpdatePassword(userID, newPassword);
         }
 
-        public ResponseT<int> SetSecurityQA(int id,string q, string a)
+        public ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a)
         {
-            return userManager.SetSecurityQA(id,q,a);
+            return userManager.SetSecurityQA(userID,q,a);
         }
 
         public void CleanUp() // for the tests
@@ -361,16 +361,16 @@ namespace SadnaExpress.ServiceLayer
         }
 
      
-        public ResponseT<ShoppingCart> ShowShoppingCart(int id)
+        public ResponseT<ShoppingCart> ShowShoppingCart(Guid userID)
         {
-            return userManager.ShowShoppingCart(id);
+            return userManager.ShowShoppingCart(userID);
         }
 
-        public ConcurrentDictionary<int , User> GetCurrent_Users()
+        public ConcurrentDictionary<Guid, User> GetCurrent_Users()
         {
             return userManager.GetCurrent_Users();
         }
-        public ConcurrentDictionary<int , Member> GetMembers()
+        public ConcurrentDictionary<Guid, Member> GetMembers()
         {
             return userManager.GetMembers();
         }
@@ -385,18 +385,18 @@ namespace SadnaExpress.ServiceLayer
         }
 
 
-        public Response PurchaseCart(int id, string paymentDetails)
+        public Response PurchaseCart(Guid userID, string paymentDetails)
         {
             bool purchaseSuccess = false;
             // saving items for userid cart items on purchase cart action
             lock (stockChange)
             {
-                if (savedItemsRestore.ContainsKey(id))
-                    savedItemsRestore[id] = new Dictionary<Guid, List<Pair<int, int>>>();
+                if (savedItemsRestore.ContainsKey(userID))
+                    savedItemsRestore[userID] = new Dictionary<Guid, List<Pair<int, int>>>();
                 else
-                    savedItemsRestore.Add(id, new Dictionary<Guid, List<Pair<int, int>>>());
+                    savedItemsRestore.Add(userID, new Dictionary<Guid, List<Pair<int, int>>>());
                 // get user shopping cart inventory and stock and reduce all stock and save the reduced value
-                ShoppingCart cart = userManager.GetShoppingCartById(id).Value;
+                ShoppingCart cart = userManager.GetShoppingCartById(userID).Value;
                 foreach (ShoppingBasket basket in cart.GetShoppingBaskets())
                 {
                     Store store = storeManager.GetStoreById(basket.GetStoreId());
@@ -405,18 +405,18 @@ namespace SadnaExpress.ServiceLayer
                     {
                         store.RemoveQuantity(itemId, itemsInBasket[itemId]);
 
-                        if (savedItemsRestore[id].ContainsKey(basket.GetStoreId()))
+                        if (savedItemsRestore[userID].ContainsKey(basket.GetStoreId()))
                         {
-                            savedItemsRestore[id][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
+                            savedItemsRestore[userID][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
                         }
                         else
                         {
-                            savedItemsRestore[id].Add(basket.GetStoreId(), new List<Pair<int, int>>());
-                            savedItemsRestore[id][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
+                            savedItemsRestore[userID].Add(basket.GetStoreId(), new List<Pair<int, int>>());
+                            savedItemsRestore[userID][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
                         }
                     }
                 }
-                Logger.Instance.Info("PurhcaseCart, saving store items for userid: " + id);
+                Logger.Instance.Info("PurhcaseCart, saving store items for userid: " + userID);
             }
             /////////////////////////// end of saving items implementation
 
@@ -434,23 +434,23 @@ namespace SadnaExpress.ServiceLayer
             {
                 lock (stockChange)
                 {
-                    foreach (Guid storeId in savedItemsRestore[id].Keys)
+                    foreach (Guid storeId in savedItemsRestore[userID].Keys)
                     {
-                        foreach (Pair<int, int> storeItem in savedItemsRestore[id][storeId])
+                        foreach (Pair<int, int> storeItem in savedItemsRestore[userID][storeId])
                         {
                             storeManager.GetStoreById(storeId).AddQuantity(storeItem.First, storeItem.Second);
                         }
                     }
-                    Logger.Instance.Info("Purchase Failed restored saved store items for userid: "+id);
-                    savedItemsRestore.Remove(id);
+                    Logger.Instance.Info("Purchase Failed restored saved store items for userid: "+userID);
+                    savedItemsRestore.Remove(userID);
                 }
             }
             return new Response();
         }
 
-        public bool isLogin(int idx)
+        public bool isLogin(Guid userID)
         {
-            return userManager.isLogin(idx);
+            return userManager.isLoggedIn(userID);
         }
 
     }

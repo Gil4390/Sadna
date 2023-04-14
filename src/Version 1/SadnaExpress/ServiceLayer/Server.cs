@@ -41,8 +41,8 @@ namespace SadnaExpress.ServiceLayer
         {
             if (tradingSystemOpen)
             {
-                ResponseT<int> responseID = service.Enter();
-                int id = responseID.Value;
+                ResponseT<Guid> responseID = service.Enter();
+                Guid id = responseID.Value;
                 string nexCommand;
 
                 while (commands.Count > 0)
@@ -90,7 +90,7 @@ namespace SadnaExpress.ServiceLayer
 
                         string email = split[1];
                         string password = split[2];
-                        ResponseT<int> response = service.Login(id, email, password);
+                        ResponseT<Guid> response = service.Login(id, email, password);
 
                         if (response.ErrorOccured)
                         {
@@ -105,7 +105,7 @@ namespace SadnaExpress.ServiceLayer
                     else if (command_type == "LOGOUT")
                     {
                         //LOGOUT
-                        ResponseT<int> response = service.Logout(id);
+                        ResponseT<Guid> response = service.Logout(id);
                         if (response.ErrorOccured)
                         {
                             Console.WriteLine(id + " - " + response.ErrorMessage);
@@ -267,7 +267,7 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         int storeID = int.Parse(split[1]);
-                        int UserID = int.Parse(split[2]);
+                        Guid UserID = Guid.Parse(split[2]);
                         service.RemoveStoreOwner(id, ToGuid(storeID), UserID);
                     }
                     else if (command_type == "APOINT-STORE-MANAGER")
@@ -291,7 +291,7 @@ namespace SadnaExpress.ServiceLayer
                         }
 
                         int storeID = int.Parse(split[1]);
-                        int UserID = int.Parse(split[2]);
+                        Guid UserID = Guid.Parse(split[2]);
                         service.RemovetStoreManager(id, ToGuid(storeID), UserID);
                     }
                     else if (command_type == "CHANGE-PERMMISION")
@@ -369,7 +369,7 @@ namespace SadnaExpress.ServiceLayer
                             throw new Exception("invalid DELETE-MEMBER args");
                         }
 
-                        int userID = int.Parse(split[1]);
+                        Guid userID = Guid.Parse(split[1]);
                         service.DeleteMember(id, userID);
                     }
                     else if (command_type == "SYSTEM-INFO")
@@ -394,7 +394,7 @@ namespace SadnaExpress.ServiceLayer
                     else if (command_type == "UPDATE")
                     {
                         int idx = 0;
-                        ResponseT<int> response = new ResponseT<int>();
+                        ResponseT<Guid> response = new ResponseT<Guid>();
                         string updateCommand = "";
                         foreach (string s in split)
                         {
@@ -441,12 +441,13 @@ namespace SadnaExpress.ServiceLayer
         {
             lock (this)
             {
-                service.Enter();
-                service.Register(0,"Admin@BGU.co.il","admin" ,"admin","admin");
-                service.Login(0, "Admin@BGU.co.il", "admin");
-                tradingSystemOpen = service.InitializeTradingSystem(0).Value;
-                service.Logout(0);
-                service.Exit(1);
+                
+                Guid adminID = service.Enter().Value;
+                service.Register(adminID, "Admin@BGU.co.il","admin" ,"admin","admin");
+                Guid registerdAdminID = service.Login(adminID, "Admin@BGU.co.il", "admin").Value;
+                tradingSystemOpen = service.InitializeTradingSystem(registerdAdminID).Value;
+                Guid userID = service.Logout(registerdAdminID).Value;
+                service.Exit(userID);
             }
         }
         

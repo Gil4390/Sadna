@@ -21,7 +21,7 @@ namespace SadnaExpress.DomainLayer.User
          * add new manager
          * get employees info
          */
-        public PromotedMember(int id, string email, string firstName, string lastName, string password) : base(id,
+        public PromotedMember(Guid id, string email, string firstName, string lastName, string password) : base(id,
             email, firstName, lastName, password)
         {
             directSupervisor = new ConcurrentDictionary<Guid, PromotedMember>();

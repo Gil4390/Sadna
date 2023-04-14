@@ -22,7 +22,7 @@ namespace SadnaExpress.DomainLayer.User
 
         private Dictionary<string , string> securityQuestions;
 
-        public Member(int id, string memail, string mfirstName, string mlastLame, string mpassword): base (id)
+        public Member(Guid id, string memail, string mfirstName, string mlastLame, string mpassword): base ()
         {
             userId = id;
             email = memail;
