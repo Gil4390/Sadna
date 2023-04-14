@@ -36,17 +36,20 @@ namespace SadnaExpress
             // second test: successful purchase or failed purchase
 
             TradingSystem domain = TradingSystem.Instance;
-            TradingSystem.Instance.Register(0, "asdqwe@gmail.com", "First", "Userqwe", "Asdqwe123");
-            TradingSystem.Instance.Register(1, "zxcasd@gmail.com", "Second", "Userxzc", "Zxcqwe123");
+            Guid guestID1 = TradingSystem.Instance.Enter().Value;
+            TradingSystem.Instance.Register(guestID1, "asdqwe@gmail.com", "First", "Userqwe", "Asdqwe123");
+            Guid memberID1 = TradingSystem.Instance.Login(guestID1, "asdqwe@gmail.com", "Asdqwe123").Value;
+            Guid storeId = TradingSystem.Instance.OpenNewStore(memberID1, "FirstStore").Value;
 
-            TradingSystem.Instance.Login(0, "asdqwe@gmail.com", "Asdqwe123");
-            Guid storeId = TradingSystem.Instance.OpenNewStore(0, "FirstStore").Value;
+            TradingSystem.Instance.AddItemToStore(memberID1, storeId, "apple", "fruits", 5.99, 3);
 
-            TradingSystem.Instance.AddItemToStore(0, storeId, "apple", "fruits", 5.99, 3);
 
-            TradingSystem.Instance.AddItemToCart(1, storeId, 0, 2);
+            Guid guestID2 = TradingSystem.Instance.Enter().Value;
+            TradingSystem.Instance.Register(guestID2, "zxcasd@gmail.com", "Second", "Userxzc", "Zxcqwe123");
+            Guid memberID2 = TradingSystem.Instance.Login(guestID2, "zxcasd@gmail.com", "Zxcqwe123").Value;
+            TradingSystem.Instance.AddItemToCart(memberID2, storeId, 0, 2);
 
-            TradingSystem.Instance.PurchaseCart(1, "Credit and Visa");
+            TradingSystem.Instance.PurchaseCart(memberID2, "Credit and Visa");
             Console.ReadLine();
         }
 

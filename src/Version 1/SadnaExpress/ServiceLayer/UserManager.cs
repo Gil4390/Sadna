@@ -27,25 +27,25 @@ namespace SadnaExpress.ServiceLayer
         {
             this.userFacade = new UserFacade();
         }
-        public ResponseT<int> Enter()
+        public ResponseT<Guid> Enter()
         {
             try
             {
-                int id = userFacade.Enter();
-                return new ResponseT<int>(id);
+                Guid userID = userFacade.Enter();
+                return new ResponseT<Guid>(userID);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
             }
         }
 
-        public Response Exit(int id)
+        public Response Exit(Guid userID)
         {
             try
             {
-                userFacade.Exit(id);
+                userFacade.Exit(userID);
                 return new Response();
             }
             catch (Exception ex)
@@ -55,11 +55,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response Register(int id, string email, string firstName, string lastName, string password)
+        public Response Register(Guid userID, string email, string firstName, string lastName, string password)
         {
             try
             {
-                userFacade.Register(id, email, firstName, lastName, password);
+                userFacade.Register(userID, email, firstName, lastName, password);
                 return new Response();
             }
             catch (Exception ex)
@@ -69,41 +69,26 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<int> Login(int id, string email, string password)
+        public ResponseT<Guid> Login(Guid userID, string email, string password)
         {
             try
             {
-                int newID = userFacade.Login(id, email, password);
-                return new ResponseT<int>(id);
+                Guid newID = userFacade.Login(userID, email, password);
+                return new ResponseT<Guid>(userID);
 
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
             }
         }
 
-        public Response AddItemToCart(int id, Guid storeID, int itemID, int itemAmount)
+        public Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount)
         {
             try
             {
-               userFacade.AddItemToCart(id, storeID, itemID, itemAmount);
-                return new Response();
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-
-        public Response RemoveItemFromCart(int id, Guid storeID, int itemID)
-        {
-            try
-            {
-                userFacade.RemoveItemFromCart(id, storeID, itemID);
+               userFacade.AddItemToCart(userID, storeID, itemID, itemAmount);
                 return new Response();
 
             }
@@ -114,7 +99,22 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response EditItemFromCart(int id, int itemID, int itemAmount)
+        public Response RemoveItemFromCart(Guid userID, Guid storeID, int itemID)
+        {
+            try
+            {
+                userFacade.RemoveItemFromCart(userID, storeID, itemID);
+                return new Response();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+
+        public Response EditItemFromCart(Guid userID, int itemID, int itemAmount)
         {
             throw new System.NotImplementedException();
         }
@@ -124,26 +124,26 @@ namespace SadnaExpress.ServiceLayer
             throw new System.NotImplementedException();
         }
 
-        public ResponseT<int> Logout(int id)
+        public ResponseT<Guid> Logout(Guid userID)
         {
             try
             {
-                int newID = userFacade.Logout(id);
-                return new ResponseT<int>(id);
+                Guid newID = userFacade.Logout(userID);
+                return new ResponseT<Guid>(newID);
 
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
             }
         }
 
-        public Response AppointStoreOwner(int id, Guid storeID, string userEmail)
+        public Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
             try
             {
-                userFacade.AppointStoreOwner(id, storeID, userEmail);
+                userFacade.AppointStoreOwner(userID, storeID, userEmail);
                 return new Response();
             }
             catch (Exception ex)
@@ -153,11 +153,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AppointStoreManager(int id, Guid storeID, string userEmail)
+        public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {
             try
             {
-                userFacade.AppointStoreManager(id, storeID, userEmail);
+                userFacade.AppointStoreManager(userID, storeID, userEmail);
                 return new Response();
             }
             catch (Exception ex)
@@ -167,11 +167,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AddStoreManagerPermissions(int id, Guid storeID,  string userEmail, string permission)
+        public Response AddStoreManagerPermissions(Guid userID, Guid storeID,  string userEmail, string permission)
         {
             try
             {
-                userFacade.AddStoreManagerPermissions(id, storeID, userEmail, permission);
+                userFacade.AddStoreManagerPermissions(userID, storeID, userEmail, permission);
                 return new Response();
             }
             catch (Exception ex)
@@ -181,11 +181,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response RemoveStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission)
+        public Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
         {
             try
             {
-                userFacade.RemoveStoreManagerPermissions(id, storeID, userEmail, permission);
+                userFacade.RemoveStoreManagerPermissions(userID, storeID, userEmail, permission);
                 return new Response();
             }
             catch (Exception ex)
@@ -195,11 +195,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID)
+        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             try
             {
-                List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(id, storeID);
+                List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(userID, storeID);
                 return new ResponseT<List<S_Member>>();
             }
             catch (Exception ex)
@@ -214,13 +214,13 @@ namespace SadnaExpress.ServiceLayer
             userFacade.CleanUp();
         }
 
-        public ResponseT<bool> InitializeTradingSystem(int id)
+        public ResponseT<bool> InitializeTradingSystem(Guid userID)
         {
             try
             {
-                Logger.Instance.Info("User id: " + id + " requested to initialize trading system");
+                Logger.Instance.Info("User id: " + userID + " requested to initialize trading system");
 
-                return new ResponseT<bool>(userFacade.InitializeTradingSystem(id));
+                return new ResponseT<bool>(userFacade.InitializeTradingSystem(userID));
                 
                // return new ResponseT<bool>(paymentService.Connect() && supplierService.Connect());
             }
@@ -230,19 +230,19 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<bool>(ex.Message);
             }
         }
-        public ConcurrentDictionary<int , User> GetCurrent_Users()
+        public ConcurrentDictionary<Guid , User> GetCurrent_Users()
         {
             return userFacade.GetCurrent_Users();
         }
-        public ConcurrentDictionary<int , Member> GetMembers()
+        public ConcurrentDictionary<Guid , Member> GetMembers()
         {
             return userFacade.GetMembers();
         }
-        public ResponseT<ShoppingCart> ShowShoppingCart(int id)
+        public ResponseT<ShoppingCart> ShowShoppingCart(Guid userID)
         {
             try
             {
-                ShoppingCart sc = userFacade.ShowShoppingCart(id);
+                ShoppingCart sc = userFacade.ShowShoppingCart(userID);
                 return new ResponseT<ShoppingCart>(sc);
             }
             catch (Exception ex)
@@ -252,26 +252,26 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<int> SetSecurityQA(int id, string q, string a)
+        public ResponseT<Guid> SetSecurityQA(Guid userID, string q, string a)
         {
             try
             {
-                userFacade.SetSecurityQA(id,q,a);
-                return new ResponseT<int>(id);
+                userFacade.SetSecurityQA(userID,q,a);
+                return new ResponseT<Guid>(userID);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
             }
         }
 
 
-        public ResponseT<ShoppingCart> GetShoppingCartById(int id)
+        public ResponseT<ShoppingCart> GetShoppingCartById(Guid userID)
         {
             try
             {
-                ShoppingCart Cart = userFacade.GetShoppingCartById(id);
+                ShoppingCart Cart = userFacade.GetShoppingCartById(userID);
                 return new ResponseT<ShoppingCart>(Cart);
             }
             catch (Exception ex)
@@ -281,52 +281,52 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-      public bool  isLogin(int idx)
+      public bool isLoggedIn(Guid userID)
         {
-            return userFacade.isLogin(idx);
+            return userFacade.isLoggedIn(userID);
         }
 
 
-        public ResponseT<int> UpdateFirst(int id, string newFirst)
+        public ResponseT<Guid> UpdateFirst(Guid userID, string newFirst)
         {
             try
             {
-                userFacade.UpdateFirst(id, newFirst);
-                return new ResponseT<int>(id);
+                userFacade.UpdateFirst(userID, newFirst);
+                return new ResponseT<Guid>(userID);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
             }
         }
 
-        public ResponseT<int> UpdateLast(int id, string newLast)
+        public ResponseT<Guid> UpdateLast(Guid userID, string newLast)
         {
             try
             {
-                userFacade.UpdateLast(id, newLast);
-                return new ResponseT<int>(id);
+                userFacade.UpdateLast(userID, newLast);
+                return new ResponseT<Guid>(userID);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
             }
         }
 
-        public ResponseT<int> UpdatePassword(int id, string newPassword)
+        public ResponseT<Guid> UpdatePassword(Guid userID, string newPassword)
         {
             try
             {
-                userFacade.UpdatePassword(id, newPassword);
-                return new ResponseT<int>(id);
+                userFacade.UpdatePassword(userID, newPassword);
+                return new ResponseT<Guid>(userID);
                 
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<int>(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
             }
         }
     }

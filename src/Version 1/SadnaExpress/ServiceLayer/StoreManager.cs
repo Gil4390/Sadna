@@ -21,12 +21,12 @@ namespace SadnaExpress.ServiceLayer
         }
 
 
-        public Response PurchaseCart(int id, string paymentDetails)
+        public Response PurchaseCart(Guid id, string paymentDetails)
         {
             throw new NotImplementedException();
         }
 
-        public ResponseT<Guid> OpenNewStore(int id, string storeName)
+        public ResponseT<Guid> OpenNewStore(Guid id, string storeName)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response CloseStore(int id ,Guid storeID)
+        public Response CloseStore(Guid id ,Guid storeID)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response DeleteStore(int id ,Guid storeID)
+        public Response DeleteStore(Guid id ,Guid storeID)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response ReopenStore(int id ,Guid storeID)
+        public Response ReopenStore(Guid id ,Guid storeID)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response GetPurchasesInfo(int id ,Guid storeID)
+        public Response GetPurchasesInfo(Guid id, Guid storeID)
         {
             try
             {
@@ -112,7 +112,7 @@ namespace SadnaExpress.ServiceLayer
         }
 
 
-        public Response WriteReview(int id, int itemID, string review)
+        public Response WriteReview(Guid id, int itemID, string review)
         {
             throw new System.NotImplementedException();
         }
@@ -141,43 +141,43 @@ namespace SadnaExpress.ServiceLayer
             throw new System.NotImplementedException();
         }
         
-        public ResponseT<List<S_Store>> GetAllStoreInfo(int id)
+        public ResponseT<List<S_Store>> GetAllStoreInfo(Guid id)
         {
             throw new System.NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByName(int id, string itemName)
+        public ResponseT<List<S_Item>> GetItemsByName(Guid id, string itemName)
         {
             throw new System.NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByCategory(int id, string category)
+        public ResponseT<List<S_Item>> GetItemsByCategory(Guid id, string category)
         {
             throw new System.NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByKeysWord(int id, string keyWords)
+        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid id, string keyWords)
         {
             throw new System.NotImplementedException();
         }
         
 
-        public Response GetPurchasesInfo(int id, int storeID)
+        public Response GetPurchasesInfo(Guid id, int storeID)
         {
             throw new System.NotImplementedException();
         }
         
-        public ResponseT<List<S_Item>> GetItemsByPrices(int id, int minPrice, int maxPrice)
+        public ResponseT<List<S_Item>> GetItemsByPrices(Guid id, int minPrice, int maxPrice)
         {
             throw new System.NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByItemRating(int id, int rating)
+        public ResponseT<List<S_Item>> GetItemsByItemRating(Guid id, int rating)
         {
             throw new System.NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByStoreRating(int id, int rating)
+        public ResponseT<List<S_Item>> GetItemsByStoreRating(Guid id, int rating)
         {
             throw new System.NotImplementedException();
         }

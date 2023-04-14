@@ -13,10 +13,9 @@ namespace SadnaExpress.DomainLayer.User
 {
     public class UserFacade : IUserFacade
     {
-        private ConcurrentDictionary<int, User> current_Users;
-        private ConcurrentDictionary<int, Member> members;
-        private ConcurrentDictionary<int, LinkedList<Order>> userOrders;
-        private int USER_ID = 0;
+        private ConcurrentDictionary<Guid, User> current_Users;
+        private ConcurrentDictionary<Guid, Member> members;
+        private ConcurrentDictionary<Guid, LinkedList<Order>> userOrders;
         private PasswordHash _ph = new PasswordHash();
         private IPaymentService paymentService;
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
@@ -25,34 +24,32 @@ namespace SadnaExpress.DomainLayer.User
         public UserFacade(IPaymentService paymentService=null)
         {
             //guests = new Dictionary<int, Guest>();
-            current_Users = new ConcurrentDictionary<int, User>();
-            members = new ConcurrentDictionary<int, Member>();
-            userOrders = new ConcurrentDictionary<int, LinkedList<Order>>();
+            current_Users = new ConcurrentDictionary<Guid, User>();
+            members = new ConcurrentDictionary<Guid, Member>();
+            userOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();
             this.paymentService = paymentService;
         }
 
-        public UserFacade(ConcurrentDictionary<int, User> current_Users, ConcurrentDictionary<int, Member> members, int uSER_ID, PasswordHash ph, IPaymentService paymentService=null)
+        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members, PasswordHash ph, IPaymentService paymentService=null)
         {
             this.current_Users = current_Users;
             this.members = members;
-            USER_ID = uSER_ID;
             _ph = ph;
             this.paymentService = paymentService;
         }
 
-        public int Enter()
+        public Guid Enter()
         {
             lock (this)
             {
-                User user = new User(USER_ID);
-                current_Users.TryAdd(USER_ID, user);
-                USER_ID++;
+                User user = new User();
+                current_Users.TryAdd(user.UserId, user);
                 Logger.Instance.Info(user ,"Enter the system.");
                 return user.UserId;
             }
         }
 
-        public void Exit(int id)
+        public void Exit(Guid id)
         {
             lock (this)
             {
@@ -69,7 +66,7 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public void Register(int id, string email, string firstName, string lastName, string password)
+        public void Register(Guid id, string email, string firstName, string lastName, string password)
         {
             lock (this)
             {
@@ -102,7 +99,7 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public int Login(int id, string email, string password)
+        public Guid Login(Guid id, string email, string password)
         {
             lock (this)
             {
@@ -132,7 +129,7 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public int Logout(int id)
+        public Guid Logout(Guid id)
         {
             lock (this)
             {
@@ -146,30 +143,30 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public void AddItemToCart(int id,Guid storeID, int itemID,  int itemAmount)
+        public void AddItemToCart(Guid userID, Guid storeID, int itemID,  int itemAmount)
         {
-            if (current_Users.ContainsKey(id))
+            if (current_Users.ContainsKey(userID))
             {
-                current_Users[id].AddItemToCart(storeID, itemID, itemAmount);
+                current_Users[userID].AddItemToCart(storeID, itemID, itemAmount);
             }
-            else if (members.ContainsKey(id))
+            else if (members.ContainsKey(userID))
             {
-                members[id].AddItemToCart(storeID, itemID, itemAmount);
+                members[userID].AddItemToCart(storeID, itemID, itemAmount);
             }
             else
             {
                 throw new Exception("no cart available for user that is not in the list of users!");
             }
         }
-        public void RemoveItemFromCart(int id,Guid storeID, int itemID)
+        public void RemoveItemFromCart(Guid userID, Guid storeID, int itemID)
         {
-            if (current_Users.ContainsKey(id))
+            if (current_Users.ContainsKey(userID))
             {
-                current_Users[id].RemoveItemFromCart(storeID, itemID);
+                current_Users[userID].RemoveItemFromCart(storeID, itemID);
             }
-            else if (members.ContainsKey(id))
+            else if (members.ContainsKey(userID))
             {
-                members[id].RemoveItemFromCart(storeID, itemID);
+                members[userID].RemoveItemFromCart(storeID, itemID);
             }
             else
             {
@@ -177,7 +174,7 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public void EditItemFromCart(int id, Guid storeID, int itemID, int itemAmount)
+        public void EditItemFromCart(Guid id, Guid storeID, int itemID, int itemAmount)
         {
             throw new NotImplementedException();
         }
@@ -186,48 +183,48 @@ namespace SadnaExpress.DomainLayer.User
             throw new NotImplementedException();
         }
 
-        public void PurchaseCart(int id)
+        public void PurchaseCart(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public void EditItemCart(int id, Guid storeID, string itemName)
+        public void EditItemCart(Guid id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void OpenNewStore(int id, Guid storeID)
+        public void OpenNewStore(Guid id, Guid storeID)
         {
-            isLogin(id);
+            isLoggedIn(id);
             PromotedMember founder = members[id].openNewStore(storeID);
             members[id] = founder;
         }
 
-        public void AddReview(int id, Guid storeID, string itemName)
+        public void AddReview(Guid id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void AddItemInventory(int id, Guid storeID, string itemName)
+        public void AddItemInventory(Guid id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveItemInventory(int id, Guid storeID, string itemName)
+        public void RemoveItemInventory(Guid id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void EditItemInventory(int id, Guid storeID, string itemName)
+        public void EditItemInventory(Guid id, Guid storeID, string itemName)
         {
             throw new NotImplementedException();
         }
 
-        public void AppointStoreOwner(int id, Guid storeID, string email)
+        public void AppointStoreOwner(Guid userID, Guid storeID, string email)
         {
-            isLogin(id);
+            isLoggedIn(userID);
             Member newOwner = null;
-            int newOwnerID = -1;
+            Guid newOwnerID = default(Guid);
             foreach (Member member in members.Values)
                 if (member.Email == email)
                 {
@@ -237,15 +234,15 @@ namespace SadnaExpress.DomainLayer.User
 
             if (newOwner == null)
                 throw new Exception($"There isn't a member with {email}");
-            PromotedMember owner = members[id].AppointStoreOwner(storeID, newOwner);
+            PromotedMember owner = members[userID].AppointStoreOwner(storeID, newOwner);
             members[newOwnerID] = owner;
         }
 
-        public void AppointStoreManager(int id, Guid storeID, string email)
+        public void AppointStoreManager(Guid userID, Guid storeID, string email)
         {
-            isLogin(id);
+            isLoggedIn(userID);
             Member newManager = null;
-            int newManagerID = -1;
+            Guid newManagerID = default(Guid);
             foreach (Member member in members.Values)
                 if (member.Email == email)
                 {
@@ -255,24 +252,24 @@ namespace SadnaExpress.DomainLayer.User
 
             if (newManager == null)
                 throw new Exception($"There isn't a member with {email}");
-            PromotedMember manager = members[id].AppointStoreManager(storeID, newManager);
+            PromotedMember manager = members[userID].AppointStoreManager(storeID, newManager);
             members[newManagerID] = manager;
         }
 
-        public void AddStoreManagerPermissions(int id, Guid storeID, string email, string permission)
+        public void AddStoreManagerPermissions(Guid userID, Guid storeID, string email, string permission)
         {
-            isLogin(id);
+            isLoggedIn(userID);
             Member manager = null;
             foreach (Member member in members.Values)
                 if (member.Email == email)
                     manager = member;
             if (manager == null)
                 throw new Exception($"There isn't a member with {email}");
-            members[id].AddStoreManagerPermissions(storeID, manager, permission);
+            members[userID].AddStoreManagerPermissions(storeID, manager, permission);
         }
-        public void RemoveStoreManagerPermissions(int id, Guid storeID, string email, string permission)
+        public void RemoveStoreManagerPermissions(Guid userID, Guid storeID, string email, string permission)
         {
-            isLogin(id);
+            isLoggedIn(userID);
             Member manager = null;
             foreach (Member member in members.Values)
                 if (member.Email == email)
@@ -280,49 +277,49 @@ namespace SadnaExpress.DomainLayer.User
 
             if (manager == null)
                 throw new Exception($"There isn't a member with {email}");
-            members[id].RemoveStoreManagerPermissions(storeID, manager,permission);
+            members[userID].RemoveStoreManagerPermissions(storeID, manager,permission);
         }
-        public List<PromotedMember> GetEmployeeInfoInStore(int id, Guid storeID)
+        public List<PromotedMember> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
-            isLogin(id);
-            List<PromotedMember> employees = members[id].GetEmployeeInfoInStore(storeID);
+            isLoggedIn(userID);
+            List<PromotedMember> employees = members[userID].GetEmployeeInfoInStore(storeID);
             return employees;
         }
 
-        public void UpdateFirst(int id, string newFirst)
+        public void UpdateFirst(Guid userID, string newFirst)
         {
-            isLogin(id);
-            if (!members.ContainsKey(id))
+            isLoggedIn(userID);
+            if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
-            members[id].FirstName = newFirst;
-            Logger.Instance.Info(members[id],"First name updated");
+            members[userID].FirstName = newFirst;
+            Logger.Instance.Info(members[userID],"First name updated");
 
         }
 
-        public void UpdateLast(int id, string newLast)
+        public void UpdateLast(Guid userID, string newLast)
         {
-            isLogin(id);
-            if (!members.ContainsKey(id))
+            isLoggedIn(userID);
+            if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
-            members[id].LastName = newLast;
-            Logger.Instance.Info(members[id],"Last name updated");
+            members[userID].LastName = newLast;
+            Logger.Instance.Info(members[userID],"Last name updated");
         }
 
-        public void UpdatePassword(int id, string newPassword)
+        public void UpdatePassword(Guid userID, string newPassword)
         {
-            isLogin(id);
-            if (!members.ContainsKey(id))
+            isLoggedIn(userID);
+            if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
-            members[id].Password = _ph.Hash(newPassword);
-            Logger.Instance.Info(members[id],"Password updated");
+            members[userID].Password = _ph.Hash(newPassword);
+            Logger.Instance.Info(members[userID],"Password updated");
         }
 
-        public void CloseStore(int id, Guid storeID)
+        public void CloseStore(Guid userID, Guid storeID)
         {
             throw new NotImplementedException();
         }
 
-        public void GetDetailsOnStore(int id, Guid storeID)
+        public void GetDetailsOnStore(Guid userID, Guid storeID)
         {
             throw new NotImplementedException();
         }
@@ -334,14 +331,14 @@ namespace SadnaExpress.DomainLayer.User
             paymentService = null;
         }
 
-        public bool InitializeTradingSystem(int id)
+        public bool InitializeTradingSystem(Guid userID)
         {
             //functions steps:
             //1. check that this is id member
             //2. check that member is log in
             //3. check that member is system manager
             //4. check that there is connection to payment and supply services
-            isLogin(id);
+            isLoggedIn(userID);
         
             //impl of 3- throw error if not
             
@@ -349,58 +346,58 @@ namespace SadnaExpress.DomainLayer.User
             return paymentService.Connect(); //should add a check for supply service connection
         }
 
-        public bool hasPermissions(int id, Guid storeId, List<string> permissions)
+        public bool hasPermissions(Guid userID, Guid storeId, List<string> permissions)
         {
-            if (members.ContainsKey(id))
-                if (members[id].hasPermissions(storeId, permissions))
+            if (members.ContainsKey(userID))
+                if (members[userID].hasPermissions(storeId, permissions))
                     return true;
             return false;
         }
-        public bool isLogin(int id)
+        public bool isLoggedIn(Guid userID)
         {
-            if (members.ContainsKey(id))
+            if (members.ContainsKey(userID))
             {
-                if (members[id].LoggedIn)
+                if (members[userID].LoggedIn)
                     return true;
                 throw new Exception("member need to login");
             }
             throw new Exception("User need to register first");
         }
 
-        public ConcurrentDictionary<int, User> GetCurrent_Users()
+        public ConcurrentDictionary<Guid, User> GetCurrent_Users()
         {
             return current_Users;
         }
-        public ConcurrentDictionary<int, Member> GetMembers()
+        public ConcurrentDictionary<Guid, Member> GetMembers()
         {
             return members;
         }
-        public ShoppingCart ShowShoppingCart(int id)
+        public ShoppingCart ShowShoppingCart(Guid userID)
         {
-            isLogin(id);
-            if (current_Users.ContainsKey(id))
-                return current_Users[id].ShoppingCart;
-            return members[id].ShoppingCart;
+            isLoggedIn(userID);
+            if (current_Users.ContainsKey(userID))
+                return current_Users[userID].ShoppingCart;
+            return members[userID].ShoppingCart;
         }
 
-        public void SetSecurityQA(int id, string q, string a)
+        public void SetSecurityQA(Guid userID, string q, string a)
         {
-            isLogin(id);
-            if (!members.ContainsKey(id))
+            isLoggedIn(userID);
+            if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
-            members[id].SetSecurityQA(q,_ph.Hash(a));
-            Logger.Instance.Info(members[id],"Security Q&A set");
+            members[userID].SetSecurityQA(q,_ph.Hash(a));
+            Logger.Instance.Info(members[userID],"Security Q&A set");
         }
 
-        public ShoppingCart GetShoppingCartById(int id)
+        public ShoppingCart GetShoppingCartById(Guid userID)
         {
-            if (current_Users.ContainsKey(id))
+            if (current_Users.ContainsKey(userID))
             {
-                return current_Users[id].ShoppingCart;
+                return current_Users[userID].ShoppingCart;
             }
-            else if (members.ContainsKey(id))
+            else if (members.ContainsKey(userID))
             {
-                return members[id].ShoppingCart;
+                return members[userID].ShoppingCart;
             }
             throw new Exception("no cart for this user id");
         }

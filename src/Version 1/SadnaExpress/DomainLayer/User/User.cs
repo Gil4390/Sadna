@@ -7,15 +7,15 @@ namespace SadnaExpress.DomainLayer.User
 {
     public class User
     {
-        protected int userId;
-        public int UserId {get => userId;set => userId = value;}
+        protected Guid userId;
+        public Guid UserId {get => userId;set => userId = value;}
         protected ShoppingCart shoppingCart;
         public ShoppingCart ShoppingCart {get => shoppingCart;}
 
-        public User(int id)
+        public User()
         {
+            userId = Guid.NewGuid();
             shoppingCart = new ShoppingCart();
-            userId = id;
         }
 
         public int convertToInt(EndPoint ep)
