@@ -44,8 +44,8 @@ namespace SadnaExpress.ServiceLayer
         // lock object for the instance
         private static readonly object lockInstance = new object();
         private static TradingSystem instance = null;
-        
-        private TradingSystem(ISupplierService supplierService=null, IPaymentService paymentService=null)
+
+        public TradingSystem(ISupplierService supplierService=null, IPaymentService paymentService=null)
         {
             userManager = new UserManager();
             //storeManager = new StoreManager();

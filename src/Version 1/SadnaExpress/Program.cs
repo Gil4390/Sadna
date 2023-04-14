@@ -166,75 +166,7 @@ namespace SadnaExpress
                 throw new NotImplementedException();
             }
 
-            private void Manager_change_premission_good()
-            {
-                throw new NotImplementedException();
-            }
 
-            private void Manager_unappoint_illigel_store_manager()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_appoint_store_manager()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_unappoint_illigel_manager()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_unappoint_self()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_unappoint_manager()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_appoint_self()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_appoint_manager_appoint_manager()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_appoint_manager()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_change_bad_discount()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_change_good_discount()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_change_bad_policy()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_change_good_policy()
-            {
-                throw new NotImplementedException();
-            }
-
-            private void Manager_show_inventory()
-            {
-                throw new NotImplementedException();
-            }
         }
         
     }
