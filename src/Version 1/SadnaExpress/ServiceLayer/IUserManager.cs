@@ -25,6 +25,9 @@ namespace SadnaExpress.ServiceLayer
         Response AppointStoreOwner(int id, Guid storeID, string userEmail); //4.4
         Response AppointStoreManager(int id, Guid storeID, string userEmail); //4.6
         // 4.7
+        ResponseT<List<S_Order>> GetStorePurchases(int id, Guid storeID, string email);
+        ResponseT<Dictionary<Guid, S_Order>> GetAllAStorePurchases(int id, Guid storeID,string email);
+
         Response AddStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission);
         Response RemoveStoreManagerPermissions(int id, Guid storeID, string userEmail, string permission);
         ResponseT<List<S_Member>> GetEmployeeInfoInStore(int id, Guid storeID); //4.11

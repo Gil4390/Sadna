@@ -66,6 +66,16 @@ namespace SadnaExpress.DomainLayer.User
         {
             this.shoppingCart.RemoveItemFromBasket(storeID, itemID);
         }
+        public virtual List<Order> GetStorePurchases(Guid storeID)
+        {
+            throw new Exception("The user unauthorised to get store purchases");
+
+        }
+
+        public virtual Dictionary<Guid,Order> GetAllAStorePurchases(Guid storeID)
+        {
+            throw new Exception("The user unauthorised to get all store purchases");
+        }
 
     }
 }

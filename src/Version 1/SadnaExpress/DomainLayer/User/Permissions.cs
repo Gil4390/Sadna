@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer.Store;
 using Exception = System.Exception;
 
 namespace SadnaExpress.DomainLayer.User
@@ -8,6 +9,7 @@ namespace SadnaExpress.DomainLayer.User
     {
         private static readonly object syncRoot = new object();
         private static Permissions instance = null;
+        private static Orders _orders = Orders.Instance;
         private Permissions(){}
 
         public static Permissions Instance
@@ -66,6 +68,18 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception("The member has the permission");
             ((PromotedMember)manager).addPermission(storeID, permission);
         }
+        
+        public List<Order> GetStorePurchases(Guid storeId, PromotedMember promotedMember)
+        {
+            List<Order> orders = _orders.GetOrdersByStoreId(storeId);
+            return orders;
+
+        }
+        public Dictionary<Guid,Order> GetAllAStorePurchases(Guid storeId, PromotedMember promotedMember)
+        {
+            Dictionary<Guid,Order> orders = _orders.GetStoreOrders();
+            return orders;
+        }
 
         public void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
@@ -105,5 +119,6 @@ namespace SadnaExpress.DomainLayer.User
                 Console.WriteLine($"{employee.Email}: \n + {employee.FirstName} {employee.LastName} \n");
             return employees;
         }
+     
     }
 }

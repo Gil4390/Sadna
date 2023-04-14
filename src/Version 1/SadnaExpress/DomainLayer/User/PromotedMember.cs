@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -109,7 +110,8 @@ namespace SadnaExpress.DomainLayer.User
                     return permissionsHolder.AppointStoreOwner(storeID, this, newOwner);
             throw new Exception("The member doesn’t have permissions to add new owner");
         }
-
+  
+        
         public override PromotedMember AppointStoreManager(Guid storeID, Member newManager)
         {
             if (permissions.ContainsKey(storeID))
@@ -153,6 +155,27 @@ namespace SadnaExpress.DomainLayer.User
                 permissions[storeID].Contains("get employees info"))
                 return permissionsHolder.GetEmployeeInfoInStore(storeID, this);
             throw new Exception("The member doesn’t have permissions to get employees info");
+        }
+        
+        public override List<Order> GetStorePurchases(Guid storeID)
+        {
+            if (permissions.ContainsKey(storeID))
+                if (permissions[storeID].Contains("owner permissions") ||
+                    permissions[storeID].Contains("founder permissions") ||
+                    permissions[storeID].Contains("get store purchases"))
+                    return permissionsHolder.GetStorePurchases(storeID, this);
+            throw new Exception("The member doesn’t have permissions to get store purchases");
+
+        }
+
+        public override Dictionary<Guid,Order> GetAllAStorePurchases(Guid storeID)
+        {
+            if (permissions.ContainsKey(storeID))
+                if (permissions[storeID].Contains("system manager permissions") ||
+                    permissions[storeID].Contains("get all stores purchases"))
+                    return permissionsHolder.GetAllAStorePurchases(storeID, this);
+            throw new Exception("The member doesn’t have permissions to get all stores purchases");
+
         }
     }
 }

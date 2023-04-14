@@ -4,21 +4,21 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class StoreFacade : IStoreFacade
     {
         private ConcurrentDictionary<Guid, Store> stores;
-        private ConcurrentDictionary<Guid, LinkedList<Order>> storeOrders;
         private ISupplierService supplierService;
+        private Orders _orders = Orders.Instance;
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
         private const int MaxSupplyServiceWaitTime = 10000; //10 seconds is 10,000 mili seconds
 
         public StoreFacade(ISupplierService supplierService=null)
         {
             stores = new ConcurrentDictionary<Guid, Store>();
-            storeOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();
             this.supplierService = supplierService;
         }
         
@@ -68,12 +68,12 @@ namespace SadnaExpress.DomainLayer.Store
             Logger.Instance.Info("store " + store.getName() + " deleted.");
         }
         
-        public LinkedList<Order> GetStorePurchases(Guid storeId)
+        public List<Order> GetStorePurchases(Guid storeId)
         {
-            if (!storeOrders.ContainsKey(storeId))
+            if (!_orders.GetStoreOrders().ContainsKey(storeId))
                 throw new Exception("Store with this id does not exist");
             Logger.Instance.Info("store " + GetStoreByID(storeId).getName() + " got his purchases info.");
-            return storeOrders[storeId];
+            return _orders.GetOrdersByStoreId(storeId);
         }
         public void PurchaseItems(string storeName, List<string> itemsName)
         {   
@@ -153,7 +153,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void CleanUp()
         {
-           storeOrders.Clear();
+          // storeOrders.Clear();
            stores.Clear();
            supplierService = null;
         }

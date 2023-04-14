@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.Services;
 
 namespace SadnaExpress.DomainLayer.User
@@ -25,12 +26,16 @@ namespace SadnaExpress.DomainLayer.User
         void RemoveItemInventory(int id,Guid storeID, string itemName);
         void EditItemInventory(int id,Guid storeID, string itemName);
         void AppointStoreOwner(int id,Guid storeID, string email);
+        
+        
         void AppointStoreManager(int id, Guid storeID, string email);
         void AddStoreManagerPermissions(int id,Guid storeID, string email, string Permission);
         void RemoveStoreManagerPermissions(int id,Guid storeID, string email, string Permission);
         void CloseStore(int id,Guid storeID);
         void GetDetailsOnStore(int id,Guid storeID);
         List<PromotedMember> GetEmployeeInfoInStore(int id, Guid storeID);
+        List<Order> GetStorePurchases(int id, Guid storeId, string email);
+        Dictionary<Guid,Order>  GetAllAStorePurchases(int id, Guid storeId, string email);
         void UpdateFirst(int id, string newFirst);
         void UpdateLast(int id, string newLast);
         void UpdatePassword(int id, string newPassword);
@@ -43,11 +48,13 @@ namespace SadnaExpress.DomainLayer.User
         void SetSecurityQA(int id,string q, string a);
         void SetPaymentService(IPaymentService paymentService);
         bool PlacePayment(string transactionDetails);
-
-
+        
         ShoppingCart GetShoppingCartById(int id);
 
         bool isLogin(int idx);
+
+      
+        
 
     }
 }
