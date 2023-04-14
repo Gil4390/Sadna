@@ -19,12 +19,9 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Guid> Login(Guid userID, string email, string password); //1.4
         ResponseT<List<S_Store>> GetAllStoreInfo(Guid userID); //2.1
         // 2.2
-        ResponseT<List<S_Item>> GetItemsByName(Guid userID, string itemName);
-        ResponseT<List<S_Item>> GetItemsByCategory(Guid userID, string category);
-        ResponseT<List<S_Item>> GetItemsByKeysWord(Guid userID, string keyWords);
-        ResponseT<List<S_Item>> GetItemsByPrices(Guid userID, int minPrice, int maxPrice);
-        ResponseT<List<S_Item>> GetItemsByItemRating(Guid userID, int rating);
-        ResponseT<List<S_Item>> GetItemsByStoreRating(Guid userID, int rating);
+        ResponseT<List<S_Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
+        ResponseT<List<S_Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1);
+        ResponseT<List<S_Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
         Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount); //2.3
         //2.4
         Response RemoveItemFromCart(Guid userID, Guid storeID, int itemID);

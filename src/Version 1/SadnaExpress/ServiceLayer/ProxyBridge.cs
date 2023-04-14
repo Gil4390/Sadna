@@ -63,36 +63,20 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetAllStoreInfo(id);
         }
 
-        public ResponseT<List<S_Item>> GetItemsByName(Guid id, string itemName)
+        public ResponseT<List<S_Item>> GetItemsByName(Guid id, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
             return _realBridge.GetItemsByName(id, itemName);
         }
-
-        public ResponseT<List<S_Item>> GetItemsByCategory(Guid id, string category)
+        public ResponseT<List<S_Item>> GetItemsByCategory(Guid id, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
         {
             return _realBridge.GetItemsByCategory(id, category);
         }
 
-        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid id, string keyWords)
+        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid id, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
             return _realBridge.GetItemsByKeysWord(id, keyWords);
         }
-
-        public ResponseT<List<S_Item>> GetItemsByPrices(Guid id, int minPrice, int maxPrice)
-        {
-            return _realBridge.GetItemsByPrices(id, minPrice, maxPrice);
-        }
-
-        public ResponseT<List<S_Item>> GetItemsByItemRating(Guid id, int rating)
-        {
-            return _realBridge.GetItemsByItemRating(id, rating);
-        }
-
-        public ResponseT<List<S_Item>> GetItemsByStoreRating(Guid id, int rating)
-        {
-            return _realBridge.GetItemsByStoreRating(id, rating);
-        }
-
+        
         //public Response AddItemToCart(int id, int itemID, int itemAmount)
         //{
         //    return _realBridge.AddItemToCart(id, itemID, itemAmount);

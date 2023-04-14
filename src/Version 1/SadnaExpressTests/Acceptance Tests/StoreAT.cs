@@ -34,7 +34,7 @@ namespace SadnaExpressTests.Integration_Tests
             _server.service.OpenNewStore(idx, store_name);
             foreach (Store store in _server.service.GetStores().Values)
             {
-                if (store.getName() == store_name)
+                if (store.StoreName == store_name)
                     return store.StoreID;
             }
             return new Guid();
@@ -57,7 +57,7 @@ namespace SadnaExpressTests.Integration_Tests
             int countNum = 0;
             foreach (Store store in _server.service.GetStores().Values)
             {
-                if (store.getName() == "BigFive")
+                if (store.StoreName == "BigFive")
                     countNum++;
             }
             Assert.IsTrue(countNum == 1);

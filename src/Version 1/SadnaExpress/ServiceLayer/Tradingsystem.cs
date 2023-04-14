@@ -42,7 +42,6 @@ namespace SadnaExpress.ServiceLayer
             userManager = new UserManager(userFacade);
            
         }
-
         public static TradingSystem Instance
         {
             get
@@ -57,13 +56,6 @@ namespace SadnaExpress.ServiceLayer
                 }
             }
         }
-
-        public int GetAvailableQuantity(Guid storeId, int itemId)
-        {
-            return storeManager.GetStoreById(storeId).getItemsInventory().getItemQuantityById(itemId);
-        }
-
-
         public int GetMaximumWaitServiceTime()
         {
             return 10000;
@@ -76,22 +68,19 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.Exit(userID);
         }
-
         public Response Register(Guid userID, string email, string firstName, string lastName, string password)
         {
             return userManager.Register(userID, email, firstName, lastName, password);
         }
-
         public ResponseT<Guid> Login(Guid userID, string email, string password)
         {
             return userManager.Login(userID, email, password);
         }
-
         public ResponseT<Guid> Logout(Guid userID)
         {
             return userManager.Logout(userID);
-        }
 
+        }
         public ResponseT<bool> InitializeTradingSystem(Guid userID)
         {
             try
@@ -111,27 +100,22 @@ namespace SadnaExpress.ServiceLayer
             //get list of business stores and convert them to service stores
             throw new NotImplementedException();
         }
-
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
             return storeManager.OpenNewStore(userID, storeName);
         }
-        
-        public ResponseT<List<S_Item>> GetItemsByName(Guid userID, string itemName)
+        public ResponseT<List<S_Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
-            throw new NotImplementedException();
+            return storeManager.GetItemsByName(userID, itemName, minPrice, maxPrice, ratingItem, category, ratingStore);
         }
-
-        public ResponseT<List<S_Item>> GetItemsByCategory(Guid userID, string category)
+        public ResponseT<List<S_Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1)
         {
-            throw new NotImplementedException();
+            return storeManager.GetItemsByCategory(userID, category, minPrice, maxPrice, ratingItem, ratingStore);
         }
-
-        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid userID, string keyWords)
+        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
-            throw new NotImplementedException();
+            return storeManager.GetItemsByKeysWord(userID, keyWords,minPrice, maxPrice, ratingItem, category, ratingStore);
         }
-
         public ResponseT<List<S_Item>> GetItemsByPrices(Guid userID, int minPrice, int maxPrice)
         {
             throw new NotImplementedException();
@@ -146,13 +130,12 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
-
         public Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount)
         {
             // first check if store can provide the itemAmount
             try
             {
-                int storeQuantity = GetAvailableQuantity(storeID, itemID);
+                int storeQuantity = 0; //GetAvailableQuantity(storeID, itemID);
                 if (storeQuantity < itemAmount)
                 {
                     Logger.Instance.Error("cant add item to shopping basket with quantity more than the store can provide!");

@@ -35,7 +35,7 @@ namespace SadnaExpressTests.Integration_Tests
             _server.service.OpenNewStore(idx, store_name);
             foreach (Store store in _server.service.GetStores().Values)
             {
-                if (store.getName() == store_name)
+                if (store.StoreName == store_name)
                     return store.StoreID;
             }
             return new Guid();

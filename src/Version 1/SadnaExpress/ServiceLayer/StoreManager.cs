@@ -20,7 +20,6 @@ namespace SadnaExpress.ServiceLayer
             
         }
 
-
         public Response PurchaseCart(Guid id, string paymentDetails)
         {
             throw new NotImplementedException();
@@ -145,39 +144,53 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new System.NotImplementedException();
         }
-
-        public ResponseT<List<S_Item>> GetItemsByName(Guid id, string itemName)
+        
+        public ResponseT<List<S_Item>> GetItemsByName(Guid id, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                // change to s_item
+                List<Item> items = storeFacade.GetItemsByName(itemName, minPrice, maxPrice, ratingItem, category, ratingStore);
+                return new ResponseT<List<S_Item>>();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<List<S_Item>>(ex.Message);
+            }
         }
 
-        public ResponseT<List<S_Item>> GetItemsByCategory(Guid id, string category)
+        public ResponseT<List<S_Item>> GetItemsByCategory(Guid id, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid id, string keyWords)
-        {
-            throw new System.NotImplementedException();
+            try
+            {
+                // change to s_item
+                List<Item> items = storeFacade.GetItemsByCategory(category, minPrice, maxPrice, ratingItem, ratingStore);
+                return new ResponseT<List<S_Item>>();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<List<S_Item>>(ex.Message);
+            }
         }
         
-
+        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid id, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
+        {
+            try
+            {
+                // change to s_item
+                List<Item> items = storeFacade.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category, ratingStore);
+                return new ResponseT<List<S_Item>>();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<List<S_Item>>(ex.Message);
+            }
+        }
+        
         public Response GetPurchasesInfo(Guid id, int storeID)
-        {
-            throw new System.NotImplementedException();
-        }
-        
-        public ResponseT<List<S_Item>> GetItemsByPrices(Guid id, int minPrice, int maxPrice)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ResponseT<List<S_Item>> GetItemsByItemRating(Guid id, int rating)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ResponseT<List<S_Item>> GetItemsByStoreRating(Guid id, int rating)
         {
             throw new System.NotImplementedException();
         }

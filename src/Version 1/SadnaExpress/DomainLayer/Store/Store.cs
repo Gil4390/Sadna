@@ -8,60 +8,71 @@ namespace SadnaExpress.DomainLayer.Store
     public class Store
     {
         private string storeName;
+        public string StoreName {get => storeName; set => storeName = value;}
         private Inventory itemsInventory;
         private Guid storeID;
         public Guid StoreID {get=>storeID;}
         //private Policy policy; // not for this version
 
         private bool active;
+        public bool Active { get => active; set => active = value; }
 
         private int storeRating;
-        
+        public int StoreRating {  get => storeRating ; set => StoreRating = value; }
+
         public Store(string name) {
-            this.storeName = name;
-            this.itemsInventory = new Inventory();
-            //this.policy = new Policy();
-            this.storeRating = 0;
+            storeName = name;
+            itemsInventory = new Inventory();
+            storeRating = 0;
             storeID = Guid.NewGuid();
             active = true;
+            //this.policy = new Policy();
         }
 
-        //getters
-        public string getName() {
-            return this.storeName;
-        }
-
-        public Guid StoreId
+        public Item GetItemsByName(string itemName, int minPrice, int maxPrice, string category, int ratingItem)
         {
-            get => storeID;
-            set => storeID = value;
+            return itemsInventory.GetItemByName(itemName, minPrice, maxPrice,category, ratingItem);
         }
-
-
-        public Inventory getItemsInventory()
+        public List<Item> GetItemsByCategory(string category, int minPrice, int maxPrice, int ratingItem)
         {
-            return this.itemsInventory;
+            return itemsInventory.GetItemsByCategory(category, minPrice, maxPrice, ratingItem);
         }
+        public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category)
+        {
+            return itemsInventory.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category);
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
         // add new Item to store, if item exists with the same name return false
         public void addItem(string name, string category, double price, int quantity)
         {
-            this.itemsInventory.AddItem(name, category, price, quantity);
+            itemsInventory.AddItem(name, category, price, quantity);
         }
 
         public void AddQuantity(int itemID, int addedQuantity)
         {
-            this.itemsInventory.AddQuantity(this.itemsInventory.getItemById(itemID), addedQuantity);
+            itemsInventory.AddQuantity(this.itemsInventory.getItemById(itemID), addedQuantity);
         }
 
         public void RemoveQuantity(int itemId, int removedQuantity)
         {
-            this.itemsInventory.RemoveQuantity(this.itemsInventory.getItemById(itemId), removedQuantity);
+            itemsInventory.RemoveQuantity(this.itemsInventory.getItemById(itemId), removedQuantity);
         }
 
         public void EditItemName(int itemId, string name)
         {
-            this.itemsInventory.getItemById(itemId);
+            itemsInventory.getItemById(itemId);
         }
 
         public void EditItemCategory(int itemId, string category)
@@ -79,30 +90,10 @@ namespace SadnaExpress.DomainLayer.Store
             this.itemsInventory.RemoveItem(this.itemsInventory.getItemById(itemId));
         }
 
-        public void RemoveItemByName(string itemName)
+       /* public void RemoveItemByName(string itemName)
         {
-            this.itemsInventory.RemoveItem(this.itemsInventory.getItemByName(itemName));
+            itemsInventory.RemoveItem(this.itemsInventory.GetItemByName(itemName));
         }
-
-        public int getStoreRating()
-        {
-            return this.storeRating;
-        }
-
-        public void setStoreRating(int rating)
-        {
-            this.storeRating = rating;
-        }
-
-        public void setItemRating(int id, int rating)
-        {
-            this.itemsInventory.setItemRating(id, rating);
-        }
-
-        public bool Active
-        {
-            get => active;
-            set => active = value;
-        }
+        */
     }
 }

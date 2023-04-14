@@ -11,52 +11,88 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Inventory()
         {
-            this.items_quantity = new ConcurrentDictionary<Item, int>();
+            items_quantity = new ConcurrentDictionary<Item, int>();
         }
-
-        //getters
-
-        public ConcurrentDictionary<Item, int> getItems()
+        
+        // name is unique
+        public Item GetItemByName(string itemName, int minPrice, int maxPrice, string category, int ratingItem)
         {
-            return this.items_quantity;
+            foreach (Item item in items_quantity.Keys)
+            {
+                if (item.Name.Equals(itemName) && item.Price >= minPrice && item.Price <= maxPrice)
+                {
+                    if (ratingItem != -1 && item.Rating != ratingItem)
+                        break;
+                    if (category != null && item.Category != category)
+                        break;
+                    return item;
+                }
+            }
+            return null;
         }
+        public List<Item> GetItemsByCategory(string category, int minPrice, int maxPrice, int ratingItem)
+        {
+            List<Item> items = new List<Item>();
+            foreach (Item item in items_quantity.Keys)
+            {
+                if (item.Category.Equals(category) && item.Price >= minPrice && item.Price <= maxPrice)
+                {
+                    if (ratingItem != -1 && item.Rating != ratingItem)
+                        continue;
+                    items.Add(item);
+                }
+            }
+            return items;
+        }
+        public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category)
+        {
+            List<Item> items = new List<Item>();
+            foreach (Item item in items_quantity.Keys)
+            {
+                if (item.Name.Contains(keyWords) && item.Price >= minPrice && item.Price <= maxPrice)
+                {
+                    if (ratingItem != -1 && item.Rating != ratingItem)
+                        continue;
+                    if (category != null && item.Category != category)
+                        continue;
+                    items.Add(item);
+                }
+            }
+            return items;
+        }
+        
         
         public void AddItemToInventory(Item item, int quantity)
         {
-            bool result = this.items_quantity.TryAdd(item, quantity);
+            bool result = items_quantity.TryAdd(item, quantity);
             if (result.Equals(false))
                 throw new Exception("adding item failed");
         }
-
-
+        
         public void RemoveItem(Item item)
         {
             int removed = 0;
-            bool result = this.items_quantity.TryRemove(item, out removed);
+            bool result = items_quantity.TryRemove(item, out removed);
             if (result.Equals(false))
                 throw new Exception("removing item failed");
         }
-
-
+        
         public void AddQuantity(Item item, int quantity)
         {
-            if (this.items_quantity.ContainsKey(item))
-                this.items_quantity[item] += quantity;
+            if (items_quantity.ContainsKey(item))
+                items_quantity[item] += quantity;
             else
-                throw new Exception("Adding quantity failed, item not found");  
-            
+                throw new Exception("Adding quantity failed, item not found");
         }
 
         public void RemoveQuantity(Item item, int quantity)
         {
-            if (this.items_quantity.ContainsKey(item))
-                this.items_quantity[item] -= quantity;
+            if (items_quantity.ContainsKey(item))
+                items_quantity[item] -= quantity;
             else
                 throw new Exception("Removing quantity failed, item not found");
         }
-
-
-
+        
         public void EditItemName(int itemId, string name)
         {
             Item item = getItemById(itemId);
@@ -66,7 +102,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("Edit item failed, item name cant be empty");
             if (ItemExistsByName(name))
                 throw new Exception("Edit item failed, item name cant be edited to a name that belongs to another item in the store");
-            item.setName(name);
+            item.Name = name;
         }
 
         public void EditItemCategory(int itemId, string category)
@@ -76,7 +112,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("Edit item failed, item not found");
             if (category.Equals(""))
                 throw new Exception("Edit item failed, item category cant be empty");
-            item.setCategory(category);
+            item.Category = category;
         }
 
         public void EditItemPrice(int itemId, double price)
@@ -86,10 +122,10 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("Edit item failed, item not found");
             if (price < 0)
                 throw new Exception("Edit item failed, item price cant be negative");
-            item.setPrice(price);
+            item.Price = price;
         }
 
-        public bool ItemExistsById(int itemId)
+ /*       public bool ItemExistsById(int itemId)
         {
             foreach (Item item in this.items_quantity.Keys)
             {
@@ -98,34 +134,26 @@ namespace SadnaExpress.DomainLayer.Store
             }
             return false;
 
-        }
+        }*/
 
         public bool ItemExistsByName(string itemName)
         {
             foreach (Item item in this.items_quantity.Keys)
             {
-                if (item.getName().Equals(itemName))
+                if (item.Name.Equals(itemName))
                     return true;
             }
             return false;
 
         }
 
-        public Item getItemByName(string itemName)
-        {
-            foreach (Item item in this.items_quantity.Keys)
-            {
-                if (item.getName().Equals(itemName))
-                    return item;
-            }
-            return null;
-        }
+
 
         public Item getItemById(int itemId)
         {
             foreach (Item item in this.items_quantity.Keys)
             {
-                if (item.getId().Equals(itemId))
+                if (item.ItemID.Equals(itemId))
                     return item;
             }
             return null;
@@ -144,7 +172,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             Item item = getItemById(id);
             if (!item.Equals(null))
-                item.setRating(rating);
+                item.Rating = rating;
         }
 
 
