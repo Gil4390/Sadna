@@ -33,38 +33,29 @@ namespace SadnaExpress.DomainLayer.User
         public void createOwner(Guid storeID, PromotedMember directSupervisor)
         {
             this.directSupervisor.TryAdd(storeID, directSupervisor);
-            List<string> permissionsList = new List<string>();
-            List<PromotedMember> appointList = new List<PromotedMember>();
-            permissionsList.Add("owner permissions");
-            permissions.TryAdd(storeID, permissionsList);
-            appoint.TryAdd(storeID, appointList);
+            permissions.TryAdd(storeID, new List<string>{"owner permissions"});
+            appoint.TryAdd(storeID, new List<PromotedMember>());
         }
 
         public void createManager(Guid storeID, PromotedMember directSupervisor)
         {
             this.directSupervisor.TryAdd(storeID, directSupervisor);
-            List<string> permissionsList = new List<string>();
-            List<PromotedMember> appointList = new List<PromotedMember>();
-            permissionsList.Add("get store history");
-            permissions.TryAdd(storeID, permissionsList);
-            appoint.TryAdd(storeID, appointList);
+            permissions.TryAdd(storeID, new List<string> {"get store history"});
+            appoint.TryAdd(storeID, new List<PromotedMember>());
         }
 
         public void createFounder(Guid storeID)
         {
-            List<string> permissionsList = new List<string>();
-            List<PromotedMember> appointList = new List<PromotedMember>();
-            permissionsList.Add("founder permissions");
-            permissions.TryAdd(storeID, permissionsList);
+            permissions.TryAdd(storeID, new List<string> {"founder permissions"});
             directSupervisor.TryAdd(storeID, null);
-            appoint.TryAdd(storeID, appointList);
+            appoint.TryAdd(storeID, new List<PromotedMember>());
         }
 
         public void createSystemManager()
         {
             List<string> permissionsList = new List<string>();
             permissionsList.Add("system manager permissions");
-            permissions.TryAdd(Guid.Empty, permissionsList);
+            permissions.TryAdd(Guid.Empty, new List<string> {"system manager permissions"});
         }
 
         public void addAppoint(Guid storeID, PromotedMember member)
@@ -102,55 +93,37 @@ namespace SadnaExpress.DomainLayer.User
         }
         public override PromotedMember AppointStoreOwner(Guid storeID, Member newOwner)
         {
-            if (permissions.ContainsKey(storeID))
-                if (permissions[storeID].Contains("owner permissions") ||
-                    permissions[storeID].Contains("founder permissions") ||
-                    permissions[storeID].Contains("add new owner"))
-                    return permissionsHolder.AppointStoreOwner(storeID, this, newOwner);
+            if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "add new owner"}))
+                return permissionsHolder.AppointStoreOwner(storeID, this, newOwner);
             throw new Exception("The member doesn’t have permissions to add new owner");
         }
 
         public override PromotedMember AppointStoreManager(Guid storeID, Member newManager)
         {
-            if (permissions.ContainsKey(storeID))
-                if (permissions[storeID].Contains("owner permissions") ||
-                    permissions[storeID].Contains("founder permissions") ||
-                    permissions[storeID].Contains("add new manager"))
-                    return permissionsHolder.AppointStoreManager(storeID, this, newManager);
+            if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "add new manager"}))
+                return permissionsHolder.AppointStoreManager(storeID, this, newManager);
             throw new Exception("The member doesn’t have permissions to add new manager");
         }
 
         public override void AddStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
-            if (permissions.ContainsKey(storeID))
-                if (permissions[storeID].Contains("owner permissions") ||
-                    permissions[storeID].Contains("founder permissions") ||
-                    permissions[storeID].Contains("edit manager permissions"))
-                {
-                    permissionsHolder.AddStoreManagerPermissions(storeID, manager, permission);
-                    return;
-                }
-            throw new Exception("The member doesn’t have permissions to edit manager's permissions");
+            if (!hasPermissions(storeID,
+                    new List<string> { "owner permissions", "founder permissions", "edit manager permissions" }))
+                throw new Exception("The member doesn’t have permissions to edit manager's permissions");
+            permissionsHolder.AddStoreManagerPermissions(storeID, manager, permission);
         }
 
         public override void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
-            if (permissions.ContainsKey(storeID))
-                if (permissions[storeID].Contains("owner permissions") ||
-                    permissions[storeID].Contains("founder permissions") ||
-                    permissions[storeID].Contains("edit manager permissions"))
-                {
-                    permissionsHolder.RemoveStoreManagerPermissions(storeID, manager, permission);
-                    permissions[storeID].Remove(permission);
-                    return;
-                }
-            throw new Exception("The member doesn’t have permissions to edit manager's permissions");
+            if (!hasPermissions(storeID,
+                    new List<string> { "owner permissions", "founder permissions", "edit manager permissions" }))
+                throw new Exception("The member doesn’t have permissions to edit manager's permissions");
+            permissionsHolder.RemoveStoreManagerPermissions(storeID, manager, permission);
         }
         public override List<PromotedMember> GetEmployeeInfoInStore(Guid storeID)
         {
-            if (permissions[storeID].Contains("owner permissions") ||
-                permissions[storeID].Contains("founder permissions") ||
-                permissions[storeID].Contains("get employees info"))
+            if (hasPermissions(storeID,
+                    new List<string> { "owner permissions", "founder permissions", "get employees info"}))
                 return permissionsHolder.GetEmployeeInfoInStore(storeID, this);
             throw new Exception("The member doesn’t have permissions to get employees info");
         }
