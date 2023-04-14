@@ -76,12 +76,11 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.Login(userID, email, password);
         }
-
         public ResponseT<Guid> Logout(Guid userID)
         {
             return userManager.Logout(userID);
-        }
 
+        }
         public ResponseT<bool> InitializeTradingSystem(Guid userID)
         {
             try
@@ -105,7 +104,6 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.OpenNewStore(userID, storeName);
         }
-        
         public ResponseT<List<S_Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
             return storeManager.GetItemsByName(userID, itemName, minPrice, maxPrice, ratingItem, category, ratingStore);
@@ -118,7 +116,20 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetItemsByKeysWord(userID, keyWords,minPrice, maxPrice, ratingItem, category, ratingStore);
         }
+        public ResponseT<List<S_Item>> GetItemsByPrices(Guid userID, int minPrice, int maxPrice)
+        {
+            throw new NotImplementedException();
+        }
 
+        public ResponseT<List<S_Item>> GetItemsByItemRating(Guid userID, int rating)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<S_Item>> GetItemsByStoreRating(Guid userID, int rating)
+        {
+            throw new NotImplementedException();
+        }
         public Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount)
         {
             // first check if store can provide the itemAmount
