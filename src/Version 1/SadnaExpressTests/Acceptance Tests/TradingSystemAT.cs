@@ -19,6 +19,17 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetBridge(new TradingSystem());
         }
 
+        public void activateAdmin()
+        {
+           //Guid adminID = service.Enter().Value;
+           //service.Register(adminID, "Admin@BGU.co.il", "admin", "admin", "admin");
+           //Guid registerdAdminID = service.Login(adminID, "Admin@BGU.co.il", "admin").Value;
+           //tradingSystemOpen = service.InitializeTradingSystem(registerdAdminID).Value;
+           //Guid userID = service.Logout(registerdAdminID).Value;
+           //service.Exit(userID);
+            
+        }
+
         private class Mock_Bad_SupplierService : Mock_SupplierService
         {
             // bad connection
