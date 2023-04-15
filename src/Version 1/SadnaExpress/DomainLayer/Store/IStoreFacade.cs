@@ -14,7 +14,7 @@ namespace SadnaExpress.DomainLayer.Store
         LinkedList<Order> GetStorePurchases(Guid storeId);
 
         void AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
-        void WriteReview(string storeName, string itemName, int rating);
+        void WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText);
 
         void PurchaseItems(string storeName, List<string> itemsName);
 

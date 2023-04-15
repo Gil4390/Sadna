@@ -90,10 +90,15 @@ namespace SadnaExpress.DomainLayer.Store
             this.itemsInventory.RemoveItem(this.itemsInventory.getItemById(itemId));
         }
 
-       /* public void RemoveItemByName(string itemName)
+        internal void WriteItemReview(Guid userID, int itemID, string reviewText)
         {
-            itemsInventory.RemoveItem(this.itemsInventory.GetItemByName(itemName));
+            itemsInventory.AddReviewToItem(userID, reviewText, itemID);
         }
-        */
+
+        /* public void RemoveItemByName(string itemName)
+         {
+             itemsInventory.RemoveItem(this.itemsInventory.GetItemByName(itemName));
+         }
+         */
     }
 }

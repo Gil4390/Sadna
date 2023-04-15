@@ -187,5 +187,14 @@ namespace SadnaExpress.DomainLayer.Store
             AddItemToInventory(newItem, quantity);
         }
 
+        public void AddReviewToItem(Guid userID, string reviewText, int itemID)
+        {
+            if (reviewText == "")
+            {
+                throw new Exception("review text cannot be empty");
+            }
+            getItemById(itemID).AddReview(userID, reviewText);
+        }
+
     }
 }

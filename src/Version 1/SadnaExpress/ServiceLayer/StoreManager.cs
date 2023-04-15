@@ -111,9 +111,12 @@ namespace SadnaExpress.ServiceLayer
         }
 
 
-        public Response WriteReview(Guid id, int itemID, string review)
+        public Response WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText)
         {
-            throw new System.NotImplementedException();
+            //check that the user bought the item before
+
+            storeFacade.WriteItemReview(userID, storeID, itemID, reviewText);
+            return new Response();
         }
 
     

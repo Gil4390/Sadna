@@ -85,7 +85,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             if(stores.ContainsKey(storeId))
                 return stores[storeId];
-            throw new Exception("there is no store with this id");
+            throw new Exception("there is no store with this id: " + storeId);
         }
 
         public void GetAllStoreInfo(string storeName)
@@ -196,6 +196,12 @@ namespace SadnaExpress.DomainLayer.Store
                 Logger.Instance.Error(ex.Message);
                 return false;
             }
+        }
+
+        public void WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText)
+        {
+            Store store = GetStoreById(storeID);
+            store.WriteItemReview(userID, itemID, reviewText);
         }
     }
 }
