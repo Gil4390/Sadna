@@ -132,39 +132,24 @@ namespace SadnaExpress.ServiceLayer
                 ratingStore);
         }
 
-        public Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount)
+        public Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
         {
-            // first check if store can provide the itemAmount
-            try
-            {
-                int storeQuantity = 0; //GetAvailableQuantity(storeID, itemID);
-                if (storeQuantity < itemAmount)
-                {
-                    Logger.Instance.Error("cant add item to shopping basket with quantity more than the store can provide!");
-                    return new Response();
-                }
-                return userManager.AddItemToCart(userID, storeID, itemID, itemAmount);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error("tried to add item to shopping basket from a diffrent Store!");
-                return new Response(ex.Message);
-            }
+            return storeManager.AddItemToCart(userID, storeID, itemID, itemAmount);
         }
 
-        public Response RemoveItemFromCart(Guid userID, Guid storeID, int itemID)
+        public Response RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID)
         {
-            return userManager.RemoveItemFromCart(userID, storeID, itemID);
+            return storeManager.RemoveItemFromCart(userID, storeID, itemID);
         }
 
-        public Response EditItemFromCart(Guid userID, int itemID, int itemAmount)
+        public Response EditItemFromCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
         {
-            throw new NotImplementedException();
+            return storeManager.EditItemFromCart(userID, storeID, itemID, itemAmount);
         }
 
-        public ResponseT<Dictionary<string, List<string>>> getDetailsOnCart()
+        public ResponseT<Dictionary<Guid, List<Guid>>> GetDetailsOnCart(Guid userID)
         {
-            throw new NotImplementedException();
+            return storeManager.GetDetailsOnCart(userID);
         }
 
         public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string review)
@@ -196,7 +181,7 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response GetPurchasesInfo(Guid userID)
+        public Response GetPurchasesInfoUser(Guid userID)
         {
             throw new NotImplementedException();
         }
@@ -271,11 +256,6 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             return userManager.GetEmployeeInfoInStore(userID, storeID);
-        }
-
-        public Response GetPurchasesInfo(Guid userID, Guid storeID)
-        {
-            throw new NotImplementedException();
         }
 
         public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)

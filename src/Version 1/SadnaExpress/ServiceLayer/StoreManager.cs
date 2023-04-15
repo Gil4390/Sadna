@@ -17,14 +17,62 @@ namespace SadnaExpress.ServiceLayer
         {
             this.userFacade = userFacade;
             this.storeFacade = storeFacade;
-            
         }
 
+        public ResponseT<Dictionary<Guid, List<Guid>>> GetDetailsOnCart(Guid userID)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
+        {
+            try
+            {
+                storeFacade.AddItemToCart(storeID, itemID, itemAmount);
+                userFacade.AddItemToCart(userID, storeID, itemID, itemAmount);
+                return new Response();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+
+        public Response RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID)
+        {
+            try
+            {
+                userFacade.RemoveItemFromCart(userID, storeID, itemID);
+                return new Response();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+
+        public Response EditItemFromCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
+        {
+            try
+            {
+                userFacade.EditItemFromCart(userID, storeID, itemID, itemAmount);
+                return new Response();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
+        }
         public Response PurchaseCart(Guid id, string paymentDetails)
         {
             throw new NotImplementedException();
         }
-
         public ResponseT<Guid> OpenNewStore(Guid id, string storeName)
         {
             try
@@ -102,7 +150,6 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new System.NotImplementedException();
         }
-
         public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
             try
@@ -237,11 +284,6 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(ex.Message);
                 return new ResponseT<List<Item>>(ex.Message);
             }
-        }
-        
-        public Response GetPurchasesInfo(Guid id, int storeID)
-        {
-            throw new System.NotImplementedException();
         }
         public void CleanUp()
         {

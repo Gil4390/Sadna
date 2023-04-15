@@ -22,11 +22,11 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
         ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1);
         ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
-        Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount); //2.3
+        Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount); //2.3
         //2.4
-        Response RemoveItemFromCart(Guid userID, Guid storeID, int itemID);
-        Response EditItemFromCart(Guid userID, int itemID,  int itemAmount);
-        ResponseT<Dictionary<string,List<string>>> getDetailsOnCart();
+        Response RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID);
+        Response EditItemFromCart(Guid userID, Guid storeID, Guid itemID,  int itemAmount);
+        ResponseT<Dictionary<Guid,List<Guid>>> GetDetailsOnCart(Guid userID);
         Response PurchaseCart(Guid userID, string paymentDetails); //2.5
         ResponseT<Guid> Logout(Guid userID); //3.1
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
@@ -34,7 +34,7 @@ namespace SadnaExpress.ServiceLayer
         Response RateItem(Guid userID, int itemID, int score); //3.4 (not in this version)
         Response WriteMessageToStore(Guid userID, Guid storeID, string message); //3.5  (not in this version)
         Response ComplainToAdmin(Guid userID, string message); //3.6 (not in this version)
-        Response GetPurchasesInfo(Guid userID); //3.7 (not in this version)
+        Response GetPurchasesInfoUser(Guid userID); //3.7 (not in this version)
         //3.8 and 3.9 (not in this version)
         //4.1
         ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
@@ -53,10 +53,8 @@ namespace SadnaExpress.ServiceLayer
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
         ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
-        Response GetPurchasesInfo(Guid userID, Guid storeID);//4.13 //6.4
-        //???????
-        ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID);
-        ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID);
+        ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
+        ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID);//6.4
         
         void CleanUp();
         ResponseT<bool> InitializeTradingSystem(Guid userID);

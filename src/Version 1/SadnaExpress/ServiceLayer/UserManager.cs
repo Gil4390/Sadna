@@ -83,47 +83,6 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-
-        public Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount)
-        {
-            try
-            {
-               userFacade.AddItemToCart(userID, storeID, itemID, itemAmount);
-                return new Response();
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-
-        public Response RemoveItemFromCart(Guid userID, Guid storeID, int itemID)
-        {
-            try
-            {
-                userFacade.RemoveItemFromCart(userID, storeID, itemID);
-                return new Response();
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-
-        public Response EditItemFromCart(Guid userID, int itemID, int itemAmount)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ResponseT<Dictionary<string, List<string>>> getDetailsOnCart()
-        {
-            throw new System.NotImplementedException();
-        }
-
         public ResponseT<Guid> Logout(Guid userID)
         {
             try

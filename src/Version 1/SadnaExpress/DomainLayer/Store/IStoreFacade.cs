@@ -24,6 +24,7 @@ namespace SadnaExpress.DomainLayer.Store
         List<Item> GetItemsByName(string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
         List<Item> GetItemsByCategory(string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1);
         List<Item> GetItemsByKeysWord(string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
+        void AddItemToCart(Guid storeID, Guid itemID, int quantity);
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
         void SetIsSystemInitialize(bool isInitialize);

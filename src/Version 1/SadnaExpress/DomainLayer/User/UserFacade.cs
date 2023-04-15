@@ -138,10 +138,10 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public void AddItemToCart(Guid userID, Guid storeID, int itemID,  int itemAmount)
+        public void AddItemToCart(Guid userID, Guid storeID, Guid itemID,  int itemAmount)
         {
             IsTsInitialized();
-
+            /*
             if (current_Users.ContainsKey(userID))
             {
                 current_Users[userID].AddItemToCart(storeID, itemID, itemAmount);
@@ -154,11 +154,12 @@ namespace SadnaExpress.DomainLayer.User
             {
                 throw new Exception("no cart available for user that is not in the list of users!");
             }
+            */
         }
-        public void RemoveItemFromCart(Guid userID, Guid storeID, int itemID)
+        public void RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID)
         {
             IsTsInitialized();
-
+            /*
             if (current_Users.ContainsKey(userID))
             {
                 current_Users[userID].RemoveItemFromCart(storeID, itemID);
@@ -170,15 +171,15 @@ namespace SadnaExpress.DomainLayer.User
             else
             {
                 throw new Exception("no cart available for user that is not in the list of users!");
-            }
+            }*/
         }
 
-        public void EditItemFromCart(Guid id, Guid storeID, int itemID, int itemAmount)
+        public void EditItemFromCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount)
         {
             IsTsInitialized();
             throw new NotImplementedException();
         }
-        public Dictionary<string, List<string>> getDetailsOnCart()
+        public Dictionary<Guid, List<Guid>> GetDetailsOnCart(Guid id)
         {
             IsTsInitialized();
             throw new NotImplementedException();
@@ -190,9 +191,8 @@ namespace SadnaExpress.DomainLayer.User
             throw new NotImplementedException();
         }
 
-        public void EditItemCart(Guid id, Guid storeID, string itemName)
+        public void EditItemCart(Guid userID, Guid storeID, string itemName)
         {
-            IsTsInitialized();
             throw new NotImplementedException();
         }
 

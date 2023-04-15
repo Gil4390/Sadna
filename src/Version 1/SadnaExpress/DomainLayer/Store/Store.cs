@@ -73,5 +73,9 @@ namespace SadnaExpress.DomainLayer.Store
             itemsInventory.EditItemQuantity(itemID, quantity);
         }
 
+        public void AddItemToCart(Guid itemID, int quantity)
+        {
+            itemsInventory.AddItemToCart(itemID, quantity);
+        }
     }
 }

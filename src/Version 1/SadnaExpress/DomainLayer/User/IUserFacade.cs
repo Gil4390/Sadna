@@ -13,10 +13,10 @@ namespace SadnaExpress.DomainLayer.User
         void Register(Guid userID, string email, string firstName, string lastLame, string password);
         Guid Login(Guid userID, string email, string password);
         Guid Logout(Guid userID);
-        void AddItemToCart(Guid userID,Guid storeID, int itemID,  int itemAmount);
-        void RemoveItemFromCart(Guid userID,Guid storeID, int itemID);
-        void EditItemFromCart(Guid userID,Guid storeID, int itemID,  int itemAmount);
-        Dictionary<string,List<string>> getDetailsOnCart();
+        void AddItemToCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount);
+        void RemoveItemFromCart(Guid userID,Guid storeID, Guid itemID);
+        void EditItemFromCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount);
+        Dictionary<Guid,List<Guid>> GetDetailsOnCart(Guid userID);
         void PurchaseCart(Guid userID);
         void EditItemCart(Guid userID,Guid storeID, string itemName);
         void OpenNewStore(Guid userID,Guid storeID);

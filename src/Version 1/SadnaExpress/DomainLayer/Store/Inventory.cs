@@ -134,5 +134,10 @@ namespace SadnaExpress.DomainLayer.Store
             getItemById(itemID).AddReview(userID, reviewText);
         }
 
+        public void AddItemToCart(Guid itemID, int quantity)
+        {
+            if (items_quantity[getItemById(itemID)] > quantity)
+                throw new Exception("You can't add to the cart, the quantity in the inventory not enough");
+        }
     }
 }
