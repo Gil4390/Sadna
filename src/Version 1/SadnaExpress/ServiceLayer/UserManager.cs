@@ -373,6 +373,32 @@ namespace SadnaExpress.ServiceLayer
             userFacade.SetIsSystemInitialize(isInitialize);
         }
 
-    
+        public ResponseT<User> GetUser(Guid userID)
+        {
+            try
+            {
+                User user = userFacade.GetUser(userID);
+                return new ResponseT<User>(user);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<User>(ex.Message);
+            }
+        }
+
+        public ResponseT<Member> GetMember(Guid userID)
+        {
+            try
+            {
+                Member member = userFacade.GetMember(userID);
+                return new ResponseT<Member>(member);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Member>(ex.Message);
+            }
+        }
     }
 }

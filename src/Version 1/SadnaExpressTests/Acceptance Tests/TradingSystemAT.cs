@@ -4,6 +4,9 @@ using System;
 
 using SadnaExpressTests;
 using static SadnaExpressTests.Mocks;
+using SadnaExpress.DomainLayer.User;
+using System.Collections.Concurrent;
+using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpressTests.Acceptance_Tests
 {
@@ -11,26 +14,31 @@ namespace SadnaExpressTests.Acceptance_Tests
     public class TradingSystemAT
     {
         protected ProxyBridge proxyBridge;
+        protected Guid userid;
 
         [TestInitialize]
         public virtual void SetUp()
         {
             proxyBridge = new ProxyBridge();
-            proxyBridge.SetBridge(new TradingSystem());
+
+            IStoreFacade storeFacade = new StoreFacade();
+            ConcurrentDictionary<Guid, User> current_users = new ConcurrentDictionary<Guid, User>();
+            User entered_user = new User();
+            userid = entered_user.UserId;
+            current_users.TryAdd(userid, entered_user);
+            ConcurrentDictionary<Guid, Member> members = new ConcurrentDictionary<Guid, Member>();
+            Guid systemManagerid = Guid.NewGuid();
+            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", "123");
+            systemManager.createSystemManager();
+            members.TryAdd(systemManagerid, systemManager);
+            IUserFacade _userFacade = new UserFacade(current_users, members, new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
+        
+            proxyBridge.SetBridge(new TradingSystem(_userFacade, storeFacade));
             proxyBridge.SetPaymentService(new Mock_PaymentService());
             proxyBridge.SetSupplierService(new Mock_SupplierService());
+            proxyBridge.SetIsSystemInitialize(true);
         }
 
-        public void activateAdmin()
-        {
-           //Guid adminID = service.Enter().Value;
-           //service.Register(adminID, "Admin@BGU.co.il", "admin", "admin", "admin");
-           //Guid registerdAdminID = service.Login(adminID, "Admin@BGU.co.il", "admin").Value;
-           //tradingSystemOpen = service.InitializeTradingSystem(registerdAdminID).Value;
-           //Guid userID = service.Logout(registerdAdminID).Value;
-           //service.Exit(userID);
-            
-        }
 
         private class Mock_Bad_SupplierService : Mock_SupplierService
         {

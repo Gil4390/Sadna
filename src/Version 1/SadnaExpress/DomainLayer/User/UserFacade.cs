@@ -22,7 +22,8 @@ namespace SadnaExpress.DomainLayer.User
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         private ISupplierService supplierService;
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
-       
+        object enterLock = new object();
+        object registerLock = new object();
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
@@ -44,10 +45,13 @@ namespace SadnaExpress.DomainLayer.User
 
         public Guid Enter()
         {
-            User user = new User();
-            current_Users.TryAdd(user.UserId, user);
-            Logger.Instance.Info(user ,"Enter the system.");
-            return user.UserId;    
+            lock (enterLock)
+            {
+                User user = new User();
+                current_Users.TryAdd(user.UserId, user);
+                Logger.Instance.Info(user, "Enter the system.");
+                return user.UserId;
+            }
         }
 
         public void Exit(Guid id)
@@ -66,34 +70,27 @@ namespace SadnaExpress.DomainLayer.User
 
         public void Register(Guid id, string email, string firstName, string lastName, string password)
         {
-            IsTsInitialized();
+            lock (registerLock)
+            {
+                IsTsInitialized();
+                if (current_Users.ContainsKey(id) == false)
+                    throw new Exception("User should enter the system before preforming this action");
 
-            if (members.ContainsKey(id))
-                throw new Exception("user with this id already logged in");
-            foreach (Member m in members.Values)
-            {
-                if (m.Email == email)
-                    throw new Exception("email already exists");
-            }
-            string hashPassword = _ph.Hash(password);
-            bool oneSystemManager = false;
-            foreach (Member member in members.Values)
-                if (member.Email.Contains("BGU"))
-                    oneSystemManager = true;
-                
-            if (email.Contains("BGU") || !oneSystemManager)
-            {
+                if (members.ContainsKey(id))
+                    throw new Exception("Member with this id already registered");
+
+                foreach (Member m in members.Values)
+                {
+                    if (m.Email == email)
+                        throw new Exception("Member with this email already exists");
+                }
+
+                string hashPassword = _ph.Hash(password);
+
                 Member newMember = new Member(id, email, firstName, lastName, hashPassword);
                 members.TryAdd(id, newMember);
-                Logger.Instance.Info(newMember,"registered with "+email+".");
+                Logger.Instance.Info(newMember, "registered with " + email + ".");
             }
-            else
-            {
-                PromotedMember newMember2 = new PromotedMember(id, email, firstName, lastName, hashPassword);
-                newMember2.createSystemManager();
-                members.TryAdd(id, newMember2);
-                Logger.Instance.Info(newMember2 ,"registered with "+email+".");
-            }   
         }
 
         public Guid Login(Guid id, string email, string password)
@@ -542,6 +539,18 @@ namespace SadnaExpress.DomainLayer.User
             _isTSInitialized = isInitialize;
         }
 
-      
+        public User GetUser(Guid userID)
+        {
+            if (current_Users.ContainsKey(userID))
+                return current_Users[userID];
+            throw new Exception("User with id " + userID + " does not exist");
+        }
+
+        public Member GetMember(Guid userID)
+        {
+            if (members.ContainsKey(userID))
+                return members[userID];
+            throw new Exception("Member with id " + userID + " does not exist");
+        }
     }
 }

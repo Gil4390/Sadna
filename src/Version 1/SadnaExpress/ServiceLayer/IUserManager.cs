@@ -50,8 +50,9 @@ namespace SadnaExpress.ServiceLayer
 
         void SetPaymentService(IPaymentService paymentService);
         void SetSupplierService(ISupplierService supplierService);
-
         void SetIsSystemInitialize(bool isInitialize);
+        ResponseT<User> GetUser(Guid userID);
+        ResponseT<Member> GetMember(Guid userID);
 
         ResponseT<List<Order>> GetStorePurchases(Guid userId, Guid storeId);
         ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userId);
