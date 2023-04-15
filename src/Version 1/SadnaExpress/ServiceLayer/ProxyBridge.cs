@@ -94,7 +94,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.PurchaseCart(id, paymentDetails);
         }
 
-        public Response WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText)
+        public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
         {
             return _realBridge.WriteItemReview(userID, storeID, itemID, reviewText);
         }
@@ -184,7 +184,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.ReopenStore(id, storeID);
         }
 
-        public ResponseT<List<Member>> GetEmployeeInfoInStore(Guid id, Guid storeID)
+        public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid id, Guid storeID)
         {
             return _realBridge.GetEmployeeInfoInStore(id, storeID);
         }

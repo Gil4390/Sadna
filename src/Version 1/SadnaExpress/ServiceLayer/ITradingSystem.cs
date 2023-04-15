@@ -30,7 +30,7 @@ namespace SadnaExpress.ServiceLayer
         Response PurchaseCart(Guid userID, string paymentDetails); //2.5
         ResponseT<Guid> Logout(Guid userID); //3.1
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
-        Response WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText); //3.3
+        Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText); //3.3
         Response RateItem(Guid userID, int itemID, int score); //3.4 (not in this version)
         Response WriteMessageToStore(Guid userID, Guid storeID, string message); //3.5  (not in this version)
         Response ComplainToAdmin(Guid userID, string message); //3.6 (not in this version)
@@ -52,7 +52,7 @@ namespace SadnaExpress.ServiceLayer
         Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
-        ResponseT<List<Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
+        ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
         Response GetPurchasesInfo(Guid userID, Guid storeID);//4.13 //6.4
         //???????
         void CleanUp();
