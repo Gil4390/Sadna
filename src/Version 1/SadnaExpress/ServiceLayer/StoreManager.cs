@@ -43,13 +43,14 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                userFacade.CloseStore(id, storeID);
                 storeFacade.CloseStore(storeID);
-                return new ResponseT<Guid>(storeID);
+                return new Response();
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<Guid>(ex.Message);
+                return new Response(ex.Message);
             }
         }
         public Response DeleteStore(Guid id ,Guid storeID)
