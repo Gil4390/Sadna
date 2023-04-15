@@ -85,7 +85,7 @@ namespace SadnaExpressTests.Integration_Tests
             Guid id = Guid.NewGuid();
             Task<Response> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
-                return proxyBridge.Register(id, "tal.galmor@weka.io","tal", "galmor", "123ABC!@#");
+                return proxyBridge.Register(id, "tal.galmor@weka.io","tal", "galmor", "123AaC!@#");
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured);
@@ -162,9 +162,9 @@ namespace SadnaExpressTests.Integration_Tests
         public void Register3UsersAtTheSameTime_HappyTest()
         {
             Task<Response>[] clientTasks = new Task<Response>[] {
-            Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","57571!@#$AS")),
-            Task.Run(() => RegisterClient("Rami@gmail.com","Rami","Barak","LKJ&^$187")),
-            Task.Run(() => RegisterClient("Yoni@gmail.com","Yoni","Kobi","87ASDFG%$"))
+            Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","57571!@#$aS")),
+            Task.Run(() => RegisterClient("Rami@gmail.com","Rami","Barak","LsJ&^$187")),
+            Task.Run(() => RegisterClient("Yoni@gmail.com","Yoni","Kobi","87ASdFG%$"))
              };
 
             // Wait for all clients to complete
@@ -181,9 +181,9 @@ namespace SadnaExpressTests.Integration_Tests
         {
             //task 2 run client with existing email
             Task<Response>[] clientTasks = new Task<Response>[] {
-            Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","57571!@#$AS")),
-            Task.Run(() => RegisterClient("RotemSela@gmail.com","Rotem","Sela","LKJ&^$187")),
-            Task.Run(() => RegisterClient("Yoni@gmail.com","Yoni","Kobi","87ASDFG%$"))
+            Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","57571!@#$aS")),
+            Task.Run(() => RegisterClient("RotemSela@gmail.com","Rotem","Sela","LkJ&^$187")),
+            Task.Run(() => RegisterClient("Yoni@gmail.com","Yoni","Kobi","87ASDsG%$"))
             };
 
             // Wait for all clients to complete
