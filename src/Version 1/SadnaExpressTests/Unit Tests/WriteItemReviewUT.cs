@@ -58,7 +58,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestCleanup]
         public void CleanUp()
         {
-            _userFacade.CleanUp();
+            
         }
         #endregion
     }
