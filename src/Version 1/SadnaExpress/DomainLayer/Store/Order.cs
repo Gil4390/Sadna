@@ -6,35 +6,21 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public class Order
     {
-        private int userID;
+        private Guid userID;
+        public Guid UserID {get=>userID;}
         private Guid storeID;
-        private LinkedList<String> listItems;
+        public Guid StoreID {get=>storeID;}
+        private List<Guid> listItems;
+        public List<Guid> ListItem { get=>listItems; }
         private double price;
+        public double Price { get=>price; }
 
-        public Order(int userID, Guid storeId,LinkedList<String> listItems,double price)
+        public Order(Guid userID, Guid storeId,List<Guid> listItems,double price)
         {
             this.userID = userID;
             storeID = storeId;
             this.listItems = listItems;
             this.price = price;
-        }
-
-        public int getUserID()
-        {
-            return userID;
-        }
-
-        public Guid getStoreID()
-        {
-            return storeID;
-        }
-        public LinkedList<String> getListItems()
-        {
-            return listItems;
-        }
-        public double getPrice()
-        {
-            return price;
         }
     }
 }

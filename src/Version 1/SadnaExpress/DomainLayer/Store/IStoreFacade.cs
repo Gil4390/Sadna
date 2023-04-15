@@ -11,7 +11,8 @@ namespace SadnaExpress.DomainLayer.Store
         void CloseStore(Guid storeID);
         void DeleteStore(Guid storeID);
         void ReopenStore(Guid storeID);
-        LinkedList<Order> GetStorePurchases(Guid storeID);
+        List<Order> GetStorePurchases(Guid storeID);
+        Dictionary<Guid, List<Order>> GetAllStorePurchases();
         Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
         void WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText);
         void PurchaseItems(string storeName, List<string> itemsName);
@@ -24,6 +25,7 @@ namespace SadnaExpress.DomainLayer.Store
         List<Item> GetItemsByName(string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
         List<Item> GetItemsByCategory(string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1);
         List<Item> GetItemsByKeysWord(string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
+        void AddItemToCart(Guid storeID, Guid itemID, int quantity);
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
         void SetIsSystemInitialize(bool isInitialize);

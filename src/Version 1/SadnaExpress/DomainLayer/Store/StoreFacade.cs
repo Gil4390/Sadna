@@ -1,10 +1,6 @@
-using SadnaExpress.ServiceLayer;
-using SadnaExpress.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -13,11 +9,13 @@ namespace SadnaExpress.DomainLayer.Store
         private ConcurrentDictionary<Guid, Store> stores;
         private ConcurrentDictionary<Guid, LinkedList<Order>> storeOrders;
         private bool _isTSInitialized;
+        private static Orders _orders;
 
         public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
             storeOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();
+            _orders = Orders.Instance;
         }
         
         public Guid OpenNewStore(string storeName)
@@ -34,35 +32,34 @@ namespace SadnaExpress.DomainLayer.Store
         public void CloseStore(Guid storeID)
         {
             IsTsInitialized();
-            if (!stores.ContainsKey(storeID))
-                Logger.Instance.Error("there is no store with this ID");
+            IsStoreExist(storeID);
             stores[storeID].Active = false;
             Logger.Instance.Info("store " + stores[storeID].StoreName + " closed.");
         }
         public void ReopenStore(Guid storeID)
         {
             IsTsInitialized();
-            if (!stores.ContainsKey(storeID))
-                throw new Exception("there is no store with this ID");
+            IsStoreExist(storeID);
             stores[storeID].Active = true;
             Logger.Instance.Info("store " + stores[storeID].StoreName + " reopen.");
         }
         public void DeleteStore(Guid storeID)
         {
             IsTsInitialized();
-            if (!stores.ContainsKey(storeID))
-                throw new Exception("there is no store with this ID");
+            IsStoreExist(storeID);
             stores.TryRemove(storeID, out var store);
             Logger.Instance.Info("store " + store.StoreName + " deleted.");
         }
         
-        public LinkedList<Order> GetStorePurchases(Guid storeID)
+        public List<Order> GetStorePurchases(Guid storeID)
         {
             IsTsInitialized();
-            if (!storeOrders.ContainsKey(storeID))
-                throw new Exception("Store with this id does not exist");
-            Logger.Instance.Info("store " + stores[storeID].StoreName + " got his purchases info.");
-            return storeOrders[storeID];
+            return _orders.GetOrdersByStoreId(storeID);
+        }
+        public Dictionary<Guid, List<Order>> GetAllStorePurchases()
+        {
+            IsTsInitialized();
+            return _orders.GetStoreOrders();
         }
         public void PurchaseItems(string storeName, List<string> itemsName)
         {
@@ -79,44 +76,40 @@ namespace SadnaExpress.DomainLayer.Store
         public Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
             IsTsInitialized();
-            if (!stores.ContainsKey(storeID))
-                throw new Exception("Store with this id does not exist");
+            IsStoreExist(storeID);
             return stores[storeID].AddItem(itemName, itemCategory, itemPrice, quantity);
         }
 
         public void RemoveItemFromStore(Guid storeID, Guid itemId)
         {
             IsTsInitialized();
-            if (!stores.ContainsKey(storeID))
-                throw new Exception("Store with this id does not exist");
+            IsStoreExist(storeID);
             stores[storeID].RemoveItem(itemId);
         }
         
         public void EditItemName(Guid storeID, Guid itemID, string name)
         {
             IsTsInitialized();
-            if (!stores.ContainsKey(storeID))
-                throw new Exception("Store with this id does not exist");
+            IsStoreExist(storeID);
             stores[storeID].EditItemName(itemID, name);
         }
         
         public void EditItemCategory(Guid storeID, Guid itemID, string category)
         {
             IsTsInitialized();
-            if (!stores.ContainsKey(storeID))
-                throw new Exception("Store with this id does not exist");
+            IsStoreExist(storeID);
             stores[storeID].EditItemCategory(itemID, category);
         }
         public void EditItemPrice(Guid storeID, Guid itemID, int price)
         {
-            if (!stores.ContainsKey(storeID))
-                throw new Exception("Store with this id does not exist");
+            IsTsInitialized();
+            IsStoreExist(storeID);
             stores[storeID].EditItemPrice(itemID, price);
         }
         public void EditItemQuantity(Guid storeID, Guid itemID, int quantity)
         {
-            if (!stores.ContainsKey(storeID))
-                throw new Exception("Store with this id does not exist");
+            IsTsInitialized();
+            IsStoreExist(storeID);
             stores[storeID].EditItemQuantity(itemID, quantity);
         }
         public List<Item> GetItemsByName(string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
@@ -163,12 +156,6 @@ namespace SadnaExpress.DomainLayer.Store
             }
             return allItems;
         }
-        public void WriteReview(string storeName, string itemName, int rating)
-        {
-            IsTsInitialized();
-            throw new System.NotImplementedException();
-        }
-
         public void CleanUp()
         {
            storeOrders.Clear();
@@ -191,10 +178,26 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("Cannot preform any action because system trading is closed");
         }
 
+        private void IsStoreExist(Guid storeID)
+        {
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("Store with this id does not exist");
+        }
+            
+
         public void WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
         {
+            IsTsInitialized();
+            IsStoreExist(storeID);
             Store store = stores[storeID];
             store.WriteItemReview(userID, itemID, reviewText);
+        }
+
+        public void AddItemToCart(Guid storeID, Guid itemID, int quantity)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeID);
+            stores[storeID].AddItemToCart(itemID, quantity);
         }
     }
 }

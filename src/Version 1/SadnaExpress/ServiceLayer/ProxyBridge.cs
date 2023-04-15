@@ -84,14 +84,14 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetItemsByKeysWord(id, keyWords);
         }
 
-        public Response EditItemFromCart(Guid id, int itemID, int itemAmount)
+        public Response EditItemFromCart(Guid id, Guid storeID, Guid itemID, int itemAmount)
         {
-            return _realBridge.EditItemFromCart(id, itemID, itemAmount);
+            return _realBridge.EditItemFromCart(id, storeID, itemID, itemAmount);
         }
 
-        public ResponseT<Dictionary<string, List<string>>> getDetailsOnCart()
+        public ResponseT<Dictionary<Guid, List<Guid>>> GetDetailsOnCart(Guid id)
         {
-            return _realBridge.getDetailsOnCart();
+            return _realBridge.GetDetailsOnCart(id);
         }
 
         public Response PurchaseCart(Guid id, string paymentDetails)
@@ -119,9 +119,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.ComplainToAdmin(id, message);
         }
 
-        public Response GetPurchasesInfo(Guid id)
+        public Response GetPurchasesInfoUser(Guid id)
         {
-            return _realBridge.GetPurchasesInfo(id);
+            return _realBridge.GetPurchasesInfoUser(id);
         }
 
         public Response EditItemCategory(Guid userID,  Guid storeID, Guid itemID, string category)
@@ -194,11 +194,6 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetEmployeeInfoInStore(id, storeID);
         }
 
-        public Response GetPurchasesInfo(Guid id, Guid storeID)
-        {
-            return _realBridge.GetPurchasesInfo(id, storeID);
-        }
-
         public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
         {
             return _realBridge.GetStorePurchases(userID, storeID);
@@ -234,12 +229,12 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response AddItemToCart(Guid id, Guid storeID, int itemID, int itemAmount)
+        public Response AddItemToCart(Guid id, Guid storeID, Guid itemID, int itemAmount)
         {
             return _realBridge.AddItemToCart(id, storeID, itemID, itemAmount);
         }
 
-        public Response RemoveItemFromCart(Guid id, Guid storeID, int itemID)
+        public Response RemoveItemFromCart(Guid id, Guid storeID, Guid itemID)
         {
             return (_realBridge.RemoveItemFromCart(id, storeID, itemID));
         }
