@@ -22,7 +22,6 @@ namespace SadnaExpress.DomainLayer.User
          * add new manager
          * get employees info
          * get store purchases
-         * get all stores purchases
          */
         public PromotedMember(int id, string email, string firstName, string lastName, string password) : base(id,
             email, firstName, lastName, password)
@@ -170,14 +169,12 @@ namespace SadnaExpress.DomainLayer.User
 
         }
 
-        public override Dictionary<Guid,Order> GetAllAStorePurchases(Guid storeID)
+        public override Dictionary<Guid,List<Order>> GetAllAStorePurchases()
         {
-            if (permissions.ContainsKey(storeID))
-                if (permissions[storeID].Contains("system manager permissions") ||
-                    permissions[storeID].Contains("get all stores purchases"))
-                    return permissionsHolder.GetAllAStorePurchases(storeID, this);
+            if (permissions.ContainsKey(Guid.Empty))
+                if (permissions[Guid.Empty].Contains("system manager permissions"))
+                   return permissionsHolder.GetAllAStorePurchases(Guid.Empty, this);
             throw new Exception("The member doesn’t have permissions to get all stores purchases");
-
         }
     }
 }

@@ -72,7 +72,7 @@ namespace SadnaExpress.DomainLayer.User
 
         }
 
-        public virtual Dictionary<Guid,Order> GetAllAStorePurchases(Guid storeID)
+        public virtual Dictionary<Guid,List<Order>> GetAllAStorePurchases()
         {
             throw new Exception("The user unauthorised to get all store purchases");
         }

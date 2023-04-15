@@ -266,31 +266,7 @@ namespace SadnaExpress.DomainLayer.User
             PromotedMember manager = members[id].AppointStoreManager(storeID, newManager);
             members[newManagerID] = manager;
         }
-        public List<Order> GetStorePurchases(int id, Guid storeId, string email)
-        {
-            isLogin(id);
-            Member  m = null;
-            foreach (Member member in members.Values)
-                if (member.Email == email)
-                     m = member;
-            if ( m == null)
-                throw new Exception($"There isn't a member with {email}");
-            return members[id].GetStorePurchases(storeId);
-
-        }
-
-        public Dictionary<Guid,Order> GetAllAStorePurchases(int id, Guid storeId, string email)
-        {
-            isLogin(id);
-            Member  m = null;
-            foreach (Member member in members.Values)
-                if (member.Email == email)
-                    m = member;
-            if (m == null)
-                throw new Exception($"There isn't a member with {email}");
-            return members[id].GetAllAStorePurchases(storeId);
-            
-        }
+    
         public void AddStoreManagerPermissions(int id, Guid storeID, string email, string permission)
         {
             isLogin(id);
@@ -323,7 +299,19 @@ namespace SadnaExpress.DomainLayer.User
             return employees;
         }
 
-    
+        public List<Order> GetStorePurchases(int id, Guid storeId)
+        {
+            isLogin(id);
+            return members[id].GetStorePurchases(storeId);
+
+        }
+
+        public Dictionary<Guid,List<Order>> GetAllAStorePurchases(int id)
+        {
+            isLogin(id);
+            return members[id].GetAllAStorePurchases();
+            
+        }
     
 
 

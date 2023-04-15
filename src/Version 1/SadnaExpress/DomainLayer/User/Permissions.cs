@@ -75,9 +75,9 @@ namespace SadnaExpress.DomainLayer.User
             return orders;
 
         }
-        public Dictionary<Guid,Order> GetAllAStorePurchases(Guid storeId, PromotedMember promotedMember)
+        public Dictionary<Guid,List<Order>> GetAllAStorePurchases(Guid storeId, PromotedMember promotedMember)
         {
-            Dictionary<Guid,Order> orders = _orders.GetStoreOrders();
+            Dictionary<Guid,List<Order>> orders = _orders.GetStoreOrders();
             return orders;
         }
 

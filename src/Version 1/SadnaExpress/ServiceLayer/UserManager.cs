@@ -153,43 +153,6 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<S_Order>> GetStorePurchases(int id, Guid storeID, string email)
-        {
-            try
-            {
-                // after gil adds service objects - need to change this
-                
-               // List<S_Order> purchases = userFacade.GetStorePurchases(id, storeID,email);
-               // return new ResponseT<List<S_Order>>(purchases);
-               
-                return new ResponseT<List<S_Order>>();
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<List<S_Order>>(ex.Message);
-            }
-        }
-       
-        public ResponseT<Dictionary<Guid,S_Order>> GetAllAStorePurchases(int id, Guid storeID, string email)
-        {
-            try
-            {
-                // after gil adds service objects - need to change this
-                
-                //Dictionary<Guid,Order> purchases = userFacade.GetStorePurchases(id, storeID,email);
-                //return new ResponseT<Dictionary<Guid,S_Order>>(purchases);
-               
-                return new ResponseT<Dictionary<Guid,S_Order>>();
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<Dictionary<Guid,S_Order>>(ex.Message);
-            }
-        }
         
         
         public Response AppointStoreManager(int id, Guid storeID, string userEmail)
@@ -248,6 +211,43 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public ResponseT<List<S_Order>> GetStorePurchases(int id, Guid storeID, string email)
+        {
+            try
+            {
+                // after gil adds service objects - need to change this
+                
+                // List<S_Order> purchases = userFacade.GetStorePurchases(id, storeID,email);
+                //  return new ResponseT<List<S_Order>>(purchases);
+               
+                return new ResponseT<List<S_Order>>();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<List<S_Order>>(ex.Message);
+            }
+        }
+       
+        public ResponseT<Dictionary<Guid, List<S_Order>>> GetAllAStorePurchases(int id, Guid storeID, string email)
+        {
+            try
+            {
+                // after gil adds service objects - need to change this
+                
+                //Dictionary<Guid,Order> purchases = userFacade.GetStorePurchases(id, storeID,email);
+                //return new ResponseT<Dictionary<Guid, List<S_Order>>>(purchases);
+               
+                return new ResponseT<Dictionary<Guid, List<S_Order>>>();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Dictionary<Guid, List<S_Order>>>(ex.Message);
+            }
+        }
      
         public void CleanUp()
         {

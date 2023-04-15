@@ -34,8 +34,8 @@ namespace SadnaExpress.DomainLayer.User
         void CloseStore(int id,Guid storeID);
         void GetDetailsOnStore(int id,Guid storeID);
         List<PromotedMember> GetEmployeeInfoInStore(int id, Guid storeID);
-        List<Order> GetStorePurchases(int id, Guid storeId, string email);
-        Dictionary<Guid,Order>  GetAllAStorePurchases(int id, Guid storeId, string email);
+        List<Order> GetStorePurchases(int id, Guid storeId);
+        Dictionary<Guid,List<Order>>  GetAllAStorePurchases(int id);
         void UpdateFirst(int id, string newFirst);
         void UpdateLast(int id, string newLast);
         void UpdatePassword(int id, string newPassword);
