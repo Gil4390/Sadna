@@ -214,7 +214,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(id);
-            if (!members[id].hasPermissions(storeID, new List<string>{" product management permissions","owner permissions","founder permissions"}))
+            if (!members[id].hasPermissions(storeID, new List<string>{"product management permissions","owner permissions","founder permissions"}))
                 throw new Exception("The user unauthorised to add add item to store");
         }
 
@@ -222,7 +222,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(id);
-            if (!members[id].hasPermissions(storeID, new List<string>{" product management permissions","owner permissions","founder permissions"}))
+            if (!members[id].hasPermissions(storeID, new List<string>{"product management permissions","owner permissions","founder permissions"}))
                 throw new Exception("The user unauthorised to add add item to store");
         }
 
@@ -230,7 +230,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(id);
-            if (!members[id].hasPermissions(storeID, new List<string>{" product management permissions","owner permissions","founder permissions"}))
+            if (!members[id].hasPermissions(storeID, new List<string>{"product management permissions","owner permissions","founder permissions"}))
                 throw new Exception("The user unauthorised to add add item to store");
         }
 
@@ -342,17 +342,21 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             members[userID].CloseStore(storeID);
         }
-        public List<Order> GetStorePurchases(Guid userId, Guid storeId)
+        public void GetStorePurchases(Guid userId, Guid storeId)
         {
+            IsTsInitialized();
             isLoggedIn(userId);
-            return members[userId].GetStorePurchases(storeId);
-            
+            if (!members[userId].hasPermissions(storeId,
+                    new List<string> { "get store purchases", "owner permissions", "founder permissions" }))
+                throw new Exception("The member doesn’t have permissions to get store purchases"); 
         }
 
-        public Dictionary<Guid, List<Order>> GetAllStorePurchases(Guid userId)
+        public void GetAllStorePurchases(Guid userId)
         {
+            IsTsInitialized();
             isLoggedIn(userId);
-            return members[userId].GetAllStorePurchases();
+            if (!members[userId].hasPermissions(Guid.Empty, new List<string>{"system manager permissions"}))
+                throw new Exception("The member doesn’t have permissions to get all stores purchases");   
         }
         public void GetDetailsOnStore(Guid userID, Guid storeID)
         {

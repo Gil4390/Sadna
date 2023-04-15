@@ -38,14 +38,10 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Guid> UpdateFirst(Guid userID, string newFirst);
         ResponseT<Guid> UpdateLast(Guid userID, string newLast);
         ResponseT<Guid> UpdatePassword(Guid userID,string newPassword);
-
         void SetPaymentService(IPaymentService paymentService);
         void SetSupplierService(ISupplierService supplierService);
         void SetIsSystemInitialize(bool isInitialize);
         ResponseT<User> GetUser(Guid userID);
         ResponseT<Member> GetMember(Guid userID);
-
-        ResponseT<List<Order>> GetStorePurchases(Guid userId, Guid storeId);
-        ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userId);
     }
 }

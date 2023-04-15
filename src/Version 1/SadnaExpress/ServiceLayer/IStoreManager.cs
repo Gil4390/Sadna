@@ -31,8 +31,8 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response DeleteStore(Guid userID, Guid storeID); 
         Response ReopenStore(Guid userID, Guid storeID);
-        Response GetPurchasesInfo(Guid userID, Guid storeID);//4.13
-                                                             //6.4
+        ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID); //4.13                                                   
+        ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID); //6.4
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
         void SetIsSystemInitialize(bool isInitialize);

@@ -260,15 +260,14 @@ namespace SadnaExpress.ServiceLayer
 
         public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
         {
-            return userManager.GetStorePurchases(userID, storeID);
+            return storeManager.GetStorePurchases(userID, storeID);
         }
 
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
-            return userManager.GetAllStorePurchases(userID);
+            return storeManager.GetAllStorePurchases(userID);
         }
-
-
+        
         public Response DeleteStore(Guid userID, Guid storeID)
         {
             return storeManager.DeleteStore(userID, storeID);

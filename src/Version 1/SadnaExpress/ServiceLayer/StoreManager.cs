@@ -285,6 +285,36 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<List<Item>>(ex.Message);
             }
         }
+        public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
+        {
+            try
+            {
+                userFacade.GetStorePurchases(userID, storeID);
+                List<Order> purchases = storeFacade.GetStorePurchases(storeID);
+                return new ResponseT<List<Order>>(purchases);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<List<Order>>(ex.Message);
+            }
+        }
+
+        public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
+        {
+            try
+            {
+                userFacade.GetAllStorePurchases(userID);
+                Dictionary<Guid, List<Order>> purchases = storeFacade.GetAllStorePurchases();
+                return new ResponseT<Dictionary<Guid, List<Order>>>(purchases);
+            }
+            catch(Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Dictionary<Guid, List<Order>>>(ex.Message);
+
+            }
+        }
         public void CleanUp()
         {
             userFacade.CleanUp();

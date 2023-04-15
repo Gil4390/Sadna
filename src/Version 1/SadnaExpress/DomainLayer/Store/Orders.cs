@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using SadnaExpress.DomainLayer.Store;
 
-namespace SadnaExpress.DomainLayer.User
+namespace SadnaExpress.DomainLayer.Store
 {
     public class Orders
     {
@@ -39,22 +38,28 @@ namespace SadnaExpress.DomainLayer.User
                 return instance;
             }
         }
-        public void AddOrderToUser(Guid userId, Order order)
+        public void AddOrderToUser(Guid userID, Order order)
         {
             List<Order> orders;
-            if (!userOrders.TryGetValue(userId, out orders)) {
+            if (!userOrders.TryGetValue(userID, out orders)) {
                 orders = new List<Order>();
-                userOrders.TryAdd(userId, orders);
+                userOrders.TryAdd(userID, orders);
             }
             orders.Add(order);
         }
 
-        public void AddOrderToStore(Guid storeId, Order order)
+        public void AddOrder(Order order)
+        {
+            AddOrderToStore(order.StoreID, order);
+            AddOrderToUser(order.UserID, order);
+        }
+
+        public void AddOrderToStore(Guid storeID, Order order)
         {
             List<Order> orders;
-            if (!storeOrders.TryGetValue(storeId, out orders)) {
+            if (!storeOrders.TryGetValue(storeID, out orders)) {
                 orders = new List<Order>();
-                storeOrders.TryAdd(storeId, orders);
+                storeOrders.TryAdd(storeID, orders);
             }
             orders.Add(order);
         }
@@ -65,7 +70,7 @@ namespace SadnaExpress.DomainLayer.User
             if (userOrders.TryGetValue(userId, out orders)) {
                 return orders;
             }
-            return new List<Order>();
+            return null;
         }
 
         public List<Order> GetOrdersByStoreId(Guid storeId)
@@ -74,9 +79,8 @@ namespace SadnaExpress.DomainLayer.User
             if (storeOrders.TryGetValue(storeId, out orders)) {
                 return orders;
             }
-            return new List<Order>();
+            return null;
         }
-        
 
         public Dictionary<Guid, List<Order>> GetUserOrders()
         {
@@ -86,6 +90,11 @@ namespace SadnaExpress.DomainLayer.User
         public Dictionary<Guid, List<Order>> GetStoreOrders()
         { 
             return new Dictionary<Guid, List<Order>>(storeOrders);
+        }
+
+        public static void CleanUp()
+        {
+            instance = null;
         }
     }
 }

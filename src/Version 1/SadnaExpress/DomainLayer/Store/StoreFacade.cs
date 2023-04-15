@@ -1,10 +1,6 @@
-using SadnaExpress.ServiceLayer;
-using SadnaExpress.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -13,12 +9,13 @@ namespace SadnaExpress.DomainLayer.Store
         private ConcurrentDictionary<Guid, Store> stores;
         private ConcurrentDictionary<Guid, LinkedList<Order>> storeOrders;
         private bool _isTSInitialized;
-        private Orders _orders = Orders.Instance;
+        private static Orders _orders;
 
         public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
             storeOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();
+            _orders = Orders.Instance;
         }
         
         public Guid OpenNewStore(string storeName)
@@ -54,11 +51,15 @@ namespace SadnaExpress.DomainLayer.Store
             Logger.Instance.Info("store " + store.StoreName + " deleted.");
         }
         
-        public LinkedList<Order> GetStorePurchases(Guid storeID)
+        public List<Order> GetStorePurchases(Guid storeID)
         {
             IsTsInitialized();
-            IsStoreExist(storeID);
-            return storeOrders[storeID];
+            return _orders.GetOrdersByStoreId(storeID);
+        }
+        public Dictionary<Guid, List<Order>> GetAllStorePurchases()
+        {
+            IsTsInitialized();
+            return _orders.GetStoreOrders();
         }
         public void PurchaseItems(string storeName, List<string> itemsName)
         {

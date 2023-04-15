@@ -60,15 +60,6 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to close");
         }
-        public virtual List<Order> GetStorePurchases(Guid storeId)
-        {
-            throw new Exception("The user unauthorised to get store purchases");
-        }
-
-        public virtual Dictionary<Guid, List<Order>> GetAllStorePurchases()
-        {
-            throw new Exception("The user unauthorised to get all stores purchases");
-        }
         public void AddItemToCart(Guid storeID, int itemID, int itemAmount)
         {
             this.shoppingCart.AddItemToBasket(storeID, itemID, itemAmount);

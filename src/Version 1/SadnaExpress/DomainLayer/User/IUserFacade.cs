@@ -51,7 +51,7 @@ namespace SadnaExpress.DomainLayer.User
         User GetUser(Guid userID);
         Member GetMember(Guid userID);
 
-        List<Order> GetStorePurchases(Guid userId, Guid storeId);
-        Dictionary<Guid, List<Order>> GetAllStorePurchases(Guid userId);
+        void GetStorePurchases(Guid userId, Guid storeId);
+        void GetAllStorePurchases(Guid userId);
     }
 }

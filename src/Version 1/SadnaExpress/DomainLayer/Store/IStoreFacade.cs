@@ -11,7 +11,8 @@ namespace SadnaExpress.DomainLayer.Store
         void CloseStore(Guid storeID);
         void DeleteStore(Guid storeID);
         void ReopenStore(Guid storeID);
-        LinkedList<Order> GetStorePurchases(Guid storeID);
+        List<Order> GetStorePurchases(Guid storeID);
+        Dictionary<Guid, List<Order>> GetAllStorePurchases();
         Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
         void WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText);
         void PurchaseItems(string storeName, List<string> itemsName);

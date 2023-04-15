@@ -135,21 +135,5 @@ namespace SadnaExpress.DomainLayer.User
                     new List<string> {"founder permissions"}))
             throw new Exception("The member doesn’t have permissions to close store");
         }
-        
-        public virtual List<Order> GetStorePurchases(Guid storeID)
-        {
-            if (permissions.ContainsKey(storeID))
-                if (permissions[storeID].Contains("owner permissions") ||
-                    permissions[storeID].Contains("founder permissions") ||
-                    permissions[storeID].Contains("get store purchases"))
-                    return permissionsHolder.GetStorePurchases(storeID, this);
-            throw new Exception("The member doesn’t have permissions to get store purchases");        }
-
-        public virtual Dictionary<Guid, List<Order>> GetAllStorePurchases()
-        {
-            if (permissions.ContainsKey(Guid.Empty))
-                if (permissions[Guid.Empty].Contains("system manager permissions"))
-                    return permissionsHolder.GetAllAStorePurchases(Guid.Empty, this);
-            throw new Exception("The member doesn’t have permissions to get all stores purchases");        }
     }
 }
