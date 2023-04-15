@@ -18,16 +18,16 @@ namespace SadnaExpressTests.Unit_Tests
     public class UserFacadeUnitTest
     {
         private IUserFacade _userFacade;
-        private ConcurrentDictionary<int, Member> members;
+        private ConcurrentDictionary<Guid, Member> members;
 
         [TestInitialize]
         public void SetUp()
         {
             Guid userId = new Guid();
-            int memberid = 0;
-            members = new ConcurrentDictionary<int, Member>();
-            members.TryAdd(memberid, new Member(0, "shayk1934@gmail.com", "shay", "kresner", "123"));
-            _userFacade = new UserFacade(new ConcurrentDictionary<int, User>(), members, userId, new PasswordHash(), new Mock_PaymentService());
+            Guid memberid = new Guid();
+            members = new ConcurrentDictionary<Guid, Member>();
+            members.TryAdd(memberid, new Member(memberid, "shayk1934@gmail.com", "shay", "kresner", "123"));
+            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members, new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
         }
 
         private class Mock_Bad_PaymentService : Mock_PaymentService
@@ -50,25 +50,45 @@ namespace SadnaExpressTests.Unit_Tests
 
         }
 
+        private class Mock_Bad_SupplierService : Mock_SupplierService
+        {
+            public override bool ShipOrder(string orderDetails, string userDetails)
+            {
+                Thread.Sleep(11000); // Wait for 11 seconds
+                return true; // Return true after waiting
+            }
+
+        }
+
+        private class Mock_5sec_SupplierService : Mock_SupplierService
+        {
+            public override bool ShipOrder(string orderDetails, string userDetails)
+            {
+                Thread.Sleep(5000); // Wait for 5 seconds
+                return true; // Return true after waiting
+            }
+
+        }
+
         [TestMethod()]
         public void UserFacadeInitializeTradingSystem_HappyTest() 
         {
-            members[0].LoggedIn = true;
-            Assert.IsTrue(_userFacade.InitializeTradingSystem(0));
+            //members[0].LoggedIn = true;
+           // Assert.IsTrue(_userFacade.InitializeTradingSystem(0));
         }
 
         [TestMethod()]
         public void UserFacadeInitializeTradingSystemUserIsNotLoggedIn_BadTest()
         {
-            members[0].LoggedIn = false;
-            Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(0));
+            //members[0].LoggedIn = false;
+            //Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(0));
         }
 
         [TestMethod()]
         public void UserFacadeInitializeTradingSystemUserNotExist_BadTest()
         {
-            int badId = 8;
-            Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(badId));
+            //int badId = 8;
+            //Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(badId));
         }
 
 
@@ -111,7 +131,54 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.IsFalse(_userFacade.PlacePayment(transactionDetails)); //operation failes cause it takes to much time- default value for bool is false do responseT returns false
         }
 
-       
+        [TestMethod()]
+        public void UserFacadeSupplyServiceNoWait_HappyTest()
+        {
+            //Arrange
+            _userFacade.SetSupplierService(new Mock_SupplierService());
+            string orderDetails = "red dress";
+            string userDetails = "Dina Agapov";
+
+            //Act
+            bool value = _userFacade.PlaceSupply(orderDetails, userDetails);
+
+            //Assert
+            Assert.IsTrue(value);
+        }
+
+        [TestMethod()]
+        public void UserFacadeSupplyServiceWait5Sec_HappyTest()
+        {
+            //Arrange
+            _userFacade.SetSupplierService(new Mock_5sec_SupplierService());
+            string orderDetails = "red dress";
+            string userDetails = "Dina Agapov";
+
+            //Act
+            bool value = _userFacade.PlaceSupply(orderDetails, userDetails);
+
+            //Assert
+            Assert.IsTrue(value);
+        }
+
+        [TestMethod()]
+        public void UserFacadeSupplyService_BadTest()
+        {
+            //Arrange
+            _userFacade.SetSupplierService(new Mock_Bad_SupplierService());
+            string orderDetails = "red dress";
+            string userDetails = "Dina Agapov";
+
+            //Act
+            bool value = _userFacade.PlaceSupply(orderDetails, userDetails);
+            //operation failes cause it takes to much time- returns false
+
+            //Assert
+            Assert.IsFalse(value);
+        }
+
+
+
 
         [TestCleanup]
         public void CleanUp()

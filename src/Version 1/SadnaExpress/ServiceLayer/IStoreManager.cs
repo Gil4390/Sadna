@@ -7,11 +7,11 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
 {
     public interface IStoreManager
     {
-        ResponseT<List<S_Store>> GetAllStoreInfo(Guid userID); //2.1
+        ResponseT<List<Store>> GetAllStoreInfo(Guid userID); //2.1
         // 2.2
-        ResponseT<List<S_Item>> GetItemsByName(Guid userID, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore);
-        ResponseT<List<S_Item>> GetItemsByCategory(Guid userID, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore);
-        ResponseT<List<S_Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore);
+        ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore);
+        ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore);
+        ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore);
 
         Response PurchaseCart(Guid id, string paymentDetails); //2.5
         ResponseT<Guid> OpenNewStore(Guid id, string storeName); //3.2

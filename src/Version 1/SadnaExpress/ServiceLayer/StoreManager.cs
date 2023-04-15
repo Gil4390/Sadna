@@ -140,53 +140,53 @@ namespace SadnaExpress.ServiceLayer
             throw new System.NotImplementedException();
         }
         
-        public ResponseT<List<S_Store>> GetAllStoreInfo(Guid id)
+        public ResponseT<List<Store>> GetAllStoreInfo(Guid id)
         {
             throw new System.NotImplementedException();
         }
         
-        public ResponseT<List<S_Item>> GetItemsByName(Guid id, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
+        public ResponseT<List<Item>> GetItemsByName(Guid id, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
             try
             {
                 // change to s_item
                 List<Item> items = storeFacade.GetItemsByName(itemName, minPrice, maxPrice, ratingItem, category, ratingStore);
-                return new ResponseT<List<S_Item>>();
+                return new ResponseT<List<Item>>();
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<List<S_Item>>(ex.Message);
+                return new ResponseT<List<Item>>(ex.Message);
             }
         }
 
-        public ResponseT<List<S_Item>> GetItemsByCategory(Guid id, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
+        public ResponseT<List<Item>> GetItemsByCategory(Guid id, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
         {
             try
             {
                 // change to s_item
                 List<Item> items = storeFacade.GetItemsByCategory(category, minPrice, maxPrice, ratingItem, ratingStore);
-                return new ResponseT<List<S_Item>>();
+                return new ResponseT<List<Item>>();
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<List<S_Item>>(ex.Message);
+                return new ResponseT<List<Item>>(ex.Message);
             }
         }
         
-        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid id, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
+        public ResponseT<List<Item>> GetItemsByKeysWord(Guid id, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
             try
             {
                 // change to s_item
                 List<Item> items = storeFacade.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category, ratingStore);
-                return new ResponseT<List<S_Item>>();
+                return new ResponseT<List<Item>>();
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<List<S_Item>>(ex.Message);
+                return new ResponseT<List<Item>>(ex.Message);
             }
         }
         
