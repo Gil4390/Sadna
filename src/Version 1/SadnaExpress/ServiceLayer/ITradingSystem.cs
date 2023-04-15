@@ -61,5 +61,8 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Guid> UpdateLast(Guid userID, string newLast);
         ResponseT<Guid> UpdatePassword(Guid userID, string newPassword);
         ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a);
+
+        void SetPaymentService(IPaymentService paymentService);
+        void SetSupplierService(ISupplierService supplierService);
     }
 }

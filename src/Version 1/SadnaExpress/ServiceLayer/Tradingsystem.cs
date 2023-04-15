@@ -34,10 +34,10 @@ namespace SadnaExpress.ServiceLayer
         private static readonly object lockInstance = new object();
         private static TradingSystem instance = null;
 
-        public TradingSystem(ISupplierService supplierService=null, IPaymentService paymentService=null)
+        public TradingSystem(IPaymentService paymentService = null, ISupplierService supplierService=null)
         {
-            IUserFacade userFacade = new UserFacade(paymentService);
-            IStoreFacade storeFacade = new StoreFacade(supplierService);
+            IUserFacade userFacade = new UserFacade(paymentService, supplierService);
+            IStoreFacade storeFacade = new StoreFacade();
             storeManager = new StoreManager(userFacade, storeFacade);
             userManager = new UserManager(userFacade);
            
@@ -364,7 +364,12 @@ namespace SadnaExpress.ServiceLayer
 
         public void SetPaymentService(IPaymentService paymentService)
         {
-            throw new NotImplementedException();
+            userManager.SetPaymentService(paymentService);
+        }
+
+        public void SetSupplierService(ISupplierService supplierService)
+        {
+            userManager.SetSupplierService(supplierService);
         }
 
 

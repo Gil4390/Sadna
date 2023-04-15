@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -46,6 +47,9 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Guid> UpdateFirst(Guid userID, string newFirst);
         ResponseT<Guid> UpdateLast(Guid userID, string newLast);
         ResponseT<Guid> UpdatePassword(Guid userID,string newPassword);
+
+        void SetPaymentService(IPaymentService paymentService);
+        void SetSupplierService(ISupplierService supplierService);
 
     }
 }

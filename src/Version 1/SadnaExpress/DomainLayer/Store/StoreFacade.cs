@@ -13,7 +13,7 @@ namespace SadnaExpress.DomainLayer.Store
         private ConcurrentDictionary<Guid, Store> stores;
         private ConcurrentDictionary<Guid, LinkedList<Order>> storeOrders;
 
-        public StoreFacade(ISupplierService supplierService=null)
+        public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
             storeOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();

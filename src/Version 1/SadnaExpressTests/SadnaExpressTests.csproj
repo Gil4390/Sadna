@@ -50,6 +50,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Acceptance Tests\SystemAT.cs" />
     <Compile Include="Acceptance Tests\TradingSystemAT.cs" />
     <Compile Include="Acceptance Tests\UserAT.cs" />
     <Compile Include="Acceptance Tests\ItemAT.cs" />

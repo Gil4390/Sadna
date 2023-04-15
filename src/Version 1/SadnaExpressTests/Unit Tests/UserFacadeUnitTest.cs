@@ -19,20 +19,28 @@ namespace SadnaExpressTests.Unit_Tests
     {
         private IUserFacade _userFacade;
         private ConcurrentDictionary<Guid, Member> members;
+        private Guid memberid= Guid.NewGuid();
+        private Guid systemManagerid = Guid.NewGuid();
 
         [TestInitialize]
         public void SetUp()
         {
-            Guid userId = new Guid();
-            Guid memberid = new Guid();
+           // Guid memberid = Guid.NewGuid();
+           // Guid systemManagerid = Guid.NewGuid();
             members = new ConcurrentDictionary<Guid, Member>();
+
             members.TryAdd(memberid, new Member(memberid, "shayk1934@gmail.com", "shay", "kresner", "123"));
+
+            PromotedMember systemManager = new PromotedMember(systemManagerid, "nogaschw@gmail.com", "noga", "schwartz", "123");
+            systemManager.createSystemManager();
+            members.TryAdd(systemManagerid, systemManager);
+
             _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members, new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
         }
 
         private class Mock_Bad_PaymentService : Mock_PaymentService
         {
-            public override bool ValidatePayment(string transactionDetails)
+            public override bool Pay(double amount, string transactionDetails)
             {
                 Thread.Sleep(11000); // Wait for 11 seconds
                 return true; // Return true after waiting
@@ -42,7 +50,7 @@ namespace SadnaExpressTests.Unit_Tests
 
         private class Mock_5sec_PaymentService : Mock_PaymentService
         {
-            public override bool ValidatePayment(string transactionDetails)
+            public override bool Pay(double amount, string transactionDetails)
             {
                 Thread.Sleep(5000); // Wait for 5 seconds
                 return true; // Return true after waiting
@@ -73,22 +81,29 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod()]
         public void UserFacadeInitializeTradingSystem_HappyTest() 
         {
-            //members[0].LoggedIn = true;
-           // Assert.IsTrue(_userFacade.InitializeTradingSystem(0));
+            members[systemManagerid].LoggedIn = true;
+            Assert.IsTrue(_userFacade.InitializeTradingSystem(systemManagerid));
         }
 
         [TestMethod()]
         public void UserFacadeInitializeTradingSystemUserIsNotLoggedIn_BadTest()
         {
-            //members[0].LoggedIn = false;
-            //Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(0));
+            members[systemManagerid].LoggedIn = false;
+            Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(systemManagerid));
         }
 
         [TestMethod()]
         public void UserFacadeInitializeTradingSystemUserNotExist_BadTest()
         {
-            //int badId = 8;
-            //Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(badId));
+            Guid badId = new Guid();
+            Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(badId));
+        }
+
+        [TestMethod()]
+        public void UserFacadeInitializeTradingSystemUserIsNotLoggedInSystemManager_BadTest()
+        {
+            members[memberid].LoggedIn = true;
+            Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(memberid));
         }
 
 
@@ -98,9 +113,10 @@ namespace SadnaExpressTests.Unit_Tests
             //Arrange
             _userFacade.SetPaymentService(new Mock_PaymentService());
             string transactionDetails = "visa card 12345";
+            double amount = 100;
 
             //Act
-            bool value = _userFacade.PlacePayment(transactionDetails);
+            bool value = _userFacade.PlacePayment(amount, transactionDetails);
 
             //Assert
             Assert.IsTrue(value);
@@ -112,9 +128,9 @@ namespace SadnaExpressTests.Unit_Tests
             //Arrange
             _userFacade.SetPaymentService(new Mock_5sec_PaymentService());
             string transactionDetails = "visa card 12345";
-
+            double amount = 500;
             //Act
-            bool value = _userFacade.PlacePayment(transactionDetails);
+            bool value = _userFacade.PlacePayment(amount, transactionDetails);
 
             //Assert
             Assert.IsTrue(value);
@@ -126,9 +142,9 @@ namespace SadnaExpressTests.Unit_Tests
             //Arrange
             _userFacade.SetPaymentService(new Mock_Bad_PaymentService());
             string transactionDetails = "visa card 12345";
-
+            double amount = 300;
             //Act & Assert
-            Assert.IsFalse(_userFacade.PlacePayment(transactionDetails)); //operation failes cause it takes to much time- default value for bool is false do responseT returns false
+            Assert.IsFalse(_userFacade.PlacePayment(amount, transactionDetails)); //operation failes cause it takes to much time
         }
 
         [TestMethod()]

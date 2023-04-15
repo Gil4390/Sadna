@@ -329,5 +329,15 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
+
+        public void SetPaymentService(IPaymentService paymentService)
+        {
+            userFacade.SetPaymentService(paymentService);
+        }
+
+        public void SetSupplierService(ISupplierService supplierService)
+        {
+            userFacade.SetSupplierService(supplierService);
+        }
     }
 }

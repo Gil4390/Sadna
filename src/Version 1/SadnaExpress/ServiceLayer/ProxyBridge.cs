@@ -233,5 +233,14 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.RemoveItemFromStore(id, storeID, itemID);
         }
 
+        public void SetPaymentService(IPaymentService paymentService)
+        {
+            _realBridge.SetPaymentService(paymentService);
+        }
+
+        public void SetSupplierService(ISupplierService supplierService)
+        {
+            _realBridge.SetSupplierService(supplierService);
+        }
     }
 }

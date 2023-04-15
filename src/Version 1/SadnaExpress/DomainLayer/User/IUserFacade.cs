@@ -42,7 +42,7 @@ namespace SadnaExpress.DomainLayer.User
         ShoppingCart ShowShoppingCart(Guid userID);
         void SetSecurityQA(Guid userID,string q, string a);
         void SetPaymentService(IPaymentService paymentService);
-        bool PlacePayment(string transactionDetails);
+        bool PlacePayment(double amount, string transactionDetails);
         void SetSupplierService(ISupplierService supplierService);
         bool PlaceSupply(string orderDetails, string userDetails);
         ShoppingCart GetShoppingCartById(Guid userID);

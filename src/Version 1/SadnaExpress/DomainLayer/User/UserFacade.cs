@@ -342,11 +342,12 @@ namespace SadnaExpress.DomainLayer.User
             //3. check that member is system manager
             //4. check that there is connection to payment and supply services
             isLoggedIn(userID);
-        
-            //impl of 3- throw error if not
-            
 
-            return paymentService.Connect(); //should add a check for supply service connection
+            //impl of 3- throw error if not
+            if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }) == false)
+                throw new Exception("Only the system manager can preform this action");
+
+            return paymentService.Connect()&&supplierService.Connect(); 
         }
 
         public bool hasPermissions(Guid userID, Guid storeId, List<string> permissions)
@@ -415,7 +416,7 @@ namespace SadnaExpress.DomainLayer.User
             this.supplierService = supplierService;
         }
 
-        public bool PlacePayment(string transactionDetails)
+        public bool PlacePayment(double amount, string transactionDetails)
         {
             try
             {
@@ -423,7 +424,7 @@ namespace SadnaExpress.DomainLayer.User
 
                 var task = Task.Run(() =>
                 {
-                    return paymentService.ValidatePayment(transactionDetails);
+                    return paymentService.Pay(amount,transactionDetails);
                 });
 
                 bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime));
