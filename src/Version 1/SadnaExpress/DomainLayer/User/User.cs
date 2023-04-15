@@ -56,6 +56,10 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to add new owner");
         }
+        public virtual void CloseStore(Guid storeID)
+        {
+            throw new Exception("The user unauthorised to close");
+        }
 
         public void AddItemToCart(Guid storeID, int itemID, int itemAmount)
         {
