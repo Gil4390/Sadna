@@ -184,7 +184,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.ReopenStore(id, storeID);
         }
 
-        public ResponseT<List<Member>> GetEmployeeInfoInStore(Guid id, Guid storeID)
+        public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid id, Guid storeID)
         {
             return _realBridge.GetEmployeeInfoInStore(id, storeID);
         }

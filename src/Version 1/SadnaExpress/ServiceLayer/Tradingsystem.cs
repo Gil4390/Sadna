@@ -117,24 +117,14 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetItemsByCategory(userID, category, minPrice, maxPrice, ratingItem, ratingStore);
         }
-        public ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+
+        public ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0,
+            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
-            return storeManager.GetItemsByKeysWord(userID, keyWords,minPrice, maxPrice, ratingItem, category, ratingStore);
-        }
-        public ResponseT<List<Item>> GetItemsByPrices(Guid userID, int minPrice, int maxPrice)
-        {
-            throw new NotImplementedException();
+            return storeManager.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category,
+                ratingStore);
         }
 
-        public ResponseT<List<Item>> GetItemsByItemRating(Guid userID, int rating)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResponseT<List<Item>> GetItemsByStoreRating(Guid userID, int rating)
-        {
-            throw new NotImplementedException();
-        }
         public Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount)
         {
             // first check if store can provide the itemAmount
@@ -238,7 +228,7 @@ namespace SadnaExpress.ServiceLayer
 
         public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {
-            return userManager.AppointStoreOwner(userID, storeID, userEmail);
+            return userManager.AppointStoreManager(userID, storeID, userEmail);
         }
 
         public Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
@@ -271,7 +261,7 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.ReopenStore(userID,storeID);
         }
 
-        public ResponseT<List<Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
+        public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             return userManager.GetEmployeeInfoInStore(userID, storeID);
         }

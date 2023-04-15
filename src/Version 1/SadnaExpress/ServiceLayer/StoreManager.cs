@@ -202,9 +202,8 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                // change to s_item
                 List<Item> items = storeFacade.GetItemsByName(itemName, minPrice, maxPrice, ratingItem, category, ratingStore);
-                return new ResponseT<List<Item>>();
+                return new ResponseT<List<Item>>(items);
             }
             catch (Exception ex)
             {
@@ -217,9 +216,8 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                // change to s_item
                 List<Item> items = storeFacade.GetItemsByCategory(category, minPrice, maxPrice, ratingItem, ratingStore);
-                return new ResponseT<List<Item>>();
+                return new ResponseT<List<Item>>(items);
             }
             catch (Exception ex)
             {
@@ -232,9 +230,8 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                // change to s_item
                 List<Item> items = storeFacade.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category, ratingStore);
-                return new ResponseT<List<Item>>();
+                return new ResponseT<List<Item>>(items);
             }
             catch (Exception ex)
             {
