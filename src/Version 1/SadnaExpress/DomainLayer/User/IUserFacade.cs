@@ -49,5 +49,7 @@ namespace SadnaExpress.DomainLayer.User
         bool isLoggedIn(Guid userID);
         void SetIsSystemInitialize(bool isInitialize);
 
+        List<Order> GetStorePurchases(Guid userId, Guid storeId);
+        Dictionary<Guid, List<Order>> GetAllStorePurchases(Guid userId);
     }
 }

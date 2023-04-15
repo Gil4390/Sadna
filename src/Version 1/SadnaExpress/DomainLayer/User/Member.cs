@@ -59,5 +59,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             get => securityQuestions;
         }
+
+     
     }
 }

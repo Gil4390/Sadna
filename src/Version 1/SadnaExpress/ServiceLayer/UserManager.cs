@@ -208,7 +208,35 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<List<PromotedMember>>(ex.Message);
             }
         }
+        public ResponseT<List<Order>> GetStorePurchases(Guid userId, Guid storeId)
+        {
+            try
+            {
+                List<Order> purchases = userFacade.GetStorePurchases(userId, storeId);
+                return new ResponseT<List<Order>>(purchases);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<List<Order>>(ex.Message);
+            }
+        }
 
+        public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userId)
+        {
+            try
+            {
+                Dictionary<Guid, List<Order>> purchases = userFacade.GetAllStorePurchases(userId);
+                return new ResponseT<Dictionary<Guid, List<Order>>>(purchases);
+            }
+            catch(Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Dictionary<Guid, List<Order>>>(ex.Message);
+
+            }
+
+        }
         public void CleanUp()
         {
             userFacade.CleanUp();
@@ -344,5 +372,7 @@ namespace SadnaExpress.ServiceLayer
         {
             userFacade.SetIsSystemInitialize(isInitialize);
         }
+
+    
     }
 }

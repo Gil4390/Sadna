@@ -53,5 +53,7 @@ namespace SadnaExpress.ServiceLayer
 
         void SetIsSystemInitialize(bool isInitialize);
 
+        ResponseT<List<Order>> GetStorePurchases(Guid userId, Guid storeId);
+        ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userId);
     }
 }
