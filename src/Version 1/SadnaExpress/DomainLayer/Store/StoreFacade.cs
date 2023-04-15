@@ -12,6 +12,7 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private ConcurrentDictionary<Guid, Store> stores;
         private ConcurrentDictionary<Guid, LinkedList<Order>> storeOrders;
+        private bool _isTSInitialized;
 
         public StoreFacade()
         {
@@ -21,7 +22,8 @@ namespace SadnaExpress.DomainLayer.Store
         
         public Guid OpenNewStore(string storeName)
         {
-            if(storeName.Length == 0)
+            IsTsInitialized();
+            if (storeName.Length == 0)
                 throw new Exception("Store name can not be empty");
             Store store = new Store(storeName);
             stores.TryAdd(store.StoreID, store);
@@ -31,6 +33,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void CloseStore(Guid storeId)
         {
+            IsTsInitialized();
             if (!stores.ContainsKey(storeId))
                 Logger.Instance.Error("there is no store with this ID");
             stores[storeId].Active = false;
@@ -38,6 +41,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void ReopenStore(Guid storeId)
         {
+            IsTsInitialized();
             if (!stores.ContainsKey(storeId))
             stores[storeId].Active = true;
             Logger.Instance.Info("store " + stores[storeId].StoreName + " reopen.");                
@@ -45,6 +49,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void DeleteStore(Guid storeId)
         {
+            IsTsInitialized();
             if (!stores.ContainsKey(storeId))
                 Logger.Instance.Error("there is no store with this name");
             stores.TryRemove(storeId, out var store);
@@ -53,52 +58,61 @@ namespace SadnaExpress.DomainLayer.Store
         
         public LinkedList<Order> GetStorePurchases(Guid storeId)
         {
+            IsTsInitialized();
             if (!storeOrders.ContainsKey(storeId))
                 throw new Exception("Store with this id does not exist");
             Logger.Instance.Info("store " + stores[storeId].StoreName + " got his purchases info.");
             return storeOrders[storeId];
         }
         public void PurchaseItems(string storeName, List<string> itemsName)
-        {   
+        {
+            IsTsInitialized();
             throw new System.NotImplementedException();
 
         }
 
         public Store GetStoreById(Guid storeId)
         {
-            if(stores.ContainsKey(storeId))
+            IsTsInitialized();
+            if (stores.ContainsKey(storeId))
                 return stores[storeId];
             throw new Exception("there is no store with this id");
         }
 
         public void GetAllStoreInfo(string storeName)
         {
+            IsTsInitialized();
             throw new System.NotImplementedException();
 
         }
 
         public void AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
+            IsTsInitialized();
             GetStoreById(storeID).addItem(itemName, itemCategory, itemPrice, quantity);
         }
 
         public void RemoveItemFromStore(Guid storeID, int itemId)
         {
+            IsTsInitialized();
             GetStoreById(storeID).RemoveItemById(itemId);
         }
 
         public void EditItemCategory(string storeName, string itemName, string category)
         {
+            IsTsInitialized();
             throw new System.NotImplementedException();
         }
 
         public void EditItemPrice(string storeName, string itemName, int price)
         {
+            IsTsInitialized();
             throw new System.NotImplementedException();
         }
         
         public List<Item> GetItemsByName(string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
+            IsTsInitialized();
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
@@ -114,6 +128,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public List<Item> GetItemsByCategory(string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
         {
+            IsTsInitialized();
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
@@ -127,6 +142,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
+            IsTsInitialized();
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
@@ -140,6 +156,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void WriteReview(string storeName, string itemName, int rating)
         {
+            IsTsInitialized();
             throw new System.NotImplementedException();
         }
 
@@ -152,6 +169,17 @@ namespace SadnaExpress.DomainLayer.Store
         public ConcurrentDictionary<Guid, Store> GetStores()
         {
             return stores;
+        }
+
+        public void SetIsSystemInitialize(bool isInitialize)
+        {
+            _isTSInitialized = isInitialize;
+        }
+
+        private void IsTsInitialized()
+        {
+            if (_isTSInitialized == false)
+                throw new Exception("Cannot preform any action because system trading is closed");
         }
     }
 }

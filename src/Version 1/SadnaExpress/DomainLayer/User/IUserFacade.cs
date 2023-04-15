@@ -47,6 +47,7 @@ namespace SadnaExpress.DomainLayer.User
         bool PlaceSupply(string orderDetails, string userDetails);
         ShoppingCart GetShoppingCartById(Guid userID);
         bool isLoggedIn(Guid userID);
+        void SetIsSystemInitialize(bool isInitialize);
 
     }
 }

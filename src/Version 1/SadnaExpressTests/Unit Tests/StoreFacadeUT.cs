@@ -5,26 +5,23 @@ using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpressTests.Unit_Tests
 {
-    [TestClass]
-    public class StoreUnitTest
+    [TestClass()]
+    public class StoreFacadeUT
     {
         private IStoreFacade storeFacade;
         private int userId;
         private Guid storeID;
-      
+
+        #region SetUp
         [TestInitialize]
-        public void Init()
+        public void SetUp()
         {
             storeFacade = new StoreFacade();
             storeID = Guid.NewGuid();
         }
+        #endregion
 
-        [TestCleanup]
-        public void CleanUp()
-        {
-            storeFacade.CleanUp();
-        }
-
+        #region Tests
         [TestMethod]
         public void openStoreWithOutName()
         {
@@ -89,6 +86,15 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(1, storeFacade.GetItemsByKeysWord("Gray").Count);
             Assert.AreEqual(2, storeFacade.GetItemsByKeysWord("Apple", category:"electronics").Count);
         }
-        
+        #endregion 
+
+        #region CleanUp
+        [TestCleanup]
+        public void CleanUp()
+        {
+            storeFacade.CleanUp();
+        }
+        #endregion
+
     }
 }

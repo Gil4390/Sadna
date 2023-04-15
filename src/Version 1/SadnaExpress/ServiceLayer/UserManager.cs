@@ -339,5 +339,10 @@ namespace SadnaExpress.ServiceLayer
         {
             userFacade.SetSupplierService(supplierService);
         }
+
+        public void SetIsSystemInitialize(bool isInitialize)
+        {
+            userFacade.SetIsSystemInitialize(isInitialize);
+        }
     }
 }

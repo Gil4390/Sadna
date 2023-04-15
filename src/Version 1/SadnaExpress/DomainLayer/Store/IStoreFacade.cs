@@ -25,5 +25,6 @@ namespace SadnaExpress.DomainLayer.Store
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
         Store GetStoreById(Guid storeId);
+        void SetIsSystemInitialize(bool isInitialize);
     }
 }

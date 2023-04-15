@@ -51,5 +51,7 @@ namespace SadnaExpress.ServiceLayer
         void SetPaymentService(IPaymentService paymentService);
         void SetSupplierService(ISupplierService supplierService);
 
+        void SetIsSystemInitialize(bool isInitialize);
+
     }
 }

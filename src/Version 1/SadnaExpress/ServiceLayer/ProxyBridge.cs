@@ -242,5 +242,10 @@ namespace SadnaExpress.ServiceLayer
         {
             _realBridge.SetSupplierService(supplierService);
         }
+
+        public void SetIsSystemInitialize(bool isInitialize)
+        {
+            _realBridge.SetIsSystemInitialize(isInitialize);
+        }
     }
 }
