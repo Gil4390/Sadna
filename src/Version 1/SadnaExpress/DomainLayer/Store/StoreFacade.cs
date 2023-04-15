@@ -194,7 +194,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText)
         {
-            Store store = GetStoreById(storeID);
+            Store store = stores[storeID];
             store.WriteItemReview(userID, itemID, reviewText);
         }
     }
