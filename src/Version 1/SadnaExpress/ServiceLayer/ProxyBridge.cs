@@ -119,16 +119,26 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetPurchasesInfo(id);
         }
 
-        public Response EditItemCategory(string storeName, string itemName, string category)
+        public Response EditItemCategory(Guid userID,  Guid storeID, Guid itemID, string category)
         {
-            return _realBridge.EditItemCategory( storeName,  itemName, category);
+            return _realBridge.EditItemCategory(userID, storeID,  itemID, category);
         }
 
-        public Response EditItemPrice(string storeName, string itemName, int price)
+        public Response EditItemPrice(Guid userID,  Guid storeID, Guid itemID, int price)
         {
-            return _realBridge.EditItemPrice( storeName,  itemName, price);
+            return _realBridge.EditItemPrice(userID, storeID, itemID, price);
         }
-
+        
+        public Response EditItemName(Guid userID,  Guid storeID, Guid itemID, string name)
+        {
+            return _realBridge.EditItemName(userID, storeID, itemID, name);
+        }
+        
+        public Response EditItemQuantity(Guid userID, Guid storeID, Guid itemID, int quantity)
+        {
+            // if you want remove put -i and to add +i
+            return _realBridge.EditItemQuantity(userID, storeID, itemID, quantity);
+        }
         public Response AppointStoreOwner(Guid id, Guid storeID, string userEmail)
         {
             return _realBridge.AppointStoreOwner(id, storeID, userEmail);
@@ -224,11 +234,11 @@ namespace SadnaExpress.ServiceLayer
             return (_realBridge.RemoveItemFromCart(id, storeID, itemID));
         }
 
-        public Response AddItemToStore(Guid id, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
+        public ResponseT<Guid> AddItemToStore(Guid id, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
             return _realBridge.AddItemToStore(id, storeID, itemName, itemCategory, itemPrice, quantity);
         }
-        public Response RemoveItemFromStore(Guid id, Guid storeID, int itemID)
+        public Response RemoveItemFromStore(Guid id, Guid storeID, Guid itemID)
         {
             return _realBridge.RemoveItemFromStore(id, storeID, itemID);
         }

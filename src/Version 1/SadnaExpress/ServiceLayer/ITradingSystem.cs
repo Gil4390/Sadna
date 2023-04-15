@@ -37,10 +37,12 @@ namespace SadnaExpress.ServiceLayer
         Response GetPurchasesInfo(Guid userID); //3.7 (not in this version)
         //3.8 and 3.9 (not in this version)
         //4.1
-        Response AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
-        Response RemoveItemFromStore(Guid userID, Guid storeID, int itemID);
-        Response EditItemCategory(string storeName, string itemName, string category);
-        Response EditItemPrice(string storeName, string itemName, int price); 
+        ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
+        Response RemoveItemFromStore(Guid userID, Guid storeID, Guid itemID);
+        Response EditItemCategory(Guid userID, Guid storeID,  Guid itemID, string category);
+        Response EditItemPrice(Guid userID, Guid storeID,  Guid itemID, int price); 
+        Response EditItemName(Guid userID, Guid storeID,  Guid itemID, string name); 
+        Response EditItemQuantity(Guid userID, Guid storeID,  Guid itemID, int quantity); 
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
         Response RemoveStoreOwner(Guid userID1, Guid storeID, Guid userID2); //4.5 (not in this version)
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6

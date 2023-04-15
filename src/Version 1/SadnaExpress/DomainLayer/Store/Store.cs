@@ -41,59 +41,30 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return itemsInventory.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category);
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
-        // add new Item to store, if item exists with the same name return false
-        public void addItem(string name, string category, double price, int quantity)
+        public Guid AddItem(string name, string category, double price, int quantity)
         {
-            itemsInventory.AddItem(name, category, price, quantity);
+            return itemsInventory.AddItem(name, category, price, quantity);
         }
-
-        public void AddQuantity(int itemID, int addedQuantity)
+        public void RemoveItem(Guid itemID)
         {
-            itemsInventory.AddQuantity(this.itemsInventory.getItemById(itemID), addedQuantity);
+            itemsInventory.RemoveItem(itemID);
         }
-
-        public void RemoveQuantity(int itemId, int removedQuantity)
+        public void EditItemName(Guid itemID, string name)
         {
-            itemsInventory.RemoveQuantity(this.itemsInventory.getItemById(itemId), removedQuantity);
+            itemsInventory.EditItemName(itemID, name);
         }
-
-        public void EditItemName(int itemId, string name)
+        public void EditItemCategory(Guid itemID, string category)
         {
-            itemsInventory.getItemById(itemId);
+            itemsInventory.EditItemCategory(itemID, category);
         }
-
-        public void EditItemCategory(int itemId, string category)
+        public void EditItemPrice(Guid itemID, int price)
         {
-            this.itemsInventory.EditItemCategory(itemId,category);
+            itemsInventory.EditItemPrice(itemID, price);
         }
-
-        public void EditItemPrice(int itemId, double price)
+        public void EditItemQuantity(Guid itemID, int quantity)
         {
-            this.itemsInventory.EditItemPrice(itemId,price);
+            itemsInventory.EditItemQuantity(itemID, quantity);
         }
-
-        public void RemoveItemById(int itemId)
-        {
-            this.itemsInventory.RemoveItem(this.itemsInventory.getItemById(itemId));
-        }
-
-       /* public void RemoveItemByName(string itemName)
-        {
-            itemsInventory.RemoveItem(this.itemsInventory.GetItemByName(itemName));
-        }
-        */
     }
 }

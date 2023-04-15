@@ -64,6 +64,7 @@
     <Compile Include="Unit Tests\ShoppingCartUT.cs" />
     <Compile Include="Unit Tests\UserFacadeUT.cs" />
     <Compile Include="Unit Tests\UserUT.cs" />
+    <Compile Include="Unit Tests\StoreUT.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -15,12 +15,15 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
 
         Response PurchaseCart(Guid id, string paymentDetails); //2.5
         ResponseT<Guid> OpenNewStore(Guid id, string storeName); //3.2
-        Response WriteReview(Guid id, int itemID, string review); //3.3
+        Response WriteReview(Guid id, Guid itemID, string review); //3.3
         //4.1
-        Response AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
-        Response RemoveItemFromStore(Guid storeID, int itemID);
-        Response EditItemCategory(string storeID, string itemName, string category);
-        Response EditItemPrice(string storeID, string itemName, int price); 
+        ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID,  string itemName, string itemCategory, double itemPrice,
+            int quantity);
+        Response RemoveItemFromStore(Guid userID, Guid storeID, Guid itemID);
+        Response EditItemCategory(Guid userID, Guid storeID, Guid itemID, string category);
+        Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price); 
+        Response EditItemName(Guid userID, Guid storeID, Guid itemID, string name); 
+        Response EditItemQuantity(Guid userID, Guid storeID, Guid itemID, int quantity); 
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response DeleteStore(Guid userID, Guid storeID); 
         Response ReopenStore(Guid userID, Guid storeID);
@@ -28,9 +31,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response GetPurchasesInfo(Guid userID, int storeID);//4.13 //6.4
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
-        
-        Store GetStoreById(Guid storeId);
-
         void SetIsSystemInitialize(bool isInitialize);
     }
 }

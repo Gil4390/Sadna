@@ -20,6 +20,7 @@ namespace SadnaExpress.DomainLayer.User
          * add new owner
          * add new manager
          * get employees info
+         * product management permissions
          */
         public PromotedMember(Guid id, string email, string firstName, string lastName, string password) : base(id,
             email, firstName, lastName, password)

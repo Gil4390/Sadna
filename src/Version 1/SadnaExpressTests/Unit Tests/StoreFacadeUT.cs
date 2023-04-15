@@ -17,6 +17,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             storeFacade = new StoreFacade();
+            storeFacade.SetIsSystemInitialize(true);
             storeID = Guid.NewGuid();
         }
         #endregion
