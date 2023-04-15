@@ -18,6 +18,7 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private bool _isTSInitialized;
         private IPasswordHash _ph = new PasswordHash();
+        private IRegistration _reg = new Registration();
         private IPaymentService paymentService;
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         private ISupplierService supplierService;
@@ -84,9 +85,12 @@ namespace SadnaExpress.DomainLayer.User
                     if (m.Email == email)
                         throw new Exception("Member with this email already exists");
                 }
-
+                if (!_reg.ValidateEmail(email))
+                    throw new Exception("Email does not meet the system criteria");
+                if (!_reg.ValidateStrongPassword(password))
+                    throw new Exception("Password is not strong enough according to the system's criteria");
+                
                 string hashPassword = _ph.Hash(password);
-
                 Member newMember = new Member(id, email, firstName, lastName, hashPassword);
                 members.TryAdd(id, newMember);
                 Logger.Instance.Info(newMember, "registered with " + email + ".");
