@@ -230,7 +230,7 @@ namespace SadnaExpress.ServiceLayer
             }
         }
        
-        public ResponseT<Dictionary<Guid, List<S_Order>>> GetAllAStorePurchases(int id, Guid storeID, string email)
+        public ResponseT<Dictionary<Guid, List<S_Order>>> GetAllAStorePurchases(int id, string email)
         {
             try
             {
