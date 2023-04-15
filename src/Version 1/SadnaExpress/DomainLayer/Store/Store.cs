@@ -46,6 +46,14 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return itemsInventory.AddItem(name, category, price, quantity);
         }
+        public void RemoveItem(Guid itemID)
+        {
+            itemsInventory.RemoveItem(itemID);
+        }
+        public void EditItemPrice(Guid itemID, int price)
+        {
+            itemsInventory.EditItemPrice(itemID, price);
+        }
         public void EditItemName(Guid itemID, string name)
         {
             itemsInventory.EditItemName(itemID, name);
@@ -55,16 +63,11 @@ namespace SadnaExpress.DomainLayer.Store
             itemsInventory.EditItemCategory(itemID, category);
         }
 
-        internal void WriteItemReview(Guid userID, int itemID, string reviewText)
+        internal void WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
             itemsInventory.AddReviewToItem(userID, reviewText, itemID);
         }
 
-        /* public void RemoveItemByName(string itemName)
-         {
-             itemsInventory.RemoveItem(this.itemsInventory.GetItemByName(itemName));
-         }
-         */
         public void EditItemQuantity(Guid itemID, int quantity)
         {
             itemsInventory.EditItemQuantity(itemID, quantity);

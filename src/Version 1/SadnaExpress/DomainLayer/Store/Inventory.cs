@@ -125,7 +125,7 @@ namespace SadnaExpress.DomainLayer.Store
             throw new Exception("The item not exist");
         }
 
-        public void AddReviewToItem(Guid userID, string reviewText, int itemID)
+        public void AddReviewToItem(Guid userID, string reviewText, Guid itemID)
         {
             if (reviewText == "")
             {

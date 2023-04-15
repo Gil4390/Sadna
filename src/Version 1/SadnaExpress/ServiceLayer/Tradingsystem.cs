@@ -160,7 +160,7 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response WriteItemReview(Guid userID, Guid storeID, int itemID, string review)
+        public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string review)
         {
             try
             {

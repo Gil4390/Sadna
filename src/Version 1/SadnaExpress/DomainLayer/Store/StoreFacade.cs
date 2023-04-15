@@ -74,7 +74,6 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsTsInitialized();
             throw new System.NotImplementedException();
-
         }
 
         public Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
@@ -192,7 +191,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("Cannot preform any action because system trading is closed");
         }
 
-        public void WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText)
+        public void WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
         {
             Store store = stores[storeID];
             store.WriteItemReview(userID, itemID, reviewText);

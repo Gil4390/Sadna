@@ -30,7 +30,7 @@ namespace SadnaExpress.ServiceLayer
         Response PurchaseCart(Guid userID, string paymentDetails); //2.5
         ResponseT<Guid> Logout(Guid userID); //3.1
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
-        Response WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText); //3.3
+        Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText); //3.3
         Response RateItem(Guid userID, int itemID, int score); //3.4 (not in this version)
         Response WriteMessageToStore(Guid userID, Guid storeID, string message); //3.5  (not in this version)
         Response ComplainToAdmin(Guid userID, string message); //3.6 (not in this version)
