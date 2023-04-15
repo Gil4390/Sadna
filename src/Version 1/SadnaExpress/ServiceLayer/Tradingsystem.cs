@@ -170,9 +170,18 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response WriteReview(Guid userID, int itemID, string review)
+        public Response WriteItemReview(Guid userID, Guid storeID, int itemID, string review)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Logger.Instance.Info("User id: " + userID + " WriteReview to itemID: " + itemID);
+                return storeManager.WriteItemReview(userID, storeID, itemID, review);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error("error adding review to item");
+                return new Response(ex.Message);
+            }
         }
 
         public Response RateItem(Guid userID, int itemID, int score)

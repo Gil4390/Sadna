@@ -8,12 +8,14 @@ namespace SadnaExpress.DomainLayer.Store
     public interface IStoreFacade
     {
         Guid OpenNewStore(string storeName);
+        void AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
+        void WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText);
         void CloseStore(Guid storeID);
         void DeleteStore(Guid storeID);
         void ReopenStore(Guid storeID);
         LinkedList<Order> GetStorePurchases(Guid storeID);
         Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
-        void WriteReview(string storeName, string itemName, int rating);
+        void WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText);
         void PurchaseItems(string storeName, List<string> itemsName);
         void RemoveItemFromStore(Guid storeID, Guid itemID);
         void EditItemName(Guid storeID, Guid itemID, string category);

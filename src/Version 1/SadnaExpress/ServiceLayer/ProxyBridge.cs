@@ -94,9 +94,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.PurchaseCart(id, paymentDetails);
         }
 
-        public Response WriteReview(Guid id, int itemID, string review)
+        public Response WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText)
         {
-            return _realBridge.WriteReview(id, itemID, review);
+            return _realBridge.WriteItemReview(userID, storeID, itemID, reviewText);
         }
 
         public Response RateItem(Guid id, int itemID, int score)

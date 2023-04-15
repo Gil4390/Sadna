@@ -191,5 +191,11 @@ namespace SadnaExpress.DomainLayer.Store
             if (_isTSInitialized == false)
                 throw new Exception("Cannot preform any action because system trading is closed");
         }
+
+        public void WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText)
+        {
+            Store store = stores[storeID];
+            store.WriteItemReview(userID, itemID, reviewText);
+        }
     }
 }

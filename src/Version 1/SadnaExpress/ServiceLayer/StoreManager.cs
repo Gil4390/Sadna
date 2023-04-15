@@ -130,6 +130,13 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
+        public Response WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText)
+        {
+            //check that the user bought the item before
+
+            storeFacade.WriteItemReview(userID, storeID, itemID, reviewText);
+            return new Response();
+        }
         public Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price)
         {
             try
