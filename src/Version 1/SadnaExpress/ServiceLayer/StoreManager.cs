@@ -210,5 +210,9 @@ namespace SadnaExpress.ServiceLayer
             return storeFacade.GetStoreById(storeId);
         }
 
+        public void SetIsSystemInitialize(bool isInitialize)
+        {
+            storeFacade.SetIsSystemInitialize(isInitialize);
+        }
     }
 }
