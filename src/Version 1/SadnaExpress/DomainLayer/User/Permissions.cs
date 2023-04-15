@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer.Store;
 using Exception = System.Exception;
 
 namespace SadnaExpress.DomainLayer.User
@@ -8,6 +9,8 @@ namespace SadnaExpress.DomainLayer.User
     {
         private static readonly object syncRoot = new object();
         private static Permissions instance = null;
+        private static Orders _orders = Orders.Instance;
+
         private Permissions(){}
 
         public static Permissions Instance
@@ -91,6 +94,18 @@ namespace SadnaExpress.DomainLayer.User
             foreach (PromotedMember employee in employees)
                 Console.WriteLine($"{employee.Email}: \n + {employee.FirstName} {employee.LastName} \n");
             return employees;
+        }
+
+        public List<Order> GetStorePurchases(Guid storeId, PromotedMember promotedMember)
+        {
+            List<Order> orders = _orders.GetOrdersByStoreId(storeId);
+            return orders;        }
+
+        public Dictionary<Guid, List<Order>> GetAllAStorePurchases(Guid empty, PromotedMember promotedMember)
+        {
+            Dictionary<Guid,List<Order>> orders = _orders.GetStoreOrders();
+            return orders;
+            
         }
     }
 }

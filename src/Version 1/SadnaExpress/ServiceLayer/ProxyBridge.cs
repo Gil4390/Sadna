@@ -19,6 +19,11 @@ namespace SadnaExpress.ServiceLayer
             _realBridge = Implemantation;
         }
 
+        public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
+        {
+            return _realBridge.GetAllStorePurchases(userID);
+        }
+
         public void CleanUp()
         {
             _realBridge.CleanUp();
@@ -192,6 +197,11 @@ namespace SadnaExpress.ServiceLayer
         public Response GetPurchasesInfo(Guid id, Guid storeID)
         {
             return _realBridge.GetPurchasesInfo(id, storeID);
+        }
+
+        public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
+        {
+            return _realBridge.GetStorePurchases(userID, storeID);
         }
 
         public Response DeleteStore(Guid id, Guid storeID)

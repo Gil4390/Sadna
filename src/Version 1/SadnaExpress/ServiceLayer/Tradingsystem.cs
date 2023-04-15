@@ -271,6 +271,17 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
+        public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
+        {
+            return userManager.GetStorePurchases(userID, storeID);
+        }
+
+        public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
+        {
+            return userManager.GetAllStorePurchases(userID);
+        }
+
+
         public Response DeleteStore(Guid userID, Guid storeID)
         {
             return storeManager.DeleteStore(userID, storeID);

@@ -345,7 +345,18 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             members[userID].CloseStore(storeID);
         }
+        public List<Order> GetStorePurchases(Guid userId, Guid storeId)
+        {
+            isLoggedIn(userId);
+            return members[userId].GetStorePurchases(storeId);
+            
+        }
 
+        public Dictionary<Guid, List<Order>> GetAllStorePurchases(Guid userId)
+        {
+            isLoggedIn(userId);
+            return members[userId].GetAllStorePurchases();
+        }
         public void GetDetailsOnStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
@@ -516,8 +527,8 @@ namespace SadnaExpress.DomainLayer.User
             if (members.ContainsKey(userID))
                 if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }) == false)                 
                    throw new Exception("System is not initialized");
-            else
-                throw new Exception("System is not initialized");
+                else
+                    throw new Exception("System is not initialized");
         }
 
         private void IsTsInitialized()
@@ -530,5 +541,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             _isTSInitialized = isInitialize;
         }
+
+      
     }
 }
