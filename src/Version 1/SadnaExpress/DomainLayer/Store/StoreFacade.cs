@@ -23,14 +23,6 @@ namespace SadnaExpress.DomainLayer.Store
             this.supplierService = supplierService;
         }
         
-        public Store GetStoreByID(Guid id)
-        {
-            foreach (Store store in stores.Values) {
-                if (store.StoreID.Equals(id))
-                    return store;
-            }
-            return null;
-        }
         public Guid OpenNewStore(string storeName)
         {
             if(storeName.Length == 0)
@@ -43,28 +35,23 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void CloseStore(Guid storeId)
         {
-            Store store = GetStoreByID(storeId);
-            if (store == null)
-                Logger.Instance.Error("there is no store with this name");
-            //
-            store.Active = false;
-            Logger.Instance.Info("store " + store.StoreName + " closed.");
+            if (!stores.ContainsKey(storeId))
+                Logger.Instance.Error("there is no store with this ID");
+            stores[storeId].Active = false;
+            Logger.Instance.Info("store " + stores[storeId].StoreName + " closed.");
         }
         public void ReopenStore(Guid storeId)
         {
-            Store store = GetStoreByID(storeId);
-            if (store == null)
-                Logger.Instance.Error("there is no store with this name");
-            //
-            store.Active = true;
-            Logger.Instance.Info("store " + store.StoreName + " reopen.");
+            if (!stores.ContainsKey(storeId))
+            stores[storeId].Active = true;
+            Logger.Instance.Info("store " + stores[storeId].StoreName + " reopen.");                
+            Logger.Instance.Error("there is no store with this name");
         }
         public void DeleteStore(Guid storeId)
         {
-            Store store = GetStoreByID(storeId);
-            if (store == null)
+            if (!stores.ContainsKey(storeId))
                 Logger.Instance.Error("there is no store with this name");
-            stores.TryRemove(store.StoreID, out store);
+            stores.TryRemove(storeId, out var store);
             Logger.Instance.Info("store " + store.StoreName + " deleted.");
         }
         
@@ -72,7 +59,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             if (!storeOrders.ContainsKey(storeId))
                 throw new Exception("Store with this id does not exist");
-            Logger.Instance.Info("store " + GetStoreByID(storeId).StoreName + " got his purchases info.");
+            Logger.Instance.Info("store " + stores[storeId].StoreName + " got his purchases info.");
             return storeOrders[storeId];
         }
         public void PurchaseItems(string storeName, List<string> itemsName)
@@ -119,6 +106,8 @@ namespace SadnaExpress.DomainLayer.Store
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
+                if (!store.Active)
+                    continue;
                 if (ratingStore != -1 && store.StoreRating != ratingStore)
                     continue;
                 Item item = store.GetItemsByName(itemName, minPrice, maxPrice, category, ratingItem);
@@ -132,6 +121,8 @@ namespace SadnaExpress.DomainLayer.Store
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
+                if (!store.Active)
+                    continue;
                 if (ratingStore != -1 && store.StoreRating != ratingStore)
                     continue;
                 allItems.AddRange(store.GetItemsByCategory(category, minPrice, maxPrice, ratingItem));
@@ -143,6 +134,8 @@ namespace SadnaExpress.DomainLayer.Store
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
+                if (!store.Active)
+                    continue;
                 if (ratingStore != -1 && store.StoreRating != ratingStore)
                     continue;
                 allItems.AddRange(store.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category));

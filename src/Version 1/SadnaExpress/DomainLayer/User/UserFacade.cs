@@ -316,7 +316,8 @@ namespace SadnaExpress.DomainLayer.User
 
         public void CloseStore(Guid userID, Guid storeID)
         {
-            throw new NotImplementedException();
+            isLoggedIn(userID);
+            members[userID].CloseStore(storeID);
         }
 
         public void GetDetailsOnStore(Guid userID, Guid storeID)
