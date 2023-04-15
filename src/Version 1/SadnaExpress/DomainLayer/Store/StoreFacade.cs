@@ -190,6 +190,18 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             Store store = stores[storeID];
+            
+            if (!storeOrders.ContainsKey(storeID))
+                throw new Exception("store with id:" + storeID + "doesn't exist");
+            bool foundUserOrder = false;
+            foreach (Order order in storeOrders[storeID])
+            {
+                if (order.UserID.Equals(userID))
+                    foundUserOrder = true;
+            }
+            if (!foundUserOrder)
+                throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
+
             store.WriteItemReview(userID, itemID, reviewText);
         }
 
