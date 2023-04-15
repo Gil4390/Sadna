@@ -37,6 +37,13 @@ namespace SadnaExpress.ServiceLayer
             storeManager = new StoreManager(userFacade, storeFacade);
             userManager = new UserManager(userFacade);
         }
+        
+        public TradingSystem(IUserFacade userFacade, IStoreFacade storeFacade)
+        {
+            storeManager = new StoreManager(userFacade, storeFacade);
+            userManager = new UserManager(userFacade);
+        }
+
         public static TradingSystem Instance
         {
             get
@@ -406,6 +413,16 @@ namespace SadnaExpress.ServiceLayer
         public Response PurchaseCart(Guid userID, string paymentDetails)
         {
             throw new NotImplementedException();
+        }
+
+        public ResponseT<User> GetUser(Guid userID)
+        {
+            return userManager.GetUser(userID);
+        }
+
+        public ResponseT<Member> GetMember(Guid userID)
+        {
+            return userManager.GetMember(userID);
         }
     }
 }

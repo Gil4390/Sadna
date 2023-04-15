@@ -48,6 +48,8 @@ namespace SadnaExpress.DomainLayer.User
         ShoppingCart GetShoppingCartById(Guid userID);
         bool isLoggedIn(Guid userID);
         void SetIsSystemInitialize(bool isInitialize);
+        User GetUser(Guid userID);
+        Member GetMember(Guid userID);
 
         List<Order> GetStorePurchases(Guid userId, Guid storeId);
         Dictionary<Guid, List<Order>> GetAllStorePurchases(Guid userId);

@@ -11,12 +11,14 @@ namespace SadnaExpressTests.Unit_Tests
     [TestClass()]
     public class UserFacadeUT
     {
+        #region Properties
         private IUserFacade _userFacade;
         private Guid userId;
         private Guid storeID;
         private ConcurrentDictionary<Guid, Member> members;
         private Guid memberid = Guid.NewGuid();
         private Guid systemManagerid = Guid.NewGuid();
+        #endregion
 
         #region SetUp
         [TestInitialize]

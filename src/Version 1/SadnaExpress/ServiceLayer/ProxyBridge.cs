@@ -36,7 +36,7 @@ namespace SadnaExpress.ServiceLayer
 
         public Response Exit(Guid id)
         {
-            throw new NotImplementedException();
+            return _realBridge.Exit(id);
         }
 
         public Response Register(Guid id, string email, string firstName, string lastName, string password)
@@ -266,6 +266,16 @@ namespace SadnaExpress.ServiceLayer
         public void SetIsSystemInitialize(bool isInitialize)
         {
             _realBridge.SetIsSystemInitialize(isInitialize);
+        }
+
+        public ResponseT<User> GetUser(Guid userID)
+        {
+            return _realBridge.GetUser(userID);
+        }
+
+        public ResponseT<Member> GetMember(Guid userID)
+        {
+            return _realBridge.GetMember(userID);
         }
     }
 }
