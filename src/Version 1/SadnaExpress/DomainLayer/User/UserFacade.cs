@@ -213,22 +213,28 @@ namespace SadnaExpress.DomainLayer.User
             throw new NotImplementedException();
         }
 
-        public void AddItemInventory(Guid id, Guid storeID, string itemName)
+        public void AddItemToStore(Guid id, Guid storeID)
         {
             IsTsInitialized();
-            throw new NotImplementedException();
+            isLoggedIn(id);
+            if (!members[id].hasPermissions(storeID, new List<string>{" product management permissions","owner permissions","founder permissions"}))
+                throw new Exception("The user unauthorised to add add item to store");
         }
 
-        public void RemoveItemInventory(Guid id, Guid storeID, string itemName)
+        public void RemoveItemFromStore(Guid id, Guid storeID)
         {
             IsTsInitialized();
-            throw new NotImplementedException();
+            isLoggedIn(id);
+            if (!members[id].hasPermissions(storeID, new List<string>{" product management permissions","owner permissions","founder permissions"}))
+                throw new Exception("The user unauthorised to add add item to store");
         }
 
-        public void EditItemInventory(Guid id, Guid storeID, string itemName)
+        public void EditItem(Guid id, Guid storeID)
         {
             IsTsInitialized();
-            throw new NotImplementedException();
+            isLoggedIn(id);
+            if (!members[id].hasPermissions(storeID, new List<string>{" product management permissions","owner permissions","founder permissions"}))
+                throw new Exception("The user unauthorised to add add item to store");
         }
 
         public void AppointStoreOwner(Guid userID, Guid storeID, string email)

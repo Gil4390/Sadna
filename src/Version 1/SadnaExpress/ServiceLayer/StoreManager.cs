@@ -39,6 +39,12 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
+
+        public Response WriteReview(Guid id, Guid itemID, string review)
+        {
+            throw new NotImplementedException();
+        }
+
         public Response CloseStore(Guid id ,Guid storeID)
         {
             try
@@ -92,37 +98,29 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
-        {
-            try
-            {
-                storeFacade.AddItemToStore(storeID, itemName, itemCategory, itemPrice, quantity);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-
         public Response PurchaseItems(int id, string paymentDetails)
         {
             throw new System.NotImplementedException();
         }
 
-
-        public Response WriteReview(Guid id, int itemID, string review)
-        {
-            throw new System.NotImplementedException();
-        }
-
-    
-
-        public Response RemoveItemFromStore(Guid storeID, int itemID)
+        public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
             try
             {
+                userFacade.AddItemToStore(userID, storeID);
+                return new ResponseT<Guid>(storeFacade.AddItemToStore(storeID, itemName, itemCategory, itemPrice, quantity));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
+        public Response RemoveItemFromStore(Guid userID, Guid storeID, Guid itemID)
+        {
+            try
+            {
+                userFacade.RemoveItemFromStore(userID, storeID);
                 storeFacade.RemoveItemFromStore(storeID, itemID);
                 return new Response();
             }
@@ -132,15 +130,62 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public Response EditItemPrice(string storeID, string itemName, int price)
+        public Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                userFacade.EditItem(userID, storeID);
+                storeFacade.EditItemPrice(storeID, itemID, price);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
         }
-        public Response EditItemCategory(string storeID, string itemName, string category)
+        public Response EditItemCategory(Guid userID, Guid storeID, Guid itemID, string category)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                userFacade.EditItem(userID, storeID);
+                storeFacade.EditItemCategory(storeID, itemID, category);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
         }
-        
+        public Response EditItemName(Guid userID, Guid storeID, Guid itemID, string name)
+        {
+            try
+            {
+                userFacade.EditItem(userID, storeID);
+                storeFacade.EditItemName(storeID, itemID, name);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+        public Response EditItemQuantity(Guid userID, Guid storeID, Guid itemID, int quantity)
+        {
+            try
+            {
+                userFacade.EditItem(userID, storeID);
+                storeFacade.EditItemQuantity(storeID, itemID, quantity);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new Response(ex.Message);
+            }
+        }
         public ResponseT<List<Store>> GetAllStoreInfo(Guid id)
         {
             throw new System.NotImplementedException();
@@ -202,12 +247,6 @@ namespace SadnaExpress.ServiceLayer
         public ConcurrentDictionary<Guid, Store> GetStores()
         {
             return storeFacade.GetStores();
-        }
-
-
-        public Store GetStoreById(Guid storeId)
-        {
-            return storeFacade.GetStoreById(storeId);
         }
 
         public void SetIsSystemInitialize(bool isInitialize)

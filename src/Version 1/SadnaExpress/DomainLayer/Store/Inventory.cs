@@ -60,83 +60,53 @@ namespace SadnaExpress.DomainLayer.Store
             }
             return items;
         }
-        
-        
-        public void AddItemToInventory(Item item, int quantity)
+        public Guid AddItem(string name, string category, double price, int quantity)
         {
-            bool result = items_quantity.TryAdd(item, quantity);
-            if (result.Equals(false))
-                throw new Exception("adding item failed");
+            if (itemExistsByName(name))
+            {
+                throw new Exception("can't add item to the store with a name that belongs to another item");
+            }
+            Item newItem = new Item(name, category, price);
+            items_quantity.TryAdd(newItem, quantity);
+            return newItem.ItemID;
+        }
+        public void RemoveItem(Guid itemID)
+        {
+            int item;
+            items_quantity.TryRemove(getItemById(itemID), out item);
         }
         
-        public void RemoveItem(Item item)
+        public void EditItemQuantity(Guid itemID, int quantity)
         {
-            int removed = 0;
-            bool result = items_quantity.TryRemove(item, out removed);
-            if (result.Equals(false))
-                throw new Exception("removing item failed");
+            Item item = getItemById(itemID);
+            if (items_quantity[item] + quantity < 0)
+                throw new Exception("Edit item quantity failed, item quantity cant be negative");
+            items_quantity[item] += quantity;
         }
-        
-        public void AddQuantity(Item item, int quantity)
+        public void EditItemName(Guid itemID, string name)
         {
-            if (items_quantity.ContainsKey(item))
-                items_quantity[item] += quantity;
-            else
-                throw new Exception("Adding quantity failed, item not found");
-        }
-
-        public void RemoveQuantity(Item item, int quantity)
-        {
-            if (items_quantity.ContainsKey(item))
-                items_quantity[item] -= quantity;
-            else
-                throw new Exception("Removing quantity failed, item not found");
-        }
-        
-        public void EditItemName(int itemId, string name)
-        {
-            Item item = getItemById(itemId);
-            if (item.Equals(null))
-                throw new Exception("Edit item failed, item not found");
+            Item item = getItemById(itemID);
             if (name.Equals(""))
                 throw new Exception("Edit item failed, item name cant be empty");
-            if (ItemExistsByName(name))
+            if (itemExistsByName(name))
                 throw new Exception("Edit item failed, item name cant be edited to a name that belongs to another item in the store");
             item.Name = name;
         }
-
-        public void EditItemCategory(int itemId, string category)
+        public void EditItemCategory(Guid itemID, string category)
         {
-            Item item = getItemById(itemId);
-            if (item.Equals(null))
-                throw new Exception("Edit item failed, item not found");
+            Item item = getItemById(itemID);
             if (category.Equals(""))
                 throw new Exception("Edit item failed, item category cant be empty");
             item.Category = category;
         }
-
-        public void EditItemPrice(int itemId, double price)
+        public void EditItemPrice(Guid itemId, double price)
         {
             Item item = getItemById(itemId);
-            if (item.Equals(null))
-                throw new Exception("Edit item failed, item not found");
             if (price < 0)
                 throw new Exception("Edit item failed, item price cant be negative");
             item.Price = price;
         }
-
- /*       public bool ItemExistsById(int itemId)
-        {
-            foreach (Item item in this.items_quantity.Keys)
-            {
-                if (item.getId().Equals(itemId))
-                    return true;
-            }
-            return false;
-
-        }*/
-
-        public bool ItemExistsByName(string itemName)
+        private bool itemExistsByName(string itemName)
         {
             foreach (Item item in this.items_quantity.Keys)
             {
@@ -144,48 +114,15 @@ namespace SadnaExpress.DomainLayer.Store
                     return true;
             }
             return false;
-
         }
-
-
-
-        public Item getItemById(int itemId)
+        private Item getItemById(Guid itemId)
         {
-            foreach (Item item in this.items_quantity.Keys)
+            foreach (Item item in items_quantity.Keys)
             {
                 if (item.ItemID.Equals(itemId))
                     return item;
             }
-            return null;
+            throw new Exception("The item not exist");
         }
-
-        public int getItemQuantityById(int itemId)
-        {
-            Item item = getItemById(itemId);
-            if (item == null)
-                return -1;
-            return this.items_quantity[item];
-        }
-
-
-        public void setItemRating(int id, int rating)
-        {
-            Item item = getItemById(id);
-            if (!item.Equals(null))
-                item.Rating = rating;
-        }
-
-
-        // add new Item to store, if item exists with the same name return false
-        public void AddItem(string name, string category, double price, int quantity)
-        {
-            if (ItemExistsByName(name))
-            {
-                throw new Exception("can't add item to the store with a name that belongs to another item");
-            }
-            Item newItem = new Item(name, category, price);
-            AddItemToInventory(newItem, quantity);
-        }
-
     }
 }

@@ -60,10 +60,17 @@
     <Compile Include="Unit Tests\StoreFacadeUT.cs" />
     <Compile Include="Mocks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+<<<<<<< HEAD
     <Compile Include="Unit Tests\InventoryUT.cs" />
     <Compile Include="Unit Tests\ShoppingCartUT.cs" />
     <Compile Include="Unit Tests\UserFacadeUT.cs" />
     <Compile Include="Unit Tests\UserUT.cs" />
+=======
+    <Compile Include="Unit Tests\StoreFacadeUnitTest.cs" />
+    <Compile Include="Unit Tests\StoreUT.cs" />
+    <Compile Include="Unit Tests\UserFacadeUnitTest.cs" />
+    <Compile Include="Unit Tests\UserUnitTest.cs" />
+>>>>>>> 31a2cb8 (product management)
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
