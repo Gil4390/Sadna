@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -27,7 +28,7 @@ namespace SadnaExpress.ServiceLayer
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
         Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
-        ResponseT<List<S_Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID); //4.11
+        ResponseT<List<Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID); //4.11
 
         //system manager actions 
         ResponseT<bool> InitializeTradingSystem(Guid userID); //1.1
@@ -46,6 +47,11 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Guid> UpdateFirst(Guid userID, string newFirst);
         ResponseT<Guid> UpdateLast(Guid userID, string newLast);
         ResponseT<Guid> UpdatePassword(Guid userID,string newPassword);
+
+        void SetPaymentService(IPaymentService paymentService);
+        void SetSupplierService(ISupplierService supplierService);
+
+        void SetIsSystemInitialize(bool isInitialize);
 
     }
 }

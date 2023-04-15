@@ -195,17 +195,17 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
+        public ResponseT<List<Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             try
             {
                 List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(userID, storeID);
-                return new ResponseT<List<S_Member>>();
+                return new ResponseT<List<Member>>();
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<List<S_Member>>(ex.Message);
+                return new ResponseT<List<Member>>(ex.Message);
             }
         }
 
@@ -328,6 +328,21 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
+        }
+
+        public void SetPaymentService(IPaymentService paymentService)
+        {
+            userFacade.SetPaymentService(paymentService);
+        }
+
+        public void SetSupplierService(ISupplierService supplierService)
+        {
+            userFacade.SetSupplierService(supplierService);
+        }
+
+        public void SetIsSystemInitialize(bool isInitialize)
+        {
+            userFacade.SetIsSystemInitialize(isInitialize);
         }
     }
 }

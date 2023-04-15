@@ -13,7 +13,6 @@ namespace SadnaExpressTests
     {
         public class Mock_SupplierService : ISupplierService
         {
-            int shipmentNum = 0;
             bool isConnected = false;
 
             public Mock_SupplierService()
@@ -32,15 +31,8 @@ namespace SadnaExpressTests
             }
 
 
-            public virtual string ShipOrder(string address)
-            {
-                shipmentNum++;
-                return "test " + shipmentNum;
-            }
-
             public virtual bool ShipOrder(string orderDetails, string userDetails)
             {
-                shipmentNum++;
                 return true;
             }
 
@@ -65,13 +57,7 @@ namespace SadnaExpressTests
                 return isConnected;
             }
 
-
-            public virtual void Pay(double amount, string payment)
-            {
-
-            }
-
-            public virtual bool ValidatePayment(string transactionDetails)
+            public virtual bool Pay(double amount, string transactionDetails)
             {
                 return true;
             }

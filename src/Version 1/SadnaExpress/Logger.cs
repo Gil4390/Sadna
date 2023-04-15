@@ -6,10 +6,10 @@ namespace SadnaExpress
 {
     public class Logger
     {
-        private static StreamWriter logger;
-        private static string pathName;
+       private static StreamWriter logger;
+       private static string pathName;
 
-        //private static readonly object lockThreads = new object();  // only add this if this class needs to be thread safe
+       private static readonly object lockThreads = new object();  // only add this if this class needs to be thread safe
 
         private static Logger instance = null;
 
@@ -17,13 +17,13 @@ namespace SadnaExpress
         {
             get
             {
-                // if lock(lockThreads) {
-                if (instance == null)
-                {
-                    instance = new Logger("LoggerOutput");
-                }
-                return instance;
-                //}
+               lock(lockThreads) {
+                    if (instance == null)
+                    {
+                        instance = new Logger("LoggerOutput");
+                    }
+                    return instance;
+               }
             }
         }
 

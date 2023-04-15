@@ -65,6 +65,7 @@ namespace SadnaExpress.DomainLayer.User
         public void closeStore(int storeID)
         {
             throw new NotImplementedException();
+            //in the next version should send a message to all the employees
         }
 
         public List<PromotedMember> GetEmployeeInfoInStore(Guid storeID, PromotedMember member)

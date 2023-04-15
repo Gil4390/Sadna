@@ -12,28 +12,18 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private ConcurrentDictionary<Guid, Store> stores;
         private ConcurrentDictionary<Guid, LinkedList<Order>> storeOrders;
-        private ISupplierService supplierService;
-        public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
-        private const int MaxSupplyServiceWaitTime = 10000; //10 seconds is 10,000 mili seconds
+        private bool _isTSInitialized;
 
-        public StoreFacade(ISupplierService supplierService=null)
+        public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
             storeOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();
-            this.supplierService = supplierService;
         }
         
-        public Store GetStoreByID(Guid id)
-        {
-            foreach (Store store in stores.Values) {
-                if (store.StoreID.Equals(id))
-                    return store;
-            }
-            return null;
-        }
         public Guid OpenNewStore(string storeName)
         {
-            if(storeName.Length == 0)
+            IsTsInitialized();
+            if (storeName.Length == 0)
                 throw new Exception("Store name can not be empty");
             Store store = new Store(storeName);
             stores.TryAdd(store.StoreID, store);
@@ -41,84 +31,103 @@ namespace SadnaExpress.DomainLayer.Store
             return store.StoreID;
         }
 
-        public void CloseStore(Guid storeId)
+        public void CloseStore(Guid storeID)
         {
-            Store store = GetStoreByID(storeId);
-            if (store == null)
-                Logger.Instance.Error("there is no store with this name");
-            //
-            store.Active = false;
-            Logger.Instance.Info("store " + store.StoreName + " closed.");
+            IsTsInitialized();
+            if (!stores.ContainsKey(storeID))
+                Logger.Instance.Error("there is no store with this ID");
+            stores[storeID].Active = false;
+            Logger.Instance.Info("store " + stores[storeID].StoreName + " closed.");
         }
-        public void ReopenStore(Guid storeId)
+        public void ReopenStore(Guid storeID)
         {
-            Store store = GetStoreByID(storeId);
-            if (store == null)
-                Logger.Instance.Error("there is no store with this name");
-            //
-            store.Active = true;
-            Logger.Instance.Info("store " + store.StoreName + " reopen.");
+            IsTsInitialized();
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("there is no store with this ID");
+            stores[storeID].Active = true;
+            Logger.Instance.Info("store " + stores[storeID].StoreName + " reopen.");
         }
-        public void DeleteStore(Guid storeId)
+        public void DeleteStore(Guid storeID)
         {
-            Store store = GetStoreByID(storeId);
-            if (store == null)
-                Logger.Instance.Error("there is no store with this name");
-            stores.TryRemove(store.StoreID, out store);
+            IsTsInitialized();
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("there is no store with this ID");
+            stores.TryRemove(storeID, out var store);
             Logger.Instance.Info("store " + store.StoreName + " deleted.");
         }
         
-        public LinkedList<Order> GetStorePurchases(Guid storeId)
+        public LinkedList<Order> GetStorePurchases(Guid storeID)
         {
-            if (!storeOrders.ContainsKey(storeId))
+            IsTsInitialized();
+            if (!storeOrders.ContainsKey(storeID))
                 throw new Exception("Store with this id does not exist");
-            Logger.Instance.Info("store " + GetStoreByID(storeId).StoreName + " got his purchases info.");
-            return storeOrders[storeId];
+            Logger.Instance.Info("store " + stores[storeID].StoreName + " got his purchases info.");
+            return storeOrders[storeID];
         }
         public void PurchaseItems(string storeName, List<string> itemsName)
-        {   
-            throw new System.NotImplementedException();
-
-        }
-
-        public Store GetStoreById(Guid storeId)
         {
-            if(stores.ContainsKey(storeId))
-                return stores[storeId];
-            throw new Exception("there is no store with this id: " + storeId);
+            IsTsInitialized();
+            throw new System.NotImplementedException();
         }
 
         public void GetAllStoreInfo(string storeName)
         {
+            IsTsInitialized();
             throw new System.NotImplementedException();
 
         }
 
-        public void AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
+        public Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
-            GetStoreById(storeID).addItem(itemName, itemCategory, itemPrice, quantity);
+            IsTsInitialized();
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("Store with this id does not exist");
+            return stores[storeID].AddItem(itemName, itemCategory, itemPrice, quantity);
         }
 
-        public void RemoveItemFromStore(Guid storeID, int itemId)
+        public void RemoveItemFromStore(Guid storeID, Guid itemId)
         {
-            GetStoreById(storeID).RemoveItemById(itemId);
-        }
-
-        public void EditItemCategory(string storeName, string itemName, string category)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void EditItemPrice(string storeName, string itemName, int price)
-        {
-            throw new System.NotImplementedException();
+            IsTsInitialized();
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("Store with this id does not exist");
+            stores[storeID].RemoveItem(itemId);
         }
         
+        public void EditItemName(Guid storeID, Guid itemID, string name)
+        {
+            IsTsInitialized();
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("Store with this id does not exist");
+            stores[storeID].EditItemName(itemID, name);
+        }
+        
+        public void EditItemCategory(Guid storeID, Guid itemID, string category)
+        {
+            IsTsInitialized();
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("Store with this id does not exist");
+            stores[storeID].EditItemCategory(itemID, category);
+        }
+        public void EditItemPrice(Guid storeID, Guid itemID, int price)
+        {
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("Store with this id does not exist");
+            stores[storeID].EditItemPrice(itemID, price);
+        }
+        public void EditItemQuantity(Guid storeID, Guid itemID, int quantity)
+        {
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("Store with this id does not exist");
+            stores[storeID].EditItemQuantity(itemID, quantity);
+        }
         public List<Item> GetItemsByName(string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
+            IsTsInitialized();
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
+                if (!store.Active)
+                    continue;
                 if (ratingStore != -1 && store.StoreRating != ratingStore)
                     continue;
                 Item item = store.GetItemsByName(itemName, minPrice, maxPrice, category, ratingItem);
@@ -129,9 +138,12 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public List<Item> GetItemsByCategory(string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
         {
+            IsTsInitialized();
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
+                if (!store.Active)
+                    continue;
                 if (ratingStore != -1 && store.StoreRating != ratingStore)
                     continue;
                 allItems.AddRange(store.GetItemsByCategory(category, minPrice, maxPrice, ratingItem));
@@ -140,9 +152,12 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
+            IsTsInitialized();
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
+                if (!store.Active)
+                    continue;
                 if (ratingStore != -1 && store.StoreRating != ratingStore)
                     continue;
                 allItems.AddRange(store.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category));
@@ -151,6 +166,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void WriteReview(string storeName, string itemName, int rating)
         {
+            IsTsInitialized();
             throw new System.NotImplementedException();
         }
 
@@ -158,44 +174,22 @@ namespace SadnaExpress.DomainLayer.Store
         {
            storeOrders.Clear();
            stores.Clear();
-           supplierService = null;
         }
+
         public ConcurrentDictionary<Guid, Store> GetStores()
         {
             return stores;
         }
-        public void SetSupplierService(ISupplierService supplierService)
+
+        public void SetIsSystemInitialize(bool isInitialize)
         {
-            this.supplierService = supplierService;
+            _isTSInitialized = isInitialize;
         }
 
-        public bool PlaceSupply(string orderDetails, string userDetails)
+        private void IsTsInitialized()
         {
-            try
-            {
-                Logger.Instance.Info(nameof(supplierService)+": user: "+userDetails+" request to preform a supply for order: "+orderDetails);
-
-                var task = Task.Run(() =>
-                {
-                    return supplierService.ShipOrder(orderDetails, userDetails);
-                });
-
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxSupplyServiceWaitTime));
-
-                if (isCompletedSuccessfully)
-                {
-                    return true;
-                }
-                else
-                {
-                    throw new TimeoutException("Supply external service action has taken longer than the maximum time allowed.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return false;
-            }
+            if (_isTSInitialized == false)
+                throw new Exception("Cannot preform any action because system trading is closed");
         }
 
         public void WriteItemReview(Guid userID, Guid storeID, int itemID, string reviewText)

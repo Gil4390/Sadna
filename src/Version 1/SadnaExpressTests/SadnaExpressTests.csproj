@@ -50,18 +50,21 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Acceptance Tests\SystemAT.cs" />
     <Compile Include="Acceptance Tests\TradingSystemAT.cs" />
     <Compile Include="Acceptance Tests\UserAT.cs" />
     <Compile Include="Acceptance Tests\ItemAT.cs" />
     <Compile Include="Acceptance Tests\StoreAT.cs" />
     <Compile Include="Acceptance Tests\EmployeeAT.cs" />
-    <Compile Include="Unit Tests\StoreUnitTest.cs" />
-    <Compile Include="Unit Tests\ShoppingCartUnitTest.cs" />
+    <Compile Include="Unit Tests\ShppingBasketUT.cs" />
+    <Compile Include="Unit Tests\StoreFacadeUT.cs" />
     <Compile Include="Mocks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit Tests\StoreFacadeUnitTest.cs" />
-    <Compile Include="Unit Tests\UserFacadeUnitTest.cs" />
-    <Compile Include="Unit Tests\UserUnitTest.cs" />
+    <Compile Include="Unit Tests\InventoryUT.cs" />
+    <Compile Include="Unit Tests\ShoppingCartUT.cs" />
+    <Compile Include="Unit Tests\UserFacadeUT.cs" />
+    <Compile Include="Unit Tests\UserUT.cs" />
+    <Compile Include="Unit Tests\StoreUT.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

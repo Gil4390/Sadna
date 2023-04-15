@@ -20,6 +20,7 @@ namespace SadnaExpress.DomainLayer.User
          * add new owner
          * add new manager
          * get employees info
+         * product management permissions
          */
         public PromotedMember(Guid id, string email, string firstName, string lastName, string password) : base(id,
             email, firstName, lastName, password)
@@ -126,6 +127,12 @@ namespace SadnaExpress.DomainLayer.User
                     new List<string> { "owner permissions", "founder permissions", "get employees info"}))
                 return permissionsHolder.GetEmployeeInfoInStore(storeID, this);
             throw new Exception("The member doesn’t have permissions to get employees info");
+        }
+        public override void CloseStore(Guid storeID)
+        {
+            if (!hasPermissions(storeID,
+                    new List<string> {"founder permissions"}))
+            throw new Exception("The member doesn’t have permissions to close store");
         }
     }
 }

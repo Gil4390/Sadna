@@ -17,11 +17,11 @@ namespace SadnaExpress.ServiceLayer
         Response Exit(Guid userID); //1.2
         Response Register(Guid userID, string email, string firstName, string lastName, string password); //1.3
         ResponseT<Guid> Login(Guid userID, string email, string password); //1.4
-        ResponseT<List<S_Store>> GetAllStoreInfo(Guid userID); //2.1
+        ResponseT<List<Store>> GetAllStoreInfo(Guid userID); //2.1
         // 2.2
-        ResponseT<List<S_Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
-        ResponseT<List<S_Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1);
-        ResponseT<List<S_Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
+        ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
+        ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1);
+        ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
         Response AddItemToCart(Guid userID, Guid storeID, int itemID, int itemAmount); //2.3
         //2.4
         Response RemoveItemFromCart(Guid userID, Guid storeID, int itemID);
@@ -37,10 +37,12 @@ namespace SadnaExpress.ServiceLayer
         Response GetPurchasesInfo(Guid userID); //3.7 (not in this version)
         //3.8 and 3.9 (not in this version)
         //4.1
-        Response AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
-        Response RemoveItemFromStore(Guid userID, Guid storeID, int itemID);
-        Response EditItemCategory(string storeName, string itemName, string category);
-        Response EditItemPrice(string storeName, string itemName, int price); 
+        ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
+        Response RemoveItemFromStore(Guid userID, Guid storeID, Guid itemID);
+        Response EditItemCategory(Guid userID, Guid storeID,  Guid itemID, string category);
+        Response EditItemPrice(Guid userID, Guid storeID,  Guid itemID, int price); 
+        Response EditItemName(Guid userID, Guid storeID,  Guid itemID, string name); 
+        Response EditItemQuantity(Guid userID, Guid storeID,  Guid itemID, int quantity); 
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
         Response RemoveStoreOwner(Guid userID1, Guid storeID, Guid userID2); //4.5 (not in this version)
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
@@ -50,7 +52,7 @@ namespace SadnaExpress.ServiceLayer
         Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
-        ResponseT<List<S_Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
+        ResponseT<List<Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
         Response GetPurchasesInfo(Guid userID, Guid storeID);//4.13 //6.4
         //???????
         void CleanUp();
@@ -61,5 +63,10 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Guid> UpdateLast(Guid userID, string newLast);
         ResponseT<Guid> UpdatePassword(Guid userID, string newPassword);
         ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a);
+
+        //helpers
+        void SetPaymentService(IPaymentService paymentService);
+        void SetSupplierService(ISupplierService supplierService);
+        void SetIsSystemInitialize(bool isInitialize);
     }
 }
