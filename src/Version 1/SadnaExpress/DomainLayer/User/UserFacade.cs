@@ -13,29 +13,32 @@ namespace SadnaExpress.DomainLayer.User
 {
     public class UserFacade : IUserFacade
     {
+        private const int MaxExternalServiceWaitTime = 10000; //10 seconds is 10,000 mili seconds
         private ConcurrentDictionary<Guid, User> current_Users;
         private ConcurrentDictionary<Guid, Member> members;
         private ConcurrentDictionary<Guid, LinkedList<Order>> userOrders;
-        private PasswordHash _ph = new PasswordHash();
+        private IPasswordHash _ph = new PasswordHash();
         private IPaymentService paymentService;
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
-        private const int MaxPaymentServiceWaitTime = 10000; //10 seconds is 10,000 mili seconds
-
-        public UserFacade(IPaymentService paymentService=null)
+        private ISupplierService supplierService;
+        public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
+       
+        public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
-            //guests = new Dictionary<int, Guest>();
             current_Users = new ConcurrentDictionary<Guid, User>();
             members = new ConcurrentDictionary<Guid, Member>();
             userOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();
             this.paymentService = paymentService;
+            this.supplierService = supplierService;
         }
 
-        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members, PasswordHash ph, IPaymentService paymentService=null)
+        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
         {
             this.current_Users = current_Users;
             this.members = members;
             _ph = ph;
             this.paymentService = paymentService;
+            this.supplierService = supplierService;
         }
 
         public Guid Enter()
@@ -407,6 +410,11 @@ namespace SadnaExpress.DomainLayer.User
             this.paymentService = paymentService;
         }
 
+        public void SetSupplierService(ISupplierService supplierService)
+        {
+            this.supplierService = supplierService;
+        }
+
         public bool PlacePayment(string transactionDetails)
         {
             try
@@ -418,7 +426,7 @@ namespace SadnaExpress.DomainLayer.User
                     return paymentService.ValidatePayment(transactionDetails);
                 });
 
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxPaymentServiceWaitTime));
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime));
 
                 if (isCompletedSuccessfully)
                 {
@@ -427,6 +435,35 @@ namespace SadnaExpress.DomainLayer.User
                 else
                 {
                     throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public bool PlaceSupply(string orderDetails, string userDetails)
+        {
+            try
+            {
+                Logger.Instance.Info(nameof(supplierService) + ": user: " + userDetails + " request to preform a supply for order: " + orderDetails);
+
+                var task = Task.Run(() =>
+                {
+                    return supplierService.ShipOrder(orderDetails, userDetails);
+                });
+
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime));
+
+                if (isCompletedSuccessfully)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new TimeoutException("Supply external service action has taken longer than the maximum time allowed.");
                 }
             }
             catch (Exception ex)

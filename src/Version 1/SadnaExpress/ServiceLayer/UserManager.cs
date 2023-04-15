@@ -195,17 +195,17 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
+        public ResponseT<List<Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             try
             {
                 List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(userID, storeID);
-                return new ResponseT<List<S_Member>>();
+                return new ResponseT<List<Member>>();
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<List<S_Member>>(ex.Message);
+                return new ResponseT<List<Member>>(ex.Message);
             }
         }
 

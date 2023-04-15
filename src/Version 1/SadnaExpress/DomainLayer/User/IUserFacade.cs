@@ -43,10 +43,9 @@ namespace SadnaExpress.DomainLayer.User
         void SetSecurityQA(Guid userID,string q, string a);
         void SetPaymentService(IPaymentService paymentService);
         bool PlacePayment(string transactionDetails);
-
-
+        void SetSupplierService(ISupplierService supplierService);
+        bool PlaceSupply(string orderDetails, string userDetails);
         ShoppingCart GetShoppingCartById(Guid userID);
-
         bool isLoggedIn(Guid userID);
 
     }

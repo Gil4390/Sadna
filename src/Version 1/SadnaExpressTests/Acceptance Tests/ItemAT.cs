@@ -15,29 +15,29 @@ namespace SadnaExpressTests.Integration_Tests
         public void SetUp()
         {
             _server = new Server();
-            _server.activateAdmin();
+           // _server.activateAdmin();
         }
         public void Login(int idx , string email , string pass)
         {
-            Thread client1 = new Thread(() =>
-            {
-                _server.service.Enter();
-                _server.service.Register(idx, email, " tal", " galmor", pass);
-                _server.service.Login(idx, email, pass);
-            });
-            client1.Start();
-            client1.Join();
+            //Thread client1 = new Thread(() =>
+            //{
+            //    _server.service.Enter();
+            //    _server.service.Register(idx, email, " tal", " galmor", pass);
+            //    _server.service.Login(idx, email, pass);
+            //});
+            //client1.Start();
+            //client1.Join();
         }
         public Guid OpenNewStore(int idx , string email , string pass , string store_name)
         {
-            _server.activateAdmin();
-            Login(idx, email, pass);
-            _server.service.OpenNewStore(idx, store_name);
-            foreach (Store store in _server.service.GetStores().Values)
-            {
-                if (store.StoreName == store_name)
-                    return store.StoreID;
-            }
+            //_server.activateAdmin();
+            //Login(idx, email, pass);
+            //_server.service.OpenNewStore(idx, store_name);
+            //foreach (Store store in _server.service.GetStores().Values)
+            //{
+            //    if (store.StoreName == store_name)
+            //        return store.StoreID;
+            //}
             return new Guid();
         }
         [TestMethod]

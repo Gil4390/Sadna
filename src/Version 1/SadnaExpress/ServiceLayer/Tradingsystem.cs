@@ -95,7 +95,7 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<S_Store>> GetAllStoreInfo(Guid userID)
+        public ResponseT<List<Store>> GetAllStoreInfo(Guid userID)
         {
             //get list of business stores and convert them to service stores
             throw new NotImplementedException();
@@ -104,29 +104,29 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.OpenNewStore(userID, storeName);
         }
-        public ResponseT<List<S_Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+        public ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
             return storeManager.GetItemsByName(userID, itemName, minPrice, maxPrice, ratingItem, category, ratingStore);
         }
-        public ResponseT<List<S_Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1)
+        public ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1)
         {
             return storeManager.GetItemsByCategory(userID, category, minPrice, maxPrice, ratingItem, ratingStore);
         }
-        public ResponseT<List<S_Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+        public ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
             return storeManager.GetItemsByKeysWord(userID, keyWords,minPrice, maxPrice, ratingItem, category, ratingStore);
         }
-        public ResponseT<List<S_Item>> GetItemsByPrices(Guid userID, int minPrice, int maxPrice)
+        public ResponseT<List<Item>> GetItemsByPrices(Guid userID, int minPrice, int maxPrice)
         {
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByItemRating(Guid userID, int rating)
+        public ResponseT<List<Item>> GetItemsByItemRating(Guid userID, int rating)
         {
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<S_Item>> GetItemsByStoreRating(Guid userID, int rating)
+        public ResponseT<List<Item>> GetItemsByStoreRating(Guid userID, int rating)
         {
             throw new NotImplementedException();
         }
@@ -298,7 +298,7 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.ReopenStore(userID,storeID);
         }
 
-        public ResponseT<List<S_Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
+        public ResponseT<List<Member>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             return userManager.GetEmployeeInfoInStore(userID, storeID);
         }
