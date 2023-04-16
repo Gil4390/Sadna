@@ -16,11 +16,9 @@ namespace SadnaExpress.DomainLayer.User
         void AddItemToCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount);
         void RemoveItemFromCart(Guid userID,Guid storeID, Guid itemID);
         void EditItemFromCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount);
-        Dictionary<Guid,List<Guid>> GetDetailsOnCart(Guid userID);
+        ShoppingCart GetDetailsOnCart(Guid userID);
         void PurchaseCart(Guid userID);
-        void EditItemCart(Guid userID,Guid storeID, string itemName);
         void OpenNewStore(Guid userID,Guid storeID);
-        void AddReview(Guid userID,Guid storeID, string itemName);
         void AddItemToStore(Guid userID,Guid storeID);
         void RemoveItemFromStore(Guid userID,Guid storeID);
         void EditItem(Guid userID,Guid storeID);
@@ -50,7 +48,6 @@ namespace SadnaExpress.DomainLayer.User
         void SetIsSystemInitialize(bool isInitialize);
         User GetUser(Guid userID);
         Member GetMember(Guid userID);
-
         void GetStorePurchases(Guid userId, Guid storeId);
         void GetAllStorePurchases(Guid userId);
     }

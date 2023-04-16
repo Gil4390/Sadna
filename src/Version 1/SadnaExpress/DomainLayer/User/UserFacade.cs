@@ -183,20 +183,17 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             throw new NotImplementedException();
         }
-        public Dictionary<Guid, List<Guid>> GetDetailsOnCart(Guid id)
+        public ShoppingCart GetDetailsOnCart(Guid userID)
         {
             IsTsInitialized();
-            throw new NotImplementedException();
+            if (members.ContainsKey(userID))
+                return members[userID].ShoppingCart;
+            return current_Users[userID].ShoppingCart;
         }
 
         public void PurchaseCart(Guid id)
         {
             IsTsInitialized();
-            throw new NotImplementedException();
-        }
-
-        public void EditItemCart(Guid userID, Guid storeID, string itemName)
-        {
             throw new NotImplementedException();
         }
 
@@ -207,13 +204,7 @@ namespace SadnaExpress.DomainLayer.User
             PromotedMember founder = members[id].openNewStore(storeID);
             members[id] = founder;
         }
-
-        public void AddReview(Guid id, Guid storeID, string itemName)
-        {
-            IsTsInitialized();
-            throw new NotImplementedException();
-        }
-
+        
         public void AddItemToStore(Guid id, Guid storeID)
         {
             IsTsInitialized();
@@ -362,6 +353,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!members[userId].hasPermissions(Guid.Empty, new List<string>{"system manager permissions"}))
                 throw new Exception("The member doesn’t have permissions to get all stores purchases");   
         }
+        
         public void GetDetailsOnStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();

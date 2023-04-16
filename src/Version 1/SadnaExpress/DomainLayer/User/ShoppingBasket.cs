@@ -7,16 +7,31 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public class ShoppingBasket
     {
-        private Guid storeId;
-        //                itemId, quantity Selected
+        private Guid storeID;
+        public Guid StoreID { get; }
         private Dictionary<int, int> itemsInBasket;
+        public Dictionary<int, int> ItemsInBasket { get; }
 
-        public ShoppingBasket(Guid store)
+        public ShoppingBasket(Guid storeId)
         {
-            this.storeId = store;
+            storeID = storeId;
             itemsInBasket = new Dictionary<int, int>();
         }
         
+        public override bool Equals(object obj)
+        {
+            return storeID.Equals(obj);
+        }
+
+        public override string ToString()
+        {
+            string output = $"store ID: {storeID} with the items: \n";
+            foreach (int item in itemsInBasket.Keys)
+                output += $"item ID: {item} with quantity: {itemsInBasket[item]}\n";
+            return output;
+        }
+        
+        /*
         public void AddItem(int itemId, int quantity)
         {
             if (quantity < 0)
@@ -51,35 +66,6 @@ namespace SadnaExpress.DomainLayer.Store
             else 
                 throw new Exception("cant edit quantity of item that is not in the basket");
         }
-
-        public Guid GetStoreId()
-        {
-            return this.storeId;
-        }
-
-        public int GetItemStock(int itemId)
-        {
-            if (itemsInBasket.ContainsKey(itemId))
-                return itemsInBasket[itemId];
-            throw new Exception("Failure here!");
-        }
-
-
-        public override bool Equals(object obj)
-        {
-            return obj is ShoppingBasket && this.storeId.Equals(((ShoppingBasket)obj).GetStoreId());
-        }
-
-        public Dictionary<int,int> GetItemsInBasket()
-        {
-            return itemsInBasket;
-        }
-
-        public int GetItemsCount()
-        { 
-            return itemsInBasket.Count; 
-        }
-
-
+*/
     }
 }
