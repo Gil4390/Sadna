@@ -150,11 +150,14 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.EditItemFromCart(userID, storeID, itemID, itemAmount);
         }
 
-        public ResponseT<Dictionary<Guid, List<Guid>>> GetDetailsOnCart(Guid userID)
+        public ResponseT<ShoppingCart> GetDetailsOnCart(Guid userID)
         {
             return storeManager.GetDetailsOnCart(userID);
         }
-
+        public Response PurchaseCart(Guid userID, string paymentDetails)
+        {
+            throw new NotImplementedException();
+        }
         public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string review)
         {
             try
@@ -319,13 +322,7 @@ namespace SadnaExpress.ServiceLayer
             storeManager.CleanUp();
             userManager.CleanUp();
         }
-
-     
-        public ResponseT<ShoppingCart> ShowShoppingCart(Guid userID)
-        {
-            return userManager.ShowShoppingCart(userID);
-        }
-
+        
         public ConcurrentDictionary<Guid, User> GetCurrent_Users()
         {
             return userManager.GetCurrent_Users();
@@ -406,10 +403,6 @@ namespace SadnaExpress.ServiceLayer
         //    }
         //    return new Response();
         //}
-        public Response PurchaseCart(Guid userID, string paymentDetails)
-        {
-            throw new NotImplementedException();
-        }
 
         public ResponseT<User> GetUser(Guid userID)
         {

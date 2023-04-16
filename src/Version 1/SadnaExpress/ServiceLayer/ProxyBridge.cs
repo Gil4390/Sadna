@@ -90,7 +90,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.EditItemFromCart(id, storeID, itemID, itemAmount);
         }
 
-        public ResponseT<Dictionary<Guid, List<Guid>>> GetDetailsOnCart(Guid id)
+        public ResponseT<ShoppingCart> GetDetailsOnCart(Guid id)
         {
             return _realBridge.GetDetailsOnCart(id);
         }

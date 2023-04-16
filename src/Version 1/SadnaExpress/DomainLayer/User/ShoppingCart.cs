@@ -7,6 +7,11 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private HashSet<ShoppingBasket> baskets;
 
+        public HashSet<ShoppingBasket> Baskets
+        {
+            get => baskets;
+        }
+
         public ShoppingCart()
         {
             baskets = new HashSet<ShoppingBasket>();
@@ -21,73 +26,38 @@ namespace SadnaExpress.DomainLayer.Store
                 output += $"{i}. {basket} \n";
                 i++;
             }
+
             return output;
         }
+
+        public void AddItemToCart(Guid storeID, Guid itemID, int stock)
+        {
+            ShoppingBasket shoppingBasket = new ShoppingBasket(storeID);
+            baskets.Add(shoppingBasket);
+            baskets.TryGetValue(shoppingBasket, out shoppingBasket);
+            shoppingBasket.AddItem(itemID, stock);
+        }
+
+        public void RemoveItemFromCart(Guid storeID, Guid itemID)
+        {
+            ShoppingBasket shoppingBasket = new ShoppingBasket(storeID);
+            bool exist = baskets.TryGetValue(shoppingBasket, out shoppingBasket);
+            if (!exist)
+                throw new Exception("The cart doesn't include the store");
+            shoppingBasket.RemoveItem(itemID);
+            if (shoppingBasket.ItemsInBasket.Count == 0)
+                baskets.Remove(shoppingBasket);
+        }
         
-        /*
-        public ShoppingBasket GetShoppingBasketByStore(Guid store)
+        public void EditItemFromCart(Guid storeID, Guid itemID, int itemAmount)
         {
-            foreach (ShoppingBasket basket in baskets)
-            {       
-                if (basket.GetStoreId().Equals(store))
-                {
-                    return basket;
-                }
-            }
-            return null;
+            ShoppingBasket shoppingBasket = new ShoppingBasket(storeID);
+            bool exist = baskets.TryGetValue(shoppingBasket, out shoppingBasket);
+            if (!exist)
+                throw new Exception("The cart doesn't include the store");
+            shoppingBasket.EditItem(itemID, itemAmount);
+            if (shoppingBasket.ItemsInBasket.Count == 0)
+                baskets.Remove(shoppingBasket);
         }
-
-        public void AddBasket(ShoppingBasket basket)
-        {
-            foreach (ShoppingBasket b in baskets)
-            {
-                if (b.Equals(basket))
-                    throw new Exception("Failed to add basket (this basket already exists in the cart)");
-            }
-            baskets.Add(basket);
-        }
-
-        public void RemoveBasket(ShoppingBasket basket)
-        {
-            baskets.Remove(basket);
-        }
-
-        public void AddItemToBasket(Guid storeId, int itemId, int stock)
-        {
-            bool addShoppingBasket = true;
-            foreach (ShoppingBasket b in baskets)
-            {
-                if (b.GetStoreId().Equals(storeId))
-                {
-                    b.AddItem(itemId, stock);
-                    addShoppingBasket = false;
-                }
-            }
-            if (addShoppingBasket)
-            {
-                ShoppingBasket newOne = new ShoppingBasket(storeId);
-                newOne.AddItem(itemId, stock);
-                baskets.Add(newOne);
-            }
-        }
-
-
-        public void RemoveItemFromBasket(Guid storeId, int itemId)
-        {
-            foreach (ShoppingBasket b in baskets)
-            {
-                if (b.GetStoreId().Equals(storeId))
-                {
-                    b.RemoveItem(itemId);
-                    int amount = b.GetItemsCount();
-                    if (amount.Equals(0))
-                        this.RemoveBasket(b);
-                }
-            }
-        }
-
-
-*/
-
     }
 }

@@ -19,9 +19,17 @@ namespace SadnaExpress.ServiceLayer
             this.storeFacade = storeFacade;
         }
 
-        public ResponseT<Dictionary<Guid, List<Guid>>> GetDetailsOnCart(Guid userID)
+        public ResponseT<ShoppingCart> GetDetailsOnCart(Guid userID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return new ResponseT<ShoppingCart>(userFacade.GetDetailsOnCart(userID));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<ShoppingCart>(ex.Message);
+            }
         }
         
         public Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)

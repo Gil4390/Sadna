@@ -145,43 +145,27 @@ namespace SadnaExpress.DomainLayer.User
         public void AddItemToCart(Guid userID, Guid storeID, Guid itemID,  int itemAmount)
         {
             IsTsInitialized();
-            /*
-            if (current_Users.ContainsKey(userID))
-            {
-                current_Users[userID].AddItemToCart(storeID, itemID, itemAmount);
-            }
-            else if (members.ContainsKey(userID))
-            {
+            if (members.ContainsKey(userID))
                 members[userID].AddItemToCart(storeID, itemID, itemAmount);
-            }
-            else
-            {
-                throw new Exception("no cart available for user that is not in the list of users!");
-            }
-            */
+            else 
+                current_Users[userID].AddItemToCart(storeID, itemID, itemAmount);
         }
         public void RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID)
         {
             IsTsInitialized();
-            /*
-            if (current_Users.ContainsKey(userID))
-            {
-                current_Users[userID].RemoveItemFromCart(storeID, itemID);
-            }
-            else if (members.ContainsKey(userID))
-            {
+            if (members.ContainsKey(userID))
                 members[userID].RemoveItemFromCart(storeID, itemID);
-            }
-            else
-            {
-                throw new Exception("no cart available for user that is not in the list of users!");
-            }*/
+            else 
+                current_Users[userID].RemoveItemFromCart(storeID, itemID);
         }
 
         public void EditItemFromCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount)
         {
             IsTsInitialized();
-            throw new NotImplementedException();
+            if (members.ContainsKey(userID))
+                members[userID].EditItemFromCart(storeID, itemID, itemAmount);
+            else 
+                current_Users[userID].EditItemFromCart(storeID, itemID, itemAmount);
         }
         public ShoppingCart GetDetailsOnCart(Guid userID)
         {
