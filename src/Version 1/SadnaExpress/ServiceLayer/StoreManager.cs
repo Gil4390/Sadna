@@ -96,11 +96,6 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response WriteReview(Guid id, Guid itemID, string review)
-        {
-            throw new NotImplementedException();
-        }
-
         public Response CloseStore(Guid id ,Guid storeID)
         {
             try
@@ -251,9 +246,10 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public ResponseT<List<Store>> GetAllStoreInfo(Guid id)
+        public ResponseT<List<Store>> GetAllStoreInfo()
         {
-            throw new System.NotImplementedException();
+            List<Store> stores = storeFacade.GetAllStoreInfo();
+            return new ResponseT<List<Store>>(stores);
         }
         
         public ResponseT<List<Item>> GetItemsByName(Guid id, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)

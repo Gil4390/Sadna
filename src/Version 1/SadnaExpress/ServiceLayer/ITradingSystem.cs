@@ -17,7 +17,7 @@ namespace SadnaExpress.ServiceLayer
         Response Exit(Guid userID); //1.2
         Response Register(Guid userID, string email, string firstName, string lastName, string password); //1.3
         ResponseT<Guid> Login(Guid userID, string email, string password); //1.4
-        ResponseT<List<Store>> GetAllStoreInfo(Guid userID); //2.1
+        ResponseT<List<Store>> GetAllStoreInfo(); //2.1
         // 2.2
         ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
         ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1);

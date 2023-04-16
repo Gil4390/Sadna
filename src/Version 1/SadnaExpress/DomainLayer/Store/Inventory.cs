@@ -6,7 +6,7 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public class Inventory
     {
-        private ConcurrentDictionary<Item, int> items_quantity;
+        public ConcurrentDictionary<Item, int> items_quantity;
 
 
         public Inventory()

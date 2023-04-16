@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -71,10 +72,10 @@ namespace SadnaExpress.DomainLayer.Store
             throw new System.NotImplementedException();
         }
 
-        public void GetAllStoreInfo(string storeName)
+        public List<Store> GetAllStoreInfo()
         {
             IsTsInitialized();
-            throw new System.NotImplementedException();
+            return stores.Values.ToList();
         }
 
         public Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
