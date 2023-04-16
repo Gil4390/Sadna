@@ -8,64 +8,71 @@ namespace SadnaExpress.DomainLayer.Store
     public class ShoppingBasket
     {
         private Guid storeID;
-        public Guid StoreID { get; }
-        private Dictionary<int, int> itemsInBasket;
-        public Dictionary<int, int> ItemsInBasket { get; }
+        public Guid StoreID { get => storeID; }
+        private Dictionary<Guid, int> itemsInBasket;
+        public Dictionary<Guid, int> ItemsInBasket { get=>itemsInBasket; }
 
         public ShoppingBasket(Guid storeId)
         {
             storeID = storeId;
-            itemsInBasket = new Dictionary<int, int>();
+            itemsInBasket = new Dictionary<Guid, int>();
         }
         
         public override bool Equals(object obj)
         {
-            return storeID.Equals(obj);
+            if (obj == null || !(obj is ShoppingBasket))
+            {
+                return false;
+            }
+            ShoppingBasket other = (ShoppingBasket)obj;
+            return storeID == other.StoreID;
+        }
+        public override int GetHashCode()
+        {
+            return this.storeID.GetHashCode();
         }
 
         public override string ToString()
         {
             string output = $"store ID: {storeID} with the items: \n";
-            foreach (int item in itemsInBasket.Keys)
-                output += $"item ID: {item} with quantity: {itemsInBasket[item]}\n";
+            foreach (Guid item in itemsInBasket.Keys)
+                output += $"    item ID: {item} with quantity: {itemsInBasket[item]}\n";
             return output;
         }
         
-        /*
-        public void AddItem(int itemId, int quantity)
+        public void AddItem(Guid itemID, int quantity)
         {
             if (quantity < 0)
                 throw new Exception("cant add item with negative quantity");
-            if (itemsInBasket.ContainsKey(itemId))
+            if (itemsInBasket.ContainsKey(itemID))
             {
-                itemsInBasket[itemId] += quantity;
+                itemsInBasket[itemID] += quantity;
             }
             else
             {
-                itemsInBasket.Add(itemId, quantity);
+                itemsInBasket.Add(itemID, quantity);
             }
         }
-
-        public void RemoveItem(int itemId)
+        
+        public void RemoveItem(Guid itemID)
         {
-            bool result = itemsInBasket.Remove(itemId);
+            bool result = itemsInBasket.Remove(itemID);
             if(!result)
             {
-                throw new Exception("ItemId not in basket");
+                throw new Exception($"ItemID {itemID} not in basket");
             }
         }
-
-        public void EditQuantity(int itemId, int quantity)
+        
+        public void EditItem(Guid itemId, int quantity)
         {
             if (quantity < 0)
                 throw new Exception("cant edit quantity with negative value");
-            else if (quantity == 0)
+            if (quantity == 0)
                 RemoveItem(itemId);
             else if (itemsInBasket.ContainsKey(itemId))
                 itemsInBasket[itemId] = quantity;
             else 
                 throw new Exception("cant edit quantity of item that is not in the basket");
         }
-*/
     }
 }

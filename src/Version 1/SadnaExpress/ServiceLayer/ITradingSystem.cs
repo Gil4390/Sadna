@@ -26,7 +26,7 @@ namespace SadnaExpress.ServiceLayer
         //2.4
         Response RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID);
         Response EditItemFromCart(Guid userID, Guid storeID, Guid itemID,  int itemAmount);
-        ResponseT<Dictionary<Guid,List<Guid>>> GetDetailsOnCart(Guid userID);
+        ResponseT<ShoppingCart> GetDetailsOnCart(Guid userID);
         Response PurchaseCart(Guid userID, string paymentDetails); //2.5
         ResponseT<Guid> Logout(Guid userID); //3.1
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
