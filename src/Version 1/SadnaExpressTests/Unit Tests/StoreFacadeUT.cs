@@ -12,19 +12,6 @@ namespace SadnaExpressTests.Unit_Tests
         private IStoreFacade storeFacade;
         private Guid storeID;
 
-
-
-        private static Orders _orders;
-        private Guid userID1;
-        private Guid userID2;
-        private Guid storeID1;
-        private Guid itemID1;
-        private Guid itemID2;
-        private Order order;
-
-        int numOfOpenStores;
-        int numOfTotalItemsInAllStores;
-
         #region SetUp
         [TestInitialize]
         public void SetUp()
