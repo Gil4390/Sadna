@@ -15,7 +15,13 @@ namespace SadnaExpress.DomainLayer.Store
             stores = new ConcurrentDictionary<Guid, Store>();
             _orders = Orders.Instance;
         }
-        
+
+        public StoreFacade(ConcurrentDictionary<Guid, Store> stores)
+        {
+            this.stores = stores;
+            _orders = Orders.Instance;
+        }
+
         public Guid OpenNewStore(string storeName)
         {
             IsTsInitialized();

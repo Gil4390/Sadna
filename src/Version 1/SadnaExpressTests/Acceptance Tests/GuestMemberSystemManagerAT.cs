@@ -2,33 +2,27 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.ServiceLayer;
 
-namespace SadnaExpressTests.Integration_Tests
+namespace SadnaExpressTests.Acceptance_Tests
 {
     [TestClass]
-    public class EmployeeAT
+    public class EmployeeAT: TradingSystemAT
     {
-        private Server _server;
-        
         [TestInitialize]
-        public void SetUp()
+        public override void SetUp()
         {
-            _server = new Server();
-          //  _server.activateAdmin();
+            base.SetUp();
         }
-        public void Register(int idx , string email , string pass)
-        {
-            Thread client1 = new Thread(() =>
-            {
-                _server.service.Enter();
-                //_server.service.Register(idx, email, " tal", " galmor", pass);
-            });
-            client1.Start();
-            client1.Join();
-        }
+
         [TestMethod]
-        public void Appoint_store_appoint()
+        public void Test()
         {
-            
+
+        }
+
+        [TestCleanup]
+        public override void CleanUp()
+        {
+            base.CleanUp();
         }
     }
 }

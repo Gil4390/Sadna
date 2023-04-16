@@ -372,6 +372,8 @@ namespace SadnaExpress.DomainLayer.User
 
             if(servicesConnected)
                 _isTSInitialized = true;
+            else
+                throw new Exception("Trading system cannot be initialized");
 
             return servicesConnected; 
         }

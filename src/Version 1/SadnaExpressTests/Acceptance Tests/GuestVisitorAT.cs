@@ -6,7 +6,7 @@ using SadnaExpress.ServiceLayer;
 using SadnaExpressTests.Acceptance_Tests;
 using SadnaExpress.DomainLayer.User;
 
-namespace SadnaExpressTests.Integration_Tests
+namespace SadnaExpressTests.Acceptance_Tests
 {
     [TestClass]
     public class GuestVisitorAT: TradingSystemAT
@@ -141,10 +141,10 @@ namespace SadnaExpressTests.Integration_Tests
         public void Register3UsersAtTheSameTime_HappyTest()
         {
             Task<Response>[] clientTasks = new Task<Response>[] {
-            Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","57571!@#$aS")),
-            Task.Run(() => RegisterClient("Rami@gmail.com","Rami","Barak","LsJ&^$187")),
-            Task.Run(() => RegisterClient("Yoni@gmail.com","Yoni","Kobi","87ASdFG%$"))
-             };
+                Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","57571!@#$aS")),
+                Task.Run(() => RegisterClient("Rami@gmail.com","Rami","Barak","LsJ&^$187")),
+                Task.Run(() => RegisterClient("Yoni@gmail.com","Yoni","Kobi","87ASdFG%$"))
+            };
 
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);

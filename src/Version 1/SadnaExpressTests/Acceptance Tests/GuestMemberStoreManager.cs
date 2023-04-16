@@ -4,13 +4,29 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 
-namespace SadnaExpressTests.Integration_Tests
+namespace SadnaExpressTests.Acceptance_Tests
 {
     [TestClass]
-    public class StoreAT
+    public class GuestMemberStoreManager : TradingSystemAT
     {
-        private Server _server;
-        
+        [TestInitialize]
+        public override void SetUp()
+        {
+            base.SetUp();
+        }
+
+        [TestMethod]
+        public void Test()
+        {
+
+        }
+
+        [TestCleanup]
+        public override void CleanUp()
+        {
+            base.CleanUp();
+        }
+
         //[TestInitialize]
         //public void SetUp()
         //{
@@ -39,7 +55,7 @@ namespace SadnaExpressTests.Integration_Tests
         //    }
         //    return new Guid();
         //}
-        
+
         //[TestMethod]
         //public void Open_new_store()
         //{
@@ -72,6 +88,6 @@ namespace SadnaExpressTests.Integration_Tests
         //    _server.service.CloseStore(count, g1);
         //    Assert.IsTrue(_server.service.GetStores()[g1].Active);
         //}
-        
+
     }
 }
