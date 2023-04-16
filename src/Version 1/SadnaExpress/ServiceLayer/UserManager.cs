@@ -36,7 +36,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(nameof(UserManager)+": "+nameof(Enter)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
