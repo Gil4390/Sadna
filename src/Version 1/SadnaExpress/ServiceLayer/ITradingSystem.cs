@@ -72,6 +72,7 @@ namespace SadnaExpress.ServiceLayer
         void SetIsSystemInitialize(bool isInitialize);
         ResponseT<User> GetUser(Guid userID);
         ResponseT<Member> GetMember(Guid userID);
+        ResponseT<ShoppingCart> GetUserShoppingCart(Guid userID);
 
     }
 }

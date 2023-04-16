@@ -331,5 +331,19 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Member>(ex.Message);
             }
         }
+
+        public ResponseT<ShoppingCart> GetUserShoppingCart(Guid userID)
+        {
+            try
+            {
+                ShoppingCart shoppingCart = userFacade.GetUserShoppingCart(userID);
+                return new ResponseT<ShoppingCart>(shoppingCart);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<ShoppingCart>(ex.Message);
+            }
+        }
     }
 }
