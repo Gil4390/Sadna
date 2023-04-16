@@ -22,6 +22,7 @@ namespace SadnaExpressTests.Unit_Tests
         private Guid itemID2;
         private Order order;
 
+
         int numOfOpenStores;
         int numOfTotalItemsInAllStores;
 
@@ -32,6 +33,7 @@ namespace SadnaExpressTests.Unit_Tests
             storeFacade = new StoreFacade();
             storeFacade.SetIsSystemInitialize(true);
             storeID = Guid.NewGuid();
+
 
             //Write review setup
             _orders = Orders.Instance;
@@ -158,9 +160,6 @@ namespace SadnaExpressTests.Unit_Tests
             }
             Assert.AreEqual(numOfTotalItemsInAllStores, itemCount);
         }
-
-
-
 
         #endregion 
 

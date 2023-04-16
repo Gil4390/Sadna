@@ -17,15 +17,21 @@ namespace SadnaExpress.DomainLayer.User
             userId = Guid.NewGuid();
             shoppingCart = new ShoppingCart();
         }
-        public void AddItemToCart(Guid storeID, int itemID, int itemAmount)
+        public void AddItemToCart(Guid storeID, Guid itemID, int itemAmount)
         {
-            //shoppingCart.AddItemToBasket(storeID, itemID, itemAmount);
+            shoppingCart.AddItemToCart(storeID, itemID, itemAmount);
         }
 
-        public void RemoveItemFromCart(Guid storeID, int itemID)
+        public void RemoveItemFromCart(Guid storeID, Guid itemID)
         {
-            //shoppingCart.RemoveItemFromBasket(storeID, itemID);
+            shoppingCart.RemoveItemFromCart(storeID, itemID);
         }
+        
+        public void EditItemFromCart(Guid storeID, Guid itemID, int itemAmount)
+        {
+            shoppingCart.EditItemFromCart(storeID, itemID, itemAmount);
+        }
+        
         public virtual bool hasPermissions(Guid storeID, List<string> listOfPermissions)
         {
             return false;

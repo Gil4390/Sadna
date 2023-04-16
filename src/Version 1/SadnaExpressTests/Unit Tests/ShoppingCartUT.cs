@@ -1,41 +1,121 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SadnaExpress.DomainLayer.User;
-using SadnaExpress.ServiceLayer;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using static SadnaExpressTests.Mocks;
+using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass()]
     public class ShoppingCartUT
     {
+        private ShoppingCart shoppingCart;
+        private ShoppingBasket shoppingBasket1;
+        private Guid itemID;
+        private Guid storeID;
+
         [TestInitialize]
         public void SetUp()
         {
-            
+            itemID = Guid.NewGuid();
+            storeID = Guid.NewGuid();
+            shoppingCart = new ShoppingCart();
+            shoppingBasket1 = new ShoppingBasket(storeID);
         }
 
 
         [TestMethod()]
-        public void Inventory_HappyTest()
+        public void AddItemToShoppingCartSuccess()
         {
-            //Arrange
-
-
             //Act
-
-
+            shoppingCart.AddItemToCart(storeID, itemID, 5);
             //Assert
-
+            Assert.AreEqual(1, shoppingCart.Baskets.Count);
         }
+
+        [TestMethod()]
+        public void AddMoreItemFromTheSameStoreSuccess()
+        {
+            //arrange
+            Guid itemID2 = Guid.NewGuid();
+            shoppingCart.AddItemToCart(storeID, itemID2, 2);
+            //Act
+            shoppingCart.AddItemToCart(storeID, itemID, 5);
+            //Assert
+            Assert.AreEqual(1, shoppingCart.Baskets.Count);
+        }
+        [TestMethod()]
+        public void AddMoreItemFromDiffStoreSuccess()
+        {
+            //arrange
+            shoppingCart.AddItemToCart(Guid.NewGuid(), itemID, 2);
+            //Act
+            shoppingCart.AddItemToCart(storeID, itemID, 5);
+            //Assert
+            Assert.AreEqual(2, shoppingCart.Baskets.Count);
+        }
+        
+        [TestMethod()]
+        public void RemoveTheItemUntilBasketEmpty()
+        {
+            //arrange
+            shoppingCart.AddItemToCart(storeID, itemID, 2);
+            //Act
+            shoppingCart.RemoveItemFromCart(storeID,itemID);
+            //Assert
+            Assert.AreEqual(0, shoppingCart.Baskets.Count);
+        }
+        [TestMethod()]
+        public void RemoveTheItemThereStillBasket()
+        {
+            //arrange
+            Guid itemID2 = Guid.NewGuid();
+            shoppingCart.AddItemToCart(storeID, itemID, 2);
+            shoppingCart.AddItemToCart(storeID, itemID2, 2);
+            //Act
+            shoppingCart.RemoveItemFromCart(storeID,itemID);
+            //Assert
+            Assert.AreEqual(1, shoppingCart.Baskets.Count);
+        }
+        [TestMethod()]
+        public void RemoveBasketNotExist()
+        {
+            //arrange
+            Guid itemID2 = Guid.NewGuid();
+            shoppingCart.AddItemToCart(storeID, itemID, 2);
+            shoppingCart.AddItemToCart(storeID, itemID2, 2);
+            //Act
+            Assert.ThrowsException<Exception>(() => shoppingCart.RemoveItemFromCart(new Guid(),itemID));
+        }
+        
+        [TestMethod()]
+        public void EditBasketNotExist()
+        {
+            //arrange
+            Guid itemID2 = Guid.NewGuid();
+            shoppingCart.AddItemToCart(storeID, itemID, 2);
+            shoppingCart.AddItemToCart(storeID, itemID2, 2);
+            //Act
+            Assert.ThrowsException<Exception>(() => shoppingCart.EditItemFromCart(new Guid(),itemID, 5));
+        }
+        [TestMethod()]
+        public void EditBasketItemNotExist()
+        {
+            //arrange
+            shoppingCart.AddItemToCart(storeID, itemID, 2);
+            //Act
+            Assert.ThrowsException<Exception>(() => shoppingCart.EditItemFromCart(storeID,new Guid(), 5));        
+        }
+        
+        [TestMethod()]
+        public void EditBasketSuccess()
+        {
+            //arrange
+            shoppingCart.AddItemToCart(storeID, itemID, 2);
+            //Act
+            shoppingCart.EditItemFromCart(storeID, itemID, 5);
+            //Assert
+            Assert.AreEqual(1, shoppingCart.Baskets.Count);
+        }
+        
 
         [TestCleanup]
         public void CleanUp()

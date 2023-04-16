@@ -6,36 +6,15 @@ using SadnaExpress.ServiceLayer;
 using SadnaExpressTests.Acceptance_Tests;
 using SadnaExpress.DomainLayer.User;
 
-namespace SadnaExpressTests.Integration_Tests
+namespace SadnaExpressTests.Acceptance_Tests
 {
     [TestClass]
-    public class UserAT: TradingSystemAT
+    public class GuestVisitorAT: TradingSystemAT
     {
         [TestInitialize]
         public override void SetUp()
         {
             base.SetUp();
-        }
-
-        public void Register(Guid idx, string email, string pass)
-        {
-            Thread client1 = new Thread(() =>
-            {
-                proxyBridge.Enter();
-                proxyBridge.Register(idx, email, " tal", " galmor", pass);
-            });
-            client1.Start();
-            client1.Join();
-        }
-        public void Login(Guid idx, string email, string pass)
-        {
-            Thread client1 = new Thread(() =>
-            {
-                proxyBridge.Enter();
-                proxyBridge.Login(idx, email, pass);
-            });
-            client1.Start();
-            client1.Join();
         }
 
         #region Enter 1.1
@@ -162,10 +141,10 @@ namespace SadnaExpressTests.Integration_Tests
         public void Register3UsersAtTheSameTime_HappyTest()
         {
             Task<Response>[] clientTasks = new Task<Response>[] {
-            Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","57571!@#$aS")),
-            Task.Run(() => RegisterClient("Rami@gmail.com","Rami","Barak","LsJ&^$187")),
-            Task.Run(() => RegisterClient("Yoni@gmail.com","Yoni","Kobi","87ASdFG%$"))
-             };
+                Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","57571!@#$aS")),
+                Task.Run(() => RegisterClient("Rami@gmail.com","Rami","Barak","LsJ&^$187")),
+                Task.Run(() => RegisterClient("Yoni@gmail.com","Yoni","Kobi","87ASdFG%$"))
+            };
 
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
@@ -195,61 +174,135 @@ namespace SadnaExpressTests.Integration_Tests
         }
         #endregion
 
+        #region Login 1.4
+
+        [TestMethod]
+        public void UserLogin_HappyTest()
+        {
+            Guid tempid = Guid.Empty;
+            Task<ResponseT<Guid>> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                return proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error accured 
+            Assert.IsNull(proxyBridge.GetMember(tempid).Value); //member with temp id does not exist
+            Assert.IsTrue(proxyBridge.GetMember(tempid).ErrorOccured); //member with temp id does not exist
+            Assert.IsTrue(proxyBridge.GetMember(systemManagerid).Value.UserId == systemManagerid);
+        }
+
+        [TestMethod]
+        public void UserLoginWithoutEnter_BadTest()
+        {
+            Guid tempid = Guid.Empty;
+            Task<ResponseT<Guid>> task = Task.Run(() => {
+                return proxyBridge.Login(systemManagerid, "RotemSela@gmail.com", "AS87654askj");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
+            Assert.IsTrue(task.Result.Value==Guid.Empty); //Guid returns empty (default value)
+        }
+
+        [TestMethod]
+        public void UserLoginBadPass_BadTest()
+        {
+            Guid tempid = Guid.Empty;
+            Task<ResponseT<Guid>> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                return proxyBridge.Login(tempid, "RotemSela@gmail.com", "WrongPassword123");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
+            Assert.IsTrue(task.Result.Value == Guid.Empty); //Guid returns empty (default value)
+        }
+
+        [TestMethod]
+        public void UserLoginBadEmail_BadTest()
+        {
+            Guid tempid = Guid.Empty;
+            Task<ResponseT<Guid>> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                return proxyBridge.Login(tempid, "RotemSalla@gmail.com", "AS87654askj");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
+            Assert.IsTrue(task.Result.Value == Guid.Empty); //Guid returns empty (default value)
+        }
 
 
-        //[TestMethod]
-        //public void Login_wrong_password()
-        //{
-        //    int count = 1;
-        //    _server.activateAdmin();
-        //    lock (_server)
-        //    {
-        //        Register(count, "tal.galmor@weka.io", "password");
-        //        Login(count, "tal.galmor@weka.io", "password1");
-        //    }
-        //    Assert.IsFalse(_server.service.GetMembers()[count].LoggedIn);
-        //    Assert.ThrowsException<Exception>(() => { _server.service.isLogin(count); });
-        //}
+        [TestMethod]
+        public void UserLoginThatAlreadyLogin1_BadTest()
+        {
+            //Arrange
+            proxyBridge.GetMember(systemManagerid).Value.LoggedIn = true;
 
-        //[TestMethod]
-        //public void Login_logout_and_login()
-        //{
-        //    int count = 1;
-        //    _server.activateAdmin();
-        //    lock (_server)
-        //    {
-        //        Register(count, "tal.galmor@weka.io", "password");
-        //        Thread client1 = new Thread(() =>
-        //        {
-        //            _server.service.Enter();
-        //            _server.service.Login(count, "tal.galmor@weka.io", "password");
-        //            _server.service.Logout(count);
-        //        });
-        //        client1.Start();
-        //        client1.Join();
-        //    }
-        //    Assert.IsFalse(_server.service.GetMembers()[count].LoggedIn);
-        //    Assert.ThrowsException<Exception>(() => { _server.service.isLogin(count); });
-        //}
+            Guid tempid = Guid.Empty;
+            Task<ResponseT<Guid>> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                return proxyBridge.Login(tempid, "RotemSalla@gmail.com", "AS87654askj");
+            });
 
-        //[TestMethod]
-        //public void Member_update_security()
-        //{
-        //    int count = 1;
-        //    // _server.activateAdmin();
-        //    Register(count, "tal.galmor@weka.io", "password");
-        //    lock (_server)
-        //    {
-        //        Thread client2 = new Thread(() =>
-        //        {
-        //            _server.service.Login(count, "tal.galmor@weka.io", "password");
-        //            _server.service.GetMembers()[count].SetSecurityQA("Cat name", "Titi");
-        //        });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
+            Assert.IsTrue(task.Result.Value == Guid.Empty); //Guid returns empty (default value)
+        }
 
-        //        client2.Start();
-        //        client2.Join();
-        //    }
-        //    Assert.IsTrue(_server.service.GetMembers()[count].CheckSecurityQ("Cat name", "Titi"));
-        //}
+        [TestMethod]
+        public void UserLoginThatAlreadyLogin2_BadTest()
+        {
+            Guid tempid = Guid.Empty;
+            Task<ResponseT<Guid>> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                proxyBridge.Login(tempid, "RotemSalla@gmail.com", "AS87654askj");
+                return proxyBridge.Login(tempid, "RotemSalla@gmail.com", "AS87654askj");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
+            Assert.IsTrue(task.Result.Value == Guid.Empty); //Guid returns empty (default value)
+        }
+
+        private ResponseT<Guid> LoginLogoutLogin(string email, string pass)
+        {
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid,email,pass);
+            return proxyBridge.Logout(systemManagerid);
+        }
+
+        private ResponseT<Guid> RegisterAndLogin(string email, string pass, string firstName, string LastName)
+        {
+            Guid id = proxyBridge.Enter().Value;
+            proxyBridge.Register(id, email, firstName, LastName, pass);
+            return proxyBridge.Login(id, email, pass);
+             
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void UserLoginLogoutLoginAndOtherUserRegisterAndLogIn__HappyTest()
+        {
+            //task 2 run client with existing email
+            Task<ResponseT<Guid>>[] clientTasks = new Task<ResponseT<Guid>>[] {
+                Task.Run(() => RegisterAndLogin("adam@gmail.com","57571!@#$aS","Adam","Alon")),
+                Task.Run(() => LoginLogoutLogin("RotemSalla@gmail.com", "AS87654askj"))
+            };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);
+        }
+        #endregion
+
+        [TestCleanup]
+        public override void CleanUp()
+        {
+            proxyBridge.GetMember(systemManagerid).Value.LoggedIn = false;
+        }
     }
 }
