@@ -7,14 +7,12 @@ namespace SadnaExpress.DomainLayer.Store
     public class StoreFacade : IStoreFacade
     {
         private ConcurrentDictionary<Guid, Store> stores;
-        private ConcurrentDictionary<Guid, LinkedList<Order>> storeOrders;
         private bool _isTSInitialized;
         private static Orders _orders;
 
         public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
-            storeOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();
             _orders = Orders.Instance;
         }
         
@@ -158,7 +156,6 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void CleanUp()
         {
-           storeOrders.Clear();
            stores.Clear();
         }
 
