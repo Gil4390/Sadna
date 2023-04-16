@@ -137,18 +137,6 @@ namespace SadnaExpress
                 }
             }
         }
-        public void Error(User user, string str)
-        {
-            lock (this)
-            {
-                using (logger = new StreamWriter(pathName, true))
-                {
-                    logger.WriteLine(System.DateTime.Now.ToString() + "|Logger error|                 user " +
-                                     user.UserId + ", " + str);
-                    logger.Close();
-                }
-            }
-        }
 
         public void Error(Guid userid, string str)
         {

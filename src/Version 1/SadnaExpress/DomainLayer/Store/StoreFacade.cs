@@ -30,7 +30,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("Store name can not be empty");
             Store store = new Store(storeName);
             stores.TryAdd(store.StoreID, store);
-            Logger.Instance.Info("store " + storeName + " opened.");
+            Logger.Instance.Info(store.StoreID,nameof(StoreFacade)+": "+nameof(OpenNewStore)+"store " + storeName + " opened.");
             return store.StoreID;
         }
 
@@ -39,21 +39,21 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].Active = false;
-            Logger.Instance.Info("store " + stores[storeID].StoreName + " closed.");
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(CloseStore)+"store " + stores[storeID].StoreName + " closed.");
         }
         public void ReopenStore(Guid storeID)
         {
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].Active = true;
-            Logger.Instance.Info("store " + stores[storeID].StoreName + " reopen.");
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(ReopenStore)+"store " + stores[storeID].StoreName + " reopen.");
         }
         public void DeleteStore(Guid storeID)
         {
             IsTsInitialized();
             IsStoreExist(storeID);
             stores.TryRemove(storeID, out var store);
-            Logger.Instance.Info("store " + store.StoreName + " deleted.");
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(DeleteStore)+"store " + store.StoreName + " deleted.");
         }
         
         public List<Order> GetStorePurchases(Guid storeID)
@@ -82,6 +82,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsTsInitialized();
             IsStoreExist(storeID);
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(AddItemToStore)+" added to store "+ storeID + "- "+itemName +" form category "+itemCategory + ": "+itemPrice+"X"+quantity);
             return stores[storeID].AddItem(itemName, itemCategory, itemPrice, quantity);
         }
 
@@ -90,6 +91,7 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].RemoveItem(itemId);
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(RemoveItemFromStore)+" removed from store "+ storeID + "- "+itemId);
         }
         
         public void EditItemName(Guid storeID, Guid itemID, string name)
@@ -97,6 +99,7 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].EditItemName(itemID, name);
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(EditItemName)+" edited item from store "+ storeID + "- "+storeID + "- "+name);
         }
         
         public void EditItemCategory(Guid storeID, Guid itemID, string category)
@@ -104,18 +107,24 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].EditItemCategory(itemID, category);
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(EditItemCategory)+" edited category from store "+ storeID + "- "+storeID + "- "+category);
+
         }
         public void EditItemPrice(Guid storeID, Guid itemID, int price)
         {
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].EditItemPrice(itemID, price);
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(EditItemPrice)+" edited price from store "+ storeID + "- "+storeID + "- "+price);
+
         }
         public void EditItemQuantity(Guid storeID, Guid itemID, int quantity)
         {
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].EditItemQuantity(itemID, quantity);
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(EditItemQuantity)+" edited quantity from store "+ storeID + "- "+storeID + "- "+quantity);
+
         }
         public List<Item> GetItemsByName(string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
@@ -131,6 +140,8 @@ namespace SadnaExpress.DomainLayer.Store
                 if (item != null)
                     allItems.Add(item);
             }
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByName));
+
             return allItems;
         }
         public List<Item> GetItemsByCategory(string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
@@ -145,6 +156,7 @@ namespace SadnaExpress.DomainLayer.Store
                     continue;
                 allItems.AddRange(store.GetItemsByCategory(category, minPrice, maxPrice, ratingItem));
             }
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByCategory));
             return allItems;
         }
         public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
@@ -159,6 +171,7 @@ namespace SadnaExpress.DomainLayer.Store
                     continue;
                 allItems.AddRange(store.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category));
             }
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByKeysWord));
             return allItems;
         }
         public void CleanUp()
@@ -203,7 +216,7 @@ namespace SadnaExpress.DomainLayer.Store
             }
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
-
+            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(WriteItemReview) + userID +" write review to store "+storeID+" on "+itemID+"- "+ reviewText);
             store.WriteItemReview(userID, itemID, reviewText);
         }
         public ConcurrentDictionary<Guid, List<string>> GetItemReviews(Guid storeID, Guid itemID)

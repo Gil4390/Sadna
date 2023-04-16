@@ -50,7 +50,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 User user = new User();
                 current_Users.TryAdd(user.UserId, user);
-                Logger.Instance.Info(user, "Enter the system.");
+                Logger.Instance.Info(nameof(UserFacade)+": "+nameof(Enter)+": enter the system as guest.");
                 return user.UserId;
             }
         }
@@ -59,14 +59,13 @@ namespace SadnaExpress.DomainLayer.User
         { 
             User user;
             Member member;
-            if (current_Users.TryRemove(id, out user))
-                Logger.Instance.Info(user, "exited from the system.");
+            if (current_Users.TryRemove(id, out user)) 
+                Logger.Instance.Info(nameof(UserFacade)+": "+nameof(Exit)+": exited from the system.");
             else if (members.TryRemove(id, out member))
-                Logger.Instance.Info(member, "exited from the system.");
+                Logger.Instance.Info(id,nameof(UserFacade)+": "+nameof(Exit)+": exited from the system.");
             else
-            {
                 throw new Exception("Error with exiting system with this id- " + id);
-            }
+            
         }
 
         public void Register(Guid id, string email, string firstName, string lastName, string password)
@@ -93,7 +92,7 @@ namespace SadnaExpress.DomainLayer.User
                 string hashPassword = _ph.Hash(password);
                 Member newMember = new Member(id, email, firstName, lastName, hashPassword);
                 members.TryAdd(id, newMember);
-                Logger.Instance.Info(newMember, "registered with " + email + ".");
+                Logger.Instance.Info(newMember.UserId, nameof(UserFacade)+": "+nameof(Register)+": registered with " + email + " and password "+password+".");
             }
         }
 
@@ -111,24 +110,18 @@ namespace SadnaExpress.DomainLayer.User
                 {
                     if (!_ph.Rehash(password, member.Password))
                     {
-                        throw new Exception("wrong password for email");
+                        throw new Exception(password + " is wrong password for email");
                     }
-                    else
-                    {
-                        //correct email & password:
-                        member.LoggedIn = true;
-                        User user;
-                        current_Users.TryRemove(id, out user);
-                        Logger.Instance.Info(member, "logged in");
-
-                        return member.UserId;
-                    }
+                    //correct email & password:
+                    member.LoggedIn = true;
+                    User user;
+                    current_Users.TryRemove(id, out user);
+                    Logger.Instance.Info(member.UserId, nameof(UserFacade)+": "+nameof(Login)+" logged in as member with email- "+email);
+                    return member.UserId;
                 }
             }
-
             //email not found
-            throw new Exception("email doesn't exist");
-            
+            throw new Exception(email +" doesn't exist");
         }
 
         public Guid Logout(Guid id)
@@ -138,7 +131,8 @@ namespace SadnaExpress.DomainLayer.User
 
             Member member = members[id];
             member.LoggedIn = false;
-            Logger.Instance.Info(member, "logged out");
+            Logger.Instance.Info(member.UserId, nameof(UserFacade)+": "+nameof(Logout)+" logged out as member");
+
             return Enter(); //member logs out and a regular user enters the system instead  
         }
 
@@ -149,6 +143,7 @@ namespace SadnaExpress.DomainLayer.User
                 members[userID].AddItemToCart(storeID, itemID, itemAmount);
             else 
                 current_Users[userID].AddItemToCart(storeID, itemID, itemAmount);
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AddItemToCart)+"Item "+itemID+"X"+itemAmount +" to store "+storeID+ " by user "+userID);
         }
         public void RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID)
         {
@@ -157,6 +152,7 @@ namespace SadnaExpress.DomainLayer.User
                 members[userID].RemoveItemFromCart(storeID, itemID);
             else 
                 current_Users[userID].RemoveItemFromCart(storeID, itemID);
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveItemFromCart)+"Item "+itemID+"removed from store "+storeID+ " by user "+userID);
         }
 
         public void EditItemFromCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount)
@@ -166,27 +162,32 @@ namespace SadnaExpress.DomainLayer.User
                 members[userID].EditItemFromCart(storeID, itemID, itemAmount);
             else 
                 current_Users[userID].EditItemFromCart(storeID, itemID, itemAmount);
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(EditItemFromCart)+"Item "+itemID+"X"+itemAmount +" updated in store "+storeID+ " by user "+userID);
         }
         public ShoppingCart GetDetailsOnCart(Guid userID)
         {
             IsTsInitialized();
             if (members.ContainsKey(userID))
                 return members[userID].ShoppingCart;
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(GetDetailsOnCart)+" ask to displays his shopping cart");
             return current_Users[userID].ShoppingCart;
+            
         }
 
-        public void PurchaseCart(Guid id)
+        public void PurchaseCart(Guid userID)
         {
             IsTsInitialized();
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(PurchaseCart)+" purchased his shopping cart");
             throw new NotImplementedException();
         }
 
-        public void OpenNewStore(Guid id, Guid storeID)
+        public void OpenNewStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
-            isLoggedIn(id);
-            PromotedMember founder = members[id].openNewStore(storeID);
-            members[id] = founder;
+            isLoggedIn(userID);
+            PromotedMember founder = members[userID].openNewStore(storeID);
+            members[userID] = founder;
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
         }
         
         public void AddItemToStore(Guid id, Guid storeID)
@@ -195,6 +196,7 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(id);
             if (!members[id].hasPermissions(storeID, new List<string>{"product management permissions","owner permissions","founder permissions"}))
                 throw new Exception("The user unauthorised to add add item to store");
+
         }
 
         public void RemoveItemFromStore(Guid id, Guid storeID)
@@ -230,6 +232,7 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception($"There isn't a member with {email}");
             PromotedMember owner = members[userID].AppointStoreOwner(storeID, newOwner);
             members[newOwnerID] = owner;
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
         }
 
         public void AppointStoreManager(Guid userID, Guid storeID, string email)
@@ -249,6 +252,7 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception($"There isn't a member with {email}");
             PromotedMember manager = members[userID].AppointStoreManager(storeID, newManager);
             members[newManagerID] = manager;
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +newManagerID +" to new store manager");
         }
 
         public void AddStoreManagerPermissions(Guid userID, Guid storeID, string email, string permission)
@@ -262,6 +266,7 @@ namespace SadnaExpress.DomainLayer.User
             if (manager == null)
                 throw new Exception($"There isn't a member with {email}");
             members[userID].AddStoreManagerPermissions(storeID, manager, permission);
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AddStoreManagerPermissions)+"System added "+userID+" manager permissions in store "+storeID+": "+permission);
         }
         public void RemoveStoreManagerPermissions(Guid userID, Guid storeID, string email, string permission)
         {
@@ -275,6 +280,7 @@ namespace SadnaExpress.DomainLayer.User
             if (manager == null)
                 throw new Exception($"There isn't a member with {email}");
             members[userID].RemoveStoreManagerPermissions(storeID, manager,permission);
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveStoreManagerPermissions)+"System removed "+userID+" manager permissions in store "+storeID+": "+permission);
         }
         public List<PromotedMember> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
@@ -291,8 +297,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
             members[userID].FirstName = newFirst;
-            Logger.Instance.Info(members[userID],"First name updated");
-
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(UpdateFirst)+"First name updated");
         }
 
         public void UpdateLast(Guid userID, string newLast)
@@ -302,7 +307,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
             members[userID].LastName = newLast;
-            Logger.Instance.Info(members[userID],"Last name updated");
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(UpdateLast)+"Last name updated");
         }
 
         public void UpdatePassword(Guid userID, string newPassword)
@@ -312,7 +317,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
             members[userID].Password = _ph.Hash(newPassword);
-            Logger.Instance.Info(members[userID],"Password updated");
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(UpdatePassword)+"Password updated");
         }
 
         public void CloseStore(Guid userID, Guid storeID)
@@ -320,6 +325,7 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userID);
             members[userID].CloseStore(storeID);
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(CloseStore)+" Closed store "+storeID);
         }
         public void GetStorePurchases(Guid userId, Guid storeId)
         {
@@ -374,7 +380,7 @@ namespace SadnaExpress.DomainLayer.User
                 _isTSInitialized = true;
             else
                 throw new Exception("Trading system cannot be initialized");
-
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(InitializeTradingSystem)+"System Initialized");
             return servicesConnected; 
         }
 
@@ -408,6 +414,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(userID);
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(ShowShoppingCart)+" requested to display his shopping cart");
             if (current_Users.ContainsKey(userID))
                 return current_Users[userID].ShoppingCart;
             return members[userID].ShoppingCart;
@@ -420,7 +427,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
             members[userID].SetSecurityQA(q,_ph.Hash(a));
-            Logger.Instance.Info(members[userID],"Security Q&A set");
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Security Q&A set");
         }
 
         public ShoppingCart GetShoppingCartById(Guid userID)
@@ -462,6 +469,7 @@ namespace SadnaExpress.DomainLayer.User
 
                 if (isCompletedSuccessfully)
                 {
+                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place payment completed with amount of "+amount+" and "+transactionDetails);
                     return true;
                 }
                 else
@@ -491,6 +499,7 @@ namespace SadnaExpress.DomainLayer.User
 
                 if (isCompletedSuccessfully)
                 {
+                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place supply completed: "+ userDetails +" , "+orderDetails);
                     return true;
                 }
                 else
