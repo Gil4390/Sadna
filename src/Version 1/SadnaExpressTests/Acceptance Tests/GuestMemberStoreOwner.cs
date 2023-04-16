@@ -4,30 +4,30 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 
-namespace SadnaExpressTests.Integration_Tests
+namespace SadnaExpressTests.Acceptance_Tests
 {
     [TestClass]
-    public class GuestMemberStoreOwner
+    public class GuestMemberStoreOwner : TradingSystemAT
     {
-        private Server _server;
-        
-        //[TestInitialize]
-        //public void SetUp()
-        //{
-        //    _server = new Server();
-        //    _server.activateAdmin();
-        //}
-        //public void Login(int idx , string email , string pass)
-        //{
-        //    Thread client1 = new Thread(() =>
-        //    {
-        //        _server.service.Enter();
-        //        _server.service.Register(idx, email, " tal", " galmor", pass);
-        //        _server.service.Login(idx, email, pass);
-        //    });
-        //    client1.Start();
-        //    client1.Join();
-        //}
+        [TestInitialize]
+        public override void SetUp()
+        {
+            base.SetUp();
+        }
+
+        [TestMethod]
+        public void Test()
+        {
+
+        }
+
+        [TestCleanup]
+        public override void CleanUp()
+        {
+            base.CleanUp();
+        }
+
+      
         //public Guid Open_new_store(int idx , string email , string pass , string store_name)
         //{
         //    Login(idx, email, pass);
@@ -39,7 +39,7 @@ namespace SadnaExpressTests.Integration_Tests
         //    }
         //    return new Guid();
         //}
-        
+
         //[TestMethod]
         //public void Open_new_store()
         //{
@@ -72,6 +72,6 @@ namespace SadnaExpressTests.Integration_Tests
         //    _server.service.CloseStore(count, g1);
         //    Assert.IsTrue(_server.service.GetStores()[g1].Active);
         //}
-        
+
     }
 }

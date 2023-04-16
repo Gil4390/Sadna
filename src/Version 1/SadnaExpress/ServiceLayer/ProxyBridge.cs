@@ -75,9 +75,9 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetItemsByName(id, itemName);
         }
-        public ResponseT<List<Item>> GetItemsByCategory(Guid id, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
+        public ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1)
         {
-            return _realBridge.GetItemsByCategory(id, category);
+            return _realBridge.GetItemsByCategory(userID, category, minPrice, maxPrice, ratingItem, ratingStore);
         }
 
         public ResponseT<List<Item>> GetItemsByKeysWord(Guid id, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
