@@ -11,9 +11,9 @@ namespace SadnaExpressTests.Unit_Tests
         private static Orders _orders;
         private Guid userID;
         private Guid storeID;
-        private Guid itemID1;
-        private Guid itemID2;
-        private Order order;
+        private ItemForOrder itemO1;
+        private ItemForOrder itemO2;
+        private new List<ItemForOrder> orderList;
             
         [TestInitialize]
         public void SetUp()
@@ -21,16 +21,18 @@ namespace SadnaExpressTests.Unit_Tests
             _orders = Orders.Instance;
             userID = Guid.NewGuid();
             storeID = Guid.NewGuid();
-            itemID1 = Guid.NewGuid();
-            itemID2 = Guid.NewGuid();
-            order = new Order(userID, storeID, new List<Guid> { itemID1, itemID2 }, 70);
+            Item item1 = new Item("pink doll", "toy", 100);
+            Item item2 = new Item("iPad", "electronic", 4000);
+            itemO1 = new ItemForOrder(item1, storeID);
+            itemO2 = new ItemForOrder(item2, storeID);
+            orderList = new List<ItemForOrder> {itemO1, itemO2};
         }
 
         [TestMethod()]
         public void AddOrderSuccess()
         {
             //act
-            _orders.AddOrder(order);
+            _orders.AddOrder(userID, orderList);
             //assert
             Assert.IsNotNull(_orders.GetOrdersByStoreId(storeID));
             Assert.IsNotNull(_orders.GetOrdersByUserId(userID));
@@ -39,10 +41,12 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod()]
         public void AddTwoOrdersToTheSameUserSuccess()
         {
-            Order order2 = new Order(userID, new Guid(), new List<Guid> { itemID1, itemID2 }, 70);
+            Item item = new Item("iPad", "electronic", 4000);
+            ItemForOrder itemO = new ItemForOrder(item, Guid.NewGuid());
+            List<ItemForOrder> orderList2 = new List<ItemForOrder>{itemO};
             //act
-            _orders.AddOrder(order);
-            _orders.AddOrder(order2);
+            _orders.AddOrder(userID, orderList);
+            _orders.AddOrder(userID, orderList2);
             //assert
             Assert.AreEqual(2,_orders.GetOrdersByUserId(userID).Count);
             Assert.AreEqual(1,_orders.GetOrdersByStoreId(storeID).Count);
@@ -51,10 +55,10 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod()]
         public void AddTwoOrdersToTheSameStoreSuccess()
         {
-            Order order2 = new Order(new Guid(), storeID, new List<Guid> { itemID1, itemID2 }, 70);
+            List<ItemForOrder> orderList2 = new List<ItemForOrder>{itemO2};
             //act
-            _orders.AddOrder(order);
-            _orders.AddOrder(order2);
+            _orders.AddOrder(userID, orderList);
+            _orders.AddOrder(new Guid(), orderList2);
             //assert
             Assert.AreEqual(1,_orders.GetOrdersByUserId(userID).Count);
             Assert.AreEqual(2,_orders.GetOrdersByStoreId(storeID).Count);

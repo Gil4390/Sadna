@@ -66,16 +66,44 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             return _orders.GetStoreOrders();
         }
-        public void PurchaseItems(string storeName, List<string> itemsName)
+        public double PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemForOrders)
         {
             IsTsInitialized();
-            throw new System.NotImplementedException();
+            double sum = 0; 
+            Dictionary<Guid, Dictionary<Guid, int>> storeUpdated = new Dictionary<Guid, Dictionary<Guid, int>>(); //store that the inventory already update
+            try
+            {
+                foreach (Guid storeID in items.Keys)
+                {
+                    IsStoreExist(storeID); // not possible but still...
+                    if (!stores[storeID].Active)
+                        throw new Exception($"The store: {storeID} not active");
+                     sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders);
+                    storeUpdated.Add(storeID, items[storeID]);
+                }
+                return sum;
+            }
+            catch (Exception e)
+            {
+                AddItemToStores(storeUpdated);
+                throw;
+            }
         }
 
         public List<Store> GetAllStoreInfo()
         {
             IsTsInitialized();
             return stores.Values.ToList();
+        }
+        public void AddItemToStores(Dictionary<Guid, Dictionary<Guid, int>> items)
+        {
+            foreach (Guid storeID in items.Keys)
+            {
+                foreach (Guid itemID in items[storeID].Keys)
+                {
+                    stores[storeID].EditItemQuantity(itemID, items[storeID][itemID]);
+                }
+            }
         }
 
         public Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
@@ -196,10 +224,9 @@ namespace SadnaExpress.DomainLayer.Store
             Store store = stores[storeID];
             
             bool foundUserOrder = false;
-            foreach (Order order in _orders.GetOrdersByUserId(userID))
+            foreach (var item in from order in _orders.GetOrdersByUserId(userID) from item in order.ListItems where item.ItemID == itemID select item)
             {
-                if (order.UserID.Equals(userID))
-                    foundUserOrder = true;
+                foundUserOrder = true;
             }
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");

@@ -1,20 +1,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.Services;
 
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
-using System.Collections;
-using System.Diagnostics;
-using System.Net;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -22,9 +13,6 @@ namespace SadnaExpress.ServiceLayer
     {
         private IStoreManager storeManager;
         private IUserManager userManager;
-        // lock object for saving items 
-        private static readonly object stockChange = new object();
-        // fields for the saved items
 
         private bool testMode=false;
         public bool TestMode
@@ -175,9 +163,9 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetDetailsOnCart(userID);
         }
-        public Response PurchaseCart(Guid userID, string paymentDetails)
+        public Response PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
-            throw new NotImplementedException();
+            return storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
         }
         public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string review)
         {

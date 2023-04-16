@@ -38,6 +38,27 @@ namespace SadnaExpress.DomainLayer.Store
                 return instance;
             }
         }
+        
+         
+        public void AddOrder(Guid userID, List<ItemForOrder> itemForOrders)
+        {
+            Order userOrder = new Order(itemForOrders);
+            AddOrderToUser(userID, userOrder);
+            Dictionary<Guid, List<ItemForOrder>> ordersForStores = new Dictionary<Guid, List<ItemForOrder>>();
+            foreach (ItemForOrder item in itemForOrders)
+            {
+                if (!ordersForStores.ContainsKey(item.StoreID))
+                    ordersForStores.Add(item.StoreID, new List<ItemForOrder>());
+                ordersForStores[item.StoreID].Add(item);
+            }
+
+            foreach (Guid storeID in ordersForStores.Keys)
+            {
+                Order storeOrder = new Order(ordersForStores[storeID]);
+                AddOrderToStore(storeID, storeOrder);
+            }
+        }
+        
         public void AddOrderToUser(Guid userID, Order order)
         {
             List<Order> orders;
@@ -46,12 +67,6 @@ namespace SadnaExpress.DomainLayer.Store
                 userOrders.TryAdd(userID, orders);
             }
             orders.Add(order);
-        }
-
-        public void AddOrder(Order order)
-        {
-            AddOrderToStore(order.StoreID, order);
-            AddOrderToUser(order.UserID, order);
         }
 
         public void AddOrderToStore(Guid storeID, Order order)
