@@ -9,7 +9,10 @@ namespace SadnaExpress
        private static StreamWriter logger;
        private static string pathName;
 
-       private static readonly object lockThreads = new object();  // only add this if this class needs to be thread safe
+        private static string normalPathName;
+        private static string testsPathName;
+
+        private static readonly object lockThreads = new object();  // only add this if this class needs to be thread safe
 
         private static Logger instance = null;
 
@@ -45,12 +48,46 @@ namespace SadnaExpress
                     }
                     logger.Close();
                 }
+                // saving normal path
+                normalPathName = pathName;
+
+                // saving test path
+                testsPathName = directory_path + "\\" + "TestLoggerOutput" + ".txt";
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
         }
+
+
+        public void SwitchOutputFile()
+        {
+            // switch from test mode to normal 
+            lock (this)
+            {
+                // first check if test file is created
+                // here opens tests output File if it is not created already
+                if (File.Exists(testsPathName).Equals(false))
+                {
+                    using (logger = new StreamWriter(testsPathName, true))
+                    {
+                        if (File.Exists(testsPathName))
+                        {
+                            logger.WriteLine("!************** Program Tests Started At " + System.DateTime.Now.ToString() + " **************!");
+                        }
+                        logger.Close();
+                    }
+                }
+
+                if (pathName.Equals(normalPathName))
+                    pathName = testsPathName;
+                else
+                    pathName = normalPathName;
+            }
+        }
+
         public void Info(string str)
         {
             lock (this)

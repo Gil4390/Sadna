@@ -27,7 +27,19 @@ namespace SadnaExpress.ServiceLayer
         // fields for the saved items
 
         private bool testMode=false;
-        public bool TestMode { get => testMode; set => testMode = value; }
+        public bool TestMode
+        {
+            get
+            {
+                return testMode;
+            }
+            set
+            {
+                if (testMode != value)
+                    Logger.Instance.SwitchOutputFile();
+                testMode = value;
+            }
+        }
 
         // lock object for the instance
         private static readonly object lockInstance = new object();
