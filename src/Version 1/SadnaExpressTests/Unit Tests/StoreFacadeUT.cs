@@ -112,9 +112,9 @@ namespace SadnaExpressTests.Unit_Tests
             storeFacade.AddItemToStore(store2, "Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", "electronics", 5000.0, 2);
             storeFacade.AddItemToStore(store2, "Apple iPhone 11 Unlocked, 64GB/128GB/256GB, All Colours", "electronics", 5000.0, 2);
             Assert.AreEqual(3, storeFacade.GetItemsByKeysWord("Apple").Count);
-            Assert.AreEqual(2, storeFacade.GetItemsByKeysWord("iPad").Count);
-            Assert.AreEqual(1, storeFacade.GetItemsByKeysWord("Gray").Count);
-            Assert.AreEqual(2, storeFacade.GetItemsByKeysWord("Apple", category:"electronics").Count);
+            Assert.AreEqual(2, storeFacade.GetItemsByKeysWord("ipad").Count);
+            Assert.AreEqual(1, storeFacade.GetItemsByKeysWord("GRay").Count);
+            Assert.AreEqual(2, storeFacade.GetItemsByKeysWord("apple", category:"electronics").Count);
         }
 
 
