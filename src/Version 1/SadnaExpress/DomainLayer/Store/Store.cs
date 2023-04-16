@@ -10,7 +10,7 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private string storeName;
         public string StoreName {get => storeName; set => storeName = value;}
-        private Inventory itemsInventory;
+        public Inventory itemsInventory;
         private Guid storeID;
         public Guid StoreID {get=>storeID;}
         //private Policy policy; // not for this version

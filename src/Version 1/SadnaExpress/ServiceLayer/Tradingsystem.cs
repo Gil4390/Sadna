@@ -107,10 +107,19 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<Store>> GetAllStoreInfo(Guid userID)
+        public ResponseT<List<Store>> GetAllStoreInfo()
         {
-            //get list of business stores and convert them to service stores
-            throw new NotImplementedException();
+            try
+            {
+                Logger.Instance.Info("GetAllStoreInfo");
+                return storeManager.GetAllStoreInfo();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<List<Store>>(ex.Message);
+            }
+            
         }
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {

@@ -22,6 +22,9 @@ namespace SadnaExpressTests.Unit_Tests
         private Guid itemID2;
         private Order order;
 
+        int numOfOpenStores;
+        int numOfTotalItemsInAllStores;
+
         #region SetUp
         [TestInitialize]
         public void SetUp()
@@ -30,7 +33,7 @@ namespace SadnaExpressTests.Unit_Tests
             storeFacade.SetIsSystemInitialize(true);
             storeID = Guid.NewGuid();
 
-
+            //Write review setup
             _orders = Orders.Instance;
             userID1 = Guid.NewGuid();
             userID2 = Guid.NewGuid();
@@ -39,6 +42,9 @@ namespace SadnaExpressTests.Unit_Tests
             itemID2 = Guid.NewGuid();
             order = new Order(userID1, storeID1, new List<Guid> { itemID1 }, 70);
             _orders.AddOrder(order);
+
+            numOfOpenStores = 1;
+            numOfTotalItemsInAllStores = 1;
 
         }
         #endregion
@@ -129,6 +135,32 @@ namespace SadnaExpressTests.Unit_Tests
         {
             Assert.ThrowsException<Exception>(() => storeFacade.WriteItemReview(userID1, storeID1, itemID2, "very bad bamba"));
         }
+
+        [TestMethod]
+        public void GetAllStoreInfoGood()
+        {
+            Assert.AreEqual(numOfOpenStores, storeFacade.GetAllStoreInfo().Count);
+            Guid store1 = storeFacade.OpenNewStore("hello");
+            numOfOpenStores++;
+            Assert.AreEqual(numOfOpenStores, storeFacade.GetAllStoreInfo().Count);
+
+
+
+            Guid itemID3 = storeFacade.AddItemToStore(storeID1, "Bamba with noughat ", "food", 10.0, 1);
+            Guid itemID4 = storeFacade.AddItemToStore(store1, "Regular Bamba", "food", 5.0, 1);
+            numOfTotalItemsInAllStores += 2;
+
+
+            int itemCount = 0;
+            foreach (var store in storeFacade.GetAllStoreInfo())
+            {
+                itemCount += store.itemsInventory.items_quantity.Count;
+            }
+            Assert.AreEqual(numOfTotalItemsInAllStores, itemCount);
+        }
+
+
+
 
         #endregion 
 

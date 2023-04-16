@@ -22,7 +22,7 @@ namespace SadnaExpress.DomainLayer.Store
         void EditItemCategory(Guid storeID, Guid itemID, string category);
         void EditItemPrice(Guid storeID, Guid itemID, int price);
         void EditItemQuantity(Guid storeID, Guid itemID, int price);
-        void GetAllStoreInfo(string storeName);
+        List<Store> GetAllStoreInfo();
         List<Item> GetItemsByName(string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
         List<Item> GetItemsByCategory(string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1);
         List<Item> GetItemsByKeysWord(string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);

@@ -7,7 +7,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
 {
     public interface IStoreManager
     {
-        ResponseT<List<Store>> GetAllStoreInfo(Guid userID); //2.1
+        ResponseT<List<Store>> GetAllStoreInfo(); //2.1
         // 2.2
         ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore);
         ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore);

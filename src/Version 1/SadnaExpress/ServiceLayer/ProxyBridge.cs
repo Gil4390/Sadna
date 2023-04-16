@@ -66,9 +66,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.OpenNewStore(id, storeName);
         }
 
-        public ResponseT<List<Store>> GetAllStoreInfo(Guid id)
+        public ResponseT<List<Store>> GetAllStoreInfo()
         {
-            return _realBridge.GetAllStoreInfo(id);
+            return _realBridge.GetAllStoreInfo();
         }
 
         public ResponseT<List<Item>> GetItemsByName(Guid id, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
