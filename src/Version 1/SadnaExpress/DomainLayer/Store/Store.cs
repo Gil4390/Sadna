@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using SadnaExpress.DomainLayer.User;
@@ -67,6 +68,10 @@ namespace SadnaExpress.DomainLayer.Store
         {
             itemsInventory.AddReviewToItem(userID, reviewText, itemID);
         }
+        internal ConcurrentDictionary<Guid, List<string>> getItemsReviews(Guid itemID)
+        {
+            return itemsInventory.getItemReviews(itemID);
+        }
 
         public void EditItemQuantity(Guid itemID, int quantity)
         {
@@ -77,5 +82,6 @@ namespace SadnaExpress.DomainLayer.Store
         {
             itemsInventory.AddItemToCart(itemID, quantity);
         }
+
     }
 }

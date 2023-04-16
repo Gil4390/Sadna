@@ -133,6 +133,10 @@ namespace SadnaExpress.DomainLayer.Store
             }
             getItemById(itemID).AddReview(userID, reviewText);
         }
+        internal ConcurrentDictionary<Guid, List<string>> getItemReviews(Guid itemID)
+        {
+            return getItemById(itemID).reviews;
+        }
 
         public void AddItemToCart(Guid itemID, int quantity)
         {

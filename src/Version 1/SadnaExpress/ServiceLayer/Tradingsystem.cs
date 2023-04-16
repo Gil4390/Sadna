@@ -166,6 +166,20 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public ResponseT<ConcurrentDictionary<Guid, List<string>>> GetItemReviews(Guid storeID, Guid itemID)
+        {
+            try
+            {
+                Logger.Instance.Info("getItemReviews on itemID: " + itemID);
+                return storeManager.GetItemReviews(storeID, itemID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error("error fetching reviews of item");
+                return new ResponseT<ConcurrentDictionary<Guid, List<string>>>(ex.Message);
+            }
+        }
+
         public Response RateItem(Guid userID, int itemID, int score)
         {
             throw new NotImplementedException();

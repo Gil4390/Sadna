@@ -202,6 +202,12 @@ namespace SadnaExpress.DomainLayer.Store
 
             store.WriteItemReview(userID, itemID, reviewText);
         }
+        public ConcurrentDictionary<Guid, List<string>> GetItemReviews(Guid storeID, Guid itemID)
+        {
+            IsStoreExist(storeID);
+            Store store = stores[storeID];
+            return store.getItemsReviews(itemID);
+        }
 
         public void AddItemToCart(Guid storeID, Guid itemID, int quantity)
         {
