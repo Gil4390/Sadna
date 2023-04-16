@@ -27,7 +27,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetDetailsOnCart)+": "+ex.Message);
                 return new ResponseT<ShoppingCart>(ex.Message);
             }
         }
@@ -43,7 +43,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(AddItemToCart)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -58,7 +58,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(RemoveItemFromCart)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -73,7 +73,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(EditItemFromCart)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -116,11 +116,11 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(OpenNewStore)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        
+
         public Response CloseStore(Guid userID ,Guid storeID)
         {
             try
@@ -131,7 +131,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(CloseStore)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -144,7 +144,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(DeleteStore)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
@@ -157,9 +157,26 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(ReopenStore)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
+        }
+        public Response GetPurchasesInfo(Guid userID, Guid storeID)
+        {
+            try
+            {
+                storeFacade.GetStorePurchases(storeID);
+                return new ResponseT<Guid>(storeID);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetPurchasesInfo)+": "+ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
+        }
+        public Response PurchaseItems(int id, string paymentDetails)
+        {
+            throw new System.NotImplementedException();
         }
         public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
@@ -170,7 +187,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(AddItemToStore)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
@@ -184,14 +201,22 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(RemoveItemFromStore)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
         public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
         {
-            storeFacade.WriteItemReview(userID, storeID, itemID, reviewText);
-            return new Response();
+            try
+            {
+                storeFacade.WriteItemReview(userID, storeID, itemID, reviewText);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(WriteItemReview)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
         }
         public ResponseT<ConcurrentDictionary<Guid, List<string>>> GetItemReviews(Guid storeID, Guid itemID)
         {
@@ -208,7 +233,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(EditItemPrice)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -222,7 +247,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(EditItemCategory)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -236,7 +261,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(EditItemName)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -250,7 +275,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(EditItemQuantity)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -260,7 +285,7 @@ namespace SadnaExpress.ServiceLayer
             return new ResponseT<List<Store>>(stores);
         }
         
-        public ResponseT<List<Item>> GetItemsByName(Guid id, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
+        public ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
             try
             {
@@ -269,12 +294,12 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetItemsByName)+": "+ex.Message);
                 return new ResponseT<List<Item>>(ex.Message);
             }
         }
 
-        public ResponseT<List<Item>> GetItemsByCategory(Guid id, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
+        public ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
         {
             try
             {
@@ -283,12 +308,12 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetItemsByCategory)+": "+ex.Message);
                 return new ResponseT<List<Item>>(ex.Message);
             }
         }
         
-        public ResponseT<List<Item>> GetItemsByKeysWord(Guid id, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
+        public ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
             try
             {
@@ -297,7 +322,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetItemsByKeysWord)+": "+ex.Message);
                 return new ResponseT<List<Item>>(ex.Message);
             }
         }
@@ -311,7 +336,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetStorePurchases)+": "+ex.Message);
                 return new ResponseT<List<Order>>(ex.Message);
             }
         }
@@ -326,7 +351,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch(Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetAllStorePurchases)+": "+ex.Message);
                 return new ResponseT<Dictionary<Guid, List<Order>>>(ex.Message);
 
             }

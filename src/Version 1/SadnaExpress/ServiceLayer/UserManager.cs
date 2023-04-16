@@ -50,7 +50,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(Exit)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -64,7 +64,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(Register)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -79,7 +79,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(Login)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
@@ -93,7 +93,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(Logout)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
@@ -107,7 +107,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(AppointStoreOwner)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -121,7 +121,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(AppointStoreManager)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -135,7 +135,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(AddStoreManagerPermissions)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -149,7 +149,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(RemoveStoreManagerPermissions)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }
@@ -163,7 +163,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(GetEmployeeInfoInStore)+": "+ex.Message);
                 return new ResponseT<List<PromotedMember>>(ex.Message);
             }
         }
@@ -185,17 +185,33 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(ex.Message + " in " + nameof(InitializeTradingSystem));
                 return new ResponseT<bool>(ex.Message);
             }
         }
         public ConcurrentDictionary<Guid , User> GetCurrent_Users()
         {
-            return userFacade.GetCurrent_Users();
+            try
+            {
+                return userFacade.GetCurrent_Users();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message + " in " + nameof(GetCurrent_Users));
+                return new ConcurrentDictionary<Guid, User>();
+            }
         }
         public ConcurrentDictionary<Guid , Member> GetMembers()
         {
-            return userFacade.GetMembers();
+            try
+            {
+                return userFacade.GetMembers();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message + " in " + nameof(GetMembers));
+                return new ConcurrentDictionary<Guid, Member>();
+            }
         }
         public ResponseT<ShoppingCart> ShowShoppingCart(Guid userID)
         {
@@ -206,7 +222,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(ShowShoppingCart)+": "+ex.Message);
                 return new ResponseT<ShoppingCart>(ex.Message);
             }
         }
@@ -220,7 +236,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(SetSecurityQA)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
@@ -235,12 +251,12 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(GetShoppingCartById)+": "+ex.Message);
                 return new ResponseT<ShoppingCart>(ex.Message);
             }
         }
 
-      public bool isLoggedIn(Guid userID)
+        public bool isLoggedIn(Guid userID)
         {
             return userFacade.isLoggedIn(userID);
         }
@@ -255,7 +271,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(UpdateFirst)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
@@ -269,7 +285,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(UpdateLast)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
@@ -284,24 +300,45 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(UpdatePassword)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
 
         public void SetPaymentService(IPaymentService paymentService)
         {
-            userFacade.SetPaymentService(paymentService);
+            try
+            {
+                userFacade.SetPaymentService(paymentService);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(UserManager)+": "+nameof(SetPaymentService)+": "+ex.Message);
+            }
         }
 
         public void SetSupplierService(ISupplierService supplierService)
         {
-            userFacade.SetSupplierService(supplierService);
+            try
+            {
+                userFacade.SetSupplierService(supplierService);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(UserManager)+": "+nameof(SetSupplierService)+": "+ex.Message);
+            }
         }
 
         public void SetIsSystemInitialize(bool isInitialize)
         {
-            userFacade.SetIsSystemInitialize(isInitialize);
+            try
+            {
+                userFacade.SetIsSystemInitialize(isInitialize);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(UserManager)+": "+nameof(SetIsSystemInitialize)+": "+ex.Message);
+            }
         }
 
         public ResponseT<User> GetUser(Guid userID)
@@ -313,7 +350,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(UserManager)+": "+nameof(GetUser)+": "+ex.Message);
                 return new ResponseT<User>(ex.Message);
             }
         }
@@ -327,7 +364,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(UserManager)+": "+nameof(GetMember)+": "+ex.Message);
                 return new ResponseT<Member>(ex.Message);
             }
         }
@@ -341,7 +378,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Instance.Error(userID , nameof(UserManager)+": "+nameof(GetUserShoppingCart)+": "+ex.Message);
                 return new ResponseT<ShoppingCart>(ex.Message);
             }
         }
