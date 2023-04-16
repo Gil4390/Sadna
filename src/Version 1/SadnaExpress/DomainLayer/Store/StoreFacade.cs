@@ -191,10 +191,8 @@ namespace SadnaExpress.DomainLayer.Store
             IsStoreExist(storeID);
             Store store = stores[storeID];
             
-            if (!storeOrders.ContainsKey(storeID))
-                throw new Exception("store with id:" + storeID + "doesn't exist");
             bool foundUserOrder = false;
-            foreach (Order order in storeOrders[storeID])
+            foreach (Order order in _orders.GetOrdersByUserId(userID))
             {
                 if (order.UserID.Equals(userID))
                     foundUserOrder = true;
