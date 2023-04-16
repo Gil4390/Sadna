@@ -77,16 +77,39 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public Response PurchaseCart(Guid id, string paymentDetails)
+        public Response PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
-            throw new NotImplementedException();
+            bool problemAfterPurchase = false;
+            Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
+            try
+            {
+                //get the user cart
+                ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
+                // cast from shopping cart to dictionary before sending to store component.
+                foreach (ShoppingBasket basket in shoppingCart.Baskets) 
+                    cart.Add(basket.StoreID, basket.ItemsInBasket);
+                // try to purchase the items. (the function update the quantity in the inventory in this function)
+                Dictionary<Guid, double> prices = storeFacade.PurchaseCart(cart);
+                problemAfterPurchase = true;
+                userFacade.PlacePayment(prices[Guid.Empty], paymentDetails);
+                userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail);
+                Orders.Instance.AddOrders(userID, cart, prices);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                if (problemAfterPurchase) // because we update the inventory we need to return them to inventory.
+                    storeFacade.AddItemToStores(cart);
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
         }
-        public ResponseT<Guid> OpenNewStore(Guid id, string storeName)
+        public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
             try
             {
                 Guid storeID = storeFacade.OpenNewStore(storeName);
-                userFacade.OpenNewStore(id,storeID);
+                userFacade.OpenNewStore(userID,storeID);
                 return new ResponseT<Guid>(storeID);
             }
             catch (Exception ex)
@@ -95,12 +118,12 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-
-        public Response CloseStore(Guid id ,Guid storeID)
+        
+        public Response CloseStore(Guid userID ,Guid storeID)
         {
             try
             {
-                userFacade.CloseStore(id, storeID);
+                userFacade.CloseStore(userID, storeID);
                 storeFacade.CloseStore(storeID);
                 return new Response();
             }
@@ -110,7 +133,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public Response DeleteStore(Guid id ,Guid storeID)
+        public Response DeleteStore(Guid userID ,Guid storeID)
         {
             try
             {
@@ -123,7 +146,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public Response ReopenStore(Guid id ,Guid storeID)
+        public Response ReopenStore(Guid userID ,Guid storeID)
         {
             try
             {
@@ -135,23 +158,6 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
-        }
-        public Response GetPurchasesInfo(Guid id, Guid storeID)
-        {
-            try
-            {
-                storeFacade.GetStorePurchases(storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-        public Response PurchaseItems(int id, string paymentDetails)
-        {
-            throw new System.NotImplementedException();
         }
         public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {

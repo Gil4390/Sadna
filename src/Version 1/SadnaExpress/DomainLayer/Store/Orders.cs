@@ -38,6 +38,7 @@ namespace SadnaExpress.DomainLayer.Store
                 return instance;
             }
         }
+        
         public void AddOrderToUser(Guid userID, Order order)
         {
             List<Order> orders;
@@ -48,6 +49,16 @@ namespace SadnaExpress.DomainLayer.Store
             orders.Add(order);
         }
 
+        public void AddOrders(Guid userID, Dictionary<Guid, Dictionary<Guid, int>> items,
+            Dictionary<Guid, double> prices)
+        {
+            foreach (Guid StoreID in items.Keys)
+            {
+                Order newOrder = new Order(userID, StoreID, items[StoreID], prices[StoreID]);
+                AddOrder(newOrder);
+            }
+        }
+        
         public void AddOrder(Order order)
         {
             AddOrderToStore(order.StoreID, order);

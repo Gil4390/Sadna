@@ -42,7 +42,6 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return itemsInventory.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category);
         }
-
         public Guid AddItem(string name, string category, double price, int quantity)
         {
             return itemsInventory.AddItem(name, category, price, quantity);
@@ -83,5 +82,9 @@ namespace SadnaExpress.DomainLayer.Store
             itemsInventory.AddItemToCart(itemID, quantity);
         }
 
+        public double PurchaseCart(Dictionary<Guid, int> items)
+        {
+            return itemsInventory.PurchaseCart(items);
+        }
     }
 }

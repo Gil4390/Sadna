@@ -23,7 +23,7 @@ namespace SadnaExpressTests.Unit_Tests
             storeID = Guid.NewGuid();
             itemID1 = Guid.NewGuid();
             itemID2 = Guid.NewGuid();
-            order = new Order(userID, storeID, new List<Guid> { itemID1, itemID2 }, 70);
+            order = new Order(userID, storeID, new Dictionary<Guid, int> { {itemID1,3}, {itemID2,1} }, 70);
         }
 
         [TestMethod()]
@@ -39,7 +39,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod()]
         public void AddTwoOrdersToTheSameUserSuccess()
         {
-            Order order2 = new Order(userID, new Guid(), new List<Guid> { itemID1, itemID2 }, 70);
+            Order order2 = new Order(userID, new Guid(), new Dictionary<Guid, int> { {itemID1,2}, {itemID2, 3} }, 70);
             //act
             _orders.AddOrder(order);
             _orders.AddOrder(order2);
@@ -51,7 +51,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod()]
         public void AddTwoOrdersToTheSameStoreSuccess()
         {
-            Order order2 = new Order(new Guid(), storeID, new List<Guid> { itemID1, itemID2 }, 70);
+            Order order2 = new Order(new Guid(), storeID, new Dictionary<Guid, int>{ {itemID1,1}, {itemID2,2} }, 70);
             //act
             _orders.AddOrder(order);
             _orders.AddOrder(order2);

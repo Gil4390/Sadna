@@ -66,16 +66,49 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             return _orders.GetStoreOrders();
         }
-        public void PurchaseItems(string storeName, List<string> itemsName)
+        public Dictionary<Guid, double> PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items)
         {
             IsTsInitialized();
-            throw new System.NotImplementedException();
+            Dictionary<Guid, Dictionary<Guid, int>> storeUpdated = new Dictionary<Guid, Dictionary<Guid, int>>(); //store that the inventory already update
+            try
+            {
+                Dictionary<Guid, double> prices = new Dictionary<Guid, double>();
+                double sum = 0;
+                foreach (Guid storeID in items.Keys)
+                {
+                    double sumOfStore = 0;
+                    IsStoreExist(storeID); // not possible but still...
+                    if (!stores[storeID].Active)
+                        throw new Exception($"The store: {storeID} not active");
+                    sumOfStore = stores[storeID].PurchaseCart(items[storeID]);
+                    prices.Add(storeID, sumOfStore);
+                    sum += sumOfStore;
+                    storeUpdated.Add(storeID, items[storeID]);
+                }
+                prices.Add(Guid.Empty, sum);
+                return prices;
+            }
+            catch (Exception e)
+            {
+                AddItemToStores(storeUpdated);
+                throw;
+            }
         }
 
         public List<Store> GetAllStoreInfo()
         {
             IsTsInitialized();
             return stores.Values.ToList();
+        }
+        public void AddItemToStores(Dictionary<Guid, Dictionary<Guid, int>> items)
+        {
+            foreach (Guid storeID in items.Keys)
+            {
+                foreach (Guid itemID in items[storeID].Keys)
+                {
+                    stores[storeID].EditItemQuantity(itemID, items[storeID][itemID]);
+                }
+            }
         }
 
         public Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)

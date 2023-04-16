@@ -10,12 +10,12 @@ namespace SadnaExpress.DomainLayer.Store
         public Guid UserID {get=>userID;}
         private Guid storeID;
         public Guid StoreID {get=>storeID;}
-        private List<Guid> listItems;
-        public List<Guid> ListItem { get=>listItems; }
+        private Dictionary<Guid, int> listItems;
+        public Dictionary<Guid, int> ListItem { get=>listItems; }
         private double price;
         public double Price { get=>price; }
 
-        public Order(Guid userID, Guid storeId,List<Guid> listItems,double price)
+        public Order(Guid userID, Guid storeId,Dictionary<Guid, int> listItems,double price)
         {
             this.userID = userID;
             storeID = storeId;

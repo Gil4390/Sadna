@@ -72,16 +72,21 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void RemoveItem(Guid itemID)
         {
-            int item;
-            items_quantity.TryRemove(getItemById(itemID), out item);
+            Item item = getItemById(itemID);
+            int outItem;
+            lock (item)
+                items_quantity.TryRemove(getItemById(itemID), out outItem);
         }
         
         public void EditItemQuantity(Guid itemID, int quantity)
         {
             Item item = getItemById(itemID);
-            if (items_quantity[item] + quantity < 0)
-                throw new Exception("Edit item quantity failed, item quantity cant be negative");
-            items_quantity[item] += quantity;
+            lock (item)
+            {
+                if (items_quantity[item] + quantity < 0)
+                    throw new Exception("Edit item quantity failed, item quantity cant be negative");
+                items_quantity[item] += quantity;
+            }
         }
         public void EditItemName(Guid itemID, string name)
         {
@@ -140,8 +145,31 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void AddItemToCart(Guid itemID, int quantity)
         {
-            if (items_quantity[getItemById(itemID)] < quantity)
+            if (items_quantity[getItemById(itemID)] <= quantity)
                 throw new Exception("You can't add to the cart, the quantity in the inventory not enough");
+        }
+
+        public double PurchaseCart(Dictionary<Guid, int> items)
+        {
+            Dictionary<Item, int> itemsUpdated = new Dictionary<Item, int>(); //items that the quantity already updated (need to be save in case of error)  
+            try
+            {
+                double sum = 0;
+                foreach (Guid itemID in items.Keys)
+                {
+                    EditItemQuantity(itemID, -items[itemID]);
+                    Item item = getItemById(itemID);
+                    sum += item.Price;
+                    itemsUpdated.Add(item, items[itemID]);
+                }
+                return sum;
+            }
+            catch (Exception e)
+            {
+                foreach (Item item in itemsUpdated.Keys)
+                    EditItemQuantity(item.ItemID, itemsUpdated[item]);
+                throw;
+            }
         }
     }
 }
