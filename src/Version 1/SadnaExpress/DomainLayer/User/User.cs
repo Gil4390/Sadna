@@ -17,21 +17,15 @@ namespace SadnaExpress.DomainLayer.User
             userId = Guid.NewGuid();
             shoppingCart = new ShoppingCart();
         }
-
-        public int convertToInt(EndPoint ep)
+        public void AddItemToCart(Guid storeID, int itemID, int itemAmount)
         {
-            string newEP = ep.ToString().Split(':')[1];
-            int parseId = int.Parse(newEP);
-            return parseId;
+            //shoppingCart.AddItemToBasket(storeID, itemID, itemAmount);
         }
 
-        public bool addInventoryToCart(Inventory inv, int stock)
+        public void RemoveItemFromCart(Guid storeID, int itemID)
         {
-            //return this.shoppingCart.addInventoryToCart(inv, stock);
-            return false;
-            // todo : check if this function is needed 
+            //shoppingCart.RemoveItemFromBasket(storeID, itemID);
         }
-        
         public virtual bool hasPermissions(Guid storeID, List<string> listOfPermissions)
         {
             return false;
@@ -60,15 +54,5 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to close");
         }
-        public void AddItemToCart(Guid storeID, int itemID, int itemAmount)
-        {
-            this.shoppingCart.AddItemToBasket(storeID, itemID, itemAmount);
-        }
-
-        public void RemoveItemFromCart(Guid storeID, int itemID)
-        {
-            this.shoppingCart.RemoveItemFromBasket(storeID, itemID);
-        }
-
     }
 }

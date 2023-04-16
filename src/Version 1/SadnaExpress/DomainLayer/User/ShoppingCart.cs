@@ -6,18 +6,25 @@ namespace SadnaExpress.DomainLayer.Store
     public class ShoppingCart
     {
         private HashSet<ShoppingBasket> baskets;
-        // list for saved items
 
         public ShoppingCart()
         {
             baskets = new HashSet<ShoppingBasket>();
         }
-        public HashSet<ShoppingBasket> GetShoppingBaskets()
+
+        public override string ToString()
         {
-            return this.baskets;
+            string output = "";
+            int i = 1;
+            foreach (ShoppingBasket basket in baskets)
+            {
+                output += $"{i}. {basket} \n";
+                i++;
+            }
+            return output;
         }
-
-
+        
+        /*
         public ShoppingBasket GetShoppingBasketByStore(Guid store)
         {
             foreach (ShoppingBasket basket in baskets)
@@ -80,7 +87,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
 
 
-
+*/
 
     }
 }
