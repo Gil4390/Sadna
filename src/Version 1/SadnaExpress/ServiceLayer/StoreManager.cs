@@ -179,7 +179,6 @@ namespace SadnaExpress.ServiceLayer
         }
         public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
         {
-            //check that the user bought the item before
             storeFacade.WriteItemReview(userID, storeID, itemID, reviewText);
             return new Response();
         }
