@@ -50,7 +50,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 User user = new User();
                 current_Users.TryAdd(user.UserId, user);
-                Logger.Instance.Info(nameof(UserFacade)+": "+nameof(Enter)+": enter the system as guest.");
+                Logger.Instance.Info(user.UserId , nameof(UserFacade)+": "+nameof(Enter)+": enter the system as guest.");
                 return user.UserId;
             }
         }
@@ -60,7 +60,7 @@ namespace SadnaExpress.DomainLayer.User
             User user;
             Member member;
             if (current_Users.TryRemove(id, out user)) 
-                Logger.Instance.Info(nameof(UserFacade)+": "+nameof(Exit)+": exited from the system.");
+                Logger.Instance.Info(id , nameof(UserFacade)+": "+nameof(Exit)+": exited from the system.");
             else if (members.TryRemove(id, out member))
                 Logger.Instance.Info(id,nameof(UserFacade)+": "+nameof(Exit)+": exited from the system.");
             else
