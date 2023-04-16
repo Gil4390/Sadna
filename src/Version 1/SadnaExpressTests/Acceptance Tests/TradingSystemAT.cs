@@ -17,6 +17,12 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected Guid userid;
         protected Guid mamberid;
         protected Guid systemManagerid;
+        protected Guid storeid1;
+        protected Guid itemid1;
+        protected Guid itemid11;
+        protected Guid storeid2;
+        protected Guid itemid2;
+        protected Guid itemNoStock;
         protected IPasswordHash passwordHash;
         [TestInitialize]
         public virtual void SetUp()
@@ -26,12 +32,15 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             ConcurrentDictionary<Guid, Store> stores=new ConcurrentDictionary<Guid, Store>();
             Store store1 = new Store("Zara");
-            store1.AddItem("Tshirt", "clothes", 99.8, 22);
-            store1.AddItem("Dress", "clothes", 70, 45);
+            storeid1 = store1.StoreID;
+            itemid1 = store1.AddItem("Tshirt", "clothes", 99.8, 40);
+            itemid11= store1.AddItem("Dress", "clothes", 70, 45);
             Store store2 = new Store("Fox");
-            store1.AddItem("Pants", "clothes", 150, 200);
-            store1.AddItem("Towel", "Home", 40, 450);
-            store1.AddItem("Teddy bear toy", "children toys", 65, 120);
+            storeid2= store2.StoreID;
+            itemid2=store2.AddItem("Pants", "clothes", 150, 200);
+            store2.AddItem("Towel", "Home", 40, 450);
+            store2.AddItem("Teddy bear toy", "children toys", 65, 120);
+            itemNoStock = store2.AddItem("mouse", "animals", 65, 0);
             stores.TryAdd(store1.StoreID, store1);
             stores.TryAdd(store2.StoreID, store2);
 

@@ -422,5 +422,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetMember(userID);
         }
+
+        public ResponseT<ShoppingCart> GetUserShoppingCart(Guid userID)
+        {
+            return userManager.GetUserShoppingCart(userID);
+        }
     }
 }

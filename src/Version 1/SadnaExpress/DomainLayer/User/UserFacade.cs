@@ -538,5 +538,12 @@ namespace SadnaExpress.DomainLayer.User
                 return members[userID];
             throw new Exception("Member with id " + userID + " does not exist");
         }
+
+        public ShoppingCart GetUserShoppingCart(Guid userID)
+        {
+            if (current_Users.ContainsKey(userID))
+                return current_Users[userID].ShoppingCart;
+            throw new Exception("User with id " + userID + " does not exist");
+        }
     }
 }
