@@ -75,6 +75,20 @@ namespace SadnaExpress
                 }
             }
         }
+
+        public void Info(Guid userid, string str)
+        {
+            lock (this)
+            {
+                using (logger = new StreamWriter(pathName, true))
+                {
+                    logger.WriteLine(System.DateTime.Now.ToString() + "|Logger info|                  user " +
+                                     userid + ", " + str);
+                    logger.Close();
+                }
+            }
+        }
+
         public void Error(string str)
         {
             lock (this)
@@ -94,6 +108,19 @@ namespace SadnaExpress
                 {
                     logger.WriteLine(System.DateTime.Now.ToString() + "|Logger error|                 user " +
                                      user.UserId + ", " + str);
+                    logger.Close();
+                }
+            }
+        }
+
+        public void Error(Guid userid, string str)
+        {
+            lock (this)
+            {
+                using (logger = new StreamWriter(pathName, true))
+                {
+                    logger.WriteLine(System.DateTime.Now.ToString() + "|Logger error|                 user " +
+                                     userid + ", " + str);
                     logger.Close();
                 }
             }
