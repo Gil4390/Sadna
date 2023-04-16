@@ -18,7 +18,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             base.SetUp();
         }
 
-        #region Getting information about stores in the market and the products in the stores 2.1
+        #region Guest Getting information about stores in the market and the products in the stores 2.1
         #endregion
 
         #region Guest search products by general search or filters 2.2
@@ -150,7 +150,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(clientTasks[2].Result.Value.Count == 2);
 
             Assert.IsFalse(clientTasks[3].Result.ErrorOccured);
-            Assert.IsTrue(clientTasks[3].Result.Value.Count == 1);
+            Assert.IsTrue(clientTasks[3].Result.Value.Count == 2);
         }
         #endregion
 
@@ -324,6 +324,180 @@ namespace SadnaExpressTests.Acceptance_Tests
         #endregion
 
         #region Guest checking the content of the shopping cart and making changes 2.4
+        [TestMethod]
+        public void GuestEditShoppingCartAddAndRemove_HappyTest()
+        {
+            Guid id = new Guid();
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
+                return proxyBridge.RemoveItemFromCart(id, storeid1, itemid1);
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.Baskets.Count == 0);
+        }
+
+        [TestMethod]
+        public void GuestEditShoppingCartAddAndEditQuantity_HappyTest()
+        {
+            Guid id = new Guid();
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(id, storeid1, itemid1, 3);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.GetItemQuantityInCart(storeid1,itemid1)==3);
+        }
+
+        [TestMethod]
+        public void GuestEditShoppingCartAddAndEditQuantityNoChange_HappyTest()
+        {
+            Guid id = new Guid();
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(id, storeid1, itemid1, 1);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.Baskets.Count == 1);
+        }
+
+        [TestMethod]
+        public void GuestEditShoppingCartItemThatDoesNotExist_BadTest()
+        {
+            Guid id = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                return proxyBridge.EditItemFromCart(id, storeid1, itemid1, 1);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.Baskets.Count == 0);
+        }
+
+        [TestMethod]
+        public void GuestEditShoppingCartWithBadStoreId_BadTest()
+        {
+            Guid id = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(id, storeid2, itemid1, 4);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.GetItemQuantityInCart(storeid1, itemid1) == 1);
+        }
+
+        [TestMethod]
+        public void GuestRemoveItemFromShoppingCartThatDoesNotExist_BadTest()
+        {
+            Guid id = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                return proxyBridge.RemoveItemFromCart(id, storeid1, itemid1);
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.Baskets.Count == 0);
+        }
+
+        [TestMethod]
+        public void GuestRemoveItemFromShoppingCart_HappyTest()
+        {
+            Guid id = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 4);
+                return proxyBridge.RemoveItemFromCart(id, storeid1, itemid1);
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.Baskets.Count == 0);
+        }
+
+        [TestMethod]
+        public void GuestRemoveItemFromShoppingCartBadStoreId_BadTest()
+        {
+            Guid id = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(id, Guid.NewGuid(), itemid1, 4);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.GetItemQuantityInCart(storeid1, itemid1) == 1);
+        }
+
+        [TestMethod]
+        public void GuestRemoveItemFromShoppingCartBadItemId_BadTest()
+        {
+            Guid id = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(id, storeid1, Guid.NewGuid(), 4);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id).Value.GetItemQuantityInCart(storeid1, itemid1) == 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsEditShoppingCart_HappyTest()
+        {
+            Guid id1 = Guid.Empty;
+            Guid id2 = Guid.Empty;
+            Guid id3 = Guid.Empty;
+            Guid id4 = Guid.Empty;
+            Task<Response>[] clientTasks = new Task<Response>[] {
+                Task.Run(() => {
+                    id1=proxyBridge.Enter().Value; 
+                    AddItemToCart(id1,storeid1,itemid1,1);
+                    AddItemToCart(id1,storeid1,itemid1,1);
+                    return proxyBridge.RemoveItemFromCart(id1,storeid1,itemid1);
+                }),
+                Task.Run(() => {
+                    id2=proxyBridge.Enter().Value; 
+                    AddItemToCart(id2,storeid1,itemid1,1);
+                    AddItemToCart(id2,storeid2,itemid2,1);
+                    AddItemToCart(id2,storeid1,itemid1,1);
+                    return proxyBridge.EditItemFromCart(id2,storeid1,itemid1,0);
+                }),
+                Task.Run(() => {
+                    id3=proxyBridge.Enter().Value;
+                    AddItemToCart(id3,storeid1,itemid1,1);
+                    proxyBridge.EditItemFromCart(id3,storeid1,itemid2,0);
+                    return proxyBridge.EditItemFromCart(id3,storeid1,itemid1,0);
+                })
+             };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id1).Value.Baskets.Count == 0);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id2).Value.Baskets.Count == 1);
+
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id3).Value.Baskets.Count == 0);
+        }
         #endregion
 
         #region Guest making a purchase of the shopping cart 2.5

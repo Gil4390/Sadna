@@ -13,11 +13,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             base.SetUp();
         }
 
-        [TestMethod]
-        public void Test()
-        {
-
-        }
+        #region Purchases information history
+        #endregion
 
         [TestCleanup]
         public override void CleanUp()

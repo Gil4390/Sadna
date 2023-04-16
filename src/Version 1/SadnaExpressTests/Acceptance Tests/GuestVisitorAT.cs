@@ -243,7 +243,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid tempid = Guid.Empty;
             Task<ResponseT<Guid>> task = Task.Run(() => {
                 tempid = proxyBridge.Enter().Value;
-                return proxyBridge.Login(tempid, "RotemSalla@gmail.com", "AS87654askj");
+                return proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
             });
 
             task.Wait();
@@ -257,8 +257,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid tempid = Guid.Empty;
             Task<ResponseT<Guid>> task = Task.Run(() => {
                 tempid = proxyBridge.Enter().Value;
-                proxyBridge.Login(tempid, "RotemSalla@gmail.com", "AS87654askj");
-                return proxyBridge.Login(tempid, "RotemSalla@gmail.com", "AS87654askj");
+                proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
+                return proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
             });
 
             task.Wait();
@@ -288,7 +288,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //task 2 run client with existing email
             Task<ResponseT<Guid>>[] clientTasks = new Task<ResponseT<Guid>>[] {
                 Task.Run(() => RegisterAndLogin("adam@gmail.com","57571!@#$aS","Adam","Alon")),
-                Task.Run(() => LoginLogoutLogin("RotemSalla@gmail.com", "AS87654askj"))
+                Task.Run(() => LoginLogoutLogin("RotemSela@gmail.com", "AS87654askj"))
             };
 
             // Wait for all clients to complete

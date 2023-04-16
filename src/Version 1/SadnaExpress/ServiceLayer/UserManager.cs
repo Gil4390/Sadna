@@ -74,7 +74,7 @@ namespace SadnaExpress.ServiceLayer
             try
             {
                 Guid newID = userFacade.Login(userID, email, password);
-                return new ResponseT<Guid>(userID);
+                return new ResponseT<Guid>(newID);
 
             }
             catch (Exception ex)

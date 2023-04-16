@@ -116,6 +116,8 @@ namespace SadnaExpress.DomainLayer.User
                     else
                     {
                         //correct email & password:
+                        if (member.LoggedIn == true)
+                            throw new Exception("member is already logged in!");
                         member.LoggedIn = true;
                         User user;
                         current_Users.TryRemove(id, out user);
@@ -137,6 +139,8 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception("member with id dosen't exist");
 
             Member member = members[id];
+            if(member.LoggedIn==false)
+                throw new Exception("member is already logged out!");
             member.LoggedIn = false;
             Logger.Instance.Info(member, "logged out");
             return Enter(); //member logs out and a regular user enters the system instead  
