@@ -26,6 +26,9 @@ namespace SadnaExpress.ServiceLayer
         private static readonly object stockChange = new object();
         // fields for the saved items
 
+        private bool testMode=false;
+        public bool TestMode { get => testMode; set => testMode = value; }
+
         // lock object for the instance
         private static readonly object lockInstance = new object();
         private static TradingSystem instance = null;

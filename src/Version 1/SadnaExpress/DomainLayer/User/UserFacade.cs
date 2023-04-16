@@ -102,6 +102,9 @@ namespace SadnaExpress.DomainLayer.User
             if (_isTSInitialized == false) //if user id not system manager and system is not initialized user cannot login
                 IsTSSystemManagerID(id);
 
+            if(current_Users.ContainsKey(id)==false)
+                throw new Exception("User should enter the system before logging in");
+
             foreach (Member member in members.Values)
             {
                 if (member.Email.Equals(email))
@@ -130,16 +133,13 @@ namespace SadnaExpress.DomainLayer.User
 
         public Guid Logout(Guid id)
         {
-            lock (this)
-            {
-                if (!members.ContainsKey(id))
-                    throw new Exception("member with id dosen't exist");
+            if (!members.ContainsKey(id))
+                throw new Exception("member with id dosen't exist");
 
-                Member member = members[id];
-                member.LoggedIn = false;
-                Logger.Instance.Info(member, "logged out");
-                return Enter(); //member logs out and a regular user enters the system instead
-            }
+            Member member = members[id];
+            member.LoggedIn = false;
+            Logger.Instance.Info(member, "logged out");
+            return Enter(); //member logs out and a regular user enters the system instead  
         }
 
         public void AddItemToCart(Guid userID, Guid storeID, Guid itemID,  int itemAmount)
