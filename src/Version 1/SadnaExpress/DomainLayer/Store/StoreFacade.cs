@@ -66,27 +66,22 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             return _orders.GetStoreOrders();
         }
-        public Dictionary<Guid, double> PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items)
+        public double PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemForOrders)
         {
             IsTsInitialized();
+            double sum = 0; 
             Dictionary<Guid, Dictionary<Guid, int>> storeUpdated = new Dictionary<Guid, Dictionary<Guid, int>>(); //store that the inventory already update
             try
             {
-                Dictionary<Guid, double> prices = new Dictionary<Guid, double>();
-                double sum = 0;
                 foreach (Guid storeID in items.Keys)
                 {
-                    double sumOfStore = 0;
                     IsStoreExist(storeID); // not possible but still...
                     if (!stores[storeID].Active)
                         throw new Exception($"The store: {storeID} not active");
-                    sumOfStore = stores[storeID].PurchaseCart(items[storeID]);
-                    prices.Add(storeID, sumOfStore);
-                    sum += sumOfStore;
+                     sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders);
                     storeUpdated.Add(storeID, items[storeID]);
                 }
-                prices.Add(Guid.Empty, sum);
-                return prices;
+                return sum;
             }
             catch (Exception e)
             {
@@ -229,10 +224,9 @@ namespace SadnaExpress.DomainLayer.Store
             Store store = stores[storeID];
             
             bool foundUserOrder = false;
-            foreach (Order order in _orders.GetOrdersByUserId(userID))
+            foreach (var item in from order in _orders.GetOrdersByUserId(userID) from item in order.ListItems where item.ItemID == itemID select item)
             {
-                if (order.UserID.Equals(userID))
-                    foundUserOrder = true;
+                foundUserOrder = true;
             }
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");

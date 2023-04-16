@@ -42,6 +42,7 @@
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\IStoreFacade.cs" />
     <Compile Include="DomainLayer\Store\Item.cs" />
+    <Compile Include="DomainLayer\Store\ItemForOrder.cs" />
     <Compile Include="DomainLayer\Store\Order.cs" />
     <Compile Include="DomainLayer\Store\Orders.cs" />
     <Compile Include="DomainLayer\User\IRegistration.cs" />

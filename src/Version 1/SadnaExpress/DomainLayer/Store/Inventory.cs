@@ -7,8 +7,7 @@ namespace SadnaExpress.DomainLayer.Store
     public class Inventory
     {
         public ConcurrentDictionary<Item, int> items_quantity;
-
-
+        
         public Inventory()
         {
             items_quantity = new ConcurrentDictionary<Item, int>();
@@ -91,25 +90,35 @@ namespace SadnaExpress.DomainLayer.Store
         public void EditItemName(Guid itemID, string name)
         {
             Item item = getItemById(itemID);
-            if (name.Equals(""))
-                throw new Exception("Edit item failed, item name cant be empty");
-            if (itemExistsByName(name))
-                throw new Exception("Edit item failed, item name cant be edited to a name that belongs to another item in the store");
-            item.Name = name;
+            lock (item)
+            {
+                if (name.Equals(""))
+                    throw new Exception("Edit item failed, item name cant be empty");
+                if (itemExistsByName(name))
+                    throw new Exception(
+                        "Edit item failed, item name cant be edited to a name that belongs to another item in the store");
+                item.Name = name;
+            }
         }
         public void EditItemCategory(Guid itemID, string category)
         {
             Item item = getItemById(itemID);
-            if (category.Equals(""))
-                throw new Exception("Edit item failed, item category cant be empty");
-            item.Category = category;
+            lock (item)
+            {
+                if (category.Equals(""))
+                    throw new Exception("Edit item failed, item category cant be empty");
+                item.Category = category;
+            }
         }
         public void EditItemPrice(Guid itemId, double price)
         {
             Item item = getItemById(itemId);
-            if (price < 0)
-                throw new Exception("Edit item failed, item price cant be negative");
-            item.Price = price;
+            lock(item)
+            {
+                if (price < 0)
+                    throw new Exception("Edit item failed, item price cant be negative");
+                item.Price = price;
+            }
         }
         private bool itemExistsByName(string itemName)
         {
@@ -149,7 +158,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("You can't add to the cart, the quantity in the inventory not enough");
         }
 
-        public double PurchaseCart(Dictionary<Guid, int> items)
+        public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, Guid storeID)
         {
             Dictionary<Item, int> itemsUpdated = new Dictionary<Item, int>(); //items that the quantity already updated (need to be save in case of error)  
             try
@@ -157,8 +166,14 @@ namespace SadnaExpress.DomainLayer.Store
                 double sum = 0;
                 foreach (Guid itemID in items.Keys)
                 {
-                    EditItemQuantity(itemID, -items[itemID]);
                     Item item = getItemById(itemID);
+                    lock (item)
+                    {
+                        if (items_quantity[item] - items[itemID] < 0)
+                            throw new Exception("Edit item quantity failed, item quantity cant be negative");
+                        items_quantity[item] -= items[itemID];
+                        itemForOrders.Add(new ItemForOrder(item, storeID));
+                    }
                     sum += item.Price;
                     itemsUpdated.Add(item, items[itemID]);
                 }

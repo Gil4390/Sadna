@@ -39,10 +39,5 @@ namespace SadnaExpress.DomainLayer.Store
 
             reviews[userID].Add(reviewText);
         }
-
-        public override string ToString()
-        {
-            return $"ID:{itemID} name: {name} price:{price}";
-        }
     }
 }
