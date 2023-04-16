@@ -156,7 +156,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
         #region Guest saving item in the shopping cart for some store 2.3
         [TestMethod]
-        public void GuestSave1ItemInShppingCart_HappyTest()
+        public void GuestSave1ItemInShoppingCart_HappyTest()
         {
             Guid id = new Guid();
             Task<Response> task = Task.Run(() => {
@@ -170,7 +170,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         [TestMethod]
-        public void GuestSaveItemsInShppingCartFromDiffStore_HappyTest()
+        public void GuestSaveItemsInShoppingCartFromDiffStore_HappyTest()
         {
             Guid id = new Guid();
             Task<Response> task = Task.Run(() => {
@@ -185,7 +185,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         [TestMethod]
-        public void GuestSave2ItemsInShppingCartFromSameStore_HappyTest()
+        public void GuestSave2ItemsInShoppingCartFromSameStore_HappyTest()
         {
             Guid id = Guid.Empty;
             Task<Response> task = Task.Run(() => {
@@ -199,7 +199,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         [TestMethod]
-        public void GuestSaveItemsInShppingCartItemDoesNotExist_HappyTest()
+        public void GuestSaveItemsInShoppingCartItemDoesNotExist_HappyTest()
         {
             Guid id = Guid.Empty;
             Task<Response> task = Task.Run(() => {
@@ -212,7 +212,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         [TestMethod]
-        public void GuestSaveItemsInShppingCartStoreDoesNotExist_BadTest()
+        public void GuestSaveItemsInShoppingCartStoreDoesNotExist_BadTest()
         {
             Guid id = Guid.Empty;
             Task<Response> task = Task.Run(() => {
@@ -231,7 +231,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
         [TestMethod]
         [TestCategory("Concurrency")]
-        public void MultipleClientsAddSameItemToCart_HappyTest()
+        public void MultipleClientsAddSameItemToShoppingCart_HappyTest()
         {
             Guid id1 = Guid.Empty;
             Guid id2 = Guid.Empty;
@@ -262,7 +262,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
         [TestMethod]
         [TestCategory("Concurrency")]
-        public void MultipleClientsAddSameItemToCartOneNotEnter_HappyTest()
+        public void MultipleClientsAddSameItemToShoppingCartOneNotEnter_HappyTest()
         {
             Guid id1 = Guid.Empty;
             Guid id2 = Guid.Empty;
