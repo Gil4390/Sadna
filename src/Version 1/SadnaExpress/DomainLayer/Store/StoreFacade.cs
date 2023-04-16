@@ -7,14 +7,12 @@ namespace SadnaExpress.DomainLayer.Store
     public class StoreFacade : IStoreFacade
     {
         private ConcurrentDictionary<Guid, Store> stores;
-        private ConcurrentDictionary<Guid, LinkedList<Order>> storeOrders;
         private bool _isTSInitialized;
         private static Orders _orders;
 
         public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
-            storeOrders = new ConcurrentDictionary<Guid, LinkedList<Order>>();
             _orders = Orders.Instance;
         }
         
@@ -158,7 +156,6 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void CleanUp()
         {
-           storeOrders.Clear();
            stores.Clear();
         }
 
@@ -201,6 +198,12 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
 
             store.WriteItemReview(userID, itemID, reviewText);
+        }
+        public ConcurrentDictionary<Guid, List<string>> GetItemReviews(Guid storeID, Guid itemID)
+        {
+            IsStoreExist(storeID);
+            Store store = stores[storeID];
+            return store.getItemsReviews(itemID);
         }
 
         public void AddItemToCart(Guid storeID, Guid itemID, int quantity)

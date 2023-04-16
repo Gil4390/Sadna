@@ -3,6 +3,7 @@ using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.Services;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -102,6 +103,11 @@ namespace SadnaExpress.ServiceLayer
         public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
         {
             return _realBridge.WriteItemReview(userID, storeID, itemID, reviewText);
+        }
+
+        public ResponseT<ConcurrentDictionary<Guid, List<string>>> GetItemReviews(Guid storeID, Guid itemID)
+        {
+            return _realBridge.GetItemReviews(storeID, itemID);
         }
 
         public Response RateItem(Guid id, int itemID, int score)
