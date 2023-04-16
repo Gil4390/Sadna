@@ -74,5 +74,12 @@ namespace SadnaExpress.DomainLayer.Store
             else 
                 throw new Exception("cant edit quantity of item that is not in the basket");
         }
+
+        public int GetItemQuantity(Guid itemId)
+        {
+            if (itemsInBasket.ContainsKey(itemId))
+                return itemsInBasket[itemId];
+            throw new Exception("Item id "+ itemId +" is not in store id "+ storeID+ " shpping basket");
+        }
     }
 }

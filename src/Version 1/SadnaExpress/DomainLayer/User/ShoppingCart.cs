@@ -59,5 +59,14 @@ namespace SadnaExpress.DomainLayer.Store
             if (shoppingBasket.ItemsInBasket.Count == 0)
                 baskets.Remove(shoppingBasket);
         }
+
+        public int GetItemQuantityInCart(Guid storeID, Guid itemID)
+        {
+            ShoppingBasket shoppingBasket = new ShoppingBasket(storeID);
+            bool exist = baskets.TryGetValue(shoppingBasket, out shoppingBasket);
+            if (!exist)
+                throw new Exception("The cart doesn't include the store");
+            return shoppingBasket.GetItemQuantity(itemID);  
+        }
     }
 }
