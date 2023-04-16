@@ -49,7 +49,7 @@ namespace SadnaExpress.DomainLayer.Store
             List<Item> items = new List<Item>();
             foreach (Item item in items_quantity.Keys)
             {
-                if (item.Name.Contains(keyWords) && item.Price >= minPrice && item.Price <= maxPrice)
+                if (item.Name.ToLower().Contains(keyWords.ToLower()) && item.Price >= minPrice && item.Price <= maxPrice)
                 {
                     if (ratingItem != -1 && item.Rating != ratingItem)
                         continue;
