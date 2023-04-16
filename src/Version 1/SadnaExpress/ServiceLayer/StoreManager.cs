@@ -182,6 +182,11 @@ namespace SadnaExpress.ServiceLayer
             storeFacade.WriteItemReview(userID, storeID, itemID, reviewText);
             return new Response();
         }
+        public ResponseT<ConcurrentDictionary<Guid, List<string>>> GetItemReviews(Guid storeID, Guid itemID)
+        {
+            ConcurrentDictionary<Guid, List<string>> reviews = storeFacade.GetItemReviews(storeID, itemID);
+            return new ResponseT<ConcurrentDictionary<Guid, List<string>>>(reviews);
+        }
         public Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price)
         {
             try
