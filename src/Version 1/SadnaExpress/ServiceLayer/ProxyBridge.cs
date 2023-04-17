@@ -283,5 +283,20 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetUserShoppingCart(userID);
         }
+
+        public ResponseT<Store> GetStore(Guid storeID)
+        {
+            return _realBridge.GetStore(storeID);
+        }
+
+        public void SetTSOrders(IOrders orders)
+        {
+            _realBridge.SetTSOrders(orders);
+        }
+
+        public ResponseT<Item> GetItemByID(Guid storeID, Guid itemID)
+        {
+            return _realBridge.GetItemByID(storeID, itemID);
+        }
     }
 }

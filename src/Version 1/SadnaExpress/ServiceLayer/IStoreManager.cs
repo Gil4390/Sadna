@@ -37,5 +37,8 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
         void SetIsSystemInitialize(bool isInitialize);
+        ResponseT<Store> GetStore(Guid storeID);
+        void SetTSOrders(IOrders orders);
+        ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
     }
 }
