@@ -54,16 +54,22 @@ namespace SadnaExpress.DomainLayer.User
             return manager;
         }
 
-        public void AddStoreManagerPermissions(Guid storeID, Member manager, string permission)
+        public void AddStoreManagerPermissions(PromotedMember appointer, Guid storeID, Member manager, string permission)
         {
             lock (manager)
             {
+                PromotedMember pmember = (PromotedMember)manager;
                 if (manager.hasPermissions(storeID,
                         new List<string> { "founder permissions", "owner permissions", permission }))
-                    throw new Exception("The member has the permission");
+                    throw new Exception("The member already has the permission");
+                Guid directManagerID = pmember.getDirectManager(storeID).UserId;
+                if (!directManagerID.Equals(appointer.UserId))
+                    throw new Exception("The caller is not the appointer of the manager");
+
+                pmember.addPermission(storeID, permission);
             }
 
-            ((PromotedMember)manager).addPermission(storeID, permission);
+            
         }
 
         public void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)

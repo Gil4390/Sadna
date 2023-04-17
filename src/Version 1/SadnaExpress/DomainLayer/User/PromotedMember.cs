@@ -116,7 +116,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!hasPermissions(storeID,
                     new List<string> { "owner permissions", "founder permissions", "edit manager permissions" }))
                 throw new Exception("The member doesn’t have permissions to edit manager's permissions");
-            permissionsHolder.AddStoreManagerPermissions(storeID, manager, permission);
+            permissionsHolder.AddStoreManagerPermissions(this, storeID, manager, permission);
         }
 
         public override void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)

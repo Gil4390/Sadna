@@ -297,9 +297,13 @@ namespace SadnaExpress.DomainLayer.User
             Member manager = null;
             foreach (Member member in members.Values)
                 if (member.Email == email)
+                {
                     manager = member;
+                    break;
+                }
             if (manager == null)
                 throw new Exception($"There isn't a member with {email}");
+
             members[userID].AddStoreManagerPermissions(storeID, manager, permission);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AddStoreManagerPermissions)+"System added "+userID+" manager permissions in store "+storeID+": "+permission);
         }
@@ -367,7 +371,7 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userId);
             if (!members[userId].hasPermissions(storeId,
-                    new List<string> { "get store purchases", "owner permissions", "founder permissions" }))
+                    new List<string> { "get store history", "owner permissions", "founder permissions" }))
                 throw new Exception("The member doesn’t have permissions to get store purchases"); 
         }
 
