@@ -25,6 +25,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected Guid storeid1;
         protected Guid itemid1;
         protected Guid itemid11;
+        protected Guid itemid22;
         protected Guid storeid2;
         protected Guid itemid2;
         protected Guid itemNoStock;
@@ -40,6 +41,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Store store1 = new Store("Zara");
             storeid1 = store1.StoreID;
             itemid1 = store1.AddItem("Tshirt", "clothes", 99.8, 40);
+            itemid22 = store1.AddItem("Ipad", "electronic", 99.8, 2);
             itemid11 = store1.AddItem("Dress", "clothes", 70, 45);
             Store store2 = new Store("Fox");
             storeid2 = store2.StoreID;
