@@ -50,5 +50,6 @@ namespace SadnaExpress.DomainLayer.User
         void GetStorePurchases(Guid userId, Guid storeId);
         void GetAllStorePurchases(Guid userId);
         void PurchaseCart(Guid userID);
+        bool CancelPayment(double amount, string transactionDetails);
     }
 }

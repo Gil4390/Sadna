@@ -4,5 +4,6 @@ namespace SadnaExpress.Services
     {
         bool Connect();
         bool Pay(double amount, string transactionDetails);
+        bool cancel(double amount, string transactionDetails);
     }
 }
