@@ -22,6 +22,10 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void SystemManagerRequestPurchasesInformationhistory_HappyTest()
         {
+            //Arrange
+            Mock_Orders mock_Orders = new Mock_Orders();
+            proxyBridge.SetTSOrders(mock_Orders);
+
             Guid tempid = Guid.Empty;
             Task<ResponseT<Dictionary<Guid, List<Order>>>> task = Task<ResponseT<Dictionary<Guid, List<Order>>>>.Run(() => {
                 tempid = proxyBridge.Enter().Value;
