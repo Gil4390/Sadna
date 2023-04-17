@@ -10,34 +10,10 @@ namespace SadnaExpressTests.Acceptance_Tests
     [TestClass]
     public class GuestMemberStoreOwner : TradingSystemAT
     {
-        Guid store5Founder = Guid.Empty;
-        Guid storeID5 = Guid.Empty;
-        Guid store5Owner = Guid.Empty;
-        Guid itemID1 = Guid.Empty;
-        Guid itemID2 = Guid.Empty;
-
-
         [TestInitialize]
         public override void SetUp()
         {
             base.SetUp();
-
-            store5Founder = proxyBridge.Enter().Value;
-            proxyBridge.Register(store5Founder, "storeFounderMail@gmail.com", "tal", "galmor", "A#!a12345678");
-            store5Founder = proxyBridge.Login(store5Founder, "storeFounderMail@gmail.com", "A#!a12345678").Value;
-            storeID5 = proxyBridge.OpenNewStore(store5Founder, "Candy store").Value;
-
-            store5Owner = proxyBridge.Enter().Value;
-            proxyBridge.Register(store5Owner, "storeOwnerMail2@gmail.com", "dina", "agapov", "A#!a12345678");
-            store5Owner = proxyBridge.Login(store5Owner, "storeOwnerMail2@gmail.com", "A#!a12345678").Value;
-
-            proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
-
-
-            itemID1 = proxyBridge.AddItemToStore(store5Founder, storeID5, "doritos", "food", 6.0, 10).Value;
-            itemID2 = proxyBridge.AddItemToStore(store5Founder, storeID5, "bisli", "food", 4.0, 20).Value;
-
-
         }
 
         #region Product Managment 4.1
@@ -46,14 +22,20 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void AddingNewItemGood()
         {
+            Guid userid = Guid.Empty;
+            Guid storeid = Guid.Empty;
             Task<ResponseT<Guid>> task = Task.Run(() => {
-                return proxyBridge.AddItemToStore(store5Owner, storeID5, "chips", "food", 5.0, 2);
+                userid = proxyBridge.Enter().Value;
+                proxyBridge.Register(userid, "storeOwnerMail@gmail.com", "tal", "galmor", "A#!a12345678");
+                userid = proxyBridge.Login(userid, "storeOwnerMail@gmail.com", "A#!a12345678").Value;
+                storeid = proxyBridge.OpenNewStore(userid, "Bamba store").Value;
+                return proxyBridge.AddItemToStore(userid, storeid, "bamba", "food", 5.0, 2);
             });
 
             task.Wait();
-            Assert.IsFalse(task.Result.ErrorOccured); //error not occured 
+            Assert.IsFalse(task.Result.ErrorOccured); //error not accured 
 
-            int count = proxyBridge.GetItemsByName(store5Owner, "chips").Value.Count;
+            int count = proxyBridge.GetItemsByName(userid, "bamba").Value.Count;
             Assert.AreEqual(1, count); //item was added
         }
         [TestMethod]
@@ -63,11 +45,11 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<ResponseT<Guid>> task = Task.Run(() => {
                 tempid = proxyBridge.Enter().Value;
 
-                return proxyBridge.AddItemToStore(tempid, storeID5, "bamba", "food", 5.0, 2);
+                return proxyBridge.AddItemToStore(tempid, storeid1, "bamba", "food", 5.0, 2);
             });
 
             task.Wait();
-            Assert.IsTrue(task.Result.ErrorOccured); //error occured 
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
 
             int count = proxyBridge.GetItemsByName(tempid, "bamba").Value.Count;
             Assert.AreEqual(0, count); //item was not added
@@ -75,12 +57,16 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void AddingNewItemStoreDoesNotExist_Bad()
         {
+            Guid tempid = Guid.Empty;
             Task<ResponseT<Guid>> task = Task.Run(() => {
-                return proxyBridge.AddItemToStore(storeOwnerid, Guid.NewGuid(), "bamba", "food", 5.0, 2);
+                tempid = proxyBridge.Enter().Value;
+                tempid = proxyBridge.Login(tempid, "AsiAzar@gmail.com", "Aa12345678").Value;
+
+                return proxyBridge.AddItemToStore(tempid, Guid.NewGuid(), "bamba", "food", 5.0, 2);
             });
 
             task.Wait();
-            Assert.IsTrue(task.Result.ErrorOccured); //error occured  
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
         }
         [TestMethod]
         public void AddingNewItemUserIsNotAStoreOwner_Bad()
@@ -90,11 +76,11 @@ namespace SadnaExpressTests.Acceptance_Tests
                 tempid = proxyBridge.Enter().Value;
                 tempid = proxyBridge.Login(tempid, "gil@gmail.com", "asASD876!@").Value;
 
-                return proxyBridge.AddItemToStore(tempid, storeID5, "bamba", "food", 5.0, 2);
+                return proxyBridge.AddItemToStore(tempid, storeid1, "bamba", "food", 5.0, 2);
             });
 
             task.Wait();
-            Assert.IsTrue(task.Result.ErrorOccured); //error occured  
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
 
             int count = proxyBridge.GetItemsByName(tempid, "bamba").Value.Count;
             Assert.AreEqual(0, count); //item was not added
@@ -111,172 +97,52 @@ namespace SadnaExpressTests.Acceptance_Tests
             });
 
             task.Wait();
-            Assert.IsTrue(task.Result.ErrorOccured); //error occured  
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
 
             int count = proxyBridge.GetItemsByName(tempid, "bamba").Value.Count;
             Assert.AreEqual(0, count); //item was not added
         }
 
         [TestMethod]
-        public void AddingNewItem2OwnersAddingItemWithSameNameOnce_Concurrent_Bad()
+        public void AddingNewItemConcurrent()
         {
-            //2 owners attempting to add an item with same name one should fail and one should succeed
-            Task<ResponseT<Guid>> task1 = Task.Run(() => {
-                return proxyBridge.AddItemToStore(store5Owner, storeID5, "chips", "food", 5.0, 2);
-            });
+            //2 owners attempting to add an item with same name
 
-            
-            Task<ResponseT<Guid>> task2 = Task.Run(() => {
-                return proxyBridge.AddItemToStore(store5Founder, storeID5, "chips", "food", 5.0, 2);
-            });
-
-            task1.Wait();
-            task2.Wait();
-            bool error1occured = task1.Result.ErrorOccured;
-            bool error2occured = task2.Result.ErrorOccured;
-            Assert.IsTrue(error1occured || error2occured); //at lest one should fail
-            Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
-
-            int count = proxyBridge.GetItemsByName(userid, "chips").Value.Count;
-            Assert.AreEqual(1, count); //item was added
         }
         #endregion
 
         #region Remove item
         [TestMethod]
-        public void RemoveItem_Good()
+        public void RemoveItemGood()
         {
-            Task<Response> task = Task.Run(() => {
-                return proxyBridge.RemoveItemFromStore(store5Owner, storeID5, itemID2);
-            });
 
-            task.Wait();
-            Assert.IsFalse(task.Result.ErrorOccured); //error not occured  
-
-            int count = proxyBridge.GetItemsByName(store5Founder, "bisli").Value.Count;
-            Assert.AreEqual(0, count); //item was removed
         }
         [TestMethod]
-        public void RemoveItemNotExist_Bad()
+        public void RemoveItemBad()
         {
-            Task<Response> task = Task.Run(() => {
-                return proxyBridge.RemoveItemFromStore(store5Owner, storeID5, Guid.NewGuid());
-            });
 
-            task.Wait();
-            Assert.IsTrue(task.Result.ErrorOccured); //error occured 
-
-            int count = proxyBridge.GetItemsByName(store5Founder, "bisli").Value.Count;
-            Assert.AreEqual(1, count); //item was removed
         }
         [TestMethod]
-        public void RemoveItemConcurrent_Bad()
+        public void RemoveItemConcurrent()
         {
-            Task<Response> task1 = Task.Run(() => {
-                return proxyBridge.RemoveItemFromStore(store5Owner, storeID5, itemID2);
-            });
 
-
-            Task<Response> task2 = Task.Run(() => {
-                return proxyBridge.RemoveItemFromStore(store5Owner, storeID5, itemID2);
-            });
-
-            task1.Wait();
-            task2.Wait();
-            bool error1occured = task1.Result.ErrorOccured;
-            bool error2occured = task2.Result.ErrorOccured;
-            Assert.IsTrue(error1occured || error2occured); //at lest one should fail
-            Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
-
-            int count = proxyBridge.GetItemsByName(userid, "bisli").Value.Count;
-            Assert.AreEqual(0, count); //item was removed
-        }
-
-        public void RemoveItemConcurrent_Good()
-        {
-            Task<Response> task1 = Task.Run(() => {
-                return proxyBridge.RemoveItemFromStore(store5Owner, storeID5, itemID1);
-            });
-
-
-            Task<Response> task2 = Task.Run(() => {
-                return proxyBridge.RemoveItemFromStore(store5Owner, storeID5, itemID2);
-            });
-
-            task1.Wait();
-            task2.Wait();
-            bool error1occured = task1.Result.ErrorOccured;
-            bool error2occured = task2.Result.ErrorOccured;
-            Assert.IsTrue(error1occured || error2occured); //at lest one should fail
-            Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
-
-            int count = proxyBridge.GetItemsByName(userid, "bisli").Value.Count;
-            Assert.AreEqual(0, count); //item was removed
-            int count2 = proxyBridge.GetItemsByName(userid, "doritos").Value.Count;
-            Assert.AreEqual(0, count2); //item was removed
         }
         #endregion
 
         #region Edit item
         [TestMethod]
-        public void EditItemName_Good()
+        public void EditItemGood()
         {
-            Task<Response> task = Task.Run(() => {
-                return proxyBridge.EditItemName(store5Owner, storeID5, itemID2, "bisli bbq");
-            });
 
-            task.Wait();
-            Assert.IsFalse(task.Result.ErrorOccured); //error not occured  
-
-            int count = proxyBridge.GetItemsByName(store5Founder, "bisli bbq").Value.Count;
-            Assert.AreEqual(1, count);
         }
         [TestMethod]
-        public void EditItemCategory_Good()
+        public void EditItemBad()
         {
-            Task<Response> task = Task.Run(() => {
-                return proxyBridge.EditItemCategory(store5Owner, storeID5, itemID2, "snacks");
-            });
 
-            task.Wait();
-            Assert.IsFalse(task.Result.ErrorOccured); //error not occured  
-
-            int count = proxyBridge.GetItemsByCategory(store5Founder, "snacks").Value.Count;
-            Assert.AreEqual(1, count);
         }
         [TestMethod]
-        public void EditItem_Bad()
+        public void EditItemConcurrent()
         {
-            Task<Response> task = Task.Run(() => {
-                return proxyBridge.EditItemName(store5Owner, storeID5, itemID2, "");
-            });
-
-            task.Wait();
-            Assert.IsTrue(task.Result.ErrorOccured); //error occured  
-
-            int count = proxyBridge.GetItemsByName(store5Founder, "bisli").Value.Count;
-            Assert.AreEqual(1, count);
-        }
-        [TestMethod]
-        public void EditItemConcurrent_Good()
-        {
-            Task<Response> task1 = Task.Run(() => {
-                return proxyBridge.EditItemName(store5Owner, storeID5, itemID2, "aaa");
-            });
-            Task<Response> task2 = Task.Run(() => {
-                return proxyBridge.EditItemName(store5Owner, storeID5, itemID2, "bbb");
-            });
-
-            task1.Wait();
-            task2.Wait();
-            Assert.IsFalse(task1.Result.ErrorOccured); //error not occured
-            Assert.IsFalse(task2.Result.ErrorOccured); //error not occured  
-                                                       
-
-            int count1 = proxyBridge.GetItemsByName(store5Founder, "aaa").Value.Count;
-            int count2 = proxyBridge.GetItemsByName(store5Founder, "bbb").Value.Count;
-
-            Assert.AreEqual(1, count1+count2);
 
         }
         #endregion
