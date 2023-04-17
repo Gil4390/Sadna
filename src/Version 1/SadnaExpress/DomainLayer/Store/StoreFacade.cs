@@ -9,8 +9,9 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private ConcurrentDictionary<Guid, Store> stores;
         private bool _isTSInitialized;
-        private static Orders _orders;
+        private static IOrders _orders;
         private Object openNewStore = new object();
+
         public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
@@ -285,6 +286,11 @@ namespace SadnaExpress.DomainLayer.Store
                     return true;
             }
             return false;
+        }
+
+        public void SetTSOrders(IOrders orders)
+        {
+            _orders = orders;
         }
     }
 }

@@ -74,6 +74,8 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Member> GetMember(Guid userID);
         ResponseT<ShoppingCart> GetUserShoppingCart(Guid userID);
         ResponseT<Store> GetStore(Guid storeID);
+        void SetTSOrders(IOrders orders);
+        ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
 
     }
 }

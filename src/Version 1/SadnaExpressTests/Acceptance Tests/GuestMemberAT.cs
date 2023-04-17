@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
+using static SadnaExpressTests.Mocks;
 
 namespace SadnaExpressTests.Acceptance_Tests
 {
@@ -15,6 +16,8 @@ namespace SadnaExpressTests.Acceptance_Tests
         public override void SetUp()
         {
             base.SetUp();
+            
+
         }
 
         #region Logout 3.1
@@ -215,6 +218,86 @@ namespace SadnaExpressTests.Acceptance_Tests
         #endregion
 
         #region Writing a review on items the user purchased 3.3
+        [TestMethod]
+        public void MemberWriteReviewOnItemPurchased_HappyTest()
+        {
+            //Arrange
+            Mock_Orders mock_Orders = new Mock_Orders();
+            mock_Orders.AddOrderToUser(memberid, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value,storeid1) }));
+            proxyBridge.SetTSOrders(mock_Orders);
+
+            //Act
+            Guid tempid = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                Guid loggedid = proxyBridge.Login(tempid, "gil@gmail.com", "asASD876!@").Value;
+                return proxyBridge.WriteItemReview(memberid, storeid1, itemid1, "very good item!");
+            });
+
+            task.Wait();
+
+            //Assert
+            Assert.IsFalse(task.Result.ErrorOccured); //no error accured 
+            Assert.IsTrue(proxyBridge.GetItemReviews(storeid1, itemid1).Value[memberid].Count==1);
+        }
+
+        [TestMethod]
+        public void MemberWriteReviewOnItemHeDidNotPurchased_BadTest()
+        {
+            //Arrange
+            Mock_Orders mock_Orders = new Mock_Orders();
+            proxyBridge.SetTSOrders(mock_Orders);
+
+            //Act
+            Guid tempid = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                Guid loggedid = proxyBridge.Login(tempid, "gil@gmail.com", "asASD876!@").Value;
+                return proxyBridge.WriteItemReview(memberid, storeid1, itemid1, "very good item!");
+            });
+
+            task.Wait();
+
+            //Assert
+            Assert.IsTrue(task.Result.ErrorOccured); // error accured 
+            Assert.IsFalse(proxyBridge.GetItemReviews(storeid1, itemid1).Value.ContainsKey(memberid));
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleMembersWriteAreviewOnSameItem_HappyTest()
+        {
+            //Arrange
+            Mock_Orders mock_Orders = new Mock_Orders();
+            mock_Orders.AddOrderToUser(memberid, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1) }));
+            mock_Orders.AddOrderToUser(systemManagerid, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1) }));
+            proxyBridge.SetTSOrders(mock_Orders);
+
+
+            Guid id1 = Guid.Empty;
+            Guid id2 = Guid.Empty;
+            Guid id3 = Guid.Empty;
+            Guid id4 = Guid.Empty;
+            Task<Response>[] clientTasks = new Task<Response>[] {
+                Task.Run(() => {
+                    id1=proxyBridge.Enter().Value;
+                    Guid loggedid = proxyBridge.Login(id1, "RotemSela@gmail.com", "AS87654askj").Value;
+                    return proxyBridge.WriteItemReview(systemManagerid, storeid1, itemid1, "very good item!");
+                }),
+                Task.Run(() => {
+                    id2 = proxyBridge.Enter().Value;
+                    Guid loggedid = proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@").Value;
+                    return proxyBridge.WriteItemReview(memberid, storeid1, itemid1, "very bad item!");
+                })
+             };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetItemReviews(storeid1, itemid1).Value.Count==2);            
+        }
         #endregion
 
         /// <summary>
