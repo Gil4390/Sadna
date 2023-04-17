@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainLayer\Store\Inventory.cs" />
+    <Compile Include="DomainLayer\Store\IOrders.cs" />
     <Compile Include="DomainLayer\Store\IStoreFacade.cs" />
     <Compile Include="DomainLayer\Store\Item.cs" />
     <Compile Include="DomainLayer\Store\ItemForOrder.cs" />

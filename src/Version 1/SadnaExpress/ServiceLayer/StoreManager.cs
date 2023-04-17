@@ -384,5 +384,24 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Store>(ex.Message);
             }
         }
+
+        public void SetTSOrders(IOrders orders)
+        {
+            storeFacade.SetTSOrders(orders);
+        }
+
+        public ResponseT<Item> GetItemByID(Guid storeID, Guid itemID)
+        {
+            try
+            {
+                Item item = storeFacade.GetItemByID(storeID, itemID);
+                return new ResponseT<Item>(item);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStore) + ": " + ex.Message);
+                return new ResponseT<Item>(ex.Message);
+            }
+        }
     }
 }

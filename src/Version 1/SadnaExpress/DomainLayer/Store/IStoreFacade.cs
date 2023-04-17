@@ -34,5 +34,6 @@ namespace SadnaExpress.DomainLayer.Store
         void SetIsSystemInitialize(bool isInitialize);
         Store GetStore(Guid storeID);
         Item GetItemByID(Guid storeID, Guid itemID); //for tests
+        void SetTSOrders(IOrders orders);
     }
 }
