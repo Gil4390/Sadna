@@ -38,50 +38,50 @@ namespace SadnaExpressTests.Acceptance_Tests
                     id1=proxyBridge.Enter().Value;
                     proxyBridge.Register(id1, "Ted@amazon.io","Ted", "Lasso", "123AaC!@#");
                     id1 = proxyBridge.Login(id1, "Ted@amazon.io", "123AaC!@#").Value;
-                    Thread.Sleep(1);
-                    return proxyBridge.GetUserShoppingCart(id1);
+                    Thread.Sleep(1000);
+                    return proxyBridge.GetDetailsOnCart(id1);
                 }),
                 Task.Run(() =>
                 {
                     id2=proxyBridge.Enter().Value;
                     proxyBridge.Register(id2, "Roy@amazon.io","Roy", "Kent", "123AaC!@#");
-                    Thread.Sleep(1);
+                    Thread.Sleep(500);
                     id2 = proxyBridge.Login(id2, "Roy@amazon.io", "123AaC!@#").Value;
-                    Thread.Sleep(1);
-                    return proxyBridge.GetUserShoppingCart(id2);
+                    Thread.Sleep(500);
+                    return proxyBridge.GetDetailsOnCart(id2);
                 }),
                 Task.Run(() =>
                 {
                     id3=proxyBridge.Enter().Value;
                     proxyBridge.Register(id3, "Tartt@amazon.io","Jamie", "Tartt", "123AaC!@#");
-                    Thread.Sleep(1);
+                    Thread.Sleep(500);
                     id3 = proxyBridge.Login(id3, "Tartt@amazon.io", "123AaC!@#").Value;
                     proxyBridge.AddItemToCart(id3, storeid1, itemid11, 1);
-                    Thread.Sleep(1);
-                    return proxyBridge.GetUserShoppingCart(id3);
+                    Thread.Sleep(500);
+                    return proxyBridge.GetDetailsOnCart(id3);
                 }),
                 Task.Run(() =>
                 {
                     id4=proxyBridge.Enter().Value;
                     proxyBridge.Register(id4, "Tartt@amazon.io","Jamie", "Tartt", "123AaC!@#");
-                    Thread.Sleep(1);
+                    Thread.Sleep(10000);
                     id4 = proxyBridge.Login(id4, "Tartt@amazon.io", "123AaC!@#").Value;
                     proxyBridge.AddItemToCart(id4, storeid1, itemid11, 1);
-                    Thread.Sleep(1);
-                    return proxyBridge.GetUserShoppingCart(id4);
+                    Thread.Sleep(10);
+                    return proxyBridge.GetDetailsOnCart(id4);
                 }),
                 Task.Run(() =>
                 {
                     id5=proxyBridge.Enter().Value;
                     proxyBridge.Register(id5, "Obysania@amazon.io","Sami", "Obysania", "123AaC!@#");
-                    Thread.Sleep(1);
+                    Thread.Sleep(7);
                     id5 = proxyBridge.Login(id5, "Obysania@amazon.io", "123AaC!@#").Value;
                     proxyBridge.GetUserShoppingCart(id5);
-                    Thread.Sleep(1);
+                    Thread.Sleep(777);
                     proxyBridge.AddItemToCart(id5, storeid1, itemid11, 1);
                     proxyBridge.AddItemToCart(id5, storeid2, itemid2, 3);
                     Thread.Sleep(1);
-                    return proxyBridge.GetUserShoppingCart(id5);
+                    return proxyBridge.GetDetailsOnCart(id5);
                 }),
                 Task.Run(() =>
                 {
@@ -91,7 +91,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     id6 = proxyBridge.Login(id6, "Mass@amazon.io", "123AaC!@#").Value;
                     proxyBridge.AddItemToCart(id6, storeid1, itemid11, 1);
                     Thread.Sleep(100);
-                    return proxyBridge.GetUserShoppingCart(id6);
+                    return proxyBridge.GetDetailsOnCart(id6);
                 }),
                 Task.Run(() =>
                 {
@@ -101,8 +101,8 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Thread.Sleep(200);
                     id7 = proxyBridge.Login(id7, "Mass@amazon.io", "123AaC!@#").Value;
                     proxyBridge.AddItemToCart(id7, storeid1, itemid11, 1);
-                    Thread.Sleep(100);
-                    return proxyBridge.GetUserShoppingCart(id7);
+                    Thread.Sleep(1000);
+                    return proxyBridge.GetDetailsOnCart(id7);
                 }),
                 Task.Run(() =>
                 {
@@ -110,8 +110,8 @@ namespace SadnaExpressTests.Acceptance_Tests
                     id8=proxyBridge.Enter().Value;
                     Thread.Sleep(200);
                     proxyBridge.AddItemToCart(id8, storeid1, itemid11, 1);
-                    Thread.Sleep(100);
-                    return proxyBridge.GetUserShoppingCart(id8);
+                    Thread.Sleep(2100);
+                    return proxyBridge.GetDetailsOnCart(id8);
                 }),
                 Task.Run(() =>
                 {
@@ -120,7 +120,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Thread.Sleep(300);
                     proxyBridge.AddItemToCart(id9, storeid1, itemid11, 3);
                     Thread.Sleep(100);
-                    return proxyBridge.GetUserShoppingCart(id9);
+                    return proxyBridge.GetDetailsOnCart(id9);
                 }),
             };
 
