@@ -67,9 +67,9 @@ namespace SadnaExpress.DomainLayer.Store
         {
             itemsInventory.AddReviewToItem(userID, reviewText, itemID);
         }
-        internal ConcurrentDictionary<Guid, List<string>> getItemsReviews(Guid itemID)
+        internal ConcurrentDictionary<Guid, List<string>> GetItemsReviews(Guid itemID)
         {
-            return itemsInventory.getItemReviews(itemID);
+            return itemsInventory.GetItemReviews(itemID);
         }
 
         public void EditItemQuantity(Guid itemID, int quantity)
@@ -85,6 +85,11 @@ namespace SadnaExpress.DomainLayer.Store
         public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders)
         {
             return itemsInventory.PurchaseCart(items, ref itemForOrders, storeID);
+        }
+
+        public Item GetItemById(Guid itemID)
+        {
+            return itemsInventory.GetItemById(itemID);
         }
     }
 }

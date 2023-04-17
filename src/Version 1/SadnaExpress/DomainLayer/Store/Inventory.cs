@@ -71,15 +71,15 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void RemoveItem(Guid itemID)
         {
-            Item item = getItemById(itemID);
+            Item item = GetItemById(itemID);
             int outItem;
             lock (item)
-                items_quantity.TryRemove(getItemById(itemID), out outItem);
+                items_quantity.TryRemove(GetItemById(itemID), out outItem);
         }
         
         public void EditItemQuantity(Guid itemID, int quantity)
         {
-            Item item = getItemById(itemID);
+            Item item = GetItemById(itemID);
             lock (item)
             {
                 if (items_quantity[item] + quantity < 0)
@@ -89,7 +89,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void EditItemName(Guid itemID, string name)
         {
-            Item item = getItemById(itemID);
+            Item item = GetItemById(itemID);
             lock (item)
             {
                 if (name.Equals(""))
@@ -102,7 +102,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void EditItemCategory(Guid itemID, string category)
         {
-            Item item = getItemById(itemID);
+            Item item = GetItemById(itemID);
             lock (item)
             {
                 if (category.Equals(""))
@@ -112,7 +112,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void EditItemPrice(Guid itemId, double price)
         {
-            Item item = getItemById(itemId);
+            Item item = GetItemById(itemId);
             lock(item)
             {
                 if (price < 0)
@@ -129,7 +129,7 @@ namespace SadnaExpress.DomainLayer.Store
             }
             return false;
         }
-        private Item getItemById(Guid itemId)
+        public Item GetItemById(Guid itemId)
         {
             foreach (Item item in items_quantity.Keys)
             {
@@ -145,16 +145,16 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 throw new Exception("review text cannot be empty");
             }
-            getItemById(itemID).AddReview(userID, reviewText);
+            GetItemById(itemID).AddReview(userID, reviewText);
         }
-        internal ConcurrentDictionary<Guid, List<string>> getItemReviews(Guid itemID)
+        internal ConcurrentDictionary<Guid, List<string>> GetItemReviews(Guid itemID)
         {
-            return getItemById(itemID).reviews;
+            return GetItemById(itemID).reviews;
         }
 
         public void AddItemToCart(Guid itemID, int quantity)
         {
-            if (items_quantity[getItemById(itemID)] <= quantity)
+            if (items_quantity[GetItemById(itemID)] <= quantity)
                 throw new Exception("You can't add to the cart, the quantity in the inventory not enough");
         }
 
@@ -166,7 +166,7 @@ namespace SadnaExpress.DomainLayer.Store
                 double sum = 0;
                 foreach (Guid itemID in items.Keys)
                 {
-                    Item item = getItemById(itemID);
+                    Item item = GetItemById(itemID);
                     lock (item)
                     {
                         if (items_quantity[item] - items[itemID] < 0)
