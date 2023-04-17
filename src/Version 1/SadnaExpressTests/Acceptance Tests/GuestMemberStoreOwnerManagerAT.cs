@@ -8,7 +8,7 @@ using SadnaExpress.ServiceLayer;
 namespace SadnaExpressTests.Acceptance_Tests
 {
     [TestClass]
-    public class GuestMemberStoreOwner : TradingSystemAT
+    public class GuestMemberStoreOwnerManagerAT : TradingSystemAT
     {
         Guid store5Founder = Guid.Empty;
         Guid storeID5 = Guid.Empty;
@@ -424,7 +424,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void AppointingNewStoreManagerBy2StoreOwners_Concurrent_Bad()
         {
             Task<Response> task1 = Task.Run(() => {
-                return proxyBridge.AppointStoreManager(store5Manager, storeID5, "logmail1@gmail.com");
+                return proxyBridge.AppointStoreManager(store5Founder, storeID5, "logmail1@gmail.com");
             });
 
 
@@ -444,7 +444,21 @@ namespace SadnaExpressTests.Acceptance_Tests
 
 
         #region changing a store manager permission 4.7
+        
+        [TestMethod]
+        public void AddingOwnerPermissions_Good()
+        {
+            /*
+            ResponseT<Guid> response1 = proxyBridge.AddItemToStore(store5Manager, storeID5, "testItem", "testCat", 50.0, 5);
+            Assert.IsTrue(response1.ErrorOccured); //no permissions yet
 
+            Response response2 = proxyBridge.AddStoreManagerPermissions(store5Owner, storeID5, "storeManagerMail2@gmail.com", "owner permissions");
+            Assert.IsFalse(response2.ErrorOccured); //error not occured 
+
+            ResponseT<Guid> response3 = proxyBridge.AddItemToStore(store5Manager, storeID5, "testItem", "testCat", 50.0, 5);
+            Assert.IsTrue(response3.ErrorOccured); //now he has permissions
+            */
+        }
         #endregion
 
 

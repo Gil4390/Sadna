@@ -32,11 +32,9 @@ namespace SadnaExpress.DomainLayer.User
         
         public PromotedMember AppointStoreOwner(Guid storeID, PromotedMember directSupervisor, Member newOwner)
         {
-            lock (newOwner)
-            {
-                if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
-                    throw new Exception("The member is already store owner");
-            }
+            if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
+                throw new Exception("The member is already store owner");
+
             PromotedMember owner = newOwner.promoteToMember();
             owner.LoggedIn = newOwner.LoggedIn;
             directSupervisor.addAppoint(storeID, owner);
@@ -46,11 +44,9 @@ namespace SadnaExpress.DomainLayer.User
 
         public PromotedMember AppointStoreManager(Guid storeID, PromotedMember directSupervisor, Member newManager)
         {
-            lock (newManager)
-            {
-                if (newManager.hasPermissions(storeID, new List<string> {"founder permissions", "owner permissions", "get store history"}))
-                    throw new Exception("The member is already store manager");
-            }
+            if (newManager.hasPermissions(storeID, new List<string> {"founder permissions", "owner permissions", "get store history"}))
+                throw new Exception("The member is already store manager");
+            
             PromotedMember manager = newManager.promoteToMember();
             manager.LoggedIn = newManager.LoggedIn;
             directSupervisor.addAppoint(storeID, manager);

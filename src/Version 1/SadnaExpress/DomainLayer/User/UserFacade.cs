@@ -25,6 +25,8 @@ namespace SadnaExpress.DomainLayer.User
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
         object enterLock = new object();
         object registerLock = new object();
+        object permissionLock = new object();
+
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
@@ -247,19 +249,20 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(userID);
-            Member newOwner = null;
-            Guid newOwnerID = default(Guid);
+            Guid newOwnerID = Guid.Empty;
             foreach (Member member in members.Values)
                 if (member.Email == email)
                 {
-                    newOwner = member;
                     newOwnerID = member.UserId;
                 }
 
-            if (newOwner == null)
+            if (newOwnerID.Equals(Guid.Empty))
                 throw new Exception($"There isn't a member with {email}");
-            PromotedMember owner = members[userID].AppointStoreOwner(storeID, newOwner);
-            members[newOwnerID] = owner;
+            lock (members[newOwnerID])
+            {
+                PromotedMember owner = members[userID].AppointStoreOwner(storeID, members[newOwnerID]);
+                members[newOwnerID] = owner;
+            }
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
         }
 
@@ -267,19 +270,24 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(userID);
-            Member newManager = null;
-            Guid newManagerID = default(Guid);
+            Guid newManagerID = Guid.Empty;
+
             foreach (Member member in members.Values)
                 if (member.Email == email)
                 {
-                    newManager = member;
                     newManagerID = member.UserId;
                 }
 
-            if (newManager == null)
+            if (newManagerID.Equals(Guid.Empty))
                 throw new Exception($"There isn't a member with {email}");
-            PromotedMember manager = members[userID].AppointStoreManager(storeID, newManager);
-            members[newManagerID] = manager;
+
+            lock (members[newManagerID])
+            {
+                PromotedMember manager = members[userID].AppointStoreManager(storeID, members[newManagerID]);
+                members[newManagerID] = manager;
+            }
+
+
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +newManagerID +" to new store manager");
         }
 
