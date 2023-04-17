@@ -170,7 +170,7 @@ namespace SadnaExpress.DomainLayer.Store
                     lock (item)
                     {
                         if (items_quantity[item] - items[itemID] < 0)
-                            throw new Exception("Edit item quantity failed, item quantity cant be negative");
+                            throw new Exception($"The item {item.Name} finished");
                         items_quantity[item] -= items[itemID];
                         itemForOrders.Add(new ItemForOrder(item, storeID));
                     }

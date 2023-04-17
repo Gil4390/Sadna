@@ -264,6 +264,8 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsTsInitialized();
             IsStoreExist(storeID);
+            if (!stores[storeID].Active)
+                throw new Exception($"store {stores[storeID].StoreName} is not active");
             stores[storeID].AddItemToCart(itemID, quantity);
         }
 
