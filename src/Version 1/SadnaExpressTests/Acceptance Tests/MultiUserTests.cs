@@ -31,7 +31,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid id7 = Guid.Empty;
             Guid id8 = Guid.Empty;
             Guid id9 = Guid.Empty;
-            Guid id10 = Guid.Empty;
             Task<ResponseT<ShoppingCart>>[] clientTasks = new Task<ResponseT<ShoppingCart>>[] {
                 Task.Run(() =>
                 {
@@ -354,7 +353,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(proxyBridge.GetStore(storeId2).Value.itemsInventory.items_quantity[proxyBridge.GetStore(storeId2).Value.GetItemById(itemId2)].Equals(0));
         }
         #endregion
-
+        
         #region Many users try to purchase items at the same time store managers removes the items
         [TestMethod]
         [TestCategory("Concurrency")]
@@ -395,7 +394,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     storeId1 = proxyBridge.OpenNewStore(loggedId1, "FruitsStore").Value;
 
                     itemId1 = proxyBridge.AddItemToStore(loggedId1, storeId1, "apple", "fruits", 5.99, 1).Value;
-                    
+
                     Thread.Sleep(100);
                     return proxyBridge.RemoveItemFromStore(loggedId1, storeId1, itemId1);
                 }),
@@ -469,9 +468,9 @@ namespace SadnaExpressTests.Acceptance_Tests
                     return proxyBridge.RemoveItemFromStore(loggedId6, storeId2, itemId2);
                 }),
                 Task.Run( () => {
-                    //Thread.Sleep(1000);
+                    Thread.Sleep(1000);
                     userId7 = proxyBridge.Enter().Value;
-                    Thread.Sleep(750);
+                    Thread.Sleep(3000);
                     Response resp = proxyBridge.AddItemToCart(userId7, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
@@ -482,7 +481,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Task.Run( () => {
                     Thread.Sleep(1000);
                     userId8 = proxyBridge.Enter().Value;
-                    Thread.Sleep(20);
+                    Thread.Sleep(200);
                     Response resp =proxyBridge.AddItemToCart(userId8, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
@@ -493,7 +492,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Thread.Sleep(1000);
                     userId9 = proxyBridge.Enter().Value;
                     Thread.Sleep(20);
-                    Thread.Sleep(1000);
+                    Thread.Sleep(3000);
                     Response resp = proxyBridge.AddItemToCart(userId9, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
@@ -504,7 +503,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Thread.Sleep(1000);
                     userId10 = proxyBridge.Enter().Value;
                     Thread.Sleep(20);
-                    Thread.Sleep(1000);
+                    Thread.Sleep(3000);
                     Response resp = proxyBridge.AddItemToCart(userId10, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
