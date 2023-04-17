@@ -49,7 +49,15 @@ namespace SadnaExpressTests
                 Thread.Sleep(11000); // Wait for 11 seconds
                 return true; // Return true after waiting
             }
-
+        }
+        public class Mock_Bad_Credit_Limit : Mock_PaymentService
+        {
+            public override bool Pay(double amount, string transactionDetails)
+            {
+                if (amount > 100) 
+                    return false;
+                return true;
+            }
         }
 
         public class Mock_5sec_PaymentService : Mock_PaymentService
@@ -97,6 +105,10 @@ namespace SadnaExpressTests
             }
 
             public virtual bool Pay(double amount, string transactionDetails)
+            {
+                return true;
+            }
+            public virtual bool cancel(double amount, string transactionDetails)
             {
                 return true;
             }

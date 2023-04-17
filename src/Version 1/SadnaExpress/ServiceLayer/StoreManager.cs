@@ -79,7 +79,6 @@ namespace SadnaExpress.ServiceLayer
         }
         public Response PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
-            bool problemAfterPurchase = false;
             Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
             try
             {
@@ -87,24 +86,30 @@ namespace SadnaExpress.ServiceLayer
                 List<ItemForOrder> itemForOrders = new List<ItemForOrder>();
                 //get the user cart
                 ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
+                if (shoppingCart.Baskets.Count == 0)
+                    throw new Exception("Cart can't be empty");
                 // cast from shopping cart to dictionary before sending to store component.
                 foreach (ShoppingBasket basket in shoppingCart.Baskets) 
                     cart.Add(basket.StoreID, basket.ItemsInBasket);
                 // try to purchase the items. (the function update the quantity in the inventory in this function)
                 double amount = storeFacade.PurchaseCart(cart, ref itemForOrders);
-                problemAfterPurchase = true;
                 if (!userFacade.PlacePayment(amount, paymentDetails))
-                    throw new Exception("payment failed");
+                {
+                    storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
+                    throw new Exception("The payment not work!");
+                }
                 if (!userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail))
-                    throw new Exception("supply failed");
+                {
+                    storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
+                    userFacade.CancelPayment(amount, paymentDetails); // because we need to refund the user
+                    throw new Exception("The supply not work!");
+                }
                 Orders.Instance.AddOrder(userID, itemForOrders);
                 userFacade.PurchaseCart(userID);
                 return new Response();
             }
             catch (Exception ex)
             {
-                if (problemAfterPurchase) // because we update the inventory we need to return them to inventory.
-                    storeFacade.AddItemToStores(cart);
                 Logger.Instance.Error(ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }

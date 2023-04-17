@@ -198,7 +198,6 @@ namespace SadnaExpress.DomainLayer.User
                 return members[userID].ShoppingCart;
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(GetDetailsOnCart)+" ask to displays his shopping cart");
             return current_Users[userID].ShoppingCart;
-            
         }
         
         public void PurchaseCart(Guid userID)
@@ -517,6 +516,11 @@ namespace SadnaExpress.DomainLayer.User
                 Logger.Instance.Error(ex.Message);
                 return false;
             }
+        }
+
+        public bool CancelPayment(double amount, string transactionDetails)
+        {
+            return paymentService.cancel(amount, transactionDetails);
         }
 
         public bool PlaceSupply(string orderDetails, string userDetails)

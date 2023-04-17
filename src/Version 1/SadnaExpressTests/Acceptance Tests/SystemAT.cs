@@ -181,6 +181,59 @@ namespace SadnaExpressTests.Acceptance_Tests
         #endregion
 
         #region Payment 1.3
+        [TestMethod]
+        public void PaymentCompletedSuccessfully_GoodTest()
+        {
+            //Arrange
+            Guid id = new Guid();
+            proxyBridge.SetIsSystemInitialize(true);
+            proxyBridge.SetPaymentService(new Mocks.Mock_5sec_PaymentService());
+            //Act
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
+                
+                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//error not occurred
+        }
+        [TestMethod]
+        public void PaymentIsCollapse_BadTest()
+        {
+            //Arrange
+            Guid id = new Guid();
+            proxyBridge.SetIsSystemInitialize(true);
+            proxyBridge.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
+            //Act
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            });
+            task.Wait();
+            //Assert
+            Assert.IsTrue(task.Result.ErrorOccured);//error occurred
+        }
+        /*
+        [TestMethod]
+        public void PaymentIsOverCreditLimit_BadTest()
+        {
+            //Arrange
+            Guid id = new Guid();
+            proxyBridge.SetIsSystemInitialize(true);
+            proxyBridge.SetPaymentService(new Mocks.Mock_Bad_Credit_Limit());
+            //Act
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            });
+            task.Wait();
+            //Assert
+            Assert.IsTrue(task.Result.ErrorOccured);//error occurred
+        }
+        */
         #endregion
 
         #region Supply 1.4

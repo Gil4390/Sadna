@@ -580,7 +580,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.AreEqual(39, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid1)); //the quantity updated
         }
         [TestMethod]
-        public void invalidPaymentInformation_BadTest()
+        public void InvalidPaymentInformation_BadTest()
         {
             Guid id = new Guid();
             Task<Response> task = Task.Run(() => {
