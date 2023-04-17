@@ -67,6 +67,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 return proxyBridge.Register(id, "tal.galmor@weka.io","tal", "galmor", "123AaC!@#");
             });
             task.Wait();
+
             Assert.IsFalse(task.Result.ErrorOccured);
             Assert.IsNotNull(proxyBridge.GetMember(id));
         }
