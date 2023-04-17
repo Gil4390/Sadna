@@ -38,45 +38,7 @@ namespace SadnaExpressTests.Unit_Tests
         #endregion
 
         #region Mocks
-        private class Mock_Bad_PaymentService : Mock_PaymentService
-        {
-            public override bool Pay(double amount, string transactionDetails)
-            {
-                Thread.Sleep(11000); // Wait for 11 seconds
-                return true; // Return true after waiting
-            }
-
-        }
-
-        private class Mock_5sec_PaymentService : Mock_PaymentService
-        {
-            public override bool Pay(double amount, string transactionDetails)
-            {
-                Thread.Sleep(5000); // Wait for 5 seconds
-                return true; // Return true after waiting
-            }
-
-        }
-
-        private class Mock_Bad_SupplierService : Mock_SupplierService
-        {
-            public override bool ShipOrder(string orderDetails, string userDetails)
-            {
-                Thread.Sleep(11000); // Wait for 11 seconds
-                return true; // Return true after waiting
-            }
-
-        }
-
-        private class Mock_5sec_SupplierService : Mock_SupplierService
-        {
-            public override bool ShipOrder(string orderDetails, string userDetails)
-            {
-                Thread.Sleep(5000); // Wait for 5 seconds
-                return true; // Return true after waiting
-            }
-
-        }
+       
         #endregion
 
         #region Tests

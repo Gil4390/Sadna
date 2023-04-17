@@ -52,7 +52,11 @@ namespace SadnaExpress.DomainLayer.User
             directSupervisor.TryAdd(storeID, null);
             appoint.TryAdd(storeID, new List<PromotedMember>());
         }
-
+        public override PromotedMember openNewStore(Guid storeID)
+        {
+            createFounder(storeID);
+            return null;
+        }
         public void createSystemManager()
         {
             List<string> permissionsList = new List<string>();

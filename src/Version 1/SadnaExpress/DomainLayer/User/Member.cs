@@ -35,7 +35,7 @@ namespace SadnaExpress.DomainLayer.User
         public PromotedMember promoteToMember() {
             return new PromotedMember(UserId, email, firstName, lastName, password);
         }
-        public PromotedMember openNewStore(Guid storeID)
+        public virtual PromotedMember openNewStore(Guid storeID)
         {
             PromotedMember founder = promoteToMember();
             founder.createFounder(storeID);

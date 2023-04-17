@@ -93,9 +93,12 @@ namespace SadnaExpress.ServiceLayer
                 // try to purchase the items. (the function update the quantity in the inventory in this function)
                 double amount = storeFacade.PurchaseCart(cart, ref itemForOrders);
                 problemAfterPurchase = true;
-                userFacade.PlacePayment(amount, paymentDetails);
-                userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail);
+                if (!userFacade.PlacePayment(amount, paymentDetails))
+                    throw new Exception("payment failed");
+                if (!userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail))
+                    throw new Exception("supply failed");
                 Orders.Instance.AddOrder(userID, itemForOrders);
+                userFacade.PurchaseCart(userID);
                 return new Response();
             }
             catch (Exception ex)
@@ -160,23 +163,6 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(ReopenStore)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
-        }
-        public Response GetPurchasesInfo(Guid userID, Guid storeID)
-        {
-            try
-            {
-                storeFacade.GetStorePurchases(storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetPurchasesInfo)+": "+ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-        public Response PurchaseItems(int id, string paymentDetails)
-        {
-            throw new System.NotImplementedException();
         }
         public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {

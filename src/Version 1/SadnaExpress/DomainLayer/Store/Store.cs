@@ -91,5 +91,9 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return itemsInventory.GetItemById(itemID);
         }
+        public int GetItemByQuantity(Guid itemID)
+        {
+            return itemsInventory.GetItemByQuantity(itemID);
+        }
     }
 }
