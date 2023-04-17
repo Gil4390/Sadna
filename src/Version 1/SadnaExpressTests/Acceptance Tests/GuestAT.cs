@@ -150,6 +150,20 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(task.Result.Value.Count == 1);
         }
 
+        [TestMethod]
+        public void GuestSearchProductsByNameTowelButStoreIsClosed_HappyTest()
+        {
+            //Arrange
+            proxyBridge.GetStore(storeid2).Value.Active = false;
+            Guid id = new Guid();
+            Task<ResponseT<List<Item>>> task = Task.Run(() => {
+                return GetItemsByName("Towel");
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(task.Result.Value.Count == 0);
+        }
+
         private ResponseT<List<Item>> GetItemsByName(string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
             Guid id = proxyBridge.Enter().Value;
