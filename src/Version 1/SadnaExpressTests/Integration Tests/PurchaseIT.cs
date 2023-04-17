@@ -4,39 +4,22 @@ using SadnaExpress.ServiceLayer;
 
 namespace SadnaExpressTests.Integration_Tests
 {
+    /// <summary>
+    /// This class contains integration tests for the purchase process in the trading system.
+    /// It tests the functionality of purchasing items as a guest user and handles various scenarios, such as successful purchases, failed payments, failed supplier service, and insufficient item quantities.
+    /// </summary>
     [TestClass]
-    public class PurchaseIT
+    public class PurchaseIT : TradingSystemIT
     {
-        protected TradingSystem trading;
-        protected Guid userID;
-        protected Guid buyerID;
-        protected Guid storeID1;
-        protected Guid storeID2;
-        protected Guid itemID1;
-        protected Guid itemID2;
-        
         [TestInitialize]
-        public void Setup()
+        public override void Setup()
         {
-            trading = new TradingSystem();
-            trading.SetIsSystemInitialize(true);
-            // create member
-            userID = trading.Enter().Value;
-            trading.Register(userID, "RotemSela@gmail.com", "noga", "schwartz","asASD876!@");
-            userID = trading.Login(userID, "RotemSela@gmail.com", "asASD876!@").Value;
-            // open stores
-            storeID1 = trading.OpenNewStore(userID, "hello").Value;
-            storeID2 = trading.OpenNewStore(userID, "hello2").Value;
-            // add items to stores
-            itemID1 = trading.AddItemToStore(userID, storeID1, "ipad 32", "electronic", 4000, 3).Value;
-            itemID2 = trading.AddItemToStore(userID, storeID2, "ipad 32", "electronic", 3000, 1).Value;
-            // create guest
-            buyerID = trading.Enter().Value;
-            // add items to cart
-            trading.AddItemToCart(buyerID, storeID1, itemID1, 2);
-            trading.AddItemToCart(buyerID, storeID2, itemID2, 1);
+            base.Setup();
         }
 
+        /// <summary>
+        /// Tests the purchase of items by a guest user when payment is successful.
+        /// </summary>
         [TestMethod]
         public void PurchaseItemsGuestSuccess()
         {
@@ -55,7 +38,10 @@ namespace SadnaExpressTests.Integration_Tests
             //check that the shopping empty
             Assert.AreEqual(0, trading.GetDetailsOnCart(buyerID).Value.Baskets.Count);
         }
-        
+
+        /// <summary>
+        /// Tests the purchase of items by a guest user when payment fails.
+        /// </summary>
         [TestMethod]
         public void PurchaseItemsGuestPaymentFail()
         {
@@ -74,6 +60,10 @@ namespace SadnaExpressTests.Integration_Tests
             //check that the shopping is same
             Assert.AreEqual(2, trading.GetDetailsOnCart(buyerID).Value.Baskets.Count);
         }
+
+        /// <summary>
+        /// Tests the purchase of items by a guest user when the supplier fails to provide the items.
+        /// </summary>
         [TestMethod]
         public void PurchaseItemsGuestSupplierFail()
         {
@@ -92,7 +82,10 @@ namespace SadnaExpressTests.Integration_Tests
             //check that the shopping is same
             Assert.AreEqual(2, trading.GetDetailsOnCart(buyerID).Value.Baskets.Count);
         }
-        
+
+        /// <summary>
+        /// Tests the purchase of items by a guest user when the quantity of the items is not valid.
+        /// </summary>
         [TestMethod]
         public void PurchaseItemsGuestTheQuantitySmallerFail()
         {
@@ -111,6 +104,12 @@ namespace SadnaExpressTests.Integration_Tests
             Assert.AreEqual(1, trading.GetStore(storeID2).Value.GetItemByQuantity(itemID2));
             //check that the shopping is same
             Assert.AreEqual(2, trading.GetDetailsOnCart(buyerID).Value.Baskets.Count);
+        }
+
+        [TestCleanup]
+        public override void CleanUp()
+        {
+            base.CleanUp();
         }
     }
 }

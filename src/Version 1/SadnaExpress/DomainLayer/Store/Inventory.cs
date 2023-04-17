@@ -190,5 +190,14 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return items_quantity[GetItemById(itemID)];
         }
+
+        public bool ItemExist(Guid itemID)
+        {
+            foreach (Item item in items_quantity.Keys)
+            {
+                if(item.ItemID == itemID) return true;
+            }
+            return false;
+        }
     }
 }
