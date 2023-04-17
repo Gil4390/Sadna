@@ -215,7 +215,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Assert
             Assert.IsTrue(task.Result.ErrorOccured);//error occurred
         }
-        /*
         [TestMethod]
         public void PaymentIsOverCreditLimit_BadTest()
         {
@@ -233,7 +232,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Assert
             Assert.IsTrue(task.Result.ErrorOccured);//error occurred
         }
-        */
         #endregion
 
         #region Supply 1.4
