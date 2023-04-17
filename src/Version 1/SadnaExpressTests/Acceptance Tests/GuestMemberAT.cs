@@ -12,6 +12,8 @@ namespace SadnaExpressTests.Acceptance_Tests
     [TestClass]
     public class GuestMemberAT: TradingSystemAT
     {
+        protected Guid storeidNew;
+
         [TestInitialize]
         public override void SetUp()
         {
@@ -21,8 +23,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.GetMember(memberId2).Value.LoggedIn = true;
             proxyBridge.GetMember(memberId3).Value.LoggedIn = true;
             proxyBridge.GetMember(memberId4).Value.LoggedIn = true;
-
-
+          
         }
 
         #region Logout 3.1
@@ -32,7 +33,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid tempid = Guid.Empty;
             Task<ResponseT<Guid>> task = Task.Run(() => {
                 tempid = proxyBridge.Enter().Value;
-                Guid loggedid=proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
+                Guid loggedid =proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
                 return proxyBridge.Logout(loggedid);
             });
 
@@ -310,6 +311,71 @@ namespace SadnaExpressTests.Acceptance_Tests
         /// </summary>
 
         #region Member Getting information about stores in the market and the products in the stores 2.1
+        [TestMethod]
+        public void StoreInfoUpdated1_HappyTest()
+        {
+            int count = 0;
+            Console.WriteLine(count);
+            Task<ResponseT<List<Store>>> task = Task.Run(() =>
+            {
+                count = proxyBridge.GetAllStoreInfo().Value.Count;
+                Store newStore = new Store("Pull&Bear");
+                 stores.TryAdd(newStore.StoreID,newStore);
+                 return proxyBridge.GetAllStoreInfo();
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(task.Result.Value.Count == count + 1 );
+        }
+        [TestMethod]
+        public void StoreInfoUpdated2_HappyTest()
+        {
+            int count = 0;
+            Console.WriteLine(count);
+            Task<ResponseT<List<Store>>> task = Task.Run(() =>
+            {
+                count = proxyBridge.GetAllStoreInfo().Value.Count;
+                Store newStore = new Store("Pull&Bear");
+                stores.TryAdd(newStore.StoreID,newStore);
+                stores.TryRemove(newStore.StoreID,out newStore);
+
+                return proxyBridge.GetAllStoreInfo();
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(task.Result.Value.Count == count);
+        }
+        
+        [TestMethod]
+        public void MultipleClientsGetInfo_HappyTest()
+        {
+            Store newStore = new Store("Pull&Bear");
+            stores.TryAdd(newStore.StoreID,newStore);
+
+            int count = proxyBridge.GetAllStoreInfo().Value.Count;
+
+            Task<ResponseT<List<Store>>>[] clientTasks = new Task<ResponseT<List<Store>>>[] {
+                Task.Run(() => {
+                    return proxyBridge.GetAllStoreInfo();
+                }),
+                Task.Run(() => {
+                    return proxyBridge.GetAllStoreInfo();
+                }),
+            };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetAllStoreInfo().Value.Count == count);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);//error occurred
+            Assert.IsTrue(proxyBridge.GetAllStoreInfo().Value.Count == count);
+            
+        }
+
+        
+        
         #endregion
 
         #region Member search products by general search or filters 2.2
@@ -319,7 +385,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<ResponseT<List<Item>>> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 return proxyBridge.GetItemsByCategory(memberId, "Home");
             });
             task.Wait();
@@ -332,7 +397,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<ResponseT<List<Item>>> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 return proxyBridge.GetItemsByCategory(memberId, "clothes");
             });
             task.Wait();
@@ -345,7 +409,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<ResponseT<List<Item>>> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 return proxyBridge.GetItemsByCategory(memberId, "clothes", 90);
             });
             task.Wait();
@@ -358,7 +421,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<ResponseT<List<Item>>> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 return proxyBridge.GetItemsByCategory(memberId, "shay");
             });
             task.Wait();
@@ -456,7 +518,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<Response> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 return proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
             });
             task.Wait();
@@ -470,7 +531,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<Response> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 return proxyBridge.AddItemToCart(memberId, storeid2, itemid2, 1);
             });
@@ -485,7 +545,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<Response> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 return proxyBridge.AddItemToCart(memberId, storeid1, itemid11, 1);
             });
@@ -499,7 +558,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<Response> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 return proxyBridge.AddItemToCart(memberId, storeid1, Guid.NewGuid(), 1);
             });
             task.Wait();
@@ -512,7 +570,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<Response> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 return proxyBridge.AddItemToCart(memberId, Guid.NewGuid(), itemid1, 1);
             });
             task.Wait();
@@ -534,22 +591,18 @@ namespace SadnaExpressTests.Acceptance_Tests
             {
                 Task.Run(() =>
                 {
-                    memberId = proxyBridge.Enter().Value;
                     return AddItemToCart(memberId, storeid1, itemid1, 1);
                 }),
                 Task.Run(() =>
                 {
-                    memberId2 = proxyBridge.Enter().Value;
                     return AddItemToCart(memberId2, storeid1, itemid1, 1);
                 }),
                 Task.Run(() =>
                 {
-                    memberId3 = proxyBridge.Enter().Value;
                     return AddItemToCart(memberId3, storeid1, itemid1, 1);
                 }),
                 Task.Run(() =>
                 {
-                    memberId4 = proxyBridge.Enter().Value;
                     return AddItemToCart(memberId4, storeid1, itemid1, 1);
                 }),
             };
@@ -626,17 +679,14 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Task.Run(() => { return AddItemToCart(memberId, storeid1, itemid1, 1); }),
                 Task.Run(() =>
                 {
-                    memberId2 = proxyBridge.Enter().Value;
                     return AddItemToCart(memberId2, storeid2, itemNoStock, 1);
                 }),
                 Task.Run(() =>
                 {
-                    memberId3 = proxyBridge.Enter().Value;
                     return AddItemToCart(memberId3, storeid1, itemid1, 1);
                 }),
                 Task.Run(() =>
                 {
-                    memberId4 = proxyBridge.Enter().Value;
                     return AddItemToCart(memberId4, storeid1, itemid1, 1);
                 }),
             };
@@ -720,7 +770,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberEditShoppingCartAddAndRemove_HappyTest()
         {
             Task<Response> task = Task.Run(() => {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 return proxyBridge.RemoveItemFromCart(memberId, storeid1, itemid1);
             });
@@ -734,7 +783,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberEditShoppingCartAddAndEditQuantity_HappyTest()
         {
             Task<Response> task = Task.Run(() => {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 return proxyBridge.EditItemFromCart(memberId, storeid1, itemid1, 3);
             });
@@ -748,7 +796,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberEditShoppingCartAddAndEditQuantityNoChange_HappyTest()
         {
             Task<Response> task = Task.Run(() => {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 return proxyBridge.EditItemFromCart(memberId, storeid1, itemid1, 1);
             });
@@ -761,7 +808,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberEditShoppingCartItemThatDoesNotExist_BadTest()
         {
             Task<Response> task = Task.Run(() => {
-                memberId = proxyBridge.Enter().Value;
                 return proxyBridge.EditItemFromCart(memberId, storeid1, itemid1, 1);
             });
             task.Wait();
@@ -773,7 +819,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberEditShoppingCartWithBadStoreId_BadTest()
         {
             Task<Response> task = Task.Run(() => {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 return proxyBridge.EditItemFromCart(memberId, storeid2, itemid1, 4);
             });
@@ -787,7 +832,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberRemoveItemFromShoppingCartThatDoesNotExist_BadTest()
         {
             Task<Response> task = Task.Run(() => {
-                memberId = proxyBridge.Enter().Value;
                 return proxyBridge.RemoveItemFromCart(memberId, storeid1, itemid1);
             });
 
@@ -800,7 +844,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberRemoveItemFromShoppingCart_HappyTest()
         {
             Task<Response> task = Task.Run(() => {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 4);
                 return proxyBridge.RemoveItemFromCart(memberId, storeid1, itemid1);
@@ -815,7 +858,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberRemoveItemFromShoppingCartBadStoreId_BadTest()
         {
             Task<Response> task = Task.Run(() => {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 return proxyBridge.EditItemFromCart(memberId, Guid.NewGuid(), itemid1, 4);
             });
@@ -829,7 +871,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberRemoveItemFromShoppingCartBadItemId_BadTest()
         {
             Task<Response> task = Task.Run(() => {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 return proxyBridge.EditItemFromCart(memberId, storeid1, Guid.NewGuid(), 4);
             });
@@ -843,23 +884,19 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void MultipleClientsEditShoppingCart_HappyTest()
         {
-     
             Task<Response>[] clientTasks = new Task<Response>[] {
                 Task.Run(() => {
-                    memberId=proxyBridge.Enter().Value; 
                     AddItemToCart(memberId,storeid1,itemid1,1);
                     AddItemToCart(memberId,storeid1,itemid1,1);
                     return proxyBridge.RemoveItemFromCart(memberId,storeid1,itemid1);
                 }),
                 Task.Run(() => {
-                    memberId2=proxyBridge.Enter().Value; 
                     AddItemToCart(memberId2,storeid1,itemid1,1);
                     AddItemToCart(memberId2,storeid2,itemid2,1);
                     AddItemToCart(memberId2,storeid1,itemid1,1);
                     return proxyBridge.EditItemFromCart(memberId2,storeid1,itemid1,0);
                 }),
                 Task.Run(() => {
-                    memberId3=proxyBridge.Enter().Value;
                     AddItemToCart(memberId3,storeid1,itemid1,1);
                     proxyBridge.EditItemFromCart(memberId3,storeid1,itemid2,0);
                     return proxyBridge.EditItemFromCart(memberId3,storeid1,itemid1,0);

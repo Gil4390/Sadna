@@ -20,6 +20,70 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         #region Guest Getting information about stores in the market and the products in the stores 2.1
+                [TestMethod]
+        public void StoreInfoUpdated1_HappyTest()
+        {
+            int count = 0;
+            Console.WriteLine(count);
+            Task<ResponseT<List<Store>>> task = Task.Run(() =>
+            {
+                count = proxyBridge.GetAllStoreInfo().Value.Count;
+                Store newStore = new Store("Pull&Bear");
+                 stores.TryAdd(newStore.StoreID,newStore);
+                 return proxyBridge.GetAllStoreInfo();
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(task.Result.Value.Count == count + 1 );
+        }
+        [TestMethod]
+        public void StoreInfoUpdated2_HappyTest()
+        {
+            int count = 0;
+            Console.WriteLine(count);
+            Task<ResponseT<List<Store>>> task = Task.Run(() =>
+            {
+                count = proxyBridge.GetAllStoreInfo().Value.Count;
+                Store newStore = new Store("Pull&Bear");
+                stores.TryAdd(newStore.StoreID,newStore);
+                stores.TryRemove(newStore.StoreID,out newStore);
+
+                return proxyBridge.GetAllStoreInfo();
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(task.Result.Value.Count == count);
+        }
+        
+        [TestMethod]
+        public void MultipleClientsGetInfo_HappyTest()
+        {
+            Store newStore = new Store("Pull&Bear");
+            stores.TryAdd(newStore.StoreID,newStore);
+
+            int count = proxyBridge.GetAllStoreInfo().Value.Count;
+
+            Task<ResponseT<List<Store>>>[] clientTasks = new Task<ResponseT<List<Store>>>[] {
+                Task.Run(() => {
+                    return proxyBridge.GetAllStoreInfo();
+                }),
+                Task.Run(() => {
+                    return proxyBridge.GetAllStoreInfo();
+                }),
+            };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetAllStoreInfo().Value.Count == count);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);//error occurred
+            Assert.IsTrue(proxyBridge.GetAllStoreInfo().Value.Count == count);
+            
+        }
+        
+        
         #endregion
 
         #region Guest search products by general search or filters 2.2
