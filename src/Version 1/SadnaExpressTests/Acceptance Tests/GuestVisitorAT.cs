@@ -124,11 +124,26 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid id = Guid.NewGuid();
             Task<Response> task = Task.Run(() =>
             {
-                return proxyBridge.Register(id, "RotemSela@gmail.com", "Rotem", "Sela", "123");
+                return proxyBridge.Register(id, "RotemSela@gmail.com", "Rotem", "Sela", "ASK9876as!!");
             });
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured);
             Assert.IsTrue(proxyBridge.GetMember(id).ErrorOccured);
+        }
+
+        [TestMethod]
+        public void UserTryToRegisteTwice_BadTest()
+        {
+            Guid id = Guid.NewGuid();
+            Task<Response> task = Task.Run(() =>
+            {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.Register(id, "shsh@gmail.com", "Rotem", "Sela", "ASK9876as!!");
+                return proxyBridge.Register(id, "RotemSela@gmail.com", "Rotem", "Sela", "ASK9876as!!");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);  
         }
 
         protected Response RegisterClient(string email, string firstName, string LastName, string pass)
@@ -172,6 +187,40 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(clientTasks[0].Result.ErrorOccured);
             Assert.IsTrue(clientTasks[1].Result.ErrorOccured);
             Assert.IsFalse(clientTasks[2].Result.ErrorOccured);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void Register2UsersAtTheSameTimeWithSameEmail_BadTest()
+        {
+            //task 2 run client with existing email
+            Task<Response>[] clientTasks = new Task<Response>[] {
+            Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","57571!@#$aS")),
+            Task.Run(() => RegisterClient("adam@gmail.com","Rotem","Sela","LkJ&^$187")),
+            };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsTrue((clientTasks[0].Result.ErrorOccured == true && clientTasks[1].Result.ErrorOccured == false) ||
+               (clientTasks[0].Result.ErrorOccured == false && clientTasks[1].Result.ErrorOccured == true));
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void Register2UsersAtTheSameTimeWithBadPass_BadTest()
+        {
+            //task 2 run client with existing email
+            Task<Response>[] clientTasks = new Task<Response>[] {
+            Task.Run(() => RegisterClient("adam@gmail.com","Adam","Alon","123")),
+            Task.Run(() => RegisterClient("adam@gmail.com","Rotem","Sela","LkJ&^$187")),
+            };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsTrue(clientTasks[0].Result.ErrorOccured == true && clientTasks[1].Result.ErrorOccured == false);
+               
         }
         #endregion
 

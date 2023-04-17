@@ -74,29 +74,33 @@ namespace SadnaExpress.DomainLayer.User
 
         public void Register(Guid id, string email, string firstName, string lastName, string password)
         {
+            IsTsInitialized();
+            if (current_Users.ContainsKey(id) == false)
+                throw new Exception("User should enter the system before preforming this action");
+
+            if (members.ContainsKey(id))
+                throw new Exception("Member with this id already registered");
+
+            if (!_reg.ValidateEmail(email))
+                throw new Exception("Email does not meet the system criteria");
+
+            if (!_reg.ValidateStrongPassword(password))
+                throw new Exception("Password is not strong enough according to the system's criteria");
+
             lock (registerLock)
             {
-                IsTsInitialized();
-                if (current_Users.ContainsKey(id) == false)
-                    throw new Exception("User should enter the system before preforming this action");
-
-                if (members.ContainsKey(id))
-                    throw new Exception("Member with this id already registered");
-
                 foreach (Member m in members.Values)
                 {
                     if (m.Email == email)
                         throw new Exception("Member with this email already exists");
+
                 }
-                if (!_reg.ValidateEmail(email))
-                    throw new Exception("Email does not meet the system criteria");
-                if (!_reg.ValidateStrongPassword(password))
-                    throw new Exception("Password is not strong enough according to the system's criteria");
-                
-                string hashPassword = _ph.Hash(password);
-                Member newMember = new Member(id, email, firstName, lastName, hashPassword);
-                members.TryAdd(id, newMember);
-                Logger.Instance.Info(newMember.UserId, nameof(UserFacade)+": "+nameof(Register)+": registered with " + email + " and password "+password+".");
+
+            string hashPassword = _ph.Hash(password);
+            Member newMember = new Member(id, email, firstName, lastName, hashPassword);
+
+            members.TryAdd(id, newMember);
+            Logger.Instance.Info(newMember.UserId, nameof(UserFacade) + ": " + nameof(Register) + ": registered with " + email + " and password " + password + ".");
             }
         }
 

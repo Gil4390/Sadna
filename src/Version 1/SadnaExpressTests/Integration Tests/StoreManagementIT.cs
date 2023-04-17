@@ -36,6 +36,7 @@ namespace SadnaExpressTests.Integration_Tests
             //Assert
             Assert.IsFalse(res.ErrorOccured);
             Assert.IsTrue(trading.GetAllStoreInfo().Value.FindAll((store) => store.StoreName == "Jumbo").Count == 1);
+            Assert.IsTrue(trading.GetStore(res.Value).Value.Active);
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace SadnaExpressTests.Integration_Tests
         /// Asserts that the store was successfully closed.
         /// <summary>
         [TestMethod()]
-        public void UserCloseStoreNameExist_BadTest()
+        public void UserCloseStore_BadTest()
         {
             //Arrange
 
@@ -73,6 +74,32 @@ namespace SadnaExpressTests.Integration_Tests
             Assert.IsFalse(res.ErrorOccured);
             Assert.IsTrue(trading.GetAllStoreInfo().Value.FindAll((store) => store.StoreID == storeID1).Count == 1);//store exists
             Assert.IsFalse(trading.GetStore(storeID1).Value.Active);
+        }
+
+        /// <summary>
+        /// Tests the UserCloseStore method when provided with valid input.
+        /// Asserts that the store items are not availble to search.
+        /// <summary>
+        [TestMethod()]
+        public void UserCloseStoreItemsNotAppearInSearchByCategory_BadTest()
+        {
+            //Arrange
+
+
+            //Act
+            ResponseT<List<Item>> res1 = trading.GetItemsByKeysWord(userID, "ipad");
+
+            Response res = trading.CloseStore(userID, storeID1);
+
+            ResponseT<List<Item>> res2= trading.GetItemsByKeysWord(userID, "ipad");
+
+            //Assert
+            Assert.IsFalse(res.ErrorOccured);
+            Assert.IsFalse(res1.ErrorOccured);
+            Assert.IsFalse(res2.ErrorOccured);
+
+            Assert.IsTrue(res1.Value.Count==2);
+            Assert.IsTrue(res2.Value.Count == 1);
         }
 
         /// <summary>
