@@ -15,7 +15,7 @@ namespace SadnaExpressTests.Acceptance_Tests
     {
         protected ProxyBridge proxyBridge;
         protected Guid userid;
-        protected Guid mamberid;
+        protected Guid memberid;
         protected Guid systemManagerid;
         protected Guid storeOwnerid;
         protected Guid storeid1;
@@ -53,15 +53,15 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             ConcurrentDictionary<Guid, Member> members = new ConcurrentDictionary<Guid, Member>();
             systemManagerid = Guid.NewGuid();
-            mamberid = Guid.NewGuid();
+            memberid = Guid.NewGuid();
             storeOwnerid = Guid.NewGuid();
-            Member member = new Member(mamberid, "gil@gmail.com", "Gil", "Gil", passwordHash.Hash("asASD876!@"));
+            Member member = new Member(memberid, "gil@gmail.com", "Gil", "Gil", passwordHash.Hash("asASD876!@"));
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", passwordHash.Hash("AS87654askj"));
             PromotedMember storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "shay", "kres", passwordHash.Hash("A#!a12345678"));
             systemManager.createSystemManager();
             storeOwner.createFounder(storeid1);
             members.TryAdd(systemManagerid, systemManager);
-            members.TryAdd(mamberid, member);
+            members.TryAdd(memberid, member);
             members.TryAdd(storeOwnerid, storeOwner);
             IUserFacade _userFacade = new UserFacade(current_users, members, new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
             TradingSystem Ts = new TradingSystem(_userFacade, storeFacade);

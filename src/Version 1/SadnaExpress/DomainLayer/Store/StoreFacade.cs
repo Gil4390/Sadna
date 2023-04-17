@@ -10,7 +10,7 @@ namespace SadnaExpress.DomainLayer.Store
         private ConcurrentDictionary<Guid, Store> stores;
         private bool _isTSInitialized;
         private static Orders _orders;
-
+        private Object openNewStore = new object();
         public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
@@ -25,13 +25,20 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Guid OpenNewStore(string storeName)
         {
-            IsTsInitialized();
-            if (storeName.Length == 0)
-                throw new Exception("Store name can not be empty");
-            Store store = new Store(storeName);
-            stores.TryAdd(store.StoreID, store);
-            Logger.Instance.Info(store.StoreID,nameof(StoreFacade)+": "+nameof(OpenNewStore)+"store " + storeName + " opened.");
-            return store.StoreID;
+            lock (openNewStore)
+            {
+                IsTsInitialized();
+                if (storeName.Length == 0)
+                    throw new Exception("Store name can not be empty");
+
+                if (IsStoreNameExist(storeName))
+                    throw new Exception("Store with this name already exist");
+
+                Store store = new Store(storeName);
+                stores.TryAdd(store.StoreID, store);
+                Logger.Instance.Info(store.StoreID, nameof(StoreFacade) + ": " + nameof(OpenNewStore) + "store " + storeName + " opened.");
+                return store.StoreID;
+            }
         }
 
         public void CloseStore(Guid storeID)
@@ -262,6 +269,22 @@ namespace SadnaExpress.DomainLayer.Store
         public Item GetItemByID(Guid storeID, Guid itemID)
         {
             return stores[storeID].GetItemById(itemID);
+        }
+
+        public Store GetStore(Guid storeID)
+        {
+            IsStoreExist(storeID);
+            return stores[storeID];
+        }
+
+        private bool IsStoreNameExist(string storeName)
+        {
+            foreach (Store store in stores.Values)
+            {
+                if (store.StoreName == storeName)
+                    return true;
+            }
+            return false;
         }
     }
 }
