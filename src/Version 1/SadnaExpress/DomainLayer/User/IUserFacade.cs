@@ -17,7 +17,6 @@ namespace SadnaExpress.DomainLayer.User
         void RemoveItemFromCart(Guid userID,Guid storeID, Guid itemID);
         void EditItemFromCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount);
         ShoppingCart GetDetailsOnCart(Guid userID);
-        void PurchaseCart(Guid userID);
         void OpenNewStore(Guid userID,Guid storeID);
         void AddItemToStore(Guid userID,Guid storeID);
         void RemoveItemFromStore(Guid userID,Guid storeID);
@@ -27,7 +26,6 @@ namespace SadnaExpress.DomainLayer.User
         void AddStoreManagerPermissions(Guid userID,Guid storeID, string email, string Permission);
         void RemoveStoreManagerPermissions(Guid userID,Guid storeID, string email, string Permission);
         void CloseStore(Guid userID,Guid storeID);
-        void GetDetailsOnStore(Guid userID,Guid storeID);
         List<PromotedMember> GetEmployeeInfoInStore(Guid userID, Guid storeID);
         void UpdateFirst(Guid userID, string newFirst);
         void UpdateLast(Guid userID, string newLast);

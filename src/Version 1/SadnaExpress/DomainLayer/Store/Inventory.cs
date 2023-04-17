@@ -154,7 +154,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void AddItemToCart(Guid itemID, int quantity)
         {
-            if (items_quantity[GetItemById(itemID)] <= quantity)
+            if (items_quantity[GetItemById(itemID)] < quantity)
                 throw new Exception("You can't add to the cart, the quantity in the inventory not enough");
         }
 

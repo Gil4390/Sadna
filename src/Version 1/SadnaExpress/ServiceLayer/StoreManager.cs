@@ -87,14 +87,17 @@ namespace SadnaExpress.ServiceLayer
                 List<ItemForOrder> itemForOrders = new List<ItemForOrder>();
                 //get the user cart
                 ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
+                Console.WriteLine(shoppingCart.ToString());
                 // cast from shopping cart to dictionary before sending to store component.
                 foreach (ShoppingBasket basket in shoppingCart.Baskets) 
                     cart.Add(basket.StoreID, basket.ItemsInBasket);
                 // try to purchase the items. (the function update the quantity in the inventory in this function)
+                Console.WriteLine(cart);
                 double amount = storeFacade.PurchaseCart(cart, ref itemForOrders);
                 problemAfterPurchase = true;
                 userFacade.PlacePayment(amount, paymentDetails);
                 userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail);
+
                 Orders.Instance.AddOrder(userID, itemForOrders);
                 return new Response();
             }
@@ -160,23 +163,6 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(ReopenStore)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
-        }
-        public Response GetPurchasesInfo(Guid userID, Guid storeID)
-        {
-            try
-            {
-                storeFacade.GetStorePurchases(storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetPurchasesInfo)+": "+ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-        public Response PurchaseItems(int id, string paymentDetails)
-        {
-            throw new System.NotImplementedException();
         }
         public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {

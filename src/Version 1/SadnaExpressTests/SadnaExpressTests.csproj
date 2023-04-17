@@ -58,6 +58,7 @@
     <Compile Include="Acceptance Tests\GuestMemberAT.cs" />
     <Compile Include="Acceptance Tests\GuestMemberStoreOwner.cs" />
     <Compile Include="Acceptance Tests\GuestAT.cs" />
+    <Compile Include="Integration Tests\PurchaseIT.cs" />
     <Compile Include="Unit Tests\OrderUT.cs" />
     <Compile Include="Unit Tests\StoreFacadeUT.cs" />
     <Compile Include="Mocks.cs" />

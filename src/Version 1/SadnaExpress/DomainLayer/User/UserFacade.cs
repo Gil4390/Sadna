@@ -200,19 +200,13 @@ namespace SadnaExpress.DomainLayer.User
             
         }
 
-        public void PurchaseCart(Guid userID)
-        {
-            IsTsInitialized();
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(PurchaseCart)+" purchased his shopping cart");
-            throw new NotImplementedException();
-        }
-
         public void OpenNewStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
             isLoggedIn(userID);
             PromotedMember founder = members[userID].openNewStore(storeID);
-            members[userID] = founder;
+            if (founder != null)
+                members[userID] = founder;
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
         }
         
@@ -368,12 +362,6 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userId);
             if (!members[userId].hasPermissions(Guid.Empty, new List<string>{"system manager permissions"}))
                 throw new Exception("The member doesn’t have permissions to get all stores purchases");   
-        }
-        
-        public void GetDetailsOnStore(Guid userID, Guid storeID)
-        {
-            IsTsInitialized();
-            throw new NotImplementedException();
         }
 
         public void CleanUp()
