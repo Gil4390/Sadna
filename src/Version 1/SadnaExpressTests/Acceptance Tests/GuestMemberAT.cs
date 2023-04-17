@@ -315,7 +315,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void StoreInfoUpdated1_HappyTest()
         {
             int count = 0;
-            Console.WriteLine(count);
             Task<ResponseT<List<Store>>> task = Task.Run(() =>
             {
                 count = proxyBridge.GetAllStoreInfo().Value.Count;
@@ -331,7 +330,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void StoreInfoUpdated2_HappyTest()
         {
             int count = 0;
-            Console.WriteLine(count);
             Task<ResponseT<List<Store>>> task = Task.Run(() =>
             {
                 count = proxyBridge.GetAllStoreInfo().Value.Count;
