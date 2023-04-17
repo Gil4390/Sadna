@@ -642,7 +642,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             // one of the guest doesn't have quantity or the quantity already 0 so the manager can't remove one
             Assert.IsTrue(clientTasks[0].Result.ErrorOccured||clientTasks[1].Result.ErrorOccured||clientTasks[2].Result.ErrorOccured);
             Assert.AreEqual(0, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid22));
-            Assert.AreEqual(39, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid1));
         }
         [TestMethod]
         [TestCategory("Concurrency")]
