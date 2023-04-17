@@ -199,7 +199,15 @@ namespace SadnaExpress.DomainLayer.User
             return current_Users[userID].ShoppingCart;
             
         }
-
+        
+        public void PurchaseCart(Guid userID)
+        {
+            if (members.ContainsKey(userID))
+                members[userID].ShoppingCart = new ShoppingCart();
+            else
+                current_Users[userID].ShoppingCart = new ShoppingCart();;
+        }
+        
         public void OpenNewStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
@@ -470,7 +478,6 @@ namespace SadnaExpress.DomainLayer.User
         {
             this.supplierService = supplierService;
         }
-
         public bool PlacePayment(double amount, string transactionDetails)
         {
             try

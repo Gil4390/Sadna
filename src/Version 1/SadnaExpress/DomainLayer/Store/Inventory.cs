@@ -186,5 +186,9 @@ namespace SadnaExpress.DomainLayer.Store
                 throw;
             }
         }
+        public int GetItemByQuantity(Guid itemID)
+        {
+            return items_quantity[GetItemById(itemID)];
+        }
     }
 }

@@ -49,6 +49,6 @@ namespace SadnaExpress.DomainLayer.User
         ShoppingCart GetUserShoppingCart(Guid userID);
         void GetStorePurchases(Guid userId, Guid storeId);
         void GetAllStorePurchases(Guid userId);
-
+        void PurchaseCart(Guid userID);
     }
 }

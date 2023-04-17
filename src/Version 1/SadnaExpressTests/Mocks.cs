@@ -42,7 +42,45 @@ namespace SadnaExpressTests
                 return true;
             }
         }
+        public class Mock_Bad_PaymentService : Mock_PaymentService
+        {
+            public override bool Pay(double amount, string transactionDetails)
+            {
+                Thread.Sleep(11000); // Wait for 11 seconds
+                return true; // Return true after waiting
+            }
 
+        }
+
+        public class Mock_5sec_PaymentService : Mock_PaymentService
+        {
+            public override bool Pay(double amount, string transactionDetails)
+            {
+                Thread.Sleep(5000); // Wait for 5 seconds
+                return true; // Return true after waiting
+            }
+
+        }
+
+        public class Mock_Bad_SupplierService : Mock_SupplierService
+        {
+            public override bool ShipOrder(string orderDetails, string userDetails)
+            {
+                Thread.Sleep(11000); // Wait for 11 seconds
+                return true; // Return true after waiting
+            }
+
+        }
+
+        public class Mock_5sec_SupplierService : Mock_SupplierService
+        {
+            public override bool ShipOrder(string orderDetails, string userDetails)
+            {
+                Thread.Sleep(5000); // Wait for 5 seconds
+                return true; // Return true after waiting
+            }
+
+        }
 
         public class Mock_PaymentService : IPaymentService
         {
@@ -68,6 +106,7 @@ namespace SadnaExpressTests
         {
             protected ConcurrentDictionary<Guid, List<Order>> userOrders;
             protected ConcurrentDictionary<Guid, List<Order>> storeOrders;
+
             public Mock_Orders()
             {
                 userOrders = new ConcurrentDictionary<Guid, List<Order>>();
@@ -88,9 +127,9 @@ namespace SadnaExpressTests
 
             public void AddOrderToUser(Guid userID, Order order)
             {
-                if(userOrders.ContainsKey(userID)==false)
+                if (userOrders.ContainsKey(userID) == false)
                     userOrders.TryAdd(userID, new List<Order>());
-                userOrders[userID].Add(order);          
+                userOrders[userID].Add(order);
             }
 
             public void CleanUp()

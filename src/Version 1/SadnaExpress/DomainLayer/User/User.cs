@@ -8,9 +8,9 @@ namespace SadnaExpress.DomainLayer.User
     public class User
     {
         protected Guid userId;
-        public Guid UserId {get => userId;set => userId = value;}
+        public Guid UserId {get => userId; set => userId = value;}
         protected ShoppingCart shoppingCart;
-        public ShoppingCart ShoppingCart {get => shoppingCart;}
+        public ShoppingCart ShoppingCart {get => shoppingCart; set => shoppingCart=value;}
 
         public User()
         {

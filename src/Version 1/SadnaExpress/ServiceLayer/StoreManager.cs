@@ -87,18 +87,18 @@ namespace SadnaExpress.ServiceLayer
                 List<ItemForOrder> itemForOrders = new List<ItemForOrder>();
                 //get the user cart
                 ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
-                Console.WriteLine(shoppingCart.ToString());
                 // cast from shopping cart to dictionary before sending to store component.
                 foreach (ShoppingBasket basket in shoppingCart.Baskets) 
                     cart.Add(basket.StoreID, basket.ItemsInBasket);
                 // try to purchase the items. (the function update the quantity in the inventory in this function)
-                Console.WriteLine(cart);
                 double amount = storeFacade.PurchaseCart(cart, ref itemForOrders);
                 problemAfterPurchase = true;
-                userFacade.PlacePayment(amount, paymentDetails);
-                userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail);
-
+                if (!userFacade.PlacePayment(amount, paymentDetails))
+                    throw new Exception("payment failed");
+                if (!userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail))
+                    throw new Exception("supply failed");
                 Orders.Instance.AddOrder(userID, itemForOrders);
+                userFacade.PurchaseCart(userID);
                 return new Response();
             }
             catch (Exception ex)
