@@ -156,10 +156,14 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void MultipleMembersAddStores_HappyTest()
         {
+            //Arrange 
+            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
             Guid id1 = Guid.Empty;
             Guid id2 = Guid.Empty;
             Guid id3 = Guid.Empty;
             Guid id4 = Guid.Empty;
+
+            //Act
             Task<ResponseT<Guid>>[] clientTasks = new Task<ResponseT<Guid>>[] {
                 Task.Run(() => {
                     id1=proxyBridge.Enter().Value;
@@ -182,6 +186,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
 
+            //Assert
             Assert.IsTrue(clientTasks[0].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetStore(clientTasks[0].Result.Value).ErrorOccured);
 
@@ -196,8 +201,12 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void MultipleMembersAddStoresSameName_HappyTest()
         {
+            //Arrange 
+            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
             Guid id1 = Guid.Empty;
             Guid id2 = Guid.Empty;
+
+            //Act
             Task<ResponseT<Guid>>[] clientTasks = new Task<ResponseT<Guid>>[] {
                 Task.Run(() => {
                     id1=proxyBridge.Enter().Value;
@@ -215,6 +224,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
 
+            //Assert
             Assert.IsTrue(proxyBridge.GetStore(clientTasks[0].Result.Value).Value==null && proxyBridge.GetStore(clientTasks[1].Result.Value).Value != null||
                 proxyBridge.GetStore(clientTasks[0].Result.Value).Value != null && proxyBridge.GetStore(clientTasks[1].Result.Value).Value == null);
         }
@@ -452,6 +462,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
         #region Member saving item in the shopping cart for some store 2.3
 
+        [TestMethod]
         public void MemberSave1ItemInShoppingCart_HappyTest()
         {
             Task<Response> task = Task.Run(() =>
@@ -470,7 +481,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<Response> task = Task.Run(() =>
             {
-                memberId = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 return proxyBridge.AddItemToCart(memberId, storeid2, itemid2, 1);
             });
