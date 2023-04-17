@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Acceptance Tests\GuestMemberSystemManagerAT.cs" />
     <Compile Include="Acceptance Tests\GuestMemberStoreManager.cs" />
+    <Compile Include="Acceptance Tests\MultiUserTests.cs" />
     <Compile Include="Acceptance Tests\SystemAT.cs" />
     <Compile Include="Acceptance Tests\TradingSystemAT.cs" />
     <Compile Include="Acceptance Tests\GuestVisitorAT.cs" />
