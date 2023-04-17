@@ -59,10 +59,13 @@ namespace SadnaExpress.DomainLayer.User
         { 
             User user;
             Member member;
-            if (current_Users.TryRemove(id, out user)) 
-                Logger.Instance.Info(id , nameof(UserFacade)+": "+nameof(Exit)+": exited from the system.");
-            else if (members.TryRemove(id, out member))
-                Logger.Instance.Info(id,nameof(UserFacade)+": "+nameof(Exit)+": exited from the system.");
+            if (current_Users.TryRemove(id, out user))
+                Logger.Instance.Info(id, nameof(UserFacade) + ": " + nameof(Exit) + ": exited from the system.");
+            else if (members.ContainsKey(id))
+            {
+                Logout(id);
+                Logger.Instance.Info(id, nameof(UserFacade) + ": " + nameof(Exit) + ": exited from the system.");
+            }
             else
                 throw new Exception("Error with exiting system with this id- " + id);
             
@@ -103,7 +106,7 @@ namespace SadnaExpress.DomainLayer.User
 
             if(current_Users.ContainsKey(id)==false)
                 throw new Exception("User should enter the system before logging in");
-
+           
             foreach (Member member in members.Values)
             {
                 if (member.Email.Equals(email))
@@ -120,6 +123,8 @@ namespace SadnaExpress.DomainLayer.User
                         member.LoggedIn = true;
                         User user;
                         current_Users.TryRemove(id, out user);
+                        member.ShoppingCart.AddUserShoppingCart(user.ShoppingCart);
+
                         Logger.Instance.Info(member, "logged in");
 
                         return member.UserId;
@@ -144,11 +149,14 @@ namespace SadnaExpress.DomainLayer.User
             return Enter(); //member logs out and a regular user enters the system instead  
         }
 
-        public void AddItemToCart(Guid userID, Guid storeID, Guid itemID,  int itemAmount)
+        public void AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
         {
             IsTsInitialized();
-            if (members.ContainsKey(userID))
+            if (members.ContainsKey(userID)){
+                if (!isLoggedIn(userID))
+                        throw new Exception("the user is not logged in");
                 members[userID].AddItemToCart(storeID, itemID, itemAmount);
+            }
             else 
                 current_Users[userID].AddItemToCart(storeID, itemID, itemAmount);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AddItemToCart)+"Item "+itemID+"X"+itemAmount +" to store "+storeID+ " by user "+userID);
@@ -156,18 +164,28 @@ namespace SadnaExpress.DomainLayer.User
         public void RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID)
         {
             IsTsInitialized();
-            if (members.ContainsKey(userID))
+            
+            if (members.ContainsKey(userID)&& isLoggedIn(userID))
+            {
+                if (!isLoggedIn(userID))
+                    throw new Exception("the user is not logged in");
                 members[userID].RemoveItemFromCart(storeID, itemID);
+            }
             else 
                 current_Users[userID].RemoveItemFromCart(storeID, itemID);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveItemFromCart)+"Item "+itemID+"removed from store "+storeID+ " by user "+userID);
         }
 
-        public void EditItemFromCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount)
+        public void EditItemFromCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
         {
             IsTsInitialized();
+
             if (members.ContainsKey(userID))
+            {
+                if (!isLoggedIn(userID))
+                    throw new Exception("the user is not logged in");
                 members[userID].EditItemFromCart(storeID, itemID, itemAmount);
+            }
             else 
                 current_Users[userID].EditItemFromCart(storeID, itemID, itemAmount);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(EditItemFromCart)+"Item "+itemID+"X"+itemAmount +" updated in store "+storeID+ " by user "+userID);
@@ -558,8 +576,13 @@ namespace SadnaExpress.DomainLayer.User
 
         public ShoppingCart GetUserShoppingCart(Guid userID)
         {
+            
             if (current_Users.ContainsKey(userID))
                 return current_Users[userID].ShoppingCart;
+            if (isLoggedIn(userID))
+                return members[userID].ShoppingCart;
+            
+            
             throw new Exception("User with id " + userID + " does not exist");
         }
     }

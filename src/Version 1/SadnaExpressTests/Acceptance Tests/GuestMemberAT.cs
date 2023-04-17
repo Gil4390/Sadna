@@ -9,38 +9,46 @@ using SadnaExpress.ServiceLayer;
 namespace SadnaExpressTests.Acceptance_Tests
 {
     [TestClass]
-    public class GuestMemberAT: TradingSystemAT
+    public class GuestMemberAT : TradingSystemAT
     {
         [TestInitialize]
         public override void SetUp()
         {
+
             base.SetUp();
+            proxyBridge.GetMember(memberId).Value.LoggedIn = true;
+            proxyBridge.GetMember(memberId2).Value.LoggedIn = true;
+            proxyBridge.GetMember(memberId3).Value.LoggedIn = true;
+            proxyBridge.GetMember(memberId4).Value.LoggedIn = true;
+
+
         }
 
         #region Logout 3.1
+
         [TestMethod]
         public void UserLogout_HappyTest()
         {
             Guid tempid = Guid.Empty;
-            Task<ResponseT<Guid>> task = Task.Run(() => {
+            Task<ResponseT<Guid>> task = Task.Run(() =>
+            {
                 tempid = proxyBridge.Enter().Value;
-                Guid loggedid=proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
+                Guid loggedid = proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
                 return proxyBridge.Logout(loggedid);
             });
 
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //no error accured 
-            Assert.IsFalse(task.Result.Value==Guid.Empty); //when logged out member gets valid id
-            Assert.IsNotNull(proxyBridge.GetUser(task.Result.Value).Value); //when member logout he moves to be user in the TS
+            Assert.IsFalse(task.Result.Value == Guid.Empty); //when logged out member gets valid id
+            Assert.IsNotNull(proxyBridge.GetUser(task.Result.Value)
+                .Value); //when member logout he moves to be user in the TS
         }
 
         [TestMethod]
         public void UserLogoutWithoutEnter_BadTest()
         {
             Guid tempid = Guid.Empty;
-            Task<ResponseT<Guid>> task = Task.Run(() => {
-                return proxyBridge.Logout(systemManagerid);
-            });
+            Task<ResponseT<Guid>> task = Task.Run(() => { return proxyBridge.Logout(systemManagerid); });
 
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error accured 
@@ -51,7 +59,8 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void UserLogoutWithoutLogin_BadTest()
         {
             Guid tempid = Guid.Empty;
-            Task<ResponseT<Guid>> task = Task.Run(() => {
+            Task<ResponseT<Guid>> task = Task.Run(() =>
+            {
                 tempid = proxyBridge.Enter().Value;
                 return proxyBridge.Logout(tempid);
             });
@@ -66,7 +75,8 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void UserLogoutTwice_BadTest()
         {
             Guid tempid = Guid.Empty;
-            Task<ResponseT<Guid>> task = Task.Run(() => {
+            Task<ResponseT<Guid>> task = Task.Run(() =>
+            {
                 tempid = proxyBridge.Enter().Value;
                 Guid loggedid = proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
                 proxyBridge.Logout(loggedid);
@@ -82,7 +92,8 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void UserLogoutFirstBadSecGood_HappyTest()
         {
             Guid tempid = Guid.Empty;
-            Task<ResponseT<Guid>> task = Task.Run(() => {
+            Task<ResponseT<Guid>> task = Task.Run(() =>
+            {
                 tempid = proxyBridge.Enter().Value;
                 Guid loggedid = proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
                 proxyBridge.Logout(tempid);
@@ -93,12 +104,15 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(task.Result.ErrorOccured); //error accured 
             Assert.IsFalse(task.Result.Value == Guid.Empty); //Guid returns empty (default value)
         }
+
         #endregion
 
         #region Opening a store 3.2
+
         #endregion
 
         #region Writing a review on items the user purchased 3.3
+
         #endregion
 
         /// <summary>
@@ -106,24 +120,586 @@ namespace SadnaExpressTests.Acceptance_Tests
         /// </summary>
 
         #region Member Getting information about stores in the market and the products in the stores 2.1
+
         #endregion
 
         #region Member search products by general search or filters 2.2
+
+        [TestMethod]
+        public void MemberSearchProductsByCategoryHome_HappyTest()
+        {
+            Task<ResponseT<List<Item>>> task = Task.Run(() =>
+            {
+                memberId = proxyBridge.Enter().Value;
+                return proxyBridge.GetItemsByCategory(memberId, "Home");
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(task.Result.Value.Count == 1);
+        }
+
+        [TestMethod]
+        public void MemberSearchProductsByCategoryClothes_HappyTest()
+        {
+            Task<ResponseT<List<Item>>> task = Task.Run(() =>
+            {
+                memberId = proxyBridge.Enter().Value;
+                return proxyBridge.GetItemsByCategory(memberId, "clothes");
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(task.Result.Value.Count == 3);
+        }
+
+        [TestMethod]
+        public void MemberSearchProductsByCategoryClothesMixMaxPrice_HappyTest()
+        {
+            Task<ResponseT<List<Item>>> task = Task.Run(() =>
+            {
+                memberId = proxyBridge.Enter().Value;
+                return proxyBridge.GetItemsByCategory(memberId, "clothes", 90);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(task.Result.Value.Count == 2);
+        }
+
+        [TestMethod]
+        public void MemberSearchProductsByCategoryThatDoesntExist_BadTest()
+        {
+            Task<ResponseT<List<Item>>> task = Task.Run(() =>
+            {
+                memberId = proxyBridge.Enter().Value;
+                return proxyBridge.GetItemsByCategory(memberId, "shay");
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(task.Result.Value.Count == 0);
+        }
+
+        [TestMethod]
+        public void MemberSearchProductsByNameTowel_HappyTest()
+        {
+            Task<ResponseT<List<Item>>> task = Task.Run(() => { return GetItemsByName("Towel"); });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(task.Result.Value.Count == 1);
+        }
+
+        private ResponseT<List<Item>> GetItemsByName(string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue,
+            int ratingItem = -1, string category = null, int ratingStore = -1)
+        {
+            return proxyBridge.GetItemsByName(memberId, itemName, minPrice, maxPrice, ratingItem, category,
+                ratingStore);
+        }
+
+        private ResponseT<List<Item>> GetItemsByCategory(string category, int minPrice = 0,
+            int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1)
+        {
+
+            return proxyBridge.GetItemsByCategory(memberId, category, minPrice, maxPrice, ratingItem, ratingStore);
+        }
+
+        private ResponseT<List<Item>> GetItemsByKeysWord(string keyWords, int minPrice = 0,
+            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+        {
+            return proxyBridge.GetItemsByKeysWord(memberId, keyWords, minPrice, maxPrice, ratingItem, category,
+                ratingStore);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsSearchForItems1_HappyTest()
+        {
+            Task<ResponseT<List<Item>>>[] clientTasks = new Task<ResponseT<List<Item>>>[]
+            {
+                Task.Run(() => GetItemsByName("Towel")),
+                Task.Run(() => GetItemsByCategory("clothes")),
+                Task.Run(() => GetItemsByCategory("clothes", 90))
+            };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[0].Result.Value.Count == 1);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[1].Result.Value.Count == 3);
+
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[2].Result.Value.Count == 2);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsSearchForItems2_HappyTest()
+        {
+            Task<ResponseT<List<Item>>>[] clientTasks = new Task<ResponseT<List<Item>>>[]
+            {
+                Task.Run(() => GetItemsByName("Towel")),
+                Task.Run(() => GetItemsByCategory("Home")),
+                Task.Run(() => GetItemsByCategory("clothes", 90)),
+                Task.Run(() => GetItemsByKeysWord("to"))
+            };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[0].Result.Value.Count == 1);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[1].Result.Value.Count == 1);
+
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[2].Result.Value.Count == 2);
+
+            Assert.IsFalse(clientTasks[3].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[3].Result.Value.Count == 2);
+        }
+
         #endregion
 
         #region Member saving item in the shopping cart for some store 2.3
+
+        public void MemberSave1ItemInShoppingCart_HappyTest()
+        {
+            Task<Response> task = Task.Run(() =>
+            {
+                memberId = proxyBridge.Enter().Value;
+                return proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 1);
+
+        }
+
+        [TestMethod]
+        public void MemberSaveItemsInShoppingCartFromDiffStore_HappyTest()
+        {
+            Task<Response> task = Task.Run(() =>
+            {
+                memberId = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                return proxyBridge.AddItemToCart(memberId, storeid2, itemid2, 1);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 2);
+
+        }
+
+        [TestMethod]
+        public void MemberSave2ItemsInShoppingCartFromSameStore_HappyTest()
+        {
+            Task<Response> task = Task.Run(() =>
+            {
+                memberId = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                return proxyBridge.AddItemToCart(memberId, storeid1, itemid11, 1);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 1);
+        }
+
+        [TestMethod]
+        public void MemberSaveItemsInShoppingCartItemDoesNotExist_HappyTest()
+        {
+            Task<Response> task = Task.Run(() =>
+            {
+                memberId = proxyBridge.Enter().Value;
+                return proxyBridge.AddItemToCart(memberId, storeid1, Guid.NewGuid(), 1);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 0);
+        }
+
+        [TestMethod]
+        public void MemberSaveItemsInShoppingCartStoreDoesNotExist_BadTest()
+        {
+            Task<Response> task = Task.Run(() =>
+            {
+                memberId = proxyBridge.Enter().Value;
+                return proxyBridge.AddItemToCart(memberId, Guid.NewGuid(), itemid1, 1);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 0);
+        }
+
+        private Response AddItemToCart(Guid id, Guid storeid, Guid itemid, int itemAmount)
+        {
+            return proxyBridge.AddItemToCart(id, storeid, itemid, itemAmount);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsAddSameItemToShoppingCart_HappyTest()
+        {
+
+            Task<Response>[] clientTasks = new Task<Response>[]
+            {
+                Task.Run(() =>
+                {
+                    memberId = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId, storeid1, itemid1, 1);
+                }),
+                Task.Run(() =>
+                {
+                    memberId2 = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId2, storeid1, itemid1, 1);
+                }),
+                Task.Run(() =>
+                {
+                    memberId3 = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId3, storeid1, itemid1, 1);
+                }),
+                Task.Run(() =>
+                {
+                    memberId4 = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId4, storeid1, itemid1, 1);
+                }),
+            };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 1);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId2).Value.Baskets.Count == 1);
+
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId3).Value.Baskets.Count == 1);
+
+            Assert.IsFalse(clientTasks[3].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId4).Value.Baskets.Count == 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsAddSameItemToShoppingCartOneNotEnter_HappyTest()
+        {
+
+            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
+
+            Task<Response>[] clientTasks = new Task<Response>[]
+            {
+                Task.Run(() => { return AddItemToCart(memberId, storeid1, itemid1, 1); }),
+                Task.Run(() =>
+                {
+                    memberId2 = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId2, storeid1, itemid1, 1);
+                }),
+                Task.Run(() =>
+                {
+                    memberId3 = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId3, storeid1, itemid1, 1);
+                }),
+                Task.Run(() =>
+                {
+                    memberId4 = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId4, storeid1, itemid1, 1);
+                }),
+            };
+
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsTrue(clientTasks[0].Result.ErrorOccured); //error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).ErrorOccured);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId2).Value.Baskets.Count == 1);
+
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId3).Value.Baskets.Count == 1);
+
+            Assert.IsFalse(clientTasks[3].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId4).Value.Baskets.Count == 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsAddSameItemToCartOneNotEnterAndOneChooseItemNotInStock_HappyTest()
+        {
+            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
+
+
+            Task<Response>[] clientTasks = new Task<Response>[]
+            {
+                Task.Run(() => { return AddItemToCart(memberId, storeid1, itemid1, 1); }),
+                Task.Run(() =>
+                {
+                    memberId2 = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId2, storeid2, itemNoStock, 1);
+                }),
+                Task.Run(() =>
+                {
+                    memberId3 = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId3, storeid1, itemid1, 1);
+                }),
+                Task.Run(() =>
+                {
+                    memberId4 = proxyBridge.Enter().Value;
+                    return AddItemToCart(memberId4, storeid1, itemid1, 1);
+                }),
+            };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsTrue(clientTasks[0].Result.ErrorOccured); //error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).ErrorOccured);
+
+            Assert.IsTrue(clientTasks[1].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId2).Value.Baskets.Count == 0);
+
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId3).Value.Baskets.Count == 1);
+
+            Assert.IsFalse(clientTasks[3].Result.ErrorOccured); //no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId4).Value.Baskets.Count == 1);
+        }
+
         #endregion
 
         #region Member checking the content of the shopping cart and making changes 2.4
-        #endregion
 
+        [TestMethod]
+        public void MemberShoppingCartSavedAfterLogOut_HappyTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                Guid id  = proxyBridge.Enter().Value;
+                proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 2);
+                proxyBridge.Logout(memberId);
+                Guid id2  = proxyBridge.Enter().Value;
+                proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@");
+                return proxyBridge.AddItemToCart(memberId, storeid1, itemid1,1);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(
+                (proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3));
+        }
+        
+        [TestMethod]
+        public void GuestAddItemsAndThenLoggedInAsMember_HappyTest()
+        {
+            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
+
+            Task<Response> task = Task.Run(() => {
+                Guid id  = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 2);
+                proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
+                return proxyBridge.AddItemToCart(memberId, storeid1, itemid1,1);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Console.WriteLine((proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1)));
+            Assert.IsTrue(
+                (proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3));
+        }
+        [TestMethod]
+        public void MemberShoppingCartSavedAfterExit_HappyTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                Guid id  = proxyBridge.Enter().Value;
+                proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 2);
+                proxyBridge.Exit(memberId);
+                Guid id2  = proxyBridge.Enter().Value;
+                proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@");
+                return proxyBridge.AddItemToCart(memberId, storeid1, itemid1,1);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(
+                (proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3));
+        }
+
+    
+
+    [TestMethod]
+        public void MemberEditShoppingCartAddAndRemove_HappyTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                memberId = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                return proxyBridge.RemoveItemFromCart(memberId, storeid1, itemid1);
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 0);
+        }
+
+        [TestMethod]
+        public void MemberEditShoppingCartAddAndEditQuantity_HappyTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                memberId = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(memberId, storeid1, itemid1, 3);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1,itemid1)==3);
+        }
+
+        [TestMethod]
+        public void MemberEditShoppingCartAddAndEditQuantityNoChange_HappyTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                memberId = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(memberId, storeid1, itemid1, 1);
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 1);
+        }
+
+        [TestMethod]
+        public void MemberEditShoppingCartItemThatDoesNotExist_BadTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                memberId = proxyBridge.Enter().Value;
+                return proxyBridge.EditItemFromCart(memberId, storeid1, itemid1, 1);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 0);
+        }
+
+        [TestMethod]
+        public void MemberEditShoppingCartWithBadStoreId_BadTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                memberId = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(memberId, storeid2, itemid1, 4);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 1);
+        }
+
+        [TestMethod]
+        public void MemberRemoveItemFromShoppingCartThatDoesNotExist_BadTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                memberId = proxyBridge.Enter().Value;
+                return proxyBridge.RemoveItemFromCart(memberId, storeid1, itemid1);
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 0);
+        }
+
+        [TestMethod]
+        public void MemberRemoveItemFromShoppingCart_HappyTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                memberId = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 4);
+                return proxyBridge.RemoveItemFromCart(memberId, storeid1, itemid1);
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 0);
+        }
+
+        [TestMethod]
+        public void MemberRemoveItemFromShoppingCartBadStoreId_BadTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                memberId = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(memberId, Guid.NewGuid(), itemid1, 4);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 1);
+        }
+
+        [TestMethod]
+        public void MemberRemoveItemFromShoppingCartBadItemId_BadTest()
+        {
+            Task<Response> task = Task.Run(() => {
+                memberId = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(memberId, storeid1, Guid.NewGuid(), 4);
+            });
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsEditShoppingCart_HappyTest()
+        {
+     
+            Task<Response>[] clientTasks = new Task<Response>[] {
+                Task.Run(() => {
+                    memberId=proxyBridge.Enter().Value; 
+                    AddItemToCart(memberId,storeid1,itemid1,1);
+                    AddItemToCart(memberId,storeid1,itemid1,1);
+                    return proxyBridge.RemoveItemFromCart(memberId,storeid1,itemid1);
+                }),
+                Task.Run(() => {
+                    memberId2=proxyBridge.Enter().Value; 
+                    AddItemToCart(memberId2,storeid1,itemid1,1);
+                    AddItemToCart(memberId2,storeid2,itemid2,1);
+                    AddItemToCart(memberId2,storeid1,itemid1,1);
+                    return proxyBridge.EditItemFromCart(memberId2,storeid1,itemid1,0);
+                }),
+                Task.Run(() => {
+                    memberId3=proxyBridge.Enter().Value;
+                    AddItemToCart(memberId3,storeid1,itemid1,1);
+                    proxyBridge.EditItemFromCart(memberId3,storeid1,itemid2,0);
+                    return proxyBridge.EditItemFromCart(memberId3,storeid1,itemid1,0);
+                })
+             };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count == 0);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId2).Value.Baskets.Count == 1);
+
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId3).Value.Baskets.Count == 0);
+        }
+        #endregion
+        
         #region Member making a purchase of the shopping cart 2.5
         #endregion
 
         [TestCleanup]
         public override void CleanUp()
         {
+
             base.CleanUp();
+
         }
     }
 }

@@ -81,5 +81,16 @@ namespace SadnaExpress.DomainLayer.Store
                 return itemsInBasket[itemId];
             throw new Exception("Item id "+ itemId +" is not in store id "+ storeID+ " shpping basket");
         }
+
+        public void AddBasket(ShoppingBasket sb)
+        {
+            foreach (Guid id in sb.ItemsInBasket.Keys)
+            {
+                if (itemsInBasket.ContainsKey(id))
+                    itemsInBasket[id] += sb.ItemsInBasket[id];
+                else
+                    itemsInBasket.Add(id,sb.itemsInBasket[id]);
+            }
+        }
     }
 }

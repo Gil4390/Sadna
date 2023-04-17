@@ -152,10 +152,14 @@ namespace SadnaExpress.DomainLayer.Store
             return getItemById(itemID).reviews;
         }
 
-        public void AddItemToCart(Guid itemID, int quantity)
+        public  void  AddItemToCart(Guid itemID, int quantity)
         {
-            if (items_quantity[getItemById(itemID)] <= quantity)
-                throw new Exception("You can't add to the cart, the quantity in the inventory not enough");
+            Item item = getItemById(itemID);
+                lock (item)
+                {
+                    if (items_quantity[item] < quantity)
+                        throw new Exception("You can't add to the cart, the quantity in the inventory not enough");
+                }
         }
 
         public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, Guid storeID)
