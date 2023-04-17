@@ -28,6 +28,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected Guid storeid2;
         protected Guid itemid2;
         protected Guid itemNoStock;
+        protected ConcurrentDictionary<Guid, Store> stores;
         protected IPasswordHash passwordHash;
         [TestInitialize]
         public virtual void SetUp()
@@ -35,7 +36,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge = new ProxyBridge();
             passwordHash = new PasswordHash();
 
-            ConcurrentDictionary<Guid, Store> stores = new ConcurrentDictionary<Guid, Store>();
+            stores = new ConcurrentDictionary<Guid, Store>();
             Store store1 = new Store("Zara");
             storeid1 = store1.StoreID;
             itemid1 = store1.AddItem("Tshirt", "clothes", 99.8, 40);
@@ -84,6 +85,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             members.TryAdd(storeOwnerid, storeOwner);
             IUserFacade _userFacade = new UserFacade(current_users, members, new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
             TradingSystem Ts = new TradingSystem(_userFacade, storeFacade);
+            
             Ts.TestMode = true;
 
             proxyBridge.SetBridge(Ts);
