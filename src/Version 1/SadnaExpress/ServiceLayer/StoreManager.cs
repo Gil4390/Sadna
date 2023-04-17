@@ -209,6 +209,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                userFacade.isLoggedIn(userID);
                 storeFacade.WriteItemReview(userID, storeID, itemID, reviewText);
                 return new Response();
             }

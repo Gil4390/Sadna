@@ -235,12 +235,11 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             Store store = stores[storeID];
-            
             bool foundUserOrder = false;
-            foreach (var item in from order in _orders.GetOrdersByUserId(userID) from item in order.ListItems where item.ItemID == itemID select item)
-            {
-                foundUserOrder = true;
-            }
+            foreach (Order order in _orders.GetOrdersByUserId(userID))
+                foreach (ItemForOrder item in order.ListItems)
+                    if (item.ItemID == itemID)
+                        foundUserOrder = true;
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
             Logger.Instance.Info(userID, nameof(StoreFacade)+": "+nameof(WriteItemReview) + userID +" write review to store "+storeID+" on "+itemID+"- "+ reviewText);
@@ -250,7 +249,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsStoreExist(storeID);
             Store store = stores[storeID];
-            return store.getItemsReviews(itemID);
+            return store.GetItemsReviews(itemID);
         }
 
         public void AddItemToCart(Guid storeID, Guid itemID, int quantity)
@@ -258,6 +257,11 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].AddItemToCart(itemID, quantity);
+        }
+
+        public Item GetItemByID(Guid storeID, Guid itemID)
+        {
+            return stores[storeID].GetItemById(itemID);
         }
     }
 }
