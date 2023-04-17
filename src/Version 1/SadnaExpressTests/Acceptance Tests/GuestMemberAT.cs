@@ -228,7 +228,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Mock_Orders mock_Orders = new Mock_Orders();
-            mock_Orders.AddOrderToUser(memberid, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value,storeid1) }));
+            mock_Orders.AddOrderToUser(memberId, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value,storeid1) }));
             proxyBridge.SetTSOrders(mock_Orders);
 
             //Act
@@ -236,14 +236,14 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<Response> task = Task.Run(() => {
                 tempid = proxyBridge.Enter().Value;
                 Guid loggedid = proxyBridge.Login(tempid, "gil@gmail.com", "asASD876!@").Value;
-                return proxyBridge.WriteItemReview(memberid, storeid1, itemid1, "very good item!");
+                return proxyBridge.WriteItemReview(memberId, storeid1, itemid1, "very good item!");
             });
 
             task.Wait();
 
             //Assert
             Assert.IsFalse(task.Result.ErrorOccured); //no error accured 
-            Assert.IsTrue(proxyBridge.GetItemReviews(storeid1, itemid1).Value[memberid].Count==1);
+            Assert.IsTrue(proxyBridge.GetItemReviews(storeid1, itemid1).Value[memberId].Count==1);
         }
 
         [TestMethod]
@@ -258,14 +258,14 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<Response> task = Task.Run(() => {
                 tempid = proxyBridge.Enter().Value;
                 Guid loggedid = proxyBridge.Login(tempid, "gil@gmail.com", "asASD876!@").Value;
-                return proxyBridge.WriteItemReview(memberid, storeid1, itemid1, "very good item!");
+                return proxyBridge.WriteItemReview(memberId, storeid1, itemid1, "very good item!");
             });
 
             task.Wait();
 
             //Assert
             Assert.IsTrue(task.Result.ErrorOccured); // error accured 
-            Assert.IsFalse(proxyBridge.GetItemReviews(storeid1, itemid1).Value.ContainsKey(memberid));
+            Assert.IsFalse(proxyBridge.GetItemReviews(storeid1, itemid1).Value.ContainsKey(memberId));
         }
 
         [TestMethod]
@@ -274,7 +274,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Mock_Orders mock_Orders = new Mock_Orders();
-            mock_Orders.AddOrderToUser(memberid, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1) }));
+            mock_Orders.AddOrderToUser(memberId, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1) }));
             mock_Orders.AddOrderToUser(systemManagerid, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1) }));
             proxyBridge.SetTSOrders(mock_Orders);
 
@@ -292,7 +292,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Task.Run(() => {
                     id2 = proxyBridge.Enter().Value;
                     Guid loggedid = proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@").Value;
-                    return proxyBridge.WriteItemReview(memberid, storeid1, itemid1, "very bad item!");
+                    return proxyBridge.WriteItemReview(memberId, storeid1, itemid1, "very bad item!");
                 })
              };
 

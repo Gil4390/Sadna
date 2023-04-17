@@ -41,7 +41,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<ResponseT<Dictionary<Guid, List<Order>>>> task = Task<ResponseT<Dictionary<Guid, List<Order>>>>.Run(() => {
                 tempid = proxyBridge.Enter().Value;
                 proxyBridge.Login(tempid, "gil@gmail.com", "asASD876!@");
-                return proxyBridge.GetAllStorePurchases(memberid);
+                return proxyBridge.GetAllStorePurchases(memberId);
             });
 
             task.Wait();
