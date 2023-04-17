@@ -68,5 +68,18 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("The cart doesn't include the store");
             return shoppingBasket.GetItemQuantity(itemID);  
         }
+
+        public void AddUserShoppingCart(ShoppingCart userShoppingCart)
+        {
+            foreach (ShoppingBasket sb in userShoppingCart.Baskets)
+            {
+                ShoppingBasket shoppingBasket = null;
+                bool exist = baskets.TryGetValue(sb, out shoppingBasket);
+                if (exist)
+                    shoppingBasket.AddBasket(sb);
+                else
+                    baskets.Add(sb);
+            }
+        }
     }
 }

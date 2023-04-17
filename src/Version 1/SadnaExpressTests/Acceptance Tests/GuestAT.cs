@@ -15,6 +15,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestInitialize]
         public override void SetUp()
         {
+            
             base.SetUp();
         }
 
@@ -25,7 +26,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void GuestSearchProductsByCategoryHome_HappyTest()
         {
-            Guid id = new Guid();
+            Guid id = Guid.NewGuid();
             Task<ResponseT<List<Item>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 return proxyBridge.GetItemsByCategory(id,"Home");
