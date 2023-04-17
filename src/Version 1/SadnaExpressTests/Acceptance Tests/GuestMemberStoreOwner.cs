@@ -13,6 +13,10 @@ namespace SadnaExpressTests.Acceptance_Tests
         Guid store5Founder = Guid.Empty;
         Guid storeID5 = Guid.Empty;
         Guid store5Owner = Guid.Empty;
+        Guid store5Manager = Guid.Empty;
+        Guid loggedInUserID1 = Guid.Empty;
+        Guid loggedInUserID2 = Guid.Empty;
+
         Guid itemID1 = Guid.Empty;
         Guid itemID2 = Guid.Empty;
 
@@ -32,6 +36,21 @@ namespace SadnaExpressTests.Acceptance_Tests
             store5Owner = proxyBridge.Login(store5Owner, "storeOwnerMail2@gmail.com", "A#!a12345678").Value;
 
             proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+
+
+            store5Manager = proxyBridge.Enter().Value;
+            proxyBridge.Register(store5Manager, "storeManagerMail2@gmail.com", "bar", "lerrer", "A#!a12345678");
+            store5Manager = proxyBridge.Login(store5Manager, "storeManagerMail2@gmail.com", "A#!a12345678").Value;
+
+            proxyBridge.AppointStoreManager(store5Founder, storeID5, "storeManagerMail2@gmail.com");
+
+
+            loggedInUserID1 = proxyBridge.Enter().Value;
+            proxyBridge.Register(loggedInUserID1, "logmail1@gmail.com", "usi1", "last1", "A#!a12345678");
+            loggedInUserID1 = proxyBridge.Login(loggedInUserID1, "logmail1@gmail.com", "A#!a12345678").Value;
+            loggedInUserID2 = proxyBridge.Enter().Value;
+            proxyBridge.Register(loggedInUserID2, "logmail2@gmail.com", "usi2", "last2", "A#!a12345678");
+            loggedInUserID2 = proxyBridge.Login(loggedInUserID2, "logmail2@gmail.com", "A#!a12345678").Value;
 
 
             itemID1 = proxyBridge.AddItemToStore(store5Founder, storeID5, "doritos", "food", 6.0, 10).Value;
@@ -286,10 +305,140 @@ namespace SadnaExpressTests.Acceptance_Tests
 
         #region Appointing a new store owner 4.4
 
+        [TestMethod]
+        public void AppointingNewStoreOwner_Good()
+        {
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //error not occured 
+
+            proxyBridge.AddItemToStore(loggedInUserID1, storeID5, "testItem", "test", 50.0, 45);
+
+            int count = proxyBridge.GetItemsByName(store5Owner, "testItem").Value.Count;
+            Assert.AreEqual(1, count); //item was added because the user has permissions
+        }
+
+        [TestMethod]
+        public void AppointingNewStoreOwner_Bad()
+        {
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error should occur 
+        }
+
+        [TestMethod]
+        public void AppointingNewStoreOwnerNoPermission_Bad()
+        {
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.AppointStoreOwner(loggedInUserID1, storeID5, "logmail2@gmail.com");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error should occur 
+        }
+
+        [TestMethod]
+        public void AppointingNewStoreOwnerCircular_Bad()
+        {
+            //setup: founder => owner
+            //here: founder => logi1 => owner (error)
+            Task<Response> task = Task.Run(() => {
+                proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+                return proxyBridge.AppointStoreOwner(loggedInUserID1, storeID5, "storeFounderMail@gmail.com");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error should occur 
+        }
+
+        [TestMethod]
+        public void AppointingNewStoreOwnerBy2StoreOwners_Concurrent_Bad()
+        {
+            Task<Response> task1 = Task.Run(() => {
+                return proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+            });
+
+
+            Task<Response> task2 = Task.Run(() => {
+                return proxyBridge.AppointStoreOwner(store5Owner, storeID5, "logmail1@gmail.com");
+            });
+
+            task1.Wait();
+            task2.Wait();
+            bool error1occured = task1.Result.ErrorOccured;
+            bool error2occured = task2.Result.ErrorOccured;
+            Assert.IsTrue(error1occured || error2occured); //at lest one should fail
+            Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
+
+            proxyBridge.AddItemToStore(loggedInUserID1, storeID5, "testItem", "test", 50.0, 45);
+            int count = proxyBridge.GetItemsByName(store5Owner, "testItem").Value.Count;
+            Assert.AreEqual(1, count); //item was added because the user has permissions
+        }
+
         #endregion
 
 
         #region Appointing a new store manager 4.6
+
+        [TestMethod]
+        public void AppointingNewStoreManager_Good()
+        {
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.AppointStoreManager(store5Owner, storeID5, "logmail1@gmail.com");
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //error not occured 
+        }
+
+        [TestMethod]
+        public void AppointingNewStoreManager_Bad()
+        {
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.AppointStoreManager(store5Founder, storeID5, "storeManagerMail2@gmail.com");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error should occur 
+        }
+
+        [TestMethod]
+        public void AppointingNewStoreManagerNoPermission_Bad()
+        {
+
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.AppointStoreManager(store5Manager, storeID5, "logmail1@gmail.com");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error should occur 
+        }
+
+        [TestMethod]
+        public void AppointingNewStoreManagerBy2StoreOwners_Concurrent_Bad()
+        {
+            Task<Response> task1 = Task.Run(() => {
+                return proxyBridge.AppointStoreManager(store5Manager, storeID5, "logmail1@gmail.com");
+            });
+
+
+            Task<Response> task2 = Task.Run(() => {
+                return proxyBridge.AppointStoreManager(store5Owner, storeID5, "logmail1@gmail.com");
+            });
+
+            task1.Wait();
+            task2.Wait();
+            bool error1occured = task1.Result.ErrorOccured;
+            bool error2occured = task2.Result.ErrorOccured;
+            Assert.IsTrue(error1occured || error2occured); //at lest one should fail
+            Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
+        }
 
         #endregion
 
