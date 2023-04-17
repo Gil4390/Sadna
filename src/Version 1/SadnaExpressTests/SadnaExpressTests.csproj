@@ -58,12 +58,14 @@
     <Compile Include="Acceptance Tests\GuestMemberAT.cs" />
     <Compile Include="Acceptance Tests\GuestMemberStoreOwnerManagerAT.cs" />
     <Compile Include="Acceptance Tests\GuestAT.cs" />
+    <Compile Include="Integration Tests\EditStoreInventoryIT.cs" />
     <Compile Include="Integration Tests\PurchaseIT.cs" />
+    <Compile Include="Integration Tests\StoreManagementIT.cs" />
+    <Compile Include="Integration Tests\TradingSystemIT.cs" />
     <Compile Include="Unit Tests\OrderUT.cs" />
     <Compile Include="Unit Tests\StoreFacadeUT.cs" />
     <Compile Include="Mocks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit Tests\InventoryUT.cs" />
     <Compile Include="Unit Tests\ShoppingCartUT.cs" />
     <Compile Include="Unit Tests\UserFacadeUT.cs" />
     <Compile Include="Unit Tests\UserUT.cs" />

@@ -122,6 +122,21 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         [TestMethod]
+        public void MemberOpenStoreNotLoggedIn_BadTest()
+        {
+            Guid tempid = Guid.Empty;
+            Task<ResponseT<Guid>> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                return proxyBridge.OpenNewStore(tempid, "My store");
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //no error accured 
+            Assert.IsTrue(task.Result.Value == Guid.Empty);
+            Assert.IsTrue(proxyBridge.GetStore(task.Result.Value).ErrorOccured); //check that store exist
+        }
+
+        [TestMethod]
         public void MemberOpenStoreWithEmptyStoreName_BadTest()
         {
             Guid tempid = Guid.Empty;
