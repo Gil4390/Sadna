@@ -71,6 +71,9 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             
             
+            memberid = Guid.NewGuid();
+            storeOwnerid = Guid.NewGuid();
+            Member member = new Member(memberid, "gil@gmail.com", "Gil", "Gil", passwordHash.Hash("asASD876!@"));
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", passwordHash.Hash("AS87654askj"));
             PromotedMember storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "shay", "kres", passwordHash.Hash("A#!a12345678"));
             systemManager.createSystemManager();
@@ -80,6 +83,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             members.TryAdd(memberId2, member2);
             members.TryAdd(memberId3, member3);
             members.TryAdd(memberId4, member4);
+
 
             members.TryAdd(storeOwnerid, storeOwner);
             IUserFacade _userFacade = new UserFacade(current_users, members, new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());

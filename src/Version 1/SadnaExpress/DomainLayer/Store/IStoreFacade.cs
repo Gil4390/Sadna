@@ -1,3 +1,4 @@
+using SadnaExpress.ServiceLayer;
 using SadnaExpress.Services;
 using System;
 using System.Collections.Concurrent;
@@ -31,5 +32,8 @@ namespace SadnaExpress.DomainLayer.Store
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
         void SetIsSystemInitialize(bool isInitialize);
+        Store GetStore(Guid storeID);
+        Item GetItemByID(Guid storeID, Guid itemID); //for tests
+        void SetTSOrders(IOrders orders);
     }
 }

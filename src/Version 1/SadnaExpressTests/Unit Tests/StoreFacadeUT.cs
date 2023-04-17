@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpressTests.Unit_Tests
 {
@@ -14,11 +15,11 @@ namespace SadnaExpressTests.Unit_Tests
         private Guid userID1;
         private Guid userID2;
         private Guid storeID1;
-        private Item item1;
+        private Guid itemID1;
         private Guid itemID2;
         private ItemForOrder itemO1;
         private Order order;
-        private new List<ItemForOrder> orderList;
+        private List<ItemForOrder> orderList;
         int numOfOpenStores;
         int numOfTotalItemsInAllStores;
 
@@ -36,14 +37,12 @@ namespace SadnaExpressTests.Unit_Tests
             userID2 = Guid.NewGuid();
             storeID1 = storeFacade.OpenNewStore("Bamba store");
             itemID2 = Guid.NewGuid();
-            item1 = new Item("Bamba shosh limited edition", "food", 20.0);
-            itemO1 = new ItemForOrder(item1, storeID);
+            itemID1 = storeFacade.AddItemToStore(storeID1, "Bamba shosh limited edition", "food", 20.0, 2);
+            itemO1 = new ItemForOrder(storeFacade.GetItemByID(storeID1, itemID1), storeID);
             orderList = new List<ItemForOrder> {itemO1};
             _orders.AddOrder(userID1, orderList);
-
             numOfOpenStores = 1;
             numOfTotalItemsInAllStores = 1;
-
         }
         #endregion
 
@@ -116,16 +115,16 @@ namespace SadnaExpressTests.Unit_Tests
 
 
         [TestMethod]
-        public void WriteItemReviewGood()
+        public void WriteItemReviewSuccess()
         {
-            storeFacade.WriteItemReview(userID1, storeID1, item1.ItemID, "very bad bamba");
-            Assert.AreEqual(1, storeFacade.GetItemReviews(storeID1, item1.ItemID).Count);
+            storeFacade.WriteItemReview(userID1, storeID1, itemID1, "very bad bamba");
+            Assert.AreEqual(1, storeFacade.GetItemReviews(storeID1, itemID1).Count);
         }
 
         [TestMethod]
         public void WriteItemReviewUserDidNotBuyItem()
         {
-            Assert.ThrowsException<NullReferenceException>(() => storeFacade.WriteItemReview(userID2, storeID1, item1.ItemID, "very bad bamba"));
+            Assert.ThrowsException<NullReferenceException>(() => storeFacade.WriteItemReview(userID2, storeID1, itemID1, "very bad bamba"));
         }
 
         [TestMethod]

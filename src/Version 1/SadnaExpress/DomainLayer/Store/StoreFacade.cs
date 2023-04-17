@@ -9,7 +9,8 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private ConcurrentDictionary<Guid, Store> stores;
         private bool _isTSInitialized;
-        private static Orders _orders;
+        private static IOrders _orders;
+        private Object openNewStore = new object();
 
         public StoreFacade()
         {
@@ -25,13 +26,20 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Guid OpenNewStore(string storeName)
         {
-            IsTsInitialized();
-            if (storeName.Length == 0)
-                throw new Exception("Store name can not be empty");
-            Store store = new Store(storeName);
-            stores.TryAdd(store.StoreID, store);
-            Logger.Instance.Info(store.StoreID,nameof(StoreFacade)+": "+nameof(OpenNewStore)+"store " + storeName + " opened.");
-            return store.StoreID;
+            lock (openNewStore)
+            {
+                IsTsInitialized();
+                if (storeName.Length == 0)
+                    throw new Exception("Store name can not be empty");
+
+                if (IsStoreNameExist(storeName))
+                    throw new Exception("Store with this name already exist");
+
+                Store store = new Store(storeName);
+                stores.TryAdd(store.StoreID, store);
+                Logger.Instance.Info(store.StoreID, nameof(StoreFacade) + ": " + nameof(OpenNewStore) + "store " + storeName + " opened.");
+                return store.StoreID;
+            }
         }
 
         public void CloseStore(Guid storeID)
@@ -235,12 +243,11 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             Store store = stores[storeID];
-            
             bool foundUserOrder = false;
-            foreach (var item in from order in _orders.GetOrdersByUserId(userID) from item in order.ListItems where item.ItemID == itemID select item)
-            {
-                foundUserOrder = true;
-            }
+            foreach (Order order in _orders.GetOrdersByUserId(userID))
+                foreach (ItemForOrder item in order.ListItems)
+                    if (item.ItemID == itemID)
+                        foundUserOrder = true;
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
             Logger.Instance.Info(userID, nameof(StoreFacade)+": "+nameof(WriteItemReview) + userID +" write review to store "+storeID+" on "+itemID+"- "+ reviewText);
@@ -250,7 +257,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsStoreExist(storeID);
             Store store = stores[storeID];
-            return store.getItemsReviews(itemID);
+            return store.GetItemsReviews(itemID);
         }
 
         public void AddItemToCart(Guid storeID, Guid itemID, int quantity)
@@ -258,6 +265,32 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].AddItemToCart(itemID, quantity);
+        }
+
+        public Item GetItemByID(Guid storeID, Guid itemID)
+        {
+            return stores[storeID].GetItemById(itemID);
+        }
+
+        public Store GetStore(Guid storeID)
+        {
+            IsStoreExist(storeID);
+            return stores[storeID];
+        }
+
+        private bool IsStoreNameExist(string storeName)
+        {
+            foreach (Store store in stores.Values)
+            {
+                if (store.StoreName == storeName)
+                    return true;
+            }
+            return false;
+        }
+
+        public void SetTSOrders(IOrders orders)
+        {
+            _orders = orders;
         }
     }
 }

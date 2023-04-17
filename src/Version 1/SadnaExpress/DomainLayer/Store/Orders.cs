@@ -5,7 +5,7 @@ using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.Store
 {
-    public class Orders
+    public class Orders: IOrders
     {
         private static readonly object syncRoot = new object();
         private static ConcurrentDictionary<Guid, List<Order>> userOrders;
@@ -107,7 +107,7 @@ namespace SadnaExpress.DomainLayer.Store
             return new Dictionary<Guid, List<Order>>(storeOrders);
         }
 
-        public static void CleanUp()
+        public void CleanUp()
         {
             instance = null;
         }

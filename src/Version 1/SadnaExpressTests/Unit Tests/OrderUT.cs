@@ -68,7 +68,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestCleanup]
         public void CleanUp()
         {
-            Orders.CleanUp();
+            _orders.CleanUp();
         }
     }
 }
