@@ -46,6 +46,8 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsTsInitialized();
             IsStoreExist(storeID);
+            if (!stores[storeID].Active)
+                throw new Exception("Store already closed");
             stores[storeID].Active = false;
             Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(CloseStore)+"store " + stores[storeID].StoreName + " closed.");
         }
