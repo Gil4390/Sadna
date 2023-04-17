@@ -503,7 +503,7 @@ namespace SadnaExpress.DomainLayer.User
                     return paymentService.Pay(amount,transactionDetails);
                 });
 
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime));
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result;
 
                 if (isCompletedSuccessfully)
                 {
@@ -538,7 +538,7 @@ namespace SadnaExpress.DomainLayer.User
                     return supplierService.ShipOrder(orderDetails, userDetails);
                 });
 
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime));
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime))&& task.Result;;
 
                 if (isCompletedSuccessfully)
                 {
