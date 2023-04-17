@@ -31,8 +31,11 @@ namespace SadnaExpress.DomainLayer.User
         
         public PromotedMember AppointStoreOwner(Guid storeID, PromotedMember directSupervisor, Member newOwner)
         {
-            if (newOwner.hasPermissions(storeID, new List<string> {"founder permissions", "owner permissions"}))
-                throw new Exception("The member is already store owner");
+            lock (newOwner)
+            {
+                if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
+                    throw new Exception("The member is already store owner");
+            }
             PromotedMember owner = newOwner.promoteToMember();
             directSupervisor.addAppoint(storeID, owner);
             owner.createOwner(storeID, directSupervisor);
@@ -41,8 +44,11 @@ namespace SadnaExpress.DomainLayer.User
 
         public PromotedMember AppointStoreManager(Guid storeID, PromotedMember directSupervisor, Member newManager)
         {
-            if (newManager.hasPermissions(storeID, new List<string> {"founder permissions", "owner permissions", "get store history"}))
-                throw new Exception("The member is already store manager");
+            lock (newManager)
+            {
+                if (newManager.hasPermissions(storeID, new List<string> {"founder permissions", "owner permissions", "get store history"}))
+                    throw new Exception("The member is already store manager");
+            }
             PromotedMember manager = newManager.promoteToMember();
             directSupervisor.addAppoint(storeID, manager);
             manager.createManager(storeID, directSupervisor);
@@ -51,15 +57,23 @@ namespace SadnaExpress.DomainLayer.User
 
         public void AddStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
-            if (manager.hasPermissions(storeID, new List<string>{"founder permissions","owner permissions", permission}))
-                throw new Exception("The member has the permission");
+            lock (manager)
+            {
+                if (manager.hasPermissions(storeID,
+                        new List<string> { "founder permissions", "owner permissions", permission }))
+                    throw new Exception("The member has the permission");
+            }
+
             ((PromotedMember)manager).addPermission(storeID, permission);
         }
 
         public void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
-            if (!manager.hasPermissions(storeID, new List<string>{permission}))
-                throw new Exception($"The member {manager.Email} dosen't have the permission");
+            lock (manager)
+            {
+                if (!manager.hasPermissions(storeID, new List<string> { permission }))
+                    throw new Exception($"The member {manager.Email} dosen't have the permission");
+            }
             ((PromotedMember)manager).removePermission(storeID, permission);
         }
 
