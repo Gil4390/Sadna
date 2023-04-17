@@ -495,6 +495,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Thread.Sleep(1000);
                     userId9 = proxyBridge.Enter().Value;
                     Thread.Sleep(20);
+                    Thread.Sleep(1000);
                     Response resp = proxyBridge.AddItemToCart(userId9, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
@@ -505,6 +506,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Thread.Sleep(1000);
                     userId10 = proxyBridge.Enter().Value;
                     Thread.Sleep(20);
+                    Thread.Sleep(1000);
                     Response resp = proxyBridge.AddItemToCart(userId10, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
@@ -531,7 +533,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(loggedId2).Value.Baskets.Count == 0); // failed to add item to cart
 
 
-            // only one purhcase successed, 2 failed before store manager removes the item
+            // all 3 purchase attempts fail while store manager removes the item
             int cntFailed = 0;
             int cntSuccess = 0;
             for (int i = 2; i < 5; i++)
@@ -541,15 +543,15 @@ namespace SadnaExpressTests.Acceptance_Tests
                 else
                     cntSuccess++;
             }
-            Assert.IsTrue(cntSuccess.Equals(1));
-            Assert.IsTrue(cntFailed.Equals(2));
+            Assert.IsTrue(cntSuccess.Equals(0));
+            Assert.IsTrue(cntFailed.Equals(3));
             // throws exception because items doesnt exist after store manager deleted it
             Assert.ThrowsException<Exception>(() => proxyBridge.GetStore(storeId1).Value.itemsInventory.items_quantity[proxyBridge.GetStore(storeId1).Value.GetItemById(itemId1)].Equals(0));
 
             Assert.IsFalse(clientTasks[5].Result.ErrorOccured);//no error occurred
 
-            // all 4 purchases failed, one user succefully added item to cart before store manager removes the item 
-            // but tries to purchase after the items is removed
+            // only 1 purchase successed , 3 purchases failed, one user succefully added item to cart and  
+            // purchased it before store manager removes the item
             cntFailed = 0;
             cntSuccess = 0;
             for (int i = 6; i < 10; i++)
@@ -559,8 +561,8 @@ namespace SadnaExpressTests.Acceptance_Tests
                 else
                     cntSuccess++;
             }
-            Assert.IsTrue(cntFailed.Equals(4));
-            Assert.IsTrue(cntSuccess.Equals(0));
+            Assert.IsTrue(cntFailed.Equals(3));
+            Assert.IsTrue(cntSuccess.Equals(1));
 
             // throws exception because items doesnt exist after store manager deleted it
             Assert.ThrowsException<Exception>(() => proxyBridge.GetStore(storeId2).Value.itemsInventory.items_quantity[proxyBridge.GetStore(storeId2).Value.GetItemById(itemId2)].Equals(0));
