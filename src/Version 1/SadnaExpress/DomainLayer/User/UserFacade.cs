@@ -25,7 +25,6 @@ namespace SadnaExpress.DomainLayer.User
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
         object enterLock = new object();
         object registerLock = new object();
-        object permissionLock = new object();
 
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
