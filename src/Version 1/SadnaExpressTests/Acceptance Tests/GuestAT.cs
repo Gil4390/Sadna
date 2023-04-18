@@ -16,7 +16,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestInitialize]
         public override void SetUp()
         {
-            
             base.SetUp();
         }
 
@@ -541,7 +540,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid id1 = Guid.Empty;
             Guid id2 = Guid.Empty;
             Guid id3 = Guid.Empty;
-            Guid id4 = Guid.Empty;
             Task<Response>[] clientTasks = new Task<Response>[] {
                 Task.Run(() => {
                     id1=proxyBridge.Enter().Value; 
@@ -628,6 +626,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void Guest2PurchaseShoppingCartWhile_OwnerEditHappyTest()
         {
+            //Arrange
             Guid id1 = new Guid();
             Guid id2 = new Guid();
             Guid id3 = proxyBridge.Enter().Value;
@@ -640,6 +639,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             id2=proxyBridge.Enter().Value; 
             AddItemToCart(id2,storeid1,itemid1,1);
             AddItemToCart(id2,storeid1,itemid22,1);
+            // Act
             Task<Response>[] clientTasks = new Task<Response>[] {
                 Task.Run(() => {
                     return proxyBridge.PurchaseCart(id1,"5411556648", "Rabbi Akiva 5");
@@ -653,9 +653,19 @@ namespace SadnaExpressTests.Acceptance_Tests
             };
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
-            // one of the guest doesn't have quantity or the quantity already 0 so the manager can't remove one
-            Assert.IsTrue(clientTasks[0].Result.ErrorOccured||clientTasks[1].Result.ErrorOccured||clientTasks[2].Result.ErrorOccured);
+            //Assert
+            // 2 situations: 1. The 2 guests succeed to purchase the cart and the owner fail to edit the quantity
+            //               2. Just one of the guest succeed to purchase the cart, the other fail the owner succed to edit the quantity                  
+            bool situation1 = !clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured && clientTasks[2].Result.ErrorOccured;
+            bool situation2 = ((clientTasks[0].Result.ErrorOccured || clientTasks[1].Result.ErrorOccured) &&
+                               (!(clientTasks[0].Result.ErrorOccured && clientTasks[1].Result.ErrorOccured))
+                               & !clientTasks[2].Result.ErrorOccured);
+            Assert.IsTrue(situation1 || situation2);
             Assert.AreEqual(0, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid22));
+            if (situation1)
+                Assert.AreEqual(2, proxyBridge.GetStorePurchases(storeOwnerid, storeid1).Value.Count);
+            else
+                Assert.AreEqual(1, proxyBridge.GetStorePurchases(storeOwnerid, storeid1).Value.Count);
         }
         [TestMethod]
         [TestCategory("Concurrency")]
@@ -683,7 +693,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
             // one of the guest doesn't have quantity
-            Assert.IsTrue(clientTasks[0].Result.ErrorOccured||clientTasks[1].Result.ErrorOccured);
+            Assert.IsTrue((clientTasks[0].Result.ErrorOccured || clientTasks[1].Result.ErrorOccured)
+                          &&(!(clientTasks[0].Result.ErrorOccured && clientTasks[1].Result.ErrorOccured)));
             Assert.AreEqual(0, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid22));
         }
         [TestMethod]

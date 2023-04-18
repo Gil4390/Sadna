@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 
 namespace SadnaExpressTests.Integration_Tests
@@ -32,6 +33,10 @@ namespace SadnaExpressTests.Integration_Tests
             // check the order not created
             Assert.AreEqual(1, trading.GetStorePurchases(userID, storeID1).Value.Count);
             Assert.AreEqual(1, trading.GetStorePurchases(userID, storeID2).Value.Count);
+            // see the prices
+            Assert.AreEqual(4000, trading.GetStorePurchases(userID, storeID1).Value[0].CalculatorAmount());
+            Assert.AreEqual(3000, trading.GetStorePurchases(userID, storeID2).Value[0].CalculatorAmount());
+            Assert.AreEqual(7000, Orders.Instance.GetOrdersByUserId(buyerID)[0].CalculatorAmount());
             // check the inventory updated
             Assert.AreEqual(1, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1));
             Assert.AreEqual(0, trading.GetStore(storeID2).Value.GetItemByQuantity(itemID2));
@@ -105,7 +110,27 @@ namespace SadnaExpressTests.Integration_Tests
             //check that the shopping is same
             Assert.AreEqual(2, trading.GetDetailsOnCart(buyerID).Value.Baskets.Count);
         }
-
+        /// <summary>
+        /// Tests the Items prices in order is the same after edit.
+        /// </summary>
+        [TestMethod]
+        public void ItemPriceStayTheSameAfterEdit()
+        {
+            //Arrange
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
+            trading.PurchaseCart(buyerID, "0502485415400", "Rabbi Akiva 5 Beer Sheva");
+            // Act
+            trading.EditItemPrice(userID, storeID1, itemID1, 10000);
+            // Assert
+            // see the prices
+            Assert.AreEqual(4000, trading.GetStorePurchases(userID, storeID1).Value[0].CalculatorAmount());
+            Assert.AreEqual(3000, trading.GetStorePurchases(userID, storeID2).Value[0].CalculatorAmount());
+            Assert.AreEqual(7000, Orders.Instance.GetOrdersByUserId(buyerID)[0].CalculatorAmount());
+            //The item price edit
+            Assert.AreEqual(10000, trading.GetStore(storeID1).Value.GetItemById(itemID1).Price);
+        }
+        
         [TestCleanup]
         public override void CleanUp()
         {
