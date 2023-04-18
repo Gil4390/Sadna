@@ -261,6 +261,36 @@ namespace SadnaExpressTests.Acceptance_Tests
                 proxyBridge.GetStore(clientTasks[0].Result.Value).Value != null && proxyBridge.GetStore(clientTasks[1].Result.Value).Value == null);
         }
 
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MembersAddStoreSameNameSameTime_HappyTest()
+        {
+            //Arrange 
+            proxyBridge.GetMember(memberId).Value.LoggedIn = true;
+            proxyBridge.GetMember(systemManagerid).Value.LoggedIn = true;
+            Guid id1 = Guid.Empty;
+            Guid id2 = Guid.Empty;
+
+            //Act
+            Task<ResponseT<Guid>>[] clientTasks = new Task<ResponseT<Guid>>[] {
+                Task.Run(() => {
+                    return proxyBridge.OpenNewStore(memberId, "Jumbo");
+                }),
+                Task.Run(() => {
+                    return proxyBridge.OpenNewStore(systemManagerid, "Jumbo");
+                })
+             };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            //Assert
+            Assert.IsTrue(clientTasks[0].Result.ErrorOccured == true && clientTasks[1].Result.ErrorOccured == false ||
+             clientTasks[0].Result.ErrorOccured == false && clientTasks[1].Result.ErrorOccured == true);
+
+            Assert.IsTrue(proxyBridge.GetStore(clientTasks[0].Result.Value).Value == null && proxyBridge.GetStore(clientTasks[1].Result.Value).Value != null ||
+                proxyBridge.GetStore(clientTasks[0].Result.Value).Value != null && proxyBridge.GetStore(clientTasks[1].Result.Value).Value == null);
+        }
 
         #endregion
 
@@ -345,6 +375,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(clientTasks[1].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetItemReviews(storeid1, itemid1).Value.Count==2);            
         }
+
         #endregion
 
         /// <summary>
@@ -547,6 +578,41 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             Assert.IsFalse(clientTasks[3].Result.ErrorOccured);
             Assert.IsTrue(clientTasks[3].Result.Value.Count == 2);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleMembersSearchForItemsWhenStoreBecomeClose_HappyTest()
+        {
+            //Arrange
+            proxyBridge.GetMember(storeOwnerid).Value.LoggedIn = true;
+
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.CloseStore(storeOwnerid, storeid1);
+            });
+
+            Task<ResponseT<List<Item>>>[] clientTasks = new Task<ResponseT<List<Item>>>[] {
+                Task.Run(() => proxyBridge.GetItemsByName(memberId,"Towel")),
+                Task.Run(() => proxyBridge.GetItemsByCategory(memberId2,"clothes")),
+                Task.Run(() => proxyBridge.GetItemsByKeysWord(memberId3,"rt"))
+             };
+            
+          
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+            task.Wait();
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[0].Result.Value.Count == 1);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);
+            Assert.IsTrue( clientTasks[1].Result.Value.Count == 1 || clientTasks[1].Result.Value.Count == 3);
+
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[2].Result.Value.Count == 0 || clientTasks[2].Result.Value.Count == 1);
+
+            Assert.IsFalse(task.Result.ErrorOccured);
         }
 
         #endregion

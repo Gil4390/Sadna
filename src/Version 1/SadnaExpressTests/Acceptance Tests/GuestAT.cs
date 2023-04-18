@@ -229,6 +229,39 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(clientTasks[3].Result.ErrorOccured);
             Assert.IsTrue(clientTasks[3].Result.Value.Count == 2);
         }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsSearchForItemsWhenStoreBecomeClose_HappyTest()
+        {
+            //Arrange
+            proxyBridge.GetMember(storeOwnerid).Value.LoggedIn = true;
+
+            Task<ResponseT<List<Item>>>[] clientTasks = new Task<ResponseT<List<Item>>>[] {
+                Task.Run(() => GetItemsByName("Towel")),
+                Task.Run(() => GetItemsByCategory("clothes")),
+                Task.Run(() =>  GetItemsByKeysWord("rt"))
+             };
+
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.CloseStore(storeOwnerid, storeid1);
+            });
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+            task.Wait();
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[0].Result.Value.Count == 1);
+
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[1].Result.Value.Count == 1|| clientTasks[1].Result.Value.Count == 3);
+
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured);
+            Assert.IsTrue(clientTasks[2].Result.Value.Count == 0 || clientTasks[2].Result.Value.Count == 1);
+
+            Assert.IsFalse(task.Result.ErrorOccured);
+        }
         #endregion
 
         #region Guest saving item in the shopping cart for some store 2.3
@@ -366,6 +399,32 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             Assert.IsFalse(clientTasks[3].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(id4).Value.Baskets.Count == 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsAddSameItemToShoppingCartWhileIsRemovedByManager_HappyTest()
+        {
+            //Arrange
+            proxyBridge.GetMember(storeOwnerid).Value.LoggedIn = true;
+
+            Guid id1 = Guid.Empty;
+            Guid id2 = Guid.Empty;
+            
+            Task<Response>[] clientTasks = new Task<Response>[] {
+                Task.Run(() => {id1=proxyBridge.Enter().Value; return AddItemToCart(id1,storeid1,itemid1,2); }),
+                Task.Run(() => {id2=proxyBridge.Enter().Value; return AddItemToCart(id2,storeid1,itemid1,5); }),
+             };
+
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.RemoveItemFromStore(storeOwnerid, storeid1, itemid1);
+            });
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+            task.Wait();
+
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
         }
 
         [TestMethod]

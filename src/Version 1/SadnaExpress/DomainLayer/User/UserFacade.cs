@@ -87,7 +87,9 @@ namespace SadnaExpress.DomainLayer.User
             if (!_reg.ValidateStrongPassword(password))
                 throw new Exception("Password is not strong enough according to the system's criteria");
 
-            lock (registerLock)
+            String internedKey = String.Intern(email);
+
+            lock (internedKey)
             {
                 foreach (Member m in members.Values)
                 {

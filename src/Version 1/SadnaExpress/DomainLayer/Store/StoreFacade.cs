@@ -10,7 +10,6 @@ namespace SadnaExpress.DomainLayer.Store
         private ConcurrentDictionary<Guid, Store> stores;
         private bool _isTSInitialized;
         private static IOrders _orders;
-        private Object openNewStore = new object();
 
         public StoreFacade()
         {
@@ -26,12 +25,14 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Guid OpenNewStore(string storeName)
         {
-            lock (openNewStore)
-            {
-                IsTsInitialized();
-                if (storeName.Length == 0)
-                    throw new Exception("Store name can not be empty");
+            String internedKey = String.Intern(storeName);
 
+            IsTsInitialized();
+            if (storeName.Length == 0)
+                throw new Exception("Store name can not be empty");
+
+            lock (internedKey)
+            {
                 if (IsStoreNameExist(storeName))
                     throw new Exception("Store with this name already exist");
 
@@ -187,13 +188,16 @@ namespace SadnaExpress.DomainLayer.Store
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
-                if (!store.Active)
-                    continue;
-                if (ratingStore != -1 && store.StoreRating != ratingStore)
-                    continue;
-                Item item = store.GetItemsByName(itemName, minPrice, maxPrice, category, ratingItem);
-                if (item != null)
-                    allItems.Add(item);
+                lock (store)
+                {
+                    if (!store.Active)
+                        continue;
+                    if (ratingStore != -1 && store.StoreRating != ratingStore)
+                        continue;
+                    Item item = store.GetItemsByName(itemName, minPrice, maxPrice, category, ratingItem);
+                    if (item != null)
+                        allItems.Add(item);
+                }
             }
             Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByName));
 
@@ -205,11 +209,14 @@ namespace SadnaExpress.DomainLayer.Store
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
-                if (!store.Active)
-                    continue;
-                if (ratingStore != -1 && store.StoreRating != ratingStore)
-                    continue;
-                allItems.AddRange(store.GetItemsByCategory(category, minPrice, maxPrice, ratingItem));
+                lock (store)
+                {
+                    if (!store.Active)
+                        continue;
+                    if (ratingStore != -1 && store.StoreRating != ratingStore)
+                        continue;
+                    allItems.AddRange(store.GetItemsByCategory(category, minPrice, maxPrice, ratingItem));
+                }
             }
             Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByCategory));
             return allItems;
@@ -220,11 +227,14 @@ namespace SadnaExpress.DomainLayer.Store
             List<Item> allItems = new List<Item>(); 
             foreach (Store store in stores.Values)
             {
-                if (!store.Active)
-                    continue;
-                if (ratingStore != -1 && store.StoreRating != ratingStore)
-                    continue;
-                allItems.AddRange(store.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category));
+                lock (store)
+                {
+                    if (!store.Active)
+                        continue;
+                    if (ratingStore != -1 && store.StoreRating != ratingStore)
+                        continue;
+                    allItems.AddRange(store.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category));
+                }
             }
             Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByKeysWord));
             return allItems;
