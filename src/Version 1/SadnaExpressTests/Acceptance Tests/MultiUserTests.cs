@@ -995,6 +995,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(userId7, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
+                    Assert.IsTrue(proxyBridge.GetItemByID(storeId2, itemId2).Value.Price.Equals(10));
                     Thread.Sleep(20);
                     return proxyBridge.PurchaseCart(userId7, "Visa", "BGU University Building 90");
 
@@ -1006,6 +1007,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(userId8, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
+                    Assert.IsTrue(proxyBridge.GetItemByID(storeId2, itemId2).Value.Price.Equals(10));
                     Thread.Sleep(20);
                     return proxyBridge.PurchaseCart(userId8, "Visa", "BGU University Building 90");
                 }),
@@ -1016,6 +1018,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(userId9, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
+                    Assert.IsTrue(proxyBridge.GetItemByID(storeId2, itemId2).Value.Price.Equals(10));
                     Thread.Sleep(20);
                     return proxyBridge.PurchaseCart(userId9, "Visa", "BGU University Building 90");
                 }),
@@ -1026,6 +1029,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(userId10, storeId2, itemId2, 1);
                     if(resp.ErrorOccured)
                         return resp;
+                    Assert.IsTrue(proxyBridge.GetItemByID(storeId2, itemId2).Value.Price.Equals(10));
                     Thread.Sleep(20);
                     return proxyBridge.PurchaseCart(userId10, "Visa", "BGU University Building 90");
 
@@ -1093,14 +1097,14 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Assert.IsTrue(proxyBridge.GetStore(storeId2).Value.itemsInventory.items_quantity[proxyBridge.GetStore(storeId2).Value.GetItemById(itemId2)].Equals(0));
                 Assert.IsTrue(proxyBridge.GetStore(storeId2).Value.GetItemById(itemId2).Price.Equals(10.0));
 
-                //Assert.IsTrue(proxyBridge.GetPurchasesInfoUser(userId8))
+                
             }
         }
         #endregion
 
 
 
-
+        
 
 
 
