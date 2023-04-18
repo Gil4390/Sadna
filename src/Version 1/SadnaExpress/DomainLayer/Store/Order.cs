@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -15,6 +16,14 @@ namespace SadnaExpress.DomainLayer.Store
         {
             this.listItems = listItems;
             date = DateTime.Now;
+        }
+
+        public double CalculatorAmount()
+        {
+            double sum = 0;
+            foreach (ItemForOrder item in listItems)
+                sum += item.Price;
+            return sum;
         }
     }
 }
