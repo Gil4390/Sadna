@@ -221,7 +221,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Arrange
             Guid id = new Guid();
             proxyBridge.SetIsSystemInitialize(true);
-            proxyBridge.SetPaymentService(new Mocks.Mock_Bad_Credit_Limit());
+            proxyBridge.SetPaymentService(new Mocks.Mock_Bad_Credit_Limit_Payment());
             //Act
             Task<Response> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
@@ -235,6 +235,57 @@ namespace SadnaExpressTests.Acceptance_Tests
         #endregion
 
         #region Supply 1.4
+        [TestMethod]
+        public void SupplyCompletedSuccessfully_GoodTest()
+        {
+            //Arrange
+            Guid id = new Guid();
+            proxyBridge.SetIsSystemInitialize(true);
+            proxyBridge.SetSupplierService(new Mocks.Mock_SupplierService());
+            //Act
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
+                
+                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            });
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured);//error not occurred
+        }
+        [TestMethod]
+        public void SupplyIsCollapse_BadTest()
+        {
+            //Arrange
+            Guid id = new Guid();
+            proxyBridge.SetIsSystemInitialize(true);
+            proxyBridge.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
+            //Act
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            });
+            task.Wait();
+            //Assert
+            Assert.IsTrue(task.Result.ErrorOccured);//error occurred
+        }
+        [TestMethod]
+        public void SupplyAddressNotCorrect_BadTest()
+        {
+            //Arrange
+            Guid id = new Guid();
+            proxyBridge.SetIsSystemInitialize(true);
+            proxyBridge.SetSupplierService(new Mocks.Mock_Bad_Address_SupplierService());
+            //Act
+            Task<Response> task = Task.Run(() => {
+                id = proxyBridge.Enter().Value;
+                proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+                return proxyBridge.PurchaseCart(id, "5411556648", "La La Land");
+            });
+            task.Wait();
+            //Assert
+            Assert.IsTrue(task.Result.ErrorOccured);//error occurred
+        }
         #endregion
 
         [TestCleanup]
