@@ -183,7 +183,7 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 foreach (Item item in itemsUpdated.Keys)
                     EditItemQuantity(item.ItemID, itemsUpdated[item]);
-                throw;
+                throw e;
             }
         }
         public int GetItemByQuantity(Guid itemID)

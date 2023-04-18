@@ -46,24 +46,36 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsTsInitialized();
             IsStoreExist(storeID);
-            if (!stores[storeID].Active)
-                throw new Exception("Store already closed");
-            stores[storeID].Active = false;
+            lock (stores[storeID])
+            {
+                if (!stores[storeID].Active)
+                    throw new Exception("Store already closed");
+                stores[storeID].Active = false;
+            }
+            
             Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(CloseStore)+"store " + stores[storeID].StoreName + " closed.");
         }
         public void ReopenStore(Guid storeID)
         {
             IsTsInitialized();
             IsStoreExist(storeID);
-            stores[storeID].Active = true;
-            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(ReopenStore)+"store " + stores[storeID].StoreName + " reopen.");
+            lock (stores[storeID])
+            {
+                if (stores[storeID].Active)
+                    throw new Exception("Store already reopend");
+                stores[storeID].Active = true;
+            }
+            Logger.Instance.Info(nameof(StoreFacade) + ": " + nameof(ReopenStore) + "store " + stores[storeID].StoreName + " reopen.");
         }
         public void DeleteStore(Guid storeID)
         {
             IsTsInitialized();
             IsStoreExist(storeID);
-            stores.TryRemove(storeID, out var store);
-            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(DeleteStore)+"store " + store.StoreName + " deleted.");
+            lock (stores[storeID])
+            {
+                stores.TryRemove(storeID, out var store);
+                Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(DeleteStore)+"store " + store.StoreName + " deleted.");
+            }
         }
         
         public List<Order> GetStorePurchases(Guid storeID)
@@ -120,8 +132,13 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsTsInitialized();
             IsStoreExist(storeID);
-            Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(AddItemToStore)+" added to store "+ storeID + "- "+itemName +" form category "+itemCategory + ": "+itemPrice+"X"+quantity);
-            return stores[storeID].AddItem(itemName, itemCategory, itemPrice, quantity);
+            String itemNameLock = String.Intern(itemName);
+            lock (itemNameLock)
+            {
+                var result = stores[storeID].AddItem(itemName, itemCategory, itemPrice, quantity);
+                Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(AddItemToStore)+" added to store "+ storeID + "- "+itemName +" form category "+itemCategory + ": "+itemPrice+"X"+quantity);
+                return result;
+            }
         }
 
         public void RemoveItemFromStore(Guid storeID, Guid itemId)
