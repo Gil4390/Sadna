@@ -91,16 +91,46 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void UserLogoutAndThenExit_HappyTest()
         {
             Guid tempid = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                Guid loggedid = proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
+                Guid loggedout= proxyBridge.Logout(loggedid).Value;
+                return proxyBridge.Exit(loggedout);
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //no error accured 
+        }
+
+        [TestMethod]
+        public void UserExitThenLogOut_BadTest()
+        {
+            Guid tempid = Guid.Empty;
             Task<ResponseT<Guid>> task = Task.Run(() => {
                 tempid = proxyBridge.Enter().Value;
                 Guid loggedid = proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
-                proxyBridge.Logout(loggedid);
+                proxyBridge.Exit(loggedid);
                 return proxyBridge.Logout(loggedid);
             });
 
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error accured 
-            Assert.IsTrue(task.Result.Value == Guid.Empty); //Guid returns empty (default value)
+        }
+
+        [TestMethod]
+        public void UserExitLogOutAutomaticly_HappyTest()
+        {
+            Guid loggedid= Guid.Empty;
+            Guid tempid = Guid.Empty;
+            Task<Response> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                loggedid = proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
+                return proxyBridge.Exit(loggedid);
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //error accured 
+            Assert.IsFalse(proxyBridge.GetMember(loggedid).Value.LoggedIn);
         }
 
         [TestMethod]

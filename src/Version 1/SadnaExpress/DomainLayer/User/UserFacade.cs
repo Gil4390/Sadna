@@ -23,8 +23,6 @@ namespace SadnaExpress.DomainLayer.User
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         private ISupplierService supplierService;
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
-        object enterLock = new object();
-        object registerLock = new object();
 
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
@@ -47,13 +45,11 @@ namespace SadnaExpress.DomainLayer.User
 
         public Guid Enter()
         {
-            lock (enterLock)
-            {
-                User user = new User();
-                current_Users.TryAdd(user.UserId, user);
-                Logger.Instance.Info(user.UserId , nameof(UserFacade)+": "+nameof(Enter)+": enter the system as guest.");
-                return user.UserId;
-            }
+            User user = new User();
+            current_Users.TryAdd(user.UserId, user);
+            Logger.Instance.Info(user.UserId , nameof(UserFacade)+": "+nameof(Enter)+": enter the system as guest.");
+            return user.UserId;
+            
         }
 
         public void Exit(Guid id)
@@ -64,8 +60,11 @@ namespace SadnaExpress.DomainLayer.User
                 Logger.Instance.Info(id, nameof(UserFacade) + ": " + nameof(Exit) + ": exited from the system.");
             else if (members.ContainsKey(id))
             {
-                Logout(id);
-                Logger.Instance.Info(id, nameof(UserFacade) + ": " + nameof(Exit) + ": exited from the system.");
+                lock (members[id])
+                {
+                    Logout(id);
+                    Logger.Instance.Info(id, nameof(UserFacade) + ": " + nameof(Exit) + ": exited from the system.");
+                }
             }
             else
                 throw new Exception("Error with exiting system with this id- " + id);
@@ -146,13 +145,14 @@ namespace SadnaExpress.DomainLayer.User
         {
             if (!members.ContainsKey(id))
                 throw new Exception("member with id dosen't exist");
-
-            Member member = members[id];
-            if(member.LoggedIn==false)
-                throw new Exception("member is already logged out!");
-            member.LoggedIn = false;
-            Logger.Instance.Info(member.UserId, nameof(UserFacade)+": "+nameof(Logout)+" logged out as member");
-
+            lock (members[id])
+            { 
+                Member member = members[id];
+                if (member.LoggedIn == false)
+                    throw new Exception("member is already logged out!");
+                member.LoggedIn = false;
+                Logger.Instance.Info(member.UserId, nameof(UserFacade) + ": " + nameof(Logout) + " logged out as member");
+            }
             return Enter(); //member logs out and a regular user enters the system instead  
         }
 
