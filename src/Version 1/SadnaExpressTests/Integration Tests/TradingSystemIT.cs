@@ -21,6 +21,7 @@ namespace SadnaExpressTests.Integration_Tests
         {
             trading = new TradingSystem();
             trading.SetIsSystemInitialize(true);
+            trading.TestMode = true;
             // create member
             userID = trading.Enter().Value;
             trading.Register(userID, "RotemSela@gmail.com", "noga", "schwartz", "asASD876!@");
