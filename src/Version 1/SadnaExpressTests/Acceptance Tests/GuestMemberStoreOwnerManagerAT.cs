@@ -146,7 +146,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         [TestMethod]
-        public void AddingNewItem2OwnersAddingItemWithSameNameOnce_Concurrent_Bad()
+        public void AddingNewItem2OwnersAddingItemWithSameNameAtOnce_Concurrent_Bad()
         {
             //2 owners attempting to add an item with same name one should fail and one should succeed
             Task<ResponseT<Guid>> task1 = Task.Run(() => {
@@ -509,6 +509,28 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(response1.ErrorOccured); //should fail because store5Owner is not the appointer of loggedInUser2
         }
 
+        [TestMethod]
+        public void AddingOwnerPermissionsTwiceConcurrent_Bad()
+        {
+            Task<Response> task1 = Task.Run(() => {
+                return proxyBridge.AddStoreManagerPermissions(store5Founder, storeID5, "storeManagerMail2@gmail.com", "owner permissions");
+            });
+
+
+            Task<Response> task2 = Task.Run(() => {
+                return proxyBridge.AddStoreManagerPermissions(store5Owner, storeID5, "storeManagerMail2@gmail.com", "owner permissions");
+            });
+
+            task1.Wait();
+            task2.Wait();
+            bool error1occured = task1.Result.ErrorOccured;
+            bool error2occured = task2.Result.ErrorOccured;
+            Assert.IsTrue(error1occured || error2occured); //at lest one should fail
+            Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
+        }
+
+
+
         #endregion
 
         #region add new owner permissions
@@ -594,7 +616,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(task2.Result.ErrorOccured); //error occured 
 
             var response2 = proxyBridge.GetAllStoreInfo();
-            int numOfActiveStoresAfterSecondClose = response.Value.FindAll(s => s.Active).Count;
+            int numOfActiveStoresAfterSecondClose = response2.Value.FindAll(s => s.Active).Count;
 
             Assert.AreEqual(numOfActiveStoresAfterFirstClose, numOfActiveStoresAfterSecondClose);
         }
@@ -615,6 +637,33 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             task2.Wait();
             Assert.IsFalse(task2.Result.ErrorOccured); //error not occured 
+        }
+
+        [TestMethod]
+        public void ClosingStoreTwiceConcurrent_Bad()
+        {
+            var response = proxyBridge.GetAllStoreInfo();
+            int numOfActiveStoresBefore = response.Value.FindAll(s => s.Active).Count;
+
+            Task<Response> task1 = Task.Run(() => {
+                return proxyBridge.CloseStore(store5Founder, storeID5);
+            });
+
+            Task<Response> task2 = Task.Run(() => {
+                return proxyBridge.CloseStore(store5Founder, storeID5);
+            });
+
+            task1.Wait();
+            task2.Wait();
+            bool error1occured = task1.Result.ErrorOccured;
+            bool error2occured = task2.Result.ErrorOccured;
+            Assert.IsTrue(error1occured || error2occured); //at lest one should fail
+            Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
+
+            var response2 = proxyBridge.GetAllStoreInfo();
+            int numOfActiveStoresAfter = response2.Value.FindAll(s => s.Active).Count;
+
+            Assert.AreEqual(numOfActiveStoresAfter, numOfActiveStoresBefore - 1);
         }
 
         #endregion

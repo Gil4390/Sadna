@@ -126,26 +126,20 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
-
             Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(id1).Value.Baskets.Count == 0);
 
             Assert.IsFalse(clientTasks[1].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(id2).Value.Baskets.Count == 0);
-
             Assert.IsTrue(clientTasks[2].Result.ErrorOccured || clientTasks[3].Result.ErrorOccured); //no error occurred
 
             Assert.IsFalse(clientTasks[4].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(id5).Value.Baskets.Count == 2);
-
             Assert.IsTrue(clientTasks[5].Result.ErrorOccured || clientTasks[6].Result.ErrorOccured); //no error occurred
-            if (!clientTasks[5].Result.ErrorOccured)
-                Assert.IsTrue(proxyBridge.GetUserShoppingCart(id6).Value.Baskets.Count == 1);
-            if (!clientTasks[6].Result.ErrorOccured)
-                Assert.IsTrue(proxyBridge.GetUserShoppingCart(id7).Value.Baskets.Count == 1);
+
             Assert.IsFalse(clientTasks[7].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(id8).Value.Baskets.Count == 1);
-
+            
             Assert.IsFalse(clientTasks[8].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(id9).Value.Baskets.Count == 1);
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(id9).Value.GetItemQuantityInCart(storeid1, itemid11) == 3);
@@ -694,21 +688,21 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Thread.Sleep(200);
                     id8 = proxyBridge.Login(id8, "oMAHA1@amazon.io", "123AaC!@#").Value;
                     Store s = proxyBridge.GetStore(storeID).Value;
-                    proxyBridge.AddItemToCart(id7, storeID,newitemID,1);
-                    proxyBridge.PurchaseCart(id1, "5411556648", "Rabbi Akiva 5");
+                    proxyBridge.AddItemToCart(id8, storeID,newitemID,1);
+                    proxyBridge.PurchaseCart(id8, "5411556648", "Rabbi Akiva 5");
                     return proxyBridge.Exit(id8);
                 }),
                 Task.Run(() =>
                 {
                     Thread.Sleep(100);
-                    id8=proxyBridge.Enter().Value;
-                    proxyBridge.Register(id8, "oMAHA2@amazon.io","Dan", "Mass", "123AaC!@#");
+                    id9=proxyBridge.Enter().Value;
+                    proxyBridge.Register(id9, "oMAHA2@amazon.io","Dan", "Mass", "123AaC!@#");
                     Thread.Sleep(200);
-                    id8 = proxyBridge.Login(id8, "oMAHA2@amazon.io", "123AaC!@#").Value;
+                    id9 = proxyBridge.Login(id9, "oMAHA2@amazon.io", "123AaC!@#").Value;
                     Store s = proxyBridge.GetStore(storeID).Value;
-                    proxyBridge.AddItemToCart(id7, storeID,newitemID,1);
-                    proxyBridge.PurchaseCart(id1, "5411556638", "Rabbi Akiva 6");
-                    return proxyBridge.Exit(id8);
+                    proxyBridge.AddItemToCart(id9, storeID,newitemID,1);
+                    proxyBridge.PurchaseCart(id9, "5411556638", "Rabbi Akiva 6");
+                    return proxyBridge.Exit(id9);
                 }),
             };
 
@@ -728,9 +722,10 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             if (!clientTasks[6].Result.ErrorOccured)
             {
-                Assert.IsNotNull(proxyBridge.GetStore(storeID).Value); 
-                Assert.IsTrue(clientTasks[7].Result.ErrorOccured || clientTasks[8].Result.ErrorOccured);//no error occurred
+                Assert.IsNotNull(proxyBridge.GetStore(storeID).Value);
                 Assert.IsFalse(clientTasks[7].Result.ErrorOccured && clientTasks[8].Result.ErrorOccured);//no error occurred
+                Assert.IsFalse(proxyBridge.GetStore(storeid1).Value.itemsInventory.ItemExist(newitemID));
+
             }
             else
             {
@@ -739,7 +734,147 @@ namespace SadnaExpressTests.Acceptance_Tests
             }
         }
         #endregion
+        
+        #region Two users try to purchase item that store owner deleting
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void StoreOwnerDeletingItemUserPurchase()
+        {
+            Guid id1 = Guid.Empty;
+            Guid id2 = Guid.Empty;
+            Guid id3 = Guid.Empty;
+            Guid id4 = Guid.Empty;
+            Guid id5 = Guid.Empty;
+            Guid id6 = Guid.Empty;
+            Guid id7 = Guid.Empty;
+            Guid id8 = Guid.Empty;
+            Guid id9 = Guid.Empty;
+            Guid storeID = Guid.Empty;
+            Guid newitemID = Guid.Empty;
+            Task<Response>[] clientTasks = new Task<Response>[] {
+                Task.Run(() =>
+                {
+                    id1=proxyBridge.Enter().Value;
+                    proxyBridge.Register(id1, "Ted@amazon.io","Ted", "Lasso", "123AaC!@#");
+                    id1 = proxyBridge.Login(id1, "Ted@amazon.io", "123AaC!@#").Value;
+                    Thread.Sleep(1000);
+                    proxyBridge.AddItemToCart(id1, storeid1, itemid1, 39);
+                    Thread.Sleep(10000);
+                    proxyBridge.AddItemToCart(id1, storeid1, itemid1, 1);
+                    return proxyBridge.PurchaseCart(id1, "5411556648", "Rabbi Akiva 5");
+                }),
+                Task.Run(() =>
+                {
+                    id2=proxyBridge.Enter().Value;
+                    proxyBridge.Register(id2, "Roy@amazon.io","Roy", "Kent", "123AaC!@#");
+                    Thread.Sleep(500);
+                    id2 = proxyBridge.Login(id2, "Roy@amazon.io", "123AaC!@#").Value;
+                    Thread.Sleep(1000);
+                    proxyBridge.AddItemToCart(id2, storeid1, itemid1, 9);
+                    Thread.Sleep(1000);
+                    proxyBridge.AddItemToCart(id2, storeid1, itemid1, 9);
+                    return proxyBridge.PurchaseCart(id2, "5411566648", "Rabbi Akiva 6");
+                }),
+                Task.Run(() =>
+                {
+                    id3=proxyBridge.Enter().Value;
+                    proxyBridge.Register(id3, "Tartt@amazon.io","Jamie", "Tartt", "123AaC!@#");
+                    Thread.Sleep(500);
+                    id3 = proxyBridge.Login(id3, "Tartt@amazon.io", "123AaC!@#").Value;
+                    proxyBridge.AddItemToCart(id3, storeid1, itemid22, 1);
+                    Thread.Sleep(2000);
+                    return proxyBridge.AddItemToCart(id3, storeid1, itemid22, 1);
+                }),
+                Task.Run(() =>
+                {
+                    id4=proxyBridge.Enter().Value;
+                    proxyBridge.Register(id4, "Tartt@amazon.io","Jamie", "Tartt", "123AaC!@#");
+                    Thread.Sleep(10000);
+                    id4 = proxyBridge.Login(id4, "Tartt@amazon.io", "123AaC!@#").Value;
+                    proxyBridge.AddItemToCart(id4, storeid1, itemid11, 1);
+                    Thread.Sleep(10);
+                    return proxyBridge.AddItemToCart(id4, storeid1, itemid22, 1);
+                }),
+                Task.Run(() =>
+                {
+                    id5=proxyBridge.Enter().Value;
+                    proxyBridge.Register(id5, "Obysania@amazon.io","Sami", "Obysania", "123AaC!@#");
+                    Thread.Sleep(7);
+                    id5 = proxyBridge.Login(id5, "Obysania@amazon.io", "123AaC!@#").Value;
+                    proxyBridge.GetUserShoppingCart(id5);
+                    Thread.Sleep(777);
+                    proxyBridge.AddItemToCart(id5, storeid1, itemid11, 1);
+                    proxyBridge.AddItemToCart(id5, storeid2, itemid11, 3);
+                    Thread.Sleep(1);
+                    return proxyBridge.AddItemToCart(id5, storeid1, itemid11, 1);
+                }),
+                Task.Run(() =>
+                {
+                    id6=proxyBridge.Enter().Value;
+                    proxyBridge.Register(id6, "Mass@amazon.io","Dan", "Mass", "123AaC!@#");
+                    Thread.Sleep(100);
+                    storeID = proxyBridge.OpenNewStore(id6, "StoreWillNotShouldOpen").Value;
+                    return proxyBridge.AddItemToCart(id6, storeid1, itemid11, 1);
+                }),
+                Task.Run(() =>
+                {
+                    Thread.Sleep(100);
+                    id7=proxyBridge.Enter().Value;
+                    Thread.Sleep(200);
+                    id7 = proxyBridge.Login(id7, "AsiAzar@gmail.com", "A#!a12345678").Value;
+                    proxyBridge.RemoveItemFromStore(id7,storeid1,itemid22);
+                    return proxyBridge.Exit(id7);
+                }),
+                Task.Run(() =>
+                {
+                    Thread.Sleep(100);
+                    id8=proxyBridge.Enter().Value;
+                    proxyBridge.Register(id8, "oMAHA1@amazon.io","Dan", "Mass", "123AaC!@#");
+                    Thread.Sleep(200);
+                    id8 = proxyBridge.Login(id8, "oMAHA1@amazon.io", "123AaC!@#").Value;
+                    proxyBridge.AddItemToCart(id8, storeid1,itemid22,1);
+                    proxyBridge.PurchaseCart(id8, "5411556648", "Rabbi Akiva 5");
+                    return proxyBridge.Exit(id8);
+                }),
+                Task.Run(() =>
+                {
+                    Thread.Sleep(100);
+                    id9=proxyBridge.Enter().Value;
+                    proxyBridge.Register(id9, "oMAHA2@amazon.io","Dan", "Mass", "123AaC!@#");
+                    Thread.Sleep(200);
+                    id9 = proxyBridge.Login(id9, "oMAHA2@amazon.io", "123AaC!@#").Value;
+                    Store s = proxyBridge.GetStore(storeID).Value;
+                    proxyBridge.AddItemToCart(id9, storeid1,itemid22,1);
+                    proxyBridge.PurchaseCart(id9, "5411556638", "Rabbi Akiva 6");
+                    return proxyBridge.Exit(id9);
+                }),
+            };
 
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsTrue(clientTasks[0].Result.ErrorOccured || clientTasks[1].Result.ErrorOccured);//no error occurred
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured && clientTasks[1].Result.ErrorOccured);//no error occurred
+
+            Assert.IsTrue(clientTasks[2].Result.ErrorOccured || clientTasks[3].Result.ErrorOccured); //no error occurred
+            
+            Assert.IsFalse(clientTasks[4].Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id5).Value.Baskets.Count == 1);
+            
+            Assert.IsTrue(clientTasks[5].Result.ErrorOccured); //no error occurred\   
+            
+            if (!clientTasks[6].Result.ErrorOccured)
+            {
+                Assert.IsFalse(proxyBridge.GetStore(storeid1).Value.itemsInventory.ItemExist(itemid22));
+            }
+            else
+            {
+                Assert.IsFalse(clientTasks[6].Result.ErrorOccured && clientTasks[7].Result.ErrorOccured &&
+                              clientTasks[8].Result.ErrorOccured);
+            }
+        }
+        #endregion
 
 
 

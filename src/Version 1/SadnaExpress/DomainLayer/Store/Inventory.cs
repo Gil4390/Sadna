@@ -71,10 +71,8 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public void RemoveItem(Guid itemID)
         {
-            Item item = GetItemById(itemID);
             int outItem;
-            lock (item)
-                items_quantity.TryRemove(GetItemById(itemID), out outItem);
+            items_quantity.TryRemove(GetItemById(itemID), out outItem);
         }
         
         public void EditItemQuantity(Guid itemID, int quantity)
@@ -183,7 +181,7 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 foreach (Item item in itemsUpdated.Keys)
                     EditItemQuantity(item.ItemID, itemsUpdated[item]);
-                throw;
+                throw e;
             }
         }
         public int GetItemByQuantity(Guid itemID)

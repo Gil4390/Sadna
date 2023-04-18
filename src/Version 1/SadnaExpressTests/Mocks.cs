@@ -50,7 +50,7 @@ namespace SadnaExpressTests
                 return true; // Return true after waiting
             }
         }
-        public class Mock_Bad_Credit_Limit : Mock_PaymentService
+        public class Mock_Bad_Credit_Limit_Payment : Mock_PaymentService
         {
             public override bool Pay(double amount, string transactionDetails)
             {
@@ -78,6 +78,16 @@ namespace SadnaExpressTests
                 return true; // Return true after waiting
             }
 
+        }
+        
+        public class Mock_Bad_Address_SupplierService : Mock_SupplierService
+        {
+            public override bool ShipOrder(string orderDetails, string userDetails)
+            {
+                if (userDetails.Contains("La La Land"))
+                    return false;
+                return true; 
+            }
         }
 
         public class Mock_5sec_SupplierService : Mock_SupplierService
