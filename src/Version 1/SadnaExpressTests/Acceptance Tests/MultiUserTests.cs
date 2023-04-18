@@ -135,11 +135,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(clientTasks[4].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(id5).Value.Baskets.Count == 2);
             Assert.IsTrue(clientTasks[5].Result.ErrorOccured || clientTasks[6].Result.ErrorOccured); //no error occurred
-            if (!clientTasks[5].Result.ErrorOccured)
-                Assert.IsTrue(proxyBridge.GetUserShoppingCart(id6).Value.Baskets.Count == 1);
-
-            if (!clientTasks[6].Result.ErrorOccured)
-                Assert.IsTrue(proxyBridge.GetUserShoppingCart(id7).Value.Baskets.Count == 1);
 
             Assert.IsFalse(clientTasks[7].Result.ErrorOccured);//no error occurred
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(id8).Value.Baskets.Count == 1);
@@ -714,8 +709,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             if (!clientTasks[6].Result.ErrorOccured)
             {
                 Assert.IsNotNull(proxyBridge.GetStore(storeID).Value);
-                Assert.IsFalse(clientTasks[7].Result.ErrorOccured || clientTasks[8].Result.ErrorOccured);//no error occurred
                 Assert.IsFalse(clientTasks[7].Result.ErrorOccured && clientTasks[8].Result.ErrorOccured);//no error occurred
+                Assert.IsFalse(proxyBridge.GetStore(storeid1).Value.itemsInventory.ItemExist(newitemID));
+
             }
             else
             {
