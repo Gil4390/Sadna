@@ -88,6 +88,22 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         [TestMethod]
+        public void UserLogoutAndThenExit_HappyTest()
+        {
+            Guid tempid = Guid.Empty;
+            Task<ResponseT<Guid>> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                Guid loggedid = proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
+                proxyBridge.Logout(loggedid);
+                return proxyBridge.Logout(loggedid);
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
+            Assert.IsTrue(task.Result.Value == Guid.Empty); //Guid returns empty (default value)
+        }
+
+        [TestMethod]
         public void UserLogoutFirstBadSecGood_HappyTest()
         {
             Guid tempid = Guid.Empty;
@@ -731,66 +747,119 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId4).Value.Baskets.Count == 1);
         }
 
-        #endregion
-
-        #region Member checking the content of the shopping cart and making changes 2.4
-
+        /// <summary>
+        /// Member logs in and add items to shopping cart, logs out, then logs in again and add more items
+        /// check that shopping cart holds all the items the user added
+        /// </summary>
         [TestMethod]
         public void MemberShoppingCartSavedAfterLogOut_HappyTest()
         {
+            //Arrange
+            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
+
+            //Act
             Task<Response> task = Task.Run(() => {
-                Guid id  = proxyBridge.Enter().Value;
-                proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
-                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 2);
-                proxyBridge.Logout(memberId);
-                Guid id2  = proxyBridge.Enter().Value;
-                proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@");
-                return proxyBridge.AddItemToCart(memberId, storeid1, itemid1,1);
+                Guid id = proxyBridge.Enter().Value;
+                Guid loggedin = proxyBridge.Login(id, "gil@gmail.com", "asASD876!@").Value;
+                proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 2);
+                Guid id2 = proxyBridge.Logout(loggedin).Value;
+                loggedin = proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@").Value;
+                return proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 1);
             });
             task.Wait();
+
+            //Assert
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
             Assert.IsTrue(
                 (proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3));
         }
-        
+
+        /// <summary>
+        /// Guest add items to shopping cart, logs in and then sees all the item he added 
+        /// when he wasn't logd in - check that shopping cart holds all the items the user added
+        /// </summary>
         [TestMethod]
         public void GuestAddItemsAndThenLoggedInAsMember_HappyTest()
         {
+            //Arrange
             proxyBridge.GetMember(memberId).Value.LoggedIn = false;
 
+            //Act
             Task<Response> task = Task.Run(() => {
-                Guid id  = proxyBridge.Enter().Value;
+                Guid id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid1, itemid1, 2);
-                proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
-                return proxyBridge.AddItemToCart(memberId, storeid1, itemid1,1);
+                proxyBridge.AddItemToCart(id, storeid2, itemid2, 5);
+                Guid loggedin = proxyBridge.Login(id, "gil@gmail.com", "asASD876!@").Value;
+                return proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 1);
             });
             task.Wait();
+
+            //Assert
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
-            Console.WriteLine((proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1)));
-            Assert.IsTrue(
-                (proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3));
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid2, itemid2) == 5);
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count==2);
         }
+
+        /// <summary>
+        /// Member logs in and add items to shopping cart, Exit the system, enter and then logs in again and add more items
+        /// check that shopping cart holds all the items the user added
+        /// </summary>
         [TestMethod]
         public void MemberShoppingCartSavedAfterExit_HappyTest()
         {
+            //Arrange
+            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
+
+            //Act
             Task<Response> task = Task.Run(() => {
-                Guid id  = proxyBridge.Enter().Value;
-                proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
-                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 2);
-                proxyBridge.Exit(memberId);
-                Guid id2  = proxyBridge.Enter().Value;
-                proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@");
-                return proxyBridge.AddItemToCart(memberId, storeid1, itemid1,1);
+                Guid id = proxyBridge.Enter().Value;
+                Guid loggedin = proxyBridge.Login(id, "gil@gmail.com", "asASD876!@").Value;
+                proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 2);
+                proxyBridge.Exit(loggedin);
+                Guid id2 = proxyBridge.Enter().Value;
+                Guid loggedin1= proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@").Value;
+                return proxyBridge.AddItemToCart(loggedin1, storeid1, itemid1, 1);
             });
             task.Wait();
+
+            //Assert
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(
-                (proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3));
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3);
         }
 
-    
+        /// <summary>
+        /// Member logs in and add items to shopping cart, logs out and then Exit the system, enter and then logs in again and add more items
+        /// check that shopping cart holds all the items the user added
+        /// </summary>
+        [TestMethod]
+        public void MemberShoppingCartSavedAfterLogOutAndExit_HappyTest()
+        {
+            //Arrange
+            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
 
-    [TestMethod]
+            //Act
+            Task<Response> task = Task.Run(() => {
+                Guid id = proxyBridge.Enter().Value;
+                Guid loggedin = proxyBridge.Login(id, "gil@gmail.com", "asASD876!@").Value;
+                proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 2);
+                Guid idtoexit= proxyBridge.Logout(loggedin).Value;
+                proxyBridge.Exit(idtoexit);
+                Guid id2 = proxyBridge.Enter().Value;
+                Guid loggedin1 = proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@").Value;
+                return proxyBridge.AddItemToCart(loggedin1, storeid1, itemid1, 1);
+            });
+            task.Wait();
+
+            //Assert
+            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsTrue(proxyBridge.GetUserShoppingCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3);
+        }
+
+        #endregion
+
+        #region Member checking the content of the shopping cart and making changes 2.4
+        [TestMethod]
         public void MemberEditShoppingCartAddAndRemove_HappyTest()
         {
             Task<Response> task = Task.Run(() => {
