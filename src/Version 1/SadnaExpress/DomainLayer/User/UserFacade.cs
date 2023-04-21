@@ -16,6 +16,7 @@ namespace SadnaExpress.DomainLayer.User
         private const int MaxExternalServiceWaitTime = 10000; //10 seconds is 10,000 mili seconds
         private ConcurrentDictionary<Guid, User> current_Users; //users that are in the system and not login
         private ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
+        private ConcurrentDictionary<Guid, string> macs;
         private bool _isTSInitialized;
         private IPasswordHash _ph = new PasswordHash();
         private IRegistration _reg = new Registration();
@@ -28,15 +29,17 @@ namespace SadnaExpress.DomainLayer.User
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
             members = new ConcurrentDictionary<Guid, Member>();
+            macs = new ConcurrentDictionary<Guid, string>();
             this.paymentService = paymentService;
             this.supplierService = supplierService;
             _isTSInitialized = false;
         }
 
-        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
+        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members,ConcurrentDictionary<Guid, string> macs, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
         {
             this.current_Users = current_Users;
             this.members = members;
+            this.macs = macs;
             _ph = ph;
             this.paymentService = paymentService;
             this.supplierService = supplierService;
@@ -96,12 +99,15 @@ namespace SadnaExpress.DomainLayer.User
                         throw new Exception("Member with this email already exists");
 
                 }
-
-            string hashPassword = _ph.Hash(password);
-            Member newMember = new Member(id, email, firstName, lastName, hashPassword);
-
-            members.TryAdd(id, newMember);
-            Logger.Instance.Info(newMember.UserId, nameof(UserFacade) + ": " + nameof(Register) + ": registered with " + email + " and password " + password + ".");
+                
+                
+                string newMac = _ph.Mac();
+                macs.TryAdd(id, newMac);
+                string hashPassword = _ph.Hash(password+newMac);
+                Member newMember = new Member(id, email, firstName, lastName, hashPassword);
+                
+                members.TryAdd(id, newMember);
+                Logger.Instance.Info(newMember.UserId, nameof(UserFacade) + ": " + nameof(Register) + ": registered with " + email +".");
             }
         }
 
@@ -117,7 +123,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 if (member.Email.Equals(email))
                 {
-                    if (!_ph.Rehash(password, member.Password))
+                    if (!_ph.Rehash(password+macs[member.UserId], member.Password))
                     {
                         throw new Exception(password + " is wrong password for email");
                     }
@@ -360,7 +366,7 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
-            members[userID].Password = _ph.Hash(newPassword);
+            members[userID].Password = _ph.Hash(newPassword+macs[userID]);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(UpdatePassword)+"Password updated");
         }
 
@@ -467,7 +473,7 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
-            members[userID].SetSecurityQA(q,_ph.Hash(a));
+            members[userID].SetSecurityQA(q,_ph.Hash(a+macs[userID]));
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Security Q&A set");
         }
 
