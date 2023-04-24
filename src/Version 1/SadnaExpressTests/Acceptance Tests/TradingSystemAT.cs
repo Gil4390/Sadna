@@ -59,6 +59,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             current_users.TryAdd(userid, entered_user);
 
             ConcurrentDictionary<Guid, Member> members = new ConcurrentDictionary<Guid, Member>();
+            ConcurrentDictionary<Guid, string> macs = new ConcurrentDictionary<Guid, string>();
             systemManagerid = Guid.NewGuid();
             memberId = Guid.NewGuid();
             memberId2 = Guid.NewGuid();
@@ -66,16 +67,26 @@ namespace SadnaExpressTests.Acceptance_Tests
             memberId4 = Guid.NewGuid();
 
             storeOwnerid = Guid.NewGuid();
-            Member member = new Member(memberId, "gil@gmail.com", "Gil", "Gil", passwordHash.Hash("asASD876!@"));
-
-            Member member2 = new Member(memberId, "sebatian@gmail.com", "Sebatian", "Sebatian", passwordHash.Hash("asASD123!@"));
-            Member member3 = new Member(memberId, "amihai@gmail.com", "Amihai", "Amihai", passwordHash.Hash("asASD753!@"));
-            Member member4 = new Member(memberId, "bar@gmail.com", "Bar", "Bar", passwordHash.Hash("asASD159!@"));
+            string newMac = passwordHash.Mac();
+            macs.TryAdd(memberId, newMac);
+            Member member = new Member(memberId, "gil@gmail.com", "Gil", "Gil", passwordHash.Hash("asASD876!@"+newMac));
+            newMac = passwordHash.Mac();
+            macs.TryAdd(memberId2, newMac);
+            Member member2 = new Member(memberId, "sebatian@gmail.com", "Sebatian", "Sebatian", passwordHash.Hash("asASD123!@"+newMac));
+            newMac = passwordHash.Mac();
+            macs.TryAdd(memberId3, newMac);
+            Member member3 = new Member(memberId, "amihai@gmail.com", "Amihai", "Amihai", passwordHash.Hash("asASD753!@"+newMac));
+            newMac = passwordHash.Mac();
+            macs.TryAdd(memberId4, newMac);
+            Member member4 = new Member(memberId, "bar@gmail.com", "Bar", "Bar", passwordHash.Hash("asASD159!@"+newMac));
 
             
-            
-            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", passwordHash.Hash("AS87654askj"));
-            PromotedMember storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "shay", "kres", passwordHash.Hash("A#!a12345678"));
+            newMac = passwordHash.Mac();
+            macs.TryAdd(systemManagerid, newMac);
+            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", passwordHash.Hash("AS87654askj"+newMac));
+            newMac = passwordHash.Mac();
+            macs.TryAdd(storeOwnerid, newMac);
+            PromotedMember storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "shay", "kres", passwordHash.Hash("A#!a12345678"+newMac));
             systemManager.createSystemManager();
             storeOwner.createFounder(storeid1);
             members.TryAdd(systemManagerid, systemManager);
@@ -85,7 +96,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             members.TryAdd(memberId4, member4);
 
             members.TryAdd(storeOwnerid, storeOwner);
-            IUserFacade _userFacade = new UserFacade(current_users, members, new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
+            IUserFacade _userFacade = new UserFacade(current_users, members, macs,new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
             TradingSystem Ts = new TradingSystem(_userFacade, storeFacade);
             
             Ts.TestMode = true;

@@ -1,16 +1,19 @@
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace SadnaExpress.DomainLayer.User
 {
     public class PasswordHash : IPasswordHash
     {
+        private Random random = new Random();
         public const int SaltByteSize = 24;
         public const int HashByteSize = 20; // to match the size of the PBKDF2-HMAC-SHA-1 hash 
         public const int Pbkdf2Iterations = 1000;
         public const int IterationIndex = 0;
         public const int SaltIndex = 1;
         public const int Pbkdf2Index = 2;
+        private const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         public string Hash(string password)
         {
             var cryptoProvider = new RNGCryptoServiceProvider();
@@ -55,6 +58,12 @@ namespace SadnaExpress.DomainLayer.User
             var pbkdf2 = new Rfc2898DeriveBytes(password, salt);
             pbkdf2.IterationCount = iterations;
             return pbkdf2.GetBytes(outputBytes);
+        }
+
+        public string Mac()
+        {
+            return new string(Enumerable.Repeat(chars, 8)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

@@ -29,7 +29,7 @@ namespace SadnaExpressTests.Unit_Tests
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", "ShaY1787%$%");
             systemManager.createSystemManager();
             members.TryAdd(systemManagerid, systemManager);
-            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members, new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
+            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,new ConcurrentDictionary<Guid, string>(), new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
             _userFacade.SetIsSystemInitialize(true);
             userId = _userFacade.Enter();
             storeID = Guid.NewGuid();
