@@ -5,6 +5,7 @@ namespace SadnaExpress.DomainLayer.User
         string Hash(string password);
         bool Rehash(string password, string correctHash);
         bool Validate(string password);
+        string Mac();
 
     }
 }
