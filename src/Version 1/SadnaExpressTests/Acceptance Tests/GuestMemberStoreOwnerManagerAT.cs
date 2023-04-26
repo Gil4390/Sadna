@@ -31,35 +31,35 @@ namespace SadnaExpressTests.Acceptance_Tests
             base.SetUp();
 
             store4Founder = proxyBridge.Enter().Value;
-            proxyBridge.Register(store4Founder, "storeFounder4Mail@gmail.com", "radwan", "ganem", "A#!a12345678");
-            store4Founder = proxyBridge.Login(store4Founder, "storeFounder4Mail@gmail.com", "A#!a12345678").Value;
+            proxyBridge.Register(store4Founder, "storeFounder4Mail@gmail.com".ToLower(), "radwan", "ganem", "A#!a12345678");
+            store4Founder = proxyBridge.Login(store4Founder, "storeFounder4Mail@gmail.com".ToLower(), "A#!a12345678").Value;
             storeID4 = proxyBridge.OpenNewStore(store4Founder, "Store 4").Value;
 
             store5Founder = proxyBridge.Enter().Value;
-            proxyBridge.Register(store5Founder, "storeFounderMail@gmail.com", "tal", "galmor", "A#!a12345678");
-            store5Founder = proxyBridge.Login(store5Founder, "storeFounderMail@gmail.com", "A#!a12345678").Value;
+            proxyBridge.Register(store5Founder, "storeFounderMail@gmail.com".ToLower(), "tal", "galmor", "A#!a12345678");
+            store5Founder = proxyBridge.Login(store5Founder, "storeFounderMail@gmail.com".ToLower(), "A#!a12345678").Value;
             storeID5 = proxyBridge.OpenNewStore(store5Founder, "Candy store").Value;
 
             store5Owner = proxyBridge.Enter().Value;
-            proxyBridge.Register(store5Owner, "storeOwnerMail2@gmail.com", "dina", "agapov", "A#!a12345678");
-            store5Owner = proxyBridge.Login(store5Owner, "storeOwnerMail2@gmail.com", "A#!a12345678").Value;
+            proxyBridge.Register(store5Owner, "storeOwnerMail2@gmail.com".ToLower(), "dina", "agapov", "A#!a12345678");
+            store5Owner = proxyBridge.Login(store5Owner, "storeOwnerMail2@gmail.com".ToLower(), "A#!a12345678").Value;
 
-            proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com".ToLower());
 
 
             store5Manager = proxyBridge.Enter().Value;
-            proxyBridge.Register(store5Manager, "storeManagerMail2@gmail.com", "bar", "lerrer", "A#!a12345678");
-            store5Manager = proxyBridge.Login(store5Manager, "storeManagerMail2@gmail.com", "A#!a12345678").Value;
+            proxyBridge.Register(store5Manager, "storeManagerMail2@gmail.com".ToLower(), "bar", "lerrer", "A#!a12345678");
+            store5Manager = proxyBridge.Login(store5Manager, "storeManagerMail2@gmail.com".ToLower(), "A#!a12345678").Value;
 
-            proxyBridge.AppointStoreManager(store5Founder, storeID5, "storeManagerMail2@gmail.com");
+            proxyBridge.AppointStoreManager(store5Founder, storeID5, "storeManagerMail2@gmail.com".ToLower());
 
 
             loggedInUserID1 = proxyBridge.Enter().Value;
-            proxyBridge.Register(loggedInUserID1, "logmail1@gmail.com", "usi1", "last1", "A#!a12345678");
-            loggedInUserID1 = proxyBridge.Login(loggedInUserID1, "logmail1@gmail.com", "A#!a12345678").Value;
+            proxyBridge.Register(loggedInUserID1, "logmail1@gmail.com".ToLower(), "usi1", "last1", "A#!a12345678");
+            loggedInUserID1 = proxyBridge.Login(loggedInUserID1, "logmail1@gmail.com".ToLower(), "A#!a12345678").Value;
             loggedInUserID2 = proxyBridge.Enter().Value;
-            proxyBridge.Register(loggedInUserID2, "logmail2@gmail.com", "usi2", "last2", "A#!a12345678");
-            loggedInUserID2 = proxyBridge.Login(loggedInUserID2, "logmail2@gmail.com", "A#!a12345678").Value;
+            proxyBridge.Register(loggedInUserID2, "logmail2@gmail.com".ToLower(), "usi2", "last2", "A#!a12345678");
+            loggedInUserID2 = proxyBridge.Login(loggedInUserID2, "logmail2@gmail.com".ToLower(), "A#!a12345678").Value;
 
 
             itemID1 = proxyBridge.AddItemToStore(store5Founder, storeID5, "doritos", "food", 6.0, 10).Value;

@@ -25,7 +25,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Guid OpenNewStore(string storeName)
         {
-            String internedKey = String.Intern(storeName);
+            String internedKey = String.Intern(storeName.ToLower());
 
             IsTsInitialized();
             if (storeName.Length == 0)
@@ -313,7 +313,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             foreach (Store store in stores.Values)
             {
-                if (store.StoreName == storeName)
+                if (store.StoreName.ToLower() == storeName.ToLower())
                     return true;
             }
             return false;
