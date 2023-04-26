@@ -42,6 +42,29 @@ namespace SadnaExpress.DomainLayer.User
             return owner;
         }
 
+        public void RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
+        {
+            if (member.hasPermissions(storeID, new List<string> {"owner permissions" }))
+                throw new Exception($"The member {member.Email} isn't owner");
+            PromotedMember storeOwner = ((PromotedMember)member);
+            if(storeOwner.getDirectManager(storeID) != directOwner)
+                throw new Exception($"{directOwner.Email} isn't the direct owner of {storeOwner.Email}");
+            // remove the appoints
+            Stack<PromotedMember> stack = new Stack<PromotedMember>();
+            stack.Push(storeOwner);
+
+            while (stack.Count > 0)
+            {
+                PromotedMember current = stack.Pop();
+                current.removeAllDictOfStore(storeID);
+                
+                foreach (PromotedMember child in current.getAppoint(storeID))
+                    stack.Push(child);
+            }
+            //remove the owner from appoint
+            directOwner.removeAppoint(storeID, storeOwner);
+        }
+        
         public PromotedMember AppointStoreManager(Guid storeID, PromotedMember directSupervisor, Member newManager)
         {
             if (newManager.hasPermissions(storeID, new List<string> {"founder permissions", "owner permissions", "get store history"}))
@@ -68,8 +91,6 @@ namespace SadnaExpress.DomainLayer.User
 
                 pmember.addPermission(storeID, permission);
             }
-
-            
         }
 
         public void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)

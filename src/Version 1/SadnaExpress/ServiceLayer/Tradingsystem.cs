@@ -267,9 +267,9 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response RemoveStoreOwner(Guid userID1, Guid storeID, Guid userID2)
+        public Response RemoveStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
-            throw new NotImplementedException();
+            return userManager.RemoveStoreOwner(userID, storeID, userEmail);
         }
 
         public Response CloseStore(Guid userID, Guid storeID)
@@ -354,64 +354,6 @@ namespace SadnaExpress.ServiceLayer
         {
             userManager.SetSupplierService(supplierService);
         }
-
-
-        //public Response PurchaseCart(Guid userID, string paymentDetails)
-        //{
-        //    bool purchaseSuccess = false;
-        //    // saving items for userid cart items on purchase cart action
-        //    lock (stockChange)
-        //    {
-        //        if (savedItemsRestore.ContainsKey(userID))
-        //            savedItemsRestore[userID] = new Dictionary<Guid, List<Pair<int, int>>>();
-        //        else
-        //            savedItemsRestore.Add(userID, new Dictionary<Guid, List<Pair<int, int>>>());
-        //        // get user shopping cart inventory and stock and reduce all stock and save the reduced value
-        //        ShoppingCart cart = userManager.GetShoppingCartById(userID).Value;
-        //        foreach (ShoppingBasket basket in cart.GetShoppingBaskets())
-        //        {
-        //            Store store = storeManager.GetStoreById(basket.GetStoreId());
-        //            Dictionary<int, int> itemsInBasket = basket.GetItemsInBasket();
-        //            foreach (int itemId in itemsInBasket.Keys)
-        //            {
-        //                store.RemoveQuantity(itemId, itemsInBasket[itemId]);
-        //                if (savedItemsRestore[userID].ContainsKey(basket.GetStoreId()))
-        //                {
-        //                    savedItemsRestore[userID][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
-        //                }
-        //                else
-        //                {
-        //                    savedItemsRestore[userID].Add(basket.GetStoreId(), new List<Pair<int, int>>());
-        //                    savedItemsRestore[userID][basket.GetStoreId()].Add(new Pair<int, int>(itemId, basket.GetItemStock(itemId)));
-        //                }
-        //            }
-        //        }
-        //        Logger.Instance.Info("PurhcaseCart, saving store items for userid: " + userID);
-        //    }
-            /////////////////////////// end of saving items implementation
-
-            // todo: need to implement purchase cart action and
-            // update bool purchaseSuccess to the purchase result
-
-
-        //    // in case of purchase failure restore store items quantity
-        //    if (purchaseSuccess.Equals(false))
-        //    {
-        //        lock (stockChange)
-        //        {
-        //            foreach (Guid storeId in savedItemsRestore[userID].Keys)
-        //            {
-        //                foreach (Pair<int, int> storeItem in savedItemsRestore[userID][storeId])
-        //                {
-        //                    storeManager.GetStoreById(storeId).AddQuantity(storeItem.First, storeItem.Second);
-        //                }
-        //            }
-        //            Logger.Instance.Info("Purchase Failed restored saved store items for userid: "+userID);
-        //            savedItemsRestore.Remove(userID);
-        //        }
-        //    }
-        //    return new Response();
-        //}
 
         public ResponseT<User> GetUser(Guid userID)
         {
