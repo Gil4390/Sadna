@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -18,7 +19,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             foreach (Item item in items_quantity.Keys)
             {
-                if (item.Name.Equals(itemName) && item.Price >= minPrice && item.Price <= maxPrice)
+                if (item.Name.ToLower().Equals(itemName.ToLower()) && item.Price >= minPrice && item.Price <= maxPrice)
                 {
                     if (ratingItem != -1 && item.Rating != ratingItem)
                         break;
@@ -34,7 +35,7 @@ namespace SadnaExpress.DomainLayer.Store
             List<Item> items = new List<Item>();
             foreach (Item item in items_quantity.Keys)
             {
-                if (item.Category.Equals(category) && item.Price >= minPrice && item.Price <= maxPrice)
+                if (item.Category.ToLower().Equals(category.ToLower()) && item.Price >= minPrice && item.Price <= maxPrice)
                 {
                     if (ratingItem != -1 && item.Rating != ratingItem)
                         continue;
@@ -61,13 +62,18 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public Guid AddItem(string name, string category, double price, int quantity)
         {
-            if (itemExistsByName(name))
+            String internedKey = String.Intern(name.ToLower());
+
+            lock (internedKey)
             {
-                throw new Exception("can't add item to the store with a name that belongs to another item");
+                if (itemExistsByName(name))
+                {
+                    throw new Exception("can't add item to the store with a name that belongs to another item");
+                }
+                Item newItem = new Item(name, category, price);
+                items_quantity.TryAdd(newItem, quantity);
+                return newItem.ItemID;
             }
-            Item newItem = new Item(name, category, price);
-            items_quantity.TryAdd(newItem, quantity);
-            return newItem.ItemID;
         }
         public void RemoveItem(Guid itemID)
         {
@@ -122,7 +128,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             foreach (Item item in this.items_quantity.Keys)
             {
-                if (item.Name.Equals(itemName))
+                if (item.Name.ToLower()==itemName.ToLower())
                     return true;
             }
             return false;

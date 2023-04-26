@@ -89,13 +89,13 @@ namespace SadnaExpress.DomainLayer.User
             if (!_reg.ValidateStrongPassword(password))
                 throw new Exception("Password is not strong enough according to the system's criteria");
 
-            String internedKey = String.Intern(email);
+            String internedKey = String.Intern(email.ToLower());
 
             lock (internedKey)
             {
                 foreach (Member m in members.Values)
                 {
-                    if (m.Email == email)
+                    if (m.Email.ToLower() == email.ToLower())
                         throw new Exception("Member with this email already exists");
 
                 }
@@ -118,10 +118,11 @@ namespace SadnaExpress.DomainLayer.User
 
             if(current_Users.ContainsKey(id)==false)
                 throw new Exception("User should enter the system before logging in");
-           
+
+            email = email.ToLower();
             foreach (Member member in members.Values)
             {
-                if (member.Email.Equals(email))
+                if (member.Email.ToLower().Equals(email.ToLower()))
                 {
                     if (!_ph.Rehash(password+macs[member.UserId], member.Password))
                     {
@@ -174,6 +175,7 @@ namespace SadnaExpress.DomainLayer.User
                 current_Users[userID].AddItemToCart(storeID, itemID, itemAmount);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AddItemToCart)+"Item "+itemID+"X"+itemAmount +" to store "+storeID+ " by user "+userID);
         }
+
         public void RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID)
         {
             IsTsInitialized();
@@ -203,6 +205,7 @@ namespace SadnaExpress.DomainLayer.User
                 current_Users[userID].EditItemFromCart(storeID, itemID, itemAmount);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(EditItemFromCart)+"Item "+itemID+"X"+itemAmount +" updated in store "+storeID+ " by user "+userID);
         }
+
         public ShoppingCart GetDetailsOnCart(Guid userID)
         {
             IsTsInitialized();
@@ -259,15 +262,8 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(userID);
-            Guid newOwnerID = Guid.Empty;
-            foreach (Member member in members.Values)
-                if (member.Email == email)
-                {
-                    newOwnerID = member.UserId;
-                }
-
-            if (newOwnerID.Equals(Guid.Empty))
-                throw new Exception($"There isn't a member with {email}");
+            Guid newOwnerID = IsMember(email).UserId;
+          
             lock (members[newOwnerID])
             {
                 PromotedMember owner = members[userID].AppointStoreOwner(storeID, members[newOwnerID]);
@@ -280,23 +276,13 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(userID);
-            Guid newManagerID = Guid.Empty;
-
-            foreach (Member member in members.Values)
-                if (member.Email == email)
-                {
-                    newManagerID = member.UserId;
-                }
-
-            if (newManagerID.Equals(Guid.Empty))
-                throw new Exception($"There isn't a member with {email}");
+            Guid newManagerID = IsMember(email).UserId;
 
             lock (members[newManagerID])
             {
                 PromotedMember manager = members[userID].AppointStoreManager(storeID, members[newManagerID]);
                 members[newManagerID] = manager;
             }
-
 
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +newManagerID +" to new store manager");
         }
@@ -305,33 +291,22 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(userID);
-            Member manager = null;
-            foreach (Member member in members.Values)
-                if (member.Email == email)
-                {
-                    manager = member;
-                    break;
-                }
-            if (manager == null)
-                throw new Exception($"There isn't a member with {email}");
+            Member manager = IsMember(email);
 
             members[userID].AddStoreManagerPermissions(storeID, manager, permission);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AddStoreManagerPermissions)+"System added "+userID+" manager permissions in store "+storeID+": "+permission);
         }
+
         public void RemoveStoreManagerPermissions(Guid userID, Guid storeID, string email, string permission)
         {
             IsTsInitialized();
             isLoggedIn(userID);
-            Member manager = null;
-            foreach (Member member in members.Values)
-                if (member.Email == email)
-                    manager = member;
+            Member manager = IsMember(email);
 
-            if (manager == null)
-                throw new Exception($"There isn't a member with {email}");
             members[userID].RemoveStoreManagerPermissions(storeID, manager,permission);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveStoreManagerPermissions)+"System removed "+userID+" manager permissions in store "+storeID+": "+permission);
         }
+
         public List<PromotedMember> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
@@ -377,6 +352,7 @@ namespace SadnaExpress.DomainLayer.User
             members[userID].CloseStore(storeID);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(CloseStore)+" Closed store "+storeID);
         }
+
         public void GetStorePurchases(Guid userId, Guid storeId)
         {
             IsTsInitialized();
@@ -435,6 +411,7 @@ namespace SadnaExpress.DomainLayer.User
                     return true;
             return false;
         }
+
         public bool isLoggedIn(Guid userID)
         {
             if (members.ContainsKey(userID))
@@ -449,14 +426,25 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("User need to register first");
         }
 
+        private Member IsMember(string email)
+        {
+            foreach (Member member in members.Values)
+                if (member.Email.ToLower() == email.ToLower())     
+                    return member;
+                  
+            throw new Exception($"There isn't a member with {email}");
+        }
+
         public ConcurrentDictionary<Guid, User> GetCurrent_Users()
         {
             return current_Users;
         }
+
         public ConcurrentDictionary<Guid, Member> GetMembers()
         {
             return members;
         }
+
         public ShoppingCart ShowShoppingCart(Guid userID)
         {
             IsTsInitialized();
@@ -500,6 +488,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             this.supplierService = supplierService;
         }
+
         public bool PlacePayment(double amount, string transactionDetails)
         {
             try
