@@ -1,8 +1,25 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { StoreItem } from '../components/StoreItem';
 
 function ShoppingPage() {
+
+  const items = [
+    { id: 1, name: 'Product 1', price: 10.99 },
+    { id: 2, name: 'Product 2', price: 19.99 },
+    { id: 3, name: 'Product 3', price: 5.99 },
+    { id: 4, name: 'Product 4', price: 29.99 },
+    { id: 5, name: 'Product 5', price: 9.99 },
+    { id: 6, name: 'Product 6', price: 9.99 },
+    { id: 7, name: 'Product 7', price: 9.99 },
+    { id: 8, name: 'Product 8', price: 9.99 },
+    { id: 9, name: 'Product 9', price: 9.99 },
+  ];
+
+  const [allItems, setAllItems] = useState(items);
+  //get request with all items
+
+
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState('product');
   const [minPrice, setMinPrice] = useState('');
@@ -41,18 +58,6 @@ function ShoppingPage() {
     // do something with search query and type
   };
 
-  const items = [
-    { id: 1, name: 'Product 1', price: 10.99 },
-    { id: 2, name: 'Product 2', price: 19.99 },
-    { id: 3, name: 'Product 3', price: 5.99 },
-    { id: 4, name: 'Product 4', price: 29.99 },
-    { id: 5, name: 'Product 5', price: 9.99 },
-    { id: 6, name: 'Product 6', price: 9.99 },
-    { id: 7, name: 'Product 7', price: 9.99 },
-    { id: 8, name: 'Product 8', price: 9.99 },
-    { id: 9, name: 'Product 9', price: 9.99 },
-  ];
-
   return (
     <div>
       <Container>
@@ -84,7 +89,7 @@ function ShoppingPage() {
                   <span className="fs-2">Max Price:</span>
                   <Form.Control type="number" value={maxPrice} onChange={handleMaxPriceChange} />
                 </Col>
-                <Col sm={2}>
+                <Col sm={3}>
                   <span className="fs-2">Min Store Rating:</span>
                   <Form.Control as="select" value={minStoreRating} onChange={handleMinStoreRatingChange}>
                     <option value="1">1</option>
@@ -94,7 +99,7 @@ function ShoppingPage() {
                     <option value="5">5</option>
                   </Form.Control>
                 </Col>
-                <Col sm={2}>
+                <Col sm={3}>
                   <span className="fs-2">Min Item Rating:</span>
                   <Form.Control as="select" value={minItemRating} onChange={handleMinItemRatingChange}>
                     <option value="1">1</option>
@@ -109,7 +114,7 @@ function ShoppingPage() {
           </Col>
         </Row>
         <Row className="mt-3">
-          {items.map((item) => (
+          {allItems.map((item) => (
             <Col sm={8} md={5} lg={4} xl={3} key={item.id} className="mt-3">
               <StoreItem {...item} />
             </Col>

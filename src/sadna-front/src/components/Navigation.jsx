@@ -1,9 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Button, Container, Nav, Navbar as NavbarBs } from "react-bootstrap"
 import CartImg from './cart.png'
+import { useShoppingCart } from "../context/CartContext";
 
 function Navigation() {
+  const { cartQuantity } = useShoppingCart()
   return (
     <div className="navigation">
       <nav className="navbar navbar-expand navbar-dark" style={{backgroundColor: "black"}}>
@@ -43,20 +44,21 @@ function Navigation() {
           </div>
         
 
-          <Button 
-            style={{ width : "4rem",  height : "3rem", padding: "1px", position: "relative", background: "darkgray"}}
-            variant="cart"
+          <NavLink 
+            to="/CartPage"
+            style={{ width : "4rem",  height : "3rem", padding: "0.5px", position: "relative", background: "darkgray"}}
           >
             <img
               class="img-fluid rounded mb-4 mb-lg-0"
               src={CartImg}
               alt="logo"
+              style={{padding: "0px", transform: "translate(0%, 10%)"} }
             />
             <div className="rounded-circle bg-danger d-flex justify-content-center align-items-center" 
-            style={{color: "white", width: "1.5rem", height: "1.5rem", position: "absolute", bottom: 0, right: 0, transform: "translate(25%, 25%)"}}>
-              3
+            style={{color: "white", width: "1.5rem", height: "1.5rem", position: "absolute", bottom: 0, right: 0, transform: "translate(35%, 10%)"}}>
+              {cartQuantity}
             </div>
-          </Button>
+          </NavLink>
 
         </div>
       </nav>
