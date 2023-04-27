@@ -19,6 +19,7 @@ namespace SadnaExpress.DomainLayer.User
          * edit manager permissions
          * get store history
          * add new owner
+         * remove owner
          * add new manager
          * get employees info
          * product management permissions
@@ -63,10 +64,23 @@ namespace SadnaExpress.DomainLayer.User
             permissionsList.Add("system manager permissions");
             permissions.TryAdd(Guid.Empty, new List<string> {"system manager permissions"});
         }
-
         public void addAppoint(Guid storeID, PromotedMember member)
         {
             appoint[storeID].Add(member);
+        }
+        public void removeAppoint(Guid storeID, PromotedMember member)
+        {
+            if (appoint.ContainsKey(storeID))
+                appoint[storeID].Remove(member);
+        }
+        public void removeAllDictOfStore(Guid storeID)
+        {
+            List<PromotedMember> removedValue1;
+            List<string> removedValue2;
+            PromotedMember removedValue3;
+            appoint.TryRemove(storeID, out removedValue1);
+            permissions.TryRemove(storeID, out removedValue2);
+            directSupervisor.TryRemove(storeID, out removedValue3);
         }
 
         public override bool hasPermissions(Guid storeID, List<string> listOfPermissions)
@@ -83,7 +97,9 @@ namespace SadnaExpress.DomainLayer.User
         }
         public List<PromotedMember> getAppoint(Guid storeID)
         {
-            return appoint[storeID];
+            if (appoint.ContainsKey(storeID))
+                return appoint[storeID];
+            return null;
         }
         public PromotedMember getDirectManager(Guid storeID)
         {
@@ -104,6 +120,13 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("The member doesn’t have permissions to add new owner");
         }
 
+        public override void RemoveStoreOwner(Guid storeID, Member storeOwner)
+        {
+            if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "remove owner"}))
+                permissionsHolder.RemoveStoreOwner(storeID, this, storeOwner);
+            else
+                throw new Exception($"The member doesn’t have permissions to remove {storeOwner.Email}");
+        }
         public override PromotedMember AppointStoreManager(Guid storeID, Member newManager)
         {
             if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "add new manager"}))

@@ -45,8 +45,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             store5Owner = proxyBridge.Login(store5Owner, "storeOwnerMail2@gmail.com", "A#!a12345678").Value;
 
             proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
-
-
+            
             store5Manager = proxyBridge.Enter().Value;
             proxyBridge.Register(store5Manager, "storeManagerMail2@gmail.com", "bar", "lerrer", "A#!a12345678");
             store5Manager = proxyBridge.Login(store5Manager, "storeManagerMail2@gmail.com", "A#!a12345678").Value;
@@ -391,8 +390,106 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         #endregion
+        
+        #region Remove store owner by his direct manager 4.5
+        [TestMethod]
+        public void RemoveStoreOwner_Good()
+        {
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            });
 
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //error not occured 
+            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(store5Owner).Value));
+        }
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void StoreOwnerRemoveHisAppointWhileOtherRemoveHim_Good()
+        {
+            // create appoint
+            proxyBridge.AppointStoreOwner(store5Owner, storeID5, "gil@gmail.com");
+            Task<Response>[] clientTasks = new Task<Response>[] {
+                Task.Run(() => {
+                    return proxyBridge.RemoveStoreOwner(store5Owner,storeID5, "gil@gmail.com");
+                }),
+                Task.Run(() =>
+                {
+                    return proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+                })
+            };
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+            // 2 situations: 1. The owner remove the owner and then removed
+            //               2. The owner removed so he can't remove a owner 
 
+            bool situation1 = !clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured;
+            bool situation2 = clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured;
+            Assert.IsTrue(situation1 || situation2);
+            // check them both not employee in store
+            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(store5Owner).Value));
+            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(memberId).Value));
+        }
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void StoreOwnerAddAppointWhileFounderRemoveHim_Good()
+        {
+            Task<Response>[] clientTasks = new Task<Response>[] {
+                Task.Run(() =>
+                {
+                    return proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+                }),
+                Task.Run(() =>
+                {
+                    Thread.Sleep(1);
+                    return proxyBridge.AppointStoreOwner(store5Owner, storeID5, "gil@gmail.com");
+                })
+            };
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+            // 2 situations: 1. The owner add the owner and then removed
+            //               2. The owner removed so he can't add a owner  
+            bool situation1 = !clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured;
+            bool situation2 = !clientTasks[0].Result.ErrorOccured && clientTasks[1].Result.ErrorOccured;
+            Assert.IsTrue(situation1 || situation2);
+            // check them both not employee in store
+            if (situation1)
+                Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(memberId).Value));
+            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(store5Owner).Value));
+        }
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void StoreOwnerAddItemWhileFounderRemoveHim_Good()
+        {
+            Task<ResponseT<Guid>> task1 = Task.Run(() => {
+                return proxyBridge.AddItemToStore(store5Owner, storeID5, "bamba","food", 5, 3);
+            });
+            
+            Task<Response> task2 = Task.Run(() => {
+                return proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            });
+
+            task1.Wait();
+            task2.Wait();
+
+            // Wait for all clients to complete
+            Task.WaitAll();
+            // 2 situations: 1. The owner add the item and then removed
+            //               2. The owner removed so he can't add the item  
+            Console.WriteLine(task1.Result.ErrorMessage+" 0 "+ task1.Result.Value);
+            Console.WriteLine(task2.Result.ErrorMessage+" 1");
+
+            bool situation1 = !task1.Result.ErrorOccured && !task2.Result.ErrorOccured;
+            bool situation2 = task1.Result.ErrorOccured && !task2.Result.ErrorOccured;
+            Assert.IsTrue(situation1 || situation2);
+            if (situation1)
+               Assert.IsNotNull(proxyBridge.GetStore(storeID5).Value.GetItemById(task1.Result.Value));
+            else
+                Assert.ThrowsException<Exception>(()=>proxyBridge.GetStore(storeID5).Value.GetItemById(task1.Result.Value));
+            // in both of the situation he need to removed
+            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(store5Owner).Value));
+        }
+        #endregion
         #region Appointing a new store manager 4.6
 
         [TestMethod]
@@ -669,7 +766,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         #endregion
 
 
-        #region request store employees’ information 4.11
+        #region request store employeesï¿½ information 4.11
 
         [TestMethod]
         public void RequestStoreEmployeeInfo_Good()

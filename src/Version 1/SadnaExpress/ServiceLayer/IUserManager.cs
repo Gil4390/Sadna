@@ -19,6 +19,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Guid> Login(Guid userID, string email, string password); //1.4
         ResponseT<Guid> Logout(Guid userID); //3.1
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
+        Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);

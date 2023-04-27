@@ -263,7 +263,7 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userID);
             Guid newOwnerID = IsMember(email).UserId;
-          
+
             lock (members[newOwnerID])
             {
                 PromotedMember owner = members[userID].AppointStoreOwner(storeID, members[newOwnerID]);
@@ -272,10 +272,20 @@ namespace SadnaExpress.DomainLayer.User
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
         }
 
+        public void RemoveStoreOwner(Guid userID, Guid storeID, string email)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+            Guid storeOwnerID = IsMember(email).UserId;
+            
+            members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +storeOwnerID +" removed as store owner");
+        }
         public void AppointStoreManager(Guid userID, Guid storeID, string email)
         {
             IsTsInitialized();
             isLoggedIn(userID);
+            
             Guid newManagerID = IsMember(email).UserId;
 
             lock (members[newManagerID])

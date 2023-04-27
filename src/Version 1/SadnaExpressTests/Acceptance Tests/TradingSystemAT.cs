@@ -72,13 +72,13 @@ namespace SadnaExpressTests.Acceptance_Tests
             Member member = new Member(memberId, "gil@gmail.com", "Gil", "Gil", passwordHash.Hash("asASD876!@"+newMac));
             newMac = passwordHash.Mac();
             macs.TryAdd(memberId2, newMac);
-            Member member2 = new Member(memberId, "sebatian@gmail.com", "Sebatian", "Sebatian", passwordHash.Hash("asASD123!@"+newMac));
+            Member member2 = new Member(memberId2, "sebatian@gmail.com", "Sebatian", "Sebatian", passwordHash.Hash("asASD123!@"+newMac));
             newMac = passwordHash.Mac();
             macs.TryAdd(memberId3, newMac);
-            Member member3 = new Member(memberId, "amihai@gmail.com", "Amihai", "Amihai", passwordHash.Hash("asASD753!@"+newMac));
+            Member member3 = new Member(memberId3, "amihai@gmail.com", "Amihai", "Amihai", passwordHash.Hash("asASD753!@"+newMac));
             newMac = passwordHash.Mac();
             macs.TryAdd(memberId4, newMac);
-            Member member4 = new Member(memberId, "bar@gmail.com", "Bar", "Bar", passwordHash.Hash("asASD159!@"+newMac));
+            Member member4 = new Member(memberId4, "bar@gmail.com", "Bar", "Bar", passwordHash.Hash("asASD159!@"+newMac));
 
             
             newMac = passwordHash.Mac();

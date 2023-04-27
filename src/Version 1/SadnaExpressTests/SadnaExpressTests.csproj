@@ -67,6 +67,7 @@
     <Compile Include="Mocks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit Tests\ShoppingCartUT.cs" />
+    <Compile Include="Unit Tests\StoreOwnerUT.cs" />
     <Compile Include="Unit Tests\UserFacadeUT.cs" />
     <Compile Include="Unit Tests\StoreUT.cs" />
   </ItemGroup>
