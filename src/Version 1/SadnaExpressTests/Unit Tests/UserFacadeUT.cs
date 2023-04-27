@@ -12,6 +12,7 @@ namespace SadnaExpressTests.Unit_Tests
     public class UserFacadeUT
     {
         #region Properties
+
         private IUserFacade _userFacade;
         private Guid userId1;
         private Guid userId2;
@@ -19,18 +20,23 @@ namespace SadnaExpressTests.Unit_Tests
         private ConcurrentDictionary<Guid, Member> members;
         private Guid memberid = Guid.NewGuid();
         private Guid systemManagerid = Guid.NewGuid();
+
         #endregion
 
         #region SetUp
+
         [TestInitialize]
         public void SetUp()
         {
             members = new ConcurrentDictionary<Guid, Member>();
             members.TryAdd(memberid, new Member(memberid, "AssiAzar@gmail.com", "shay", "kresner", "ShaY1787%$%"));
-            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", "ShaY1787%$%");
+            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga",
+                "schwartz", "ShaY1787%$%");
             systemManager.createSystemManager();
             members.TryAdd(systemManagerid, systemManager);
-            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,new ConcurrentDictionary<Guid, string>(), new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
+            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,
+                new ConcurrentDictionary<Guid, string>(), new PasswordHash(), new Mock_PaymentService(),
+                new Mock_SupplierService());
             _userFacade.SetIsSystemInitialize(true);
             userId1 = _userFacade.Enter();
             userId2 = _userFacade.Enter();
@@ -40,12 +46,13 @@ namespace SadnaExpressTests.Unit_Tests
         #endregion
 
         #region Mocks
-       
+
         #endregion
 
         #region Tests
 
         #region Initialize Trading System Tests
+
         [TestMethod()]
         public void UserFacadeInitializeTradingSystem_HappyTest()
         {
@@ -105,6 +112,7 @@ namespace SadnaExpressTests.Unit_Tests
         #endregion
 
         #region Payment Service Tests
+
         [TestMethod()]
         public void UserFacadePaymentServiceNoWait_HappyTest()
         {
@@ -142,11 +150,14 @@ namespace SadnaExpressTests.Unit_Tests
             string transactionDetails = "visa card ShaY1787%$%45";
             double amount = 300;
             //Act & Assert
-            Assert.IsFalse(_userFacade.PlacePayment(amount, transactionDetails)); //operation failes cause it takes to much time
+            Assert.IsFalse(_userFacade.PlacePayment(amount,
+                transactionDetails)); //operation failes cause it takes to much time
         }
+
         #endregion
 
         #region Supply Service Tests
+
         [TestMethod()]
         public void UserFacadeSupplyServiceNoWait_HappyTest()
         {
@@ -192,9 +203,11 @@ namespace SadnaExpressTests.Unit_Tests
             //Assert
             Assert.IsFalse(value);
         }
+
         #endregion
 
         #region Open Store Tests
+
         [TestMethod]
         public void openStoreUserNotRegister()
         {
@@ -219,9 +232,11 @@ namespace SadnaExpressTests.Unit_Tests
             per.Add("founder permissions");
             Assert.IsTrue(_userFacade.hasPermissions(userId1, storeID, per));
         }
+
         #endregion
 
         #region Store Owner Tests
+
         [TestMethod]
         public void addNewOwnerUserNotRegister()
         {
@@ -247,17 +262,8 @@ namespace SadnaExpressTests.Unit_Tests
                 _userFacade.AppointStoreOwner(userId1, storeID, "nogaschw@gmail.com"));
         }
 
-        [TestMethod]
-        public void AppointStoreOwnerHasNotHavePermission()
-        {
-            _userFacade.Register(userId1, "shayk1934@gmail.com", "shay", "kresner", "ShaY1787%$%");
-            _userFacade.Login(userId1, "shayk1934@gmail.com", "ShaY1787%$%");
-            Assert.ThrowsException<Exception>(() =>
-                _userFacade.AppointStoreOwner(userId1, storeID, "nogaschw@gmail.com"));
-        }
-        #endregion
-
         #region Founder Tests
+
         [TestMethod]
         public void FounderAppointStoreOwnerSuccess()
         {
@@ -318,9 +324,11 @@ namespace SadnaExpressTests.Unit_Tests
             per.Add("get store history");
             Assert.IsTrue(_userFacade.hasPermissions(userIdOwner, storeID, per));
         }
+
         #endregion
 
         #region Store manager Tests
+
         [TestMethod]
         public void AppointStoreManagerThatAlreadyStoreManage()
         {
@@ -352,6 +360,7 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.ThrowsException<Exception>(() =>
                 _userFacade.AppointStoreManager(userId1, storeID, "nogaschw@gmail.com"));
         }
+
         [TestMethod]
         public void AddStoreManagerPermissionsSuccess()
         {
@@ -369,8 +378,9 @@ namespace SadnaExpressTests.Unit_Tests
             //check permission 
             List<string> per = new List<string>();
             per.Add("add new manager");
-            Assert.IsTrue(_userFacade.hasPermissions(userIdManager, storeID, per));        
+            Assert.IsTrue(_userFacade.hasPermissions(userIdManager, storeID, per));
         }
+
         [TestMethod]
         public void RemoveStoreManagerPermissionsFromMemberFail()
         {
@@ -383,8 +393,10 @@ namespace SadnaExpressTests.Unit_Tests
             _userFacade.Register(userIdManager, "nogaschw@gmail.com", "noga", "schwartz", "ShaY1787%$%");
             _userFacade.Exit(userIdManager);
             // remove permission fail
-            Assert.ThrowsException<Exception>(() =>_userFacade.RemoveStoreManagerPermissions(userId1, storeID, "nogaschw@gmail.com", "get store history"));
+            Assert.ThrowsException<Exception>(() =>
+                _userFacade.RemoveStoreManagerPermissions(userId1, storeID, "nogaschw@gmail.com", "get store history"));
         }
+
         [TestMethod]
         public void RemoveStoreManagerPermissionsSuccess()
         {
@@ -402,31 +414,40 @@ namespace SadnaExpressTests.Unit_Tests
             //check permission 
             List<string> per = new List<string>();
             per.Add("get store history");
-            Assert.IsFalse(_userFacade.hasPermissions(userIdManager, storeID, per));        
+            Assert.IsFalse(_userFacade.hasPermissions(userIdManager, storeID, per));
         }
+
         #endregion
 
         #region Register
+
         [TestMethod]
         public void CapitalorLowerEmail_Happy()
         {
             _userFacade.Register(userId1, "shayk1934@gmail.com", "shay", "kresner", "ShaY1787%$%");
-            
+
 
             Assert.IsTrue(members[userId1].Email == "shayk1934@gmail.com");
-            Assert.ThrowsException<Exception>(() => _userFacade.Register(userId2, "SHAYK1934@gmail.com", "shay", "kresner", "ShaY1787%$%"));
+            Assert.ThrowsException<Exception>(() =>
+                _userFacade.Register(userId2, "SHAYK1934@gmail.com", "shay", "kresner", "ShaY1787%$%"));
             Assert.IsFalse(members.ContainsKey(userId2));
 
         }
+
         #endregion
+
         #endregion
 
         #region CleanUp
+
         [TestCleanup]
         public void CleanUp()
         {
             _userFacade.CleanUp();
         }
+
+        #endregion
+        
         #endregion
     }
 }

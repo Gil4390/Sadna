@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 
 namespace SadnaExpressTests.Acceptance_Tests
@@ -14,7 +16,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestInitialize]
         public override void SetUp()
         {
-
             base.SetUp();
         }
 
@@ -875,9 +876,96 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
         #endregion
 
+        #region  many users try remove many store owners 
 
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void ManyUsersRemoveManyStoreOwner()
+        {
+            //Arrange
+            // create store founder
+            Guid storeFounder = proxyBridge.Enter().Value;
+            proxyBridge.Register(storeFounder, "storeFounderMail@gmail.com", "radwan", "ganem", "A#!a12345678");
+            storeFounder = proxyBridge.Login(storeFounder, "storeFounderMail@gmail.com", "A#!a12345678").Value;
+            Guid storeID = proxyBridge.OpenNewStore(storeFounder, "Store 1").Value;
+            
+            // create owner 1
+            Response res1 =proxyBridge.AppointStoreOwner(storeFounder, storeID, "gil@gmail.com");
+            
+            //create appoint 1 to owner 1
+            Guid enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "gil@gmail.com", "asASD876!@");
+            proxyBridge.AppointStoreOwner(memberId, storeID, "sebatian@gmail.com");
+            
+            //create appoint 2 to owner 1
+            Response res2 = proxyBridge.AppointStoreOwner(memberId, storeID, "amihai@gmail.com");
 
+            //create appoint 1 to member1
+            enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "sebatian@gmail.com", "asASD123!@");
+            proxyBridge.AppointStoreOwner(memberId2, storeID, "bar@gmail.com");
 
+            //create appoint 2 to member1
+            Guid memberId5 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId5, "member5@gmail.com", "member", "member", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(memberId2, storeID, "member5@gmail.com");
+            
+            //create appoint 1 to member2
+            enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "amihai@gmail.com", "asASD753!@");
+            Guid memberId6 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId6, "member6@gmail.com", "member", "member", "A#!a12345678");
+            memberId6 = proxyBridge.Login(memberId6, "member6@gmail.com", "A#!a12345678").Value;
+            proxyBridge.AppointStoreOwner(memberId3, storeID, "member6@gmail.com");
+            
+            //create appoint 2 to member2
+            Guid memberId7 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId7, "member7@gmail.com", "member", "member", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(memberId3, storeID, "member7@gmail.com");
+            
+            //create appoint 1 to member6
+            enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "member6@gmail.com", "A#!a12345678");
+            
+            Guid memberId8 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId8, "member8@gmail.com", "member", "member", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(memberId6, storeID, "member8@gmail.com");
+            
+            //create appoint 1 to member 5
+            enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "member5@gmail.com", "A#!a12345678");
+            
+            Guid memberId9 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId9, "member9@gmail.com", "member", "member", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(memberId5, storeID, "member9@gmail.com");
+            
+            //Act
+            proxyBridge.RemoveStoreOwner(storeFounder, storeID, "gil@gmail.com");
+            proxyBridge.RemoveStoreOwner(memberId, storeID, "sebatian@gmail.com");
+            proxyBridge.RemoveStoreOwner(memberId, storeID, "amihai@gmail.com");
+            proxyBridge.RemoveStoreOwner(memberId2, storeID, "bar@gmail.com");
+            proxyBridge.RemoveStoreOwner(memberId2, storeID, "member5@gmail.com");
+            proxyBridge.RemoveStoreOwner(memberId3, storeID, "member6@gmail.com");
+            proxyBridge.RemoveStoreOwner(memberId3, storeID, "member7@gmail.com");
+            proxyBridge.RemoveStoreOwner(memberId6, storeID, "member8@gmail.com");
+            proxyBridge.RemoveStoreOwner(memberId5, storeID, "member9@gmail.com");
+            //Assert
+            //check that only the founder has left
+            Assert.AreEqual(1, proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value.Count);
+            Assert.IsTrue( proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value.Contains((PromotedMember)proxyBridge.GetMember(storeFounder).Value));
+            //check that the other didnt have permissions to the store
+            Assert.IsFalse(proxyBridge.GetMember(memberId).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
+            Assert.IsFalse(proxyBridge.GetMember(memberId2).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
+            Assert.IsFalse(proxyBridge.GetMember(memberId3).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
+            Assert.IsFalse(proxyBridge.GetMember(memberId4).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
+            Assert.IsFalse(proxyBridge.GetMember(memberId5).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
+            Assert.IsFalse(proxyBridge.GetMember(memberId6).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
+            Assert.IsFalse(proxyBridge.GetMember(memberId7).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
+            Assert.IsFalse(proxyBridge.GetMember(memberId8).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
+            Assert.IsFalse(proxyBridge.GetMember(memberId9).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
+        }
+
+        #endregion
         //test for next version 
         #region Many users try to purchase items at the same time store managers removes the items
         [TestCategory("Concurrency")]

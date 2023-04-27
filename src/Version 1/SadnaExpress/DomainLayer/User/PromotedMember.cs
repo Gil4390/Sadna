@@ -70,16 +70,17 @@ namespace SadnaExpress.DomainLayer.User
         }
         public void removeAppoint(Guid storeID, PromotedMember member)
         {
-            appoint[storeID].Remove(member);
+            if (appoint.ContainsKey(storeID))
+                appoint[storeID].Remove(member);
         }
         public void removeAllDictOfStore(Guid storeID)
         {
             List<PromotedMember> removedValue1;
             List<string> removedValue2;
             PromotedMember removedValue3;
-            if (!(appoint.TryRemove(storeID, out removedValue1) && permissions.TryRemove(storeID, out  removedValue2) &&
-                  directSupervisor.TryRemove(storeID, out removedValue3)))
-                throw new Exception("remove failed");
+            appoint.TryRemove(storeID, out removedValue1);
+            permissions.TryRemove(storeID, out removedValue2);
+            directSupervisor.TryRemove(storeID, out removedValue3);
         }
 
         public override bool hasPermissions(Guid storeID, List<string> listOfPermissions)
@@ -96,7 +97,9 @@ namespace SadnaExpress.DomainLayer.User
         }
         public List<PromotedMember> getAppoint(Guid storeID)
         {
-            return appoint[storeID];
+            if (appoint.ContainsKey(storeID))
+                return appoint[storeID];
+            return null;
         }
         public PromotedMember getDirectManager(Guid storeID)
         {
@@ -121,7 +124,8 @@ namespace SadnaExpress.DomainLayer.User
         {
             if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "remove owner"}))
                 permissionsHolder.RemoveStoreOwner(storeID, this, storeOwner);
-            throw new Exception("The member doesn’t have permissions to remove new owner");
+            else
+                throw new Exception($"The member doesn’t have permissions to remove {storeOwner.Email}");
         }
         public override PromotedMember AppointStoreManager(Guid storeID, Member newManager)
         {

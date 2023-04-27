@@ -116,7 +116,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                userFacade.AppointStoreOwner(userID, storeID, userEmail);
+                userFacade.RemoveStoreOwner(userID, storeID, userEmail);
                 return new Response();
             }
             catch (Exception ex)

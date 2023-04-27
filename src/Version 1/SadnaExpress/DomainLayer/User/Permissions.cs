@@ -32,6 +32,7 @@ namespace SadnaExpress.DomainLayer.User
         
         public PromotedMember AppointStoreOwner(Guid storeID, PromotedMember directSupervisor, Member newOwner)
         {
+            Console.WriteLine($"{newOwner.Email} {directSupervisor.Email}");
             if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
                 throw new Exception("The member is already store owner");
 
@@ -43,8 +44,8 @@ namespace SadnaExpress.DomainLayer.User
         }
 
         public void RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
-        {
-            if (member.hasPermissions(storeID, new List<string> {"owner permissions" }))
+        {            
+            if (!member.hasPermissions(storeID, new List<string> {"owner permissions"}))
                 throw new Exception($"The member {member.Email} isn't owner");
             PromotedMember storeOwner = ((PromotedMember)member);
             if(storeOwner.getDirectManager(storeID) != directOwner)
@@ -56,13 +57,16 @@ namespace SadnaExpress.DomainLayer.User
             while (stack.Count > 0)
             {
                 PromotedMember current = stack.Pop();
+
+                if (current.getAppoint(storeID) != null)
+                {
+                    foreach (PromotedMember child in current.getAppoint(storeID))
+                        stack.Push(child);
+                }
                 current.removeAllDictOfStore(storeID);
-                
-                foreach (PromotedMember child in current.getAppoint(storeID))
-                    stack.Push(child);
             }
             //remove the owner from appoint
-            directOwner.removeAppoint(storeID, storeOwner);
+            directOwner.removeAppoint(storeID, storeOwner); 
         }
         
         public PromotedMember AppointStoreManager(Guid storeID, PromotedMember directSupervisor, Member newManager)
