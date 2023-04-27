@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.ServiceLayer;
 using SadnaExpress.Services;
 
 namespace SadnaExpress.DomainLayer.User
@@ -51,5 +52,7 @@ namespace SadnaExpress.DomainLayer.User
         void GetAllStorePurchases(Guid userId);
         void PurchaseCart(Guid userID);
         bool CancelPayment(double amount, string transactionDetails);
+       List<Notification> GetNotifications(Guid userId);
+       List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores);
     }
 }

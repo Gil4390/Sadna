@@ -10,6 +10,7 @@ namespace SadnaExpress.DomainLayer.User
         protected Guid userId;
         public Guid UserId {get => userId; set => userId = value;}
         protected ShoppingCart shoppingCart;
+        
         public ShoppingCart ShoppingCart {get => shoppingCart; set => shoppingCart=value;}
 
         public User()

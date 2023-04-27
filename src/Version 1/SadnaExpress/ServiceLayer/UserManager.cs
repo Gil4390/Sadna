@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
@@ -381,6 +382,37 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(userID , nameof(UserManager)+": "+nameof(GetUserShoppingCart)+": "+ex.Message);
                 return new ResponseT<ShoppingCart>(ex.Message);
             }
+        }
+
+        public ResponseT<List<Notification>> GetNotifications(Guid userId)
+        {
+            try
+            {
+                List<Notification> notifications =  userFacade.GetNotifications(userId);
+                return new ResponseT<List<Notification>>(notifications);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userId , nameof(UserManager)+": "+nameof(GetNotifications)+": "+ex.Message);
+                return new ResponseT<List<Notification>>(ex.Message);
+            }
+        }
+
+        public ResponseT<List<Member>> getAllStoreOwners(ConcurrentDictionary<Guid, Store> stores)
+        {
+            try
+            {
+                List<Member> storesOwners =  userFacade.getAllStoreOwners(stores);
+                return new ResponseT<List<Member>>(storesOwners);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(  nameof(UserManager)+": "+nameof(getAllStoreOwners)+": "+ex.Message);
+                return new ResponseT<List<Member>>(ex.Message);
+            }
+            
         }
     }
 }

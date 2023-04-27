@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.DomainLayer;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -297,6 +298,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<Item> GetItemByID(Guid storeID, Guid itemID)
         {
             return _realBridge.GetItemByID(storeID, itemID);
+        }
+
+        public ResponseT<List<Notification>> GetNotifications(Guid userID)
+        {
+            return _realBridge.GetNotifications(userID);
         }
     }
 }
