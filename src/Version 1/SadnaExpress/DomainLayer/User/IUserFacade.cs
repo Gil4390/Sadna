@@ -54,5 +54,6 @@ namespace SadnaExpress.DomainLayer.User
         bool CancelPayment(double amount, string transactionDetails);
        List<Notification> GetNotifications(Guid userId);
        List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores);
+       List<Member> GetStoreOwnerOfStores(List<Guid> stores);
     }
 }

@@ -189,7 +189,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetIsSystemInitialize(true);
             proxyBridge.SetPaymentService(new Mocks.Mock_5sec_PaymentService());
             //Act
-            Task<Response> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
                 
@@ -206,7 +206,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetIsSystemInitialize(true);
             proxyBridge.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
             //Act
-            Task<Response> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
                 return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
@@ -223,7 +223,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetIsSystemInitialize(true);
             proxyBridge.SetPaymentService(new Mocks.Mock_Bad_Credit_Limit_Payment());
             //Act
-            Task<Response> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
                 return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
@@ -243,7 +243,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetIsSystemInitialize(true);
             proxyBridge.SetSupplierService(new Mocks.Mock_SupplierService());
             //Act
-            Task<Response> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
                 
@@ -260,7 +260,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetIsSystemInitialize(true);
             proxyBridge.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
             //Act
-            Task<Response> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
                 return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
@@ -277,7 +277,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetIsSystemInitialize(true);
             proxyBridge.SetSupplierService(new Mocks.Mock_Bad_Address_SupplierService());
             //Act
-            Task<Response> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
                 return proxyBridge.PurchaseCart(id, "5411556648", "La La Land");

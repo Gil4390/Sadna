@@ -78,7 +78,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public Response PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
             Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
             try
@@ -107,12 +107,12 @@ namespace SadnaExpress.ServiceLayer
                 }
                 Orders.Instance.AddOrder(userID, itemForOrders);
                 userFacade.PurchaseCart(userID);
-                return new Response();
+                return new ResponseT<List<ItemForOrder>>(itemForOrders);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return new ResponseT<Guid>(ex.Message);
+                return new ResponseT<List<ItemForOrder>>(ex.Message);
             }
         }
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)

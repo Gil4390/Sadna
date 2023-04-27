@@ -96,7 +96,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetDetailsOnCart(id);
         }
 
-        public Response PurchaseCart(Guid id, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid id, string paymentDetails, string usersDetail)
         {
             return _realBridge.PurchaseCart(id, paymentDetails, usersDetail);
         }

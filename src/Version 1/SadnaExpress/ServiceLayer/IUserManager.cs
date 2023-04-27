@@ -47,5 +47,6 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<ShoppingCart> GetUserShoppingCart(Guid userID);
         ResponseT<List<Notification>> GetNotifications(Guid userId);
         ResponseT<List<Member>> getAllStoreOwners(ConcurrentDictionary<Guid, Store> stores);
+        ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
     }
 }

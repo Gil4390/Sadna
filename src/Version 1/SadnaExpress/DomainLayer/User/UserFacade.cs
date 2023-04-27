@@ -560,6 +560,22 @@ namespace SadnaExpress.DomainLayer.User
             return storeOwners;
         }
 
+        public List<Member> GetStoreOwnerOfStores(List<Guid> stores)
+        {
+            List<Member> storeOwners = new List<Member>();
+            foreach(Member member in members.Values)
+            {
+                foreach(Guid storeID in stores)
+                {
+                    if (members[member.UserId].hasPermissions(storeID, new List<string> { "owner permissions" })) ;
+                    storeOwners.Add(member);
+                }
+            }
+
+            return storeOwners;
+            
+        }
+
         public bool PlaceSupply(string orderDetails, string userDetails)
         {
             try

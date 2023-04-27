@@ -134,6 +134,7 @@ namespace SadnaExpress.ServiceLayer
             ResponseT<Guid> responseT;
             try
             {
+                
                 responseT = storeManager.OpenNewStore(userID, storeName);
                 GetMember(userID).Value.Update(" " + userID + "open new store", userID);
                 return responseT;
@@ -180,14 +181,25 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetDetailsOnCart(userID);
         }
-        public Response PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
-            Response response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
-            GetMember(userID).Value.Update( " "+ userID + "purchase Cart",userID);
-            return response;
-           
             
+            ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
+            List<Guid> storeIDs = new List<Guid>();
+            
+            foreach (ItemForOrder item in response.Value)
+            {
+                storeIDs.Add(item.StoreID);
+            }
+
+            List<Member> storeOwners = GetStoreOwnerOfStores(storeIDs).Value;
+            foreach (Member member in storeOwners)
+            {
+                member.Update( " "+ userID + "purchase Cart",userID);
+            }
+            return response;
         }
+        
         public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string review)
         {
             try
@@ -302,7 +314,7 @@ namespace SadnaExpress.ServiceLayer
         {
             
             Response response =  storeManager.CloseStore(userID,storeID);
-            GetMember(userID).Value.Update(" " + userID + "close new store", userID);
+            GetMember(userID).Value.Update(" " + userID + "close store", userID);
             return response;
 
         }
@@ -381,7 +393,11 @@ namespace SadnaExpress.ServiceLayer
             return userManager.getAllStoreOwners(stores);
         }
 
-        
+        public ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores)
+        {
+            return userManager.GetStoreOwnerOfStores(stores);
+        }
+
         public void SetPaymentService(IPaymentService paymentService)
         {
             userManager.SetPaymentService(paymentService);
