@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from "react-router-dom";
-import CartImg from './cart.png'
+import CartImg from '../images/cart.png'
 
 function GuestNav() {
 
