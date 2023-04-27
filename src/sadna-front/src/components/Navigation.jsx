@@ -40,6 +40,11 @@ function Navigation() {
                   About
                 </NavLink>
               </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/StoresManagementPage">
+                  Manage-Stores
+                </NavLink>
+              </li>
             </ul>
           </div>
         
