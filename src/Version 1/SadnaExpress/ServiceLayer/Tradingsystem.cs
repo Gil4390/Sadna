@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
@@ -13,6 +14,7 @@ namespace SadnaExpress.ServiceLayer
     {
         private IStoreManager storeManager;
         private IUserManager userManager;
+        private NotificationSystem notificationSystem;
 
         private bool testMode=false;
         public bool TestMode
@@ -39,6 +41,9 @@ namespace SadnaExpress.ServiceLayer
             IStoreFacade storeFacade = new StoreFacade();
             storeManager = new StoreManager(userFacade, storeFacade);
             userManager = new UserManager(userFacade);
+            notificationSystem = new NotificationSystem();
+            notificationSystem.RegisterObservers(GetStoreOwners().Value);
+
         }
         
         public TradingSystem(IUserFacade userFacade, IStoreFacade storeFacade)
@@ -126,7 +131,19 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
-            return storeManager.OpenNewStore(userID, storeName);
+            ResponseT<Guid> responseT;
+            try
+            {
+                responseT = storeManager.OpenNewStore(userID, storeName);
+                GetMember(userID).Value.Update(" " + userID + "open new store", userID);
+                return responseT;
+
+            } 
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                return new ResponseT<Guid>(ex.Message);
+            }
         }
         public ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
@@ -165,7 +182,11 @@ namespace SadnaExpress.ServiceLayer
         }
         public Response PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
-            return storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
+            Response response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
+            GetMember(userID).Value.Update( " "+ userID + "purchase Cart",userID);
+            return response;
+           
+            
         }
         public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string review)
         {
@@ -244,12 +265,16 @@ namespace SadnaExpress.ServiceLayer
         }
         public Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
+            
             return userManager.AppointStoreOwner(userID, storeID, userEmail);
+            
         }
 
         public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {
-            return userManager.AppointStoreManager(userID, storeID, userEmail);
+            Response response  = userManager.AppointStoreManager(userID, storeID, userEmail);
+            notificationSystem.RegisterObserver(GetMember(userID).Value);
+            return response;
         }
 
         public Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
@@ -270,11 +295,16 @@ namespace SadnaExpress.ServiceLayer
         public Response RemoveStoreOwner(Guid userID1, Guid storeID, Guid userID2)
         {
             throw new NotImplementedException();
+            // need to unregister from the list in notificationSystem
         }
 
         public Response CloseStore(Guid userID, Guid storeID)
         {
-            return storeManager.CloseStore(userID,storeID);
+            
+            Response response =  storeManager.CloseStore(userID,storeID);
+            GetMember(userID).Value.Update(" " + userID + "close new store", userID);
+            return response;
+
         }
 
         public Response ReopenStore(Guid userID, Guid storeID)
@@ -345,6 +375,13 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetStores();
         }
 
+        public ResponseT<List<Member>> GetStoreOwners()
+        {
+            ConcurrentDictionary<Guid, Store> stores = storeManager.GetStores();
+            return userManager.getAllStoreOwners(stores);
+        }
+
+        
         public void SetPaymentService(IPaymentService paymentService)
         {
             userManager.SetPaymentService(paymentService);
@@ -442,5 +479,11 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetItemByID(storeID, itemID);
         }
+
+        public ResponseT<List<Notification>> GetNotifications(Guid userID)
+        {
+            return userManager.GetNotifications(userID);
+        }
+        
     }
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.DomainLayer;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -76,6 +77,10 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Store> GetStore(Guid storeID);
         void SetTSOrders(IOrders orders);
         ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
+
+        ResponseT<List<Notification>> GetNotifications(Guid userID);
+
+
 
     }
 }
