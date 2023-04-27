@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, ListGroup, Button } from 'react-bootstrap';
 import { CartItem } from '../components/CartItem';
-
+import { useNavigate } from "react-router-dom";
 
 function CartPage() {
   const items = [
@@ -10,6 +10,7 @@ function CartPage() {
     { id: 3, name: 'Product 3', price: 5.99 },
   ];
 
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState(items);
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -42,7 +43,7 @@ function CartPage() {
           </ListGroup>
           <hr />
           <h4>Total Price: ${totalPrice}</h4>
-          <Button variant="success" size="lg">Checkout Now</Button>
+          <Button variant="success" size="lg" onClick={() => navigate("/PaymentPage")}>Checkout Now</Button>
         </div>
       )}
     </Container>
