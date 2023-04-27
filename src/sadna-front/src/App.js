@@ -3,7 +3,8 @@ import './App.css';
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigation, Footer} from "./components";
-import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPage, StoresManagementPage } from "./pages";
+import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPage, StoresManagementPage,
+         AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage} from "./pages";
 import { ShoppingCartProvider } from "./context/CartContext";
 
 
@@ -22,6 +23,11 @@ function App() {
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/RegisterPage" element={<RegisterPage />} />
         <Route path="/StoresManagementPage" element={<StoresManagementPage />} />
+
+        <Route path="/AdminViewAllUsersPage" element={<AdminViewAllUsersPage />} />
+        <Route path="/AdminManageAllStoresPage" element={<AdminManageAllStoresPage />} />
+        <Route path="/AdminViewAllPurchasesPage" element={<AdminViewAllPurchasesPage />} />
+        <Route path="/AdminManageComplaintsPage" element={<AdminManageComplaintsPage />} />
       </Routes>
       <Footer />
 
