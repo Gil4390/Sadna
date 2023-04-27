@@ -32,7 +32,6 @@ namespace SadnaExpress.DomainLayer.User
         
         public PromotedMember AppointStoreOwner(Guid storeID, PromotedMember directSupervisor, Member newOwner)
         {
-            Console.WriteLine($"{newOwner.Email} {directSupervisor.Email}");
             if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
                 throw new Exception("The member is already store owner");
 
