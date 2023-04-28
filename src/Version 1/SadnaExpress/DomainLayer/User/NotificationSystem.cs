@@ -8,12 +8,14 @@ namespace SadnaExpress.DomainLayer
 {
     public class NotificationSystem : ISubject
     {
-        private List<Member> storeOwners;
+
+        public List<Member> storeOwners;
         public NotificationSystem()
         {
             storeOwners = new List<Member>();
         }
 
+        public List<Member> Obesevers { get => storeOwners; set => storeOwners = value; }
 
 
         public void NotifyObservers(string message, Guid userId)
@@ -57,4 +59,5 @@ namespace SadnaExpress.DomainLayer
 
   
     }
+    
 }
