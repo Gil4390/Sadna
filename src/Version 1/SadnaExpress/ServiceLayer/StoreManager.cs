@@ -210,10 +210,10 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public ResponseT<ConcurrentDictionary<Guid, List<string>>> GetItemReviews(Guid storeID, Guid itemID)
+        public ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID)
         {
-            ConcurrentDictionary<Guid, List<string>> reviews = storeFacade.GetItemReviews(storeID, itemID);
-            return new ResponseT<ConcurrentDictionary<Guid, List<string>>>(reviews);
+            List<Review> reviews = storeFacade.GetItemReviews(storeID, itemID);
+            return new ResponseT<List<Review>>(reviews);
         }
         public Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price)
         {

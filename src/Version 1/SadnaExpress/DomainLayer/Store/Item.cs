@@ -17,9 +17,7 @@ namespace SadnaExpress.DomainLayer.Store
         public double Price {get => price; set => price = value;}
         private int rating;
         public int Rating {get => rating; set => rating = value;}
-
-        public ConcurrentDictionary<Guid, List<string>> reviews;
-
+        
         public Item(string name, string category, double price)
         {
             this.name = name;
@@ -27,17 +25,6 @@ namespace SadnaExpress.DomainLayer.Store
             this.price = price;
             rating = 0;
             itemID = Guid.NewGuid(); 
-            reviews = new ConcurrentDictionary<Guid, List<string>>();
-        }
-
-        public void AddReview(Guid userID, string reviewText)
-        {
-            if (!reviews.ContainsKey(userID)) //if first review make new List
-            {
-                reviews[userID] = new List<string>();
-            }
-
-            reviews[userID].Add(reviewText);
         }
     }
 }

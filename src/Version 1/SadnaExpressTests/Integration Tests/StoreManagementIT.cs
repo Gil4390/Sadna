@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
+
 using SadnaExpress.ServiceLayer;
 using SadnaExpressTests.Unit_Tests;
 using System;
@@ -138,7 +139,7 @@ namespace SadnaExpressTests.Integration_Tests
 
             //Assert
             Assert.IsFalse(res.ErrorOccured);
-            Assert.IsTrue(trading.GetItemReviews(storeID1, itemID1).Value[userID].Count==1);//store exists
+            Assert.AreEqual(1, trading.GetItemReviews(storeID1, itemID1).Value.Count);//store exists and item
         }
 
         /// <summary>
@@ -156,7 +157,10 @@ namespace SadnaExpressTests.Integration_Tests
 
             //Assert
             Assert.IsTrue(res.ErrorOccured);
-            Assert.IsFalse(trading.GetItemReviews(storeID1, itemID1).Value.ContainsKey(userID));
+            foreach (Review review in trading.GetItemReviews(storeID1, itemID1).Value)
+            {
+                Assert.AreNotEqual(review.ReviewerID, userID);
+            }
         }
 
         /// <summary>
@@ -178,7 +182,7 @@ namespace SadnaExpressTests.Integration_Tests
             //Assert
             Assert.IsFalse(res.ErrorOccured);
             Assert.IsFalse(res1.ErrorOccured);
-            Assert.IsTrue(trading.GetItemReviews(storeID1, itemID1).Value[userID].Count == 2);//store exists
+            Assert.AreEqual(2, trading.GetItemReviews(storeID1, itemID1).Value.Count);//store exists
         }
 
         [TestCleanup]

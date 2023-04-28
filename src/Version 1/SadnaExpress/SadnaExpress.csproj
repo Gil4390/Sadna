@@ -46,6 +46,7 @@
     <Compile Include="DomainLayer\Store\ItemForOrder.cs" />
     <Compile Include="DomainLayer\Store\Order.cs" />
     <Compile Include="DomainLayer\Store\Orders.cs" />
+    <Compile Include="DomainLayer\Store\Review.cs" />
     <Compile Include="DomainLayer\User\IRegistration.cs" />
     <Compile Include="DomainLayer\User\Registration.cs" />
     <Compile Include="DomainLayer\User\ShoppingBasket.cs" />
