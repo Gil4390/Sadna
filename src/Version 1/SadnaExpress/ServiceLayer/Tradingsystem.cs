@@ -181,7 +181,7 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<ConcurrentDictionary<Guid, List<string>>> GetItemReviews(Guid storeID, Guid itemID)
+        public ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID)
         {
             try
             {
@@ -191,7 +191,7 @@ namespace SadnaExpress.ServiceLayer
             catch (Exception ex)
             {
                 Logger.Instance.Error("error fetching reviews of item");
-                return new ResponseT<ConcurrentDictionary<Guid, List<string>>>(ex.Message);
+                return new ResponseT<List<Review>>(ex.Message);
             }
         }
 

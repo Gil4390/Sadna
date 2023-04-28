@@ -143,19 +143,6 @@ namespace SadnaExpress.DomainLayer.Store
             throw new Exception("The item not exist");
         }
 
-        public void AddReviewToItem(Guid userID, string reviewText, Guid itemID)
-        {
-            if (reviewText == "")
-            {
-                throw new Exception("review text cannot be empty");
-            }
-            GetItemById(itemID).AddReview(userID, reviewText);
-        }
-        internal ConcurrentDictionary<Guid, List<string>> GetItemReviews(Guid itemID)
-        {
-            return GetItemById(itemID).reviews;
-        }
-
         public void AddItemToCart(Guid itemID, int quantity)
         {
             if (items_quantity[GetItemById(itemID)] < quantity)

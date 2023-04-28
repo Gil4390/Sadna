@@ -63,15 +63,6 @@ namespace SadnaExpress.DomainLayer.Store
             itemsInventory.EditItemCategory(itemID, category);
         }
 
-        internal void WriteItemReview(Guid userID, Guid itemID, string reviewText)
-        {
-            itemsInventory.AddReviewToItem(userID, reviewText, itemID);
-        }
-        internal ConcurrentDictionary<Guid, List<string>> GetItemsReviews(Guid itemID)
-        {
-            return itemsInventory.GetItemReviews(itemID);
-        }
-
         public void EditItemQuantity(Guid itemID, int quantity)
         {
             itemsInventory.EditItemQuantity(itemID, quantity);

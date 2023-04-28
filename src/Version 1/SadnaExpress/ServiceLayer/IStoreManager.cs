@@ -20,7 +20,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response PurchaseCart(Guid id, string paymentDetails, string usersDetail); //2.5
         ResponseT<Guid> OpenNewStore(Guid id, string storeName); //3.2
         Response WriteItemReview(Guid id, Guid storeID, Guid itemID, string review); //3.3
-        ResponseT<ConcurrentDictionary<Guid, List<string>>> GetItemReviews(Guid storeID, Guid itemID);
+        ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID);
         //4.1
         ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID,  string itemName, string itemCategory, double itemPrice,
             int quantity);
