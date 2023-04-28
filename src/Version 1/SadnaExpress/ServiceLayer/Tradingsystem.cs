@@ -307,7 +307,6 @@ namespace SadnaExpress.ServiceLayer
         public Response RemoveStoreOwner(Guid userID1, Guid storeID, Guid userID2)
         {
             throw new NotImplementedException();
-            // need to unregister from the list in notificationSystem
         }
 
         public Response CloseStore(Guid userID, Guid storeID)
