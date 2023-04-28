@@ -8,18 +8,21 @@ namespace SadnaExpress.DomainLayer.Store
     public class StoreFacade : IStoreFacade
     {
         private ConcurrentDictionary<Guid, Store> stores;
+        private ConcurrentBag<Review> reviews;
         private bool _isTSInitialized;
         private static IOrders _orders;
 
         public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
+            reviews = new ConcurrentBag<Review>();
             _orders = Orders.Instance;
         }
 
         public StoreFacade(ConcurrentDictionary<Guid, Store> stores)
         {
             this.stores = stores;
+            reviews = new ConcurrentBag<Review>();
             _orders = Orders.Instance;
         }
 
@@ -242,6 +245,11 @@ namespace SadnaExpress.DomainLayer.Store
         public void CleanUp()
         {
            stores.Clear();
+           _orders = null;
+           while (!reviews.IsEmpty)
+           {
+               reviews.TryTake(out _);
+           }
         }
 
         public ConcurrentDictionary<Guid, Store> GetStores()
@@ -272,6 +280,8 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             Store store = stores[storeID];
+            if (reviewText == "")
+                throw new Exception("review text cannot be empty");
             bool foundUserOrder = false;
             foreach (Order order in _orders.GetOrdersByUserId(userID))
                 foreach (ItemForOrder item in order.ListItems)
@@ -279,14 +289,18 @@ namespace SadnaExpress.DomainLayer.Store
                         foundUserOrder = true;
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
+            reviews.Add(new Review(userID, stores[storeID], store.GetItemById(itemID), reviewText));
             Logger.Instance.Info(userID, nameof(StoreFacade)+": "+nameof(WriteItemReview) + userID +" write review to store "+storeID+" on "+itemID+"- "+ reviewText);
-            store.WriteItemReview(userID, itemID, reviewText);
         }
-        public ConcurrentDictionary<Guid, List<string>> GetItemReviews(Guid storeID, Guid itemID)
+        public List<Review> GetItemReviews(Guid storeID, Guid itemID)
         {
             IsStoreExist(storeID);
             Store store = stores[storeID];
-            return store.GetItemsReviews(itemID);
+            List<Review> reviewsOfItem = new List<Review>();
+            foreach (Review review in reviews)
+                if (review.Store == store && review.Item == store.GetItemById(itemID))
+                    reviewsOfItem.Add(review);
+            return reviewsOfItem;
         }
 
         public void AddItemToCart(Guid storeID, Guid itemID, int quantity)

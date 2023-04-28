@@ -9,7 +9,20 @@ import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPa
 import { ShoppingCartProvider } from "./context/CartContext";
 
 
-function App() {
+import { useEffect, useState } from 'react';
+// @ts-ignore
+import { GuestThunks } from './services/guest.thunk.ts';
+import React from 'react';
+
+const App:React.FC=()=>{
+  const [id, setid] = useState(null);
+
+  useEffect(() => {
+
+    setid(GuestThunks.Enter());
+ }, [])
+  
+  console.log(id);
   return (
     <ShoppingCartProvider>
 

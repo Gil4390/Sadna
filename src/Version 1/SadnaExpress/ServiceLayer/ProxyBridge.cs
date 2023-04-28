@@ -105,7 +105,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.WriteItemReview(userID, storeID, itemID, reviewText);
         }
 
-        public ResponseT<ConcurrentDictionary<Guid, List<string>>> GetItemReviews(Guid storeID, Guid itemID)
+        public ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID)
         {
             return _realBridge.GetItemReviews(storeID, itemID);
         }
