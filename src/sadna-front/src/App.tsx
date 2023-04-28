@@ -4,7 +4,8 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigation, Footer} from "./components";
 import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPage, StoresManagementPage,
-         AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage} from "./pages";
+         AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage,
+         PoliciesPage } from "./pages";
 import { ShoppingCartProvider } from "./context/CartContext";
 
 
@@ -41,6 +42,8 @@ const App:React.FC=()=>{
         <Route path="/AdminManageAllStoresPage" element={<AdminManageAllStoresPage />} />
         <Route path="/AdminViewAllPurchasesPage" element={<AdminViewAllPurchasesPage />} />
         <Route path="/AdminManageComplaintsPage" element={<AdminManageComplaintsPage />} />
+        
+        <Route path="/PoliciesPage" element={<PoliciesPage />} />
       </Routes>
       <Footer />
 

@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from './sadna_express_logo.png'
+import Logo from '../images/sadna_express_logo.png'
 
 
 function Home() {
