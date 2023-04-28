@@ -5,8 +5,8 @@ namespace SadnaExpress.DomainLayer
 {
     public interface ISubject
     {
-        void RegisterObserver(Member observer);
-        void RemoveObserver(Member observer);
-        void NotifyObservers(string message, Guid userId);
+        void RegisterObserver(Guid storeID ,Member observer);
+        void RemoveObserver(Guid storeID ,Member observer);
+        void NotifyObservers(Guid storeID ,string message, Guid userId);
     }
 }

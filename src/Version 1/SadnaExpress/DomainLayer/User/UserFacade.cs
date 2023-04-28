@@ -25,7 +25,7 @@ namespace SadnaExpress.DomainLayer.User
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         private ISupplierService supplierService;
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
-
+        protected NotificationSystem notificationSystem = NotificationSystem.Instance;
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
@@ -278,6 +278,7 @@ namespace SadnaExpress.DomainLayer.User
                 members[newOwnerID] = owner;
             }
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
+            notificationSystem.RegisterObserver(storeID,GetMember(userID));
         }
 
         public void AppointStoreManager(Guid userID, Guid storeID, string email)

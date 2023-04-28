@@ -24,7 +24,8 @@ namespace SadnaExpress.DomainLayer.User
 
         private Dictionary<string , string> securityQuestions;
         protected List<Notification> awaitingNotification;
-        private NotificationSystem notificationSystem;
+        protected NotificationSystem notificationSystem = NotificationSystem.Instance;
+
 
 
         public Member(Guid id, string memail, string mfirstName, string mlastLame, string mpassword): base ()
@@ -37,7 +38,6 @@ namespace SadnaExpress.DomainLayer.User
             LoggedIn = false;
             securityQuestions = new Dictionary<string, string>();
             awaitingNotification = new List<Notification>();
-            notificationSystem = new NotificationSystem();
         }
         public void addToAwaitingNotification(Notification notification) {
             this.awaitingNotification.Add(notification);

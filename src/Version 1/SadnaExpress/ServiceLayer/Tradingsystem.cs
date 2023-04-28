@@ -14,7 +14,7 @@ namespace SadnaExpress.ServiceLayer
     {
         private IStoreManager storeManager;
         private IUserManager userManager;
-        private NotificationSystem notificationSystem;
+        private NotificationSystem notificationSystem = NotificationSystem.Instance;
 
         private bool testMode=false;
         public bool TestMode
@@ -41,9 +41,6 @@ namespace SadnaExpress.ServiceLayer
             IStoreFacade storeFacade = new StoreFacade();
             storeManager = new StoreManager(userFacade, storeFacade);
             userManager = new UserManager(userFacade);
-            notificationSystem = new NotificationSystem();
-            notificationSystem.RegisterObservers(GetStoreOwners().Value);
-
         }
         
         public TradingSystem(IUserFacade userFacade, IStoreFacade storeFacade)
@@ -192,11 +189,11 @@ namespace SadnaExpress.ServiceLayer
                 storeIDs.Add(item.StoreID);
             }
 
-            List<Member> storeOwners = GetStoreOwnerOfStores(storeIDs).Value;
-            foreach (Member member in storeOwners)
+            foreach (Guid storeID in storeIDs)
             {
-                member.Update( " "+ userID + "purchase Cart",userID);
+                notificationSystem.NotifyObservers(storeID, "purchase cart", userID);
             }
+
             return response;
         }
         
@@ -277,17 +274,15 @@ namespace SadnaExpress.ServiceLayer
         }
         public Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
-            
             return userManager.AppointStoreOwner(userID, storeID, userEmail);
-            
         }
 
         public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {
-            Response response  = userManager.AppointStoreManager(userID, storeID, userEmail);
-            notificationSystem.RegisterObserver(GetMember(userID).Value);
-            return response;
+            return userManager.AppointStoreManager(userID, storeID, userEmail);
+
         }
+        
 
         public Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
         {
@@ -313,13 +308,14 @@ namespace SadnaExpress.ServiceLayer
         {
             
             Response response =  storeManager.CloseStore(userID,storeID);
-            GetMember(userID).Value.Update(" " + userID + "close store", userID);
+            notificationSystem.NotifyObservers(storeID,"Close store",userID);
             return response;
 
         }
 
         public Response ReopenStore(Guid userID, Guid storeID)
         {
+            notificationSystem.NotifyObservers(storeID,"reopen store",userID);
             return storeManager.ReopenStore(userID,storeID);
         }
 

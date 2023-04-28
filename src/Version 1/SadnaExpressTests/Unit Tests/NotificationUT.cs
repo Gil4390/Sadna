@@ -10,7 +10,7 @@ namespace SadnaExpressTests.Unit_Tests
     [TestClass()]
     public class NotificationUT
     {
-        private NotificationSystem notificationSystem;
+        private NotificationSystem notificationSystem = NotificationSystem.Instance;
         private Guid storeID;
         private Guid userID1;
         private Member member1;
@@ -21,7 +21,6 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
-            notificationSystem = new NotificationSystem();
             storeID = Guid.NewGuid();
             userID1 = Guid.NewGuid();
             userID2 = Guid.NewGuid();
@@ -36,35 +35,36 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void RegisterObserverSuccess()
         {
-            int pre = notificationSystem.Obesevers.Count;
-            notificationSystem.RegisterObserver(member1);
-            Assert.AreEqual(pre + 1 , notificationSystem.Obesevers.Count);
+            notificationSystem.RegisterObserver(storeID,member1);
+            int pre = notificationSystem.StoreOwners[storeID].Count;
+            notificationSystem.RegisterObserver(storeID,member2);
+            Assert.AreEqual(pre + 1 , notificationSystem.StoreOwners[storeID].Count);
         }
         
         [TestMethod]
         public void RemoveObserverSuccess()
         {
-            notificationSystem.RegisterObserver(member1);
-            notificationSystem.RegisterObserver(member2);
-            int pre = notificationSystem.Obesevers.Count;
-            notificationSystem.RemoveObserver(member1);
-            Assert.AreEqual(pre - 1 , notificationSystem.Obesevers.Count);
+            notificationSystem.RegisterObserver(storeID,member1);
+            notificationSystem.RegisterObserver(storeID,member2);;
+            int pre = notificationSystem.StoreOwners[storeID].Count;
+            notificationSystem.RemoveObserver(storeID,member1);
+            Assert.AreEqual(pre - 1 , notificationSystem.StoreOwners[storeID].Count);
         }
         [TestMethod]
         public void NotifyWhenTheMemberIsNotLoginSuccess()
         {
             int pre = member1.AwaitingNotification.Count;
-            notificationSystem.RegisterObserver(member1);
-            notificationSystem.NotifyObservers("memeber2 did something", member2.UserId);
+            notificationSystem.RegisterObserver(storeID,member1);
+            notificationSystem.NotifyObservers(storeID,"memeber2 did something", member2.UserId);
             Assert.AreEqual(pre + 1 , member1.AwaitingNotification.Count);
         }
         [TestMethod]
         public void NotifyWhenTheMemberIsLoginSuccess()
         {
             int pre = member1.AwaitingNotification.Count;
-            notificationSystem.RegisterObserver(member1);
+            notificationSystem.RegisterObserver(storeID,member1);
             member1.LoggedIn = true;
-            notificationSystem.NotifyObservers("memeber2 did something", member2.UserId);
+            notificationSystem.NotifyObservers(storeID,"memeber2 did something", member2.UserId);
             Assert.AreEqual(pre , member1.AwaitingNotification.Count);
         }
         

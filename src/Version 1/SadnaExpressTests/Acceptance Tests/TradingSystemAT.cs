@@ -31,6 +31,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected Guid itemNoStock;
         protected ConcurrentDictionary<Guid, Store> stores;
         protected IPasswordHash passwordHash;
+        protected PromotedMember storeOwner;
         [TestInitialize]
         public virtual void SetUp()
         {
@@ -86,7 +87,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", passwordHash.Hash("AS87654askj"+newMac));
             newMac = passwordHash.Mac();
             macs.TryAdd(storeOwnerid, newMac);
-            PromotedMember storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "shay", "kres", passwordHash.Hash("A#!a12345678"+newMac));
+            storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "shay", "kres", passwordHash.Hash("A#!a12345678"+newMac));
             systemManager.createSystemManager();
             storeOwner.createFounder(storeid1);
             members.TryAdd(systemManagerid, systemManager);
