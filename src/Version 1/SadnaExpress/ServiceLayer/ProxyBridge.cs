@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.DomainLayer;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -95,7 +96,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetDetailsOnCart(id);
         }
 
-        public Response PurchaseCart(Guid id, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid id, string paymentDetails, string usersDetail)
         {
             return _realBridge.PurchaseCart(id, paymentDetails, usersDetail);
         }
@@ -297,6 +298,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<Item> GetItemByID(Guid storeID, Guid itemID)
         {
             return _realBridge.GetItemByID(storeID, itemID);
+        }
+
+        public ResponseT<List<Notification>> GetNotifications(Guid userID)
+        {
+            return _realBridge.GetNotifications(userID);
         }
     }
 }

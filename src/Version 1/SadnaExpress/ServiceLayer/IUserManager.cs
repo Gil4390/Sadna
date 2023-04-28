@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
@@ -45,5 +46,8 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<User> GetUser(Guid userID);
         ResponseT<Member> GetMember(Guid userID);
         ResponseT<ShoppingCart> GetUserShoppingCart(Guid userID);
+        ResponseT<List<Notification>> GetNotifications(Guid userId);
+        ResponseT<List<Member>> getAllStoreOwners(ConcurrentDictionary<Guid, Store> stores);
+        ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
     }
 }

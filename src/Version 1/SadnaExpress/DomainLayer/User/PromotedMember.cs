@@ -156,6 +156,7 @@ namespace SadnaExpress.DomainLayer.User
                 return permissionsHolder.GetEmployeeInfoInStore(storeID, this);
             throw new Exception("The member doesn’t have permissions to get employees info");
         }
+   
         public override void CloseStore(Guid storeID)
         {
             if (!hasPermissions(storeID,

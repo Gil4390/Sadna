@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.DomainLayer;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -27,7 +28,7 @@ namespace SadnaExpress.ServiceLayer
         Response RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID);
         Response EditItemFromCart(Guid userID, Guid storeID, Guid itemID,  int itemAmount);
         ResponseT<ShoppingCart> GetDetailsOnCart(Guid userID);
-        Response PurchaseCart(Guid userID, string paymentDetails, string usersDetail); //2.5
+        ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail); //2.5
         ResponseT<Guid> Logout(Guid userID); //3.1
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
         Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText); //3.3
@@ -76,6 +77,10 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Store> GetStore(Guid storeID);
         void SetTSOrders(IOrders orders);
         ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
+
+        ResponseT<List<Notification>> GetNotifications(Guid userID);
+
+
 
     }
 }

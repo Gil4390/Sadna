@@ -17,6 +17,7 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<Guid, User> current_Users; //users that are in the system and not login
         private ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private ConcurrentDictionary<Guid, string> macs;
+
         private bool _isTSInitialized;
         private IPasswordHash _ph = new PasswordHash();
         private IRegistration _reg = new Registration();
@@ -24,7 +25,7 @@ namespace SadnaExpress.DomainLayer.User
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         private ISupplierService supplierService;
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
-
+        protected NotificationSystem notificationSystem = NotificationSystem.Instance;
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
@@ -139,7 +140,7 @@ namespace SadnaExpress.DomainLayer.User
                         member.ShoppingCart.AddUserShoppingCart(user.ShoppingCart);
 
                         Logger.Instance.Info(member, "logged in");
-
+                        member.showAllMessages();
                         return member.UserId;
                     }
                 }
@@ -231,8 +232,11 @@ namespace SadnaExpress.DomainLayer.User
             if (founder != null)
                 members[userID] = founder;
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
+
+
         }
-        
+
+    
         public void AddItemToStore(Guid id, Guid storeID)
         {
             IsTsInitialized();
@@ -270,6 +274,7 @@ namespace SadnaExpress.DomainLayer.User
                 members[newOwnerID] = owner;
             }
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
+            notificationSystem.RegisterObserver(storeID,GetMember(userID));
         }
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)
@@ -532,6 +537,43 @@ namespace SadnaExpress.DomainLayer.User
         public bool CancelPayment(double amount, string transactionDetails)
         {
             return paymentService.cancel(amount, transactionDetails);
+        }
+
+        public List<Notification> GetNotifications(Guid userId)
+        {
+            return members[userId].AwaitingNotification;
+
+        }
+
+        public List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores)
+        {
+            List<Member> storeOwners = new List<Member>();
+            foreach(Member member in members.Values)
+            {
+                foreach(Guid storeID in stores.Keys)
+                {
+                    if (members[member.UserId].hasPermissions(storeID, new List<string> { "owner permissions" })) ;
+                    storeOwners.Add(member);
+                }
+            }
+
+            return storeOwners;
+        }
+
+        public List<Member> GetStoreOwnerOfStores(List<Guid> stores)
+        {
+            List<Member> storeOwners = new List<Member>();
+            foreach(Member member in members.Values)
+            {
+                foreach(Guid storeID in stores)
+                {
+                    if (members[member.UserId].hasPermissions(storeID, new List<string> { "owner permissions" })) ;
+                    storeOwners.Add(member);
+                }
+            }
+
+            return storeOwners;
+            
         }
 
         public bool PlaceSupply(string orderDetails, string userDetails)

@@ -640,7 +640,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void Guest1PurchaseShoppingCart_HappyTest()
         {
             Guid id = new Guid();
-            Task<Response> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
                 return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
@@ -654,7 +654,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void InvalidPaymentInformation_BadTest()
         {
             Guid id = new Guid();
-            Task<Response> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
                 proxyBridge.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
@@ -669,7 +669,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void PurchaseItemFromStoreNotActive_BadTest()
         {
             Guid id = new Guid();
-            Task<Response> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
                 proxyBridge.GetStore(storeid1).Value.Active = false;
@@ -699,26 +699,25 @@ namespace SadnaExpressTests.Acceptance_Tests
             AddItemToCart(id2,storeid1,itemid1,1);
             AddItemToCart(id2,storeid1,itemid22,1);
             // Act
-            Task<Response>[] clientTasks = new Task<Response>[] {
-                Task.Run(() => {
+                Task<ResponseT<List<ItemForOrder>>> task1 = Task.Run(() => {
                     return proxyBridge.PurchaseCart(id1,"5411556648", "Rabbi Akiva 5");
-                }),
-                Task.Run(() => {
+                });
+                Task<ResponseT<List<ItemForOrder>>> task2 = Task.Run(() => {
                     return proxyBridge.PurchaseCart(id2,"5411556648", "Rabbi Akiva 5");
-                }),
-                Task.Run(() => {
+                });
+                Task<Response> task3 = Task.Run(() => {
                     return proxyBridge.EditItemQuantity(storeOwnerid,storeid1,itemid22,-1);
-                })
-            };
+                });
+            
             // Wait for all clients to complete
-            Task.WaitAll(clientTasks);
+            Task.WaitAll();
             //Assert
             // 2 situations: 1. The 2 guests succeed to purchase the cart and the owner fail to edit the quantity
             //               2. Just one of the guest succeed to purchase the cart, the other fail the owner succed to edit the quantity                  
-            bool situation1 = !clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured && clientTasks[2].Result.ErrorOccured;
-            bool situation2 = ((clientTasks[0].Result.ErrorOccured || clientTasks[1].Result.ErrorOccured) &&
-                               (!(clientTasks[0].Result.ErrorOccured && clientTasks[1].Result.ErrorOccured))
-                               & !clientTasks[2].Result.ErrorOccured);
+            bool situation1 = !task1.Result.ErrorOccured && !task2.Result.ErrorOccured && task3.Result.ErrorOccured;
+            bool situation2 = ((task1.Result.ErrorOccured || task2.Result.ErrorOccured) &&
+                               (!(task1.Result.ErrorOccured && task2.Result.ErrorOccured))
+                               & !task3.Result.ErrorOccured);
             Assert.IsTrue(situation1 || situation2);
             Assert.AreEqual(0, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid22));
             if (situation1)
@@ -741,7 +740,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             id2=proxyBridge.Enter().Value; 
             AddItemToCart(id2,storeid1,itemid22,1);
             proxyBridge.EditItemQuantity(storeOwnerid,storeid1,itemid22,-1);
-            Task<Response>[] clientTasks = new Task<Response>[] {
+            Task<ResponseT<List<ItemForOrder>>>[] clientTasks = new Task<ResponseT<List<ItemForOrder>>>[] {
                 Task.Run(() => {
                     return proxyBridge.PurchaseCart(id1,"5411556648", "Rabbi Akiva 5");
                 }),
@@ -764,23 +763,26 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.Login(id1, "AsiAzar@gmail.com", "A#!a12345678");
             // Create guest 1 cart
             Guid id2=proxyBridge.Enter().Value;
-            
-            Task<Response>[] clientTasks = new Task<Response>[] {
-                Task.Run(() => {
-                    return proxyBridge.RemoveItemFromStore(storeOwnerid,storeid1, itemid22);
-                }),
-                Task.Run(() => {
-                    AddItemToCart(id2,storeid1,itemid22,1);
-                    AddItemToCart(id2,storeid1,itemid1,1);
-                    return proxyBridge.PurchaseCart(id2,"5411556648", "Rabbi Akiva 5");
-                })
-            };
+
+            Task<Response> task1 = Task.Run(() =>
+            {
+                return proxyBridge.RemoveItemFromStore(storeOwnerid, storeid1, itemid22);
+            });
+
+            Task<ResponseT<List<ItemForOrder>>> task2 = Task.Run(() =>
+            {
+                AddItemToCart(id2, storeid1, itemid22, 1);
+                AddItemToCart(id2, storeid1, itemid1, 1);
+                return proxyBridge.PurchaseCart(id2, "5411556648", "Rabbi Akiva 5");
+            });
             // Wait for all clients to complete
-            Task.WaitAll(clientTasks);
+            task1.Wait();
+            task2.Wait();
+            Task.WaitAll();
             // 2 situations: 1. The guest succeed to purchase the cart and after it the item was removed.
             //               2. The item removed and then the guest try and get an error.                     
-            bool situation1 = !clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured;
-            bool situation2 = !clientTasks[0].Result.ErrorOccured && clientTasks[1].Result.ErrorOccured;
+            bool situation1 = !task1.Result.ErrorOccured && !task2.Result.ErrorOccured;
+            bool situation2 = !task1.Result.ErrorOccured && task2.Result.ErrorOccured;
             Assert.IsTrue(situation1 || situation2);
             Assert.ThrowsException<Exception>(()=>proxyBridge.GetStore(storeid1).Value.GetItemById(itemid22));
             if (situation1)

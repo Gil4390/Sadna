@@ -6,7 +6,7 @@ using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
 {
-    public class Member : User
+    public class Member : User , IObserver
     {
         protected string email;
         public string Email {get => email; set => email = value;}
@@ -17,10 +17,16 @@ namespace SadnaExpress.DomainLayer.User
         public string LastName { get => lastName; set => lastName = value;}
         protected string password;
         public string Password { get => password; set => password = value; }
+        public List<Notification> AwaitingNotification { get => awaitingNotification; set => awaitingNotification = value; }
+
         private bool loggedIn;
         public bool LoggedIn { get => loggedIn; set => loggedIn = value; }
 
         private Dictionary<string , string> securityQuestions;
+        protected List<Notification> awaitingNotification;
+        protected NotificationSystem notificationSystem = NotificationSystem.Instance;
+
+
 
         public Member(Guid id, string memail, string mfirstName, string mlastLame, string mpassword): base ()
         {
@@ -31,7 +37,13 @@ namespace SadnaExpress.DomainLayer.User
             password = mpassword;
             LoggedIn = false;
             securityQuestions = new Dictionary<string, string>();
+            awaitingNotification = new List<Notification>();
         }
+        public void addToAwaitingNotification(Notification notification) {
+            this.awaitingNotification.Add(notification);
+        }
+        
+        
         public PromotedMember promoteToMember() {
             return new PromotedMember(UserId, email, firstName, lastName, password);
         }
@@ -59,7 +71,27 @@ namespace SadnaExpress.DomainLayer.User
         {
             get => securityQuestions;
         }
+        
 
-     
+        public void showMessage()
+        {
+            // display message
+        }
+
+
+        public void Update(string message, Guid from)
+        {
+            notificationSystem.update(this,message,from);
+        }
+
+
+        public void showAllMessages()
+        {
+            // removes all notifcations
+            foreach (Notification notification in awaitingNotification)
+                // display message
+                awaitingNotification.Remove(notification);
+
+        }
     }
 }
