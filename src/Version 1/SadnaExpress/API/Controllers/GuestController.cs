@@ -1,4 +1,4 @@
-﻿using SadnaExpress.API1.Controllers;
+﻿using SadnaExpress.API.Controllers;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 
-namespace SadnaExpress.API1.Controllers
+namespace SadnaExpress.API.Controllers
 {
     [RoutePrefix(APIConstants.GuestData.root)]
     public class GuestController : ApiController

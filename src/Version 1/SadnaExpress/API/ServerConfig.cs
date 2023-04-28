@@ -11,9 +11,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 
-[assembly: OwinStartup(typeof(SadnaExpress.API1.ServerConfig))]
+[assembly: OwinStartup(typeof(SadnaExpress.API.ServerConfig))]
 
-namespace SadnaExpress.API1
+namespace SadnaExpress.API
 {
     public class ServerConfig
     {

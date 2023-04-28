@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.Owin.Hosting;
-using SadnaExpress.API1;
+using SadnaExpress.API;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.Services;
-using SadnaExpress.API1.WebClient.SignalR;
-using SadnaExpress.API1.WebClient.WebClientServer;
+using SadnaExpress.API.WebClient.SignalR;
+using SadnaExpress.API.WebClient.WebClientServer;
 
 namespace SadnaExpress
 {

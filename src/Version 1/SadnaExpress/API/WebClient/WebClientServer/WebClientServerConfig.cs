@@ -12,9 +12,9 @@ using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 
 
-[assembly: OwinStartup(typeof(SadnaExpress.API1.WebClient.WebClientServer.WebClientServerConfig))]
+[assembly: OwinStartup(typeof(SadnaExpress.API.WebClient.WebClientServer.WebClientServerConfig))]
 
-namespace SadnaExpress.API1.WebClient.WebClientServer
+namespace SadnaExpress.API.WebClient.WebClientServer
 {
     public class WebClientServerConfig
     {
