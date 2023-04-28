@@ -76,15 +76,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API1\Controllers\APIConstants.cs" />
-    <Compile Include="API1\Controllers\GuestController.cs" />
-    <Compile Include="API1\Controllers\MemberController.cs" />
-    <Compile Include="API1\ServerConfig.cs" />
-    <Compile Include="API1\ServerServiceHost.cs" />
-    <Compile Include="API1\WebClient\SignalR\SignalRServerConfig.cs" />
-    <Compile Include="API1\WebClient\SignalR\SignalRServiceHost.cs" />
-    <Compile Include="API1\WebClient\WebClientServer\WebClientServerConfig.cs" />
-    <Compile Include="API1\WebClient\WebClientServer\WebClientServiceHost.cs" />
+    <Compile Include="API\Controllers\APIConstants.cs" />
+    <Compile Include="API\Controllers\GuestController.cs" />
+    <Compile Include="API\Controllers\MemberController.cs" />
+    <Compile Include="API\ServerConfig.cs" />
+    <Compile Include="API\ServerServiceHost.cs" />
+    <Compile Include="API\WebClient\SignalR\SignalRServerConfig.cs" />
+    <Compile Include="API\WebClient\SignalR\SignalRServiceHost.cs" />
+    <Compile Include="API\WebClient\WebClientServer\WebClientServerConfig.cs" />
+    <Compile Include="API\WebClient\WebClientServer\WebClientServiceHost.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\IOrders.cs" />
     <Compile Include="DomainLayer\Store\IStoreFacade.cs" />

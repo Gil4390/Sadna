@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SadnaExpress.API1.Controllers
+namespace SadnaExpress.API.Controllers
 {
     public static class APIConstants
     {

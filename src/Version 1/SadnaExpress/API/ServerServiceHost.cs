@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SadnaExpress.API1
+namespace SadnaExpress.API
 {
     public class ServerServiceHost
     {
