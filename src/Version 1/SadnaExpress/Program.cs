@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Microsoft.Owin.Hosting;
+using SadnaExpress.API1;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.Services;
+using SadnaExpress.API1.WebClient.SignalR;
+using SadnaExpress.API1.WebClient.WebClientServer;
 
 namespace SadnaExpress
 {
@@ -15,6 +19,23 @@ namespace SadnaExpress
         public static void Main(string[] args)
         {
             Console.WriteLine("Hello Sadna");
-        }       
+
+            //start the api server
+            ServerServiceHost serverServiceHost = new ServerServiceHost();
+            serverServiceHost.Start();
+            Console.ReadLine();
+
+            //start the web server
+            // WebClientServiceHost webClientServiceHost = new WebClientServiceHost();
+            // webClientServiceHost.Start();
+
+            //start the signalR server
+            // SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
+            // signalRServiceHost.Start();
+
+        }
+
+
+
     }
 }
