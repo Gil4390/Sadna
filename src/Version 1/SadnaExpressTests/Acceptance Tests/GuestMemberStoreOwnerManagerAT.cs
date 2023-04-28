@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
@@ -45,8 +46,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             store5Owner = proxyBridge.Login(store5Owner, "storeOwnerMail2@gmail.com", "A#!a12345678").Value;
 
             proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
-
-
+            
             store5Manager = proxyBridge.Enter().Value;
             proxyBridge.Register(store5Manager, "storeManagerMail2@gmail.com", "bar", "lerrer", "A#!a12345678");
             store5Manager = proxyBridge.Login(store5Manager, "storeManagerMail2@gmail.com", "A#!a12345678").Value;
@@ -67,7 +67,32 @@ namespace SadnaExpressTests.Acceptance_Tests
 
 
         }
+        
+        #region Notification
 
+        #region
+
+        [TestMethod]
+        public void CloseStoreNotification()
+        {   
+            proxyBridge.GetMember(store5Founder).Value.LoggedIn = false;
+            proxyBridge.CloseStore(store5Founder, storeID5);
+            Assert.AreEqual(proxyBridge.GetMember(store5Founder).Value.AwaitingNotification.Count,1);
+        }
+
+        [TestMethod]
+        public void OpenStoreNotification()
+        {   
+            proxyBridge.GetMember(store5Founder).Value.LoggedIn = false;
+            proxyBridge.CloseStore(store5Founder, storeID5);
+            proxyBridge.ReopenStore(store5Founder, storeID5);
+            Assert.AreEqual(proxyBridge.GetMember(store5Founder).Value.AwaitingNotification.Count,2);
+        }
+        #endregion
+
+        #endregion
+        
+        
         #region Product Managment 4.1
 
         #region Add new item
@@ -428,6 +453,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error should occur 
         }
+ 
 
         [TestMethod]
         public void AppointingNewStoreManagerBy2StoreOwners_Concurrent_Bad()
@@ -669,7 +695,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         #endregion
 
 
-        #region request store employees’ information 4.11
+        #region request store employeesï¿½ information 4.11
 
         [TestMethod]
         public void RequestStoreEmployeeInfo_Good()

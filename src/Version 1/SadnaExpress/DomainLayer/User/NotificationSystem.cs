@@ -1,26 +1,41 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using NodaTime;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer
 {
     public class NotificationSystem : ISubject
     {
+        private static NotificationSystem instance;
+        private Dictionary<Guid , List<Member>> storeOwners;
 
-        public List<Member> storeOwners;
-        public NotificationSystem()
+        public Dictionary<Guid, List<Member>> StoreOwners
         {
-            storeOwners = new List<Member>();
+            get => storeOwners;
+            set => storeOwners = value;
         }
 
-        public List<Member> Obesevers { get => storeOwners; set => storeOwners = value; }
-
-
-        public void NotifyObservers(string message, Guid userId)
+        private NotificationSystem()
         {
-            foreach (Member member in storeOwners)
+            storeOwners = new Dictionary<Guid, List<Member>>();
+        }
+
+        public static NotificationSystem Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new NotificationSystem();
+                }
+                return instance;
+            }
+        }
+
+        public void NotifyObservers(Guid storeID , string message, Guid userId)
+        {
+            List<Member> owners  = storeOwners[storeID];
+            foreach (Member member in owners)
             {
                 Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
                 if (member.LoggedIn)
@@ -38,23 +53,39 @@ namespace SadnaExpress.DomainLayer
             else
                 member.addToAwaitingNotification(notification);
         }
-
-        public void RegisterObserver(Member observer)
+        public void updateMany(List<Member> members, string message, Guid userId)
         {
-            storeOwners.Add(observer);
-        }
-        public void RegisterObservers(List<Member> observers)
-        {
-            foreach (Member member in observers)
+            foreach (Member member in members)
             {
-                storeOwners.Add(member);
+                Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
+                if (member.LoggedIn)
+                    member.showMessage();
+                else
+                    member.addToAwaitingNotification(notification);
             }
         }
-
-        public void RemoveObserver(Member observer)
+        public void RegisterObserver(Guid storeID , Member observer)
         {
-            storeOwners.Remove(observer);
+            List<Member> members;
+            if (storeOwners.TryGetValue(storeID, out members))
+            {
+                members.Add(observer);
+            }
+            else
+            {
+                members = new List<Member> { observer };
+                storeOwners.Add(storeID, members);
+            }
+            
+        }
 
+        public void RemoveObserver(Guid storeID, Member observer)
+        {
+            if (storeOwners.TryGetValue(storeID, out List<Member> observers))
+            {
+                 observers.Remove(observer);
+            }
+          
         }
 
   
