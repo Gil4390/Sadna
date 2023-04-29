@@ -10,6 +10,8 @@ export { default as AdminViewAllUsersPage } from "./Admin/AdminViewAllUsersPage"
 export { default as AdminManageAllStoresPage } from "./Admin/AdminManageAllStoresPage";
 export { default as AdminViewAllPurchasesPage } from "./Admin/AdminViewAllPurchasesPage";
 export { default as AdminManageComplaintsPage } from "./Admin/AdminManageComplaintsPage";
+export { default as AdminInitializeSystemPage } from "./Admin/AdminInitializeSystemPage";
+
 export { default as PoliciesPage } from "./Member/PoliciesPage";
 
 

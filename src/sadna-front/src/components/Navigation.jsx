@@ -8,7 +8,7 @@ import AdminNav from './AdminNav';
 
 function Navigation() {
   const { cartQuantity } = useShoppingCart()
-  const [UserType, setUserType] = useState("guestt")
+  const [UserType, setUserType] = useState("admin")
 
   const handleLogout = () => {
     setUserType("guest");
