@@ -79,7 +79,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
 
         ResponseT<List<Notification>> GetNotifications(Guid userID);
-
+        bool IsSystemInitialize();
 
 
     }

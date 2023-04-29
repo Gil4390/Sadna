@@ -1,3 +1,4 @@
+import {trackPromise} from 'react-promise-tracker';
 // @ts-ignore
 import {GuestService} from './guest.service.ts';
 
@@ -7,8 +8,8 @@ export class GuestThunks{
     public static Enter = ():any => {
         return async () => {
             try{
-                const respone = await GuestThunks.GuestService.Enter();
-                return respone;
+                const respone = await trackPromise(GuestThunks.GuestService.Enter()); 
+                return respone?.data;
             }
             catch(error){
                console.log(error); 

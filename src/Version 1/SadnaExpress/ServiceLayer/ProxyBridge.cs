@@ -304,5 +304,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetNotifications(userID);
         }
+
+        public bool IsSystemInitialize()
+        {
+            return _realBridge.IsSystemInitialize();
+        }
     }
 }

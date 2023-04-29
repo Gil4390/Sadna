@@ -53,8 +53,10 @@ namespace SadnaExpress.DomainLayer.User
         void GetAllStorePurchases(Guid userId);
         void PurchaseCart(Guid userID);
         bool CancelPayment(double amount, string transactionDetails);
-       List<Notification> GetNotifications(Guid userId);
-       List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores);
-       List<Member> GetStoreOwnerOfStores(List<Guid> stores);
+        List<Notification> GetNotifications(Guid userId);
+        List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores);
+        List<Member> GetStoreOwnerOfStores(List<Guid> stores);
+
+        bool IsSystemInitialize();
     }
 }
