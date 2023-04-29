@@ -13,5 +13,7 @@ export { default as AdminManageComplaintsPage } from "./Admin/AdminManageComplai
 export { default as AdminInitializeSystemPage } from "./Admin/AdminInitializeSystemPage";
 
 export { default as PoliciesPage } from "./Member/PoliciesPage";
+export { default as ManageStoreEmployeesPage } from "./Member/ManageStoreEmployeesPage";
+export { default as ManageItemsPage } from "./Member/ManageItemsPage";
 
 

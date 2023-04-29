@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigation, Footer} from "./components";
 import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPage, StoresManagementPage,
          AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage,
-         AdminInitializeSystemPage, PoliciesPage } from "./pages";
+         AdminInitializeSystemPage, PoliciesPage, ManageItemsPage, ManageStoreEmployeesPage } from "./pages";
 import { ShoppingCartProvider } from "./context/CartContext";
 
 
@@ -50,6 +50,8 @@ const App:React.FC=()=>{
         <Route path="/AdminInitializeSystemPage" element={<AdminInitializeSystemPage />} />
         
         <Route path="/PoliciesPage" element={<PoliciesPage />} />
+        <Route path="/ManageStoreEmployeesPage" element={<ManageStoreEmployeesPage />} />
+        <Route path="/ManageItemsPage" element={<ManageItemsPage />} />
       </Routes>
       <Footer />
 
