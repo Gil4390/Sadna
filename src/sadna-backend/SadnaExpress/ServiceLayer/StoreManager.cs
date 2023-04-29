@@ -13,7 +13,7 @@ namespace SadnaExpress.ServiceLayer
     {
         private IStoreFacade storeFacade;
         private IUserFacade userFacade;
-       
+
         public StoreManager(IUserFacade userFacade, IStoreFacade storeFacade)
         {
             this.userFacade = userFacade;
@@ -85,6 +85,7 @@ namespace SadnaExpress.ServiceLayer
             {
                 // send list of objects as ref 
                 List<ItemForOrder> itemForOrders = new List<ItemForOrder>();
+                List<Guid> stores = new List<Guid>();
                 //get the user cart
                 ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
                 if (shoppingCart.Baskets.Count == 0)
@@ -107,6 +108,7 @@ namespace SadnaExpress.ServiceLayer
                 }
                 Orders.Instance.AddOrder(userID, itemForOrders);
                 userFacade.PurchaseCart(userID);
+                NotificationSystem.Instance.NotifyObserversInStores(cart.Keys, "purchase cart", userID);
                 return new ResponseT<List<ItemForOrder>>(itemForOrders);
             }
             catch (Exception ex)
@@ -136,6 +138,7 @@ namespace SadnaExpress.ServiceLayer
             {
                 userFacade.CloseStore(userID, storeID);
                 storeFacade.CloseStore(storeID);
+                NotificationSystem.Instance.NotifyObservers(storeID,"Close store",userID);
                 return new Response();
             }
             catch (Exception ex)

@@ -66,8 +66,6 @@ namespace SadnaExpressTests.Integration_Tests
         public void UserCloseStore_BadTest()
         {
             //Arrange
-
-
             //Act
             Response res = trading.CloseStore(userID, storeID1); 
 
@@ -105,9 +103,9 @@ namespace SadnaExpressTests.Integration_Tests
 
         /// <summary>
         /// Tests the UserReopenStore method when provided with valid input.
+        /// not in this version
         /// Asserts that the store was successfully reopened.
-        /// <summary>
-        [TestMethod()]
+        /// <summary> 
         public void UserReOpenStore_HappyTest()
         {
             //Arrange

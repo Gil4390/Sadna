@@ -14,7 +14,6 @@ namespace SadnaExpress.ServiceLayer
     {
         private IStoreManager storeManager;
         private IUserManager userManager;
-        private NotificationSystem notificationSystem = NotificationSystem.Instance;
 
         private bool testMode=false;
         public bool TestMode
@@ -180,20 +179,7 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
-            
             ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
-            List<Guid> storeIDs = new List<Guid>();
-            
-            foreach (ItemForOrder item in response.Value)
-            {
-                storeIDs.Add(item.StoreID);
-            }
-
-            foreach (Guid storeID in storeIDs)
-            {
-                notificationSystem.NotifyObservers(storeID, "purchase cart", userID);
-            }
-
             return response;
         }
         
@@ -306,17 +292,15 @@ namespace SadnaExpress.ServiceLayer
 
         public Response CloseStore(Guid userID, Guid storeID)
         {
-            
             Response response =  storeManager.CloseStore(userID,storeID);
-            notificationSystem.NotifyObservers(storeID,"Close store",userID);
             return response;
-
         }
 
         public Response ReopenStore(Guid userID, Guid storeID)
         {
-            notificationSystem.NotifyObservers(storeID,"reopen store",userID);
-            return storeManager.ReopenStore(userID,storeID);
+            throw new NotImplementedException();
+            //notificationSystem.NotifyObservers(storeID,"reopen store",userID);
+            //return storeManager.ReopenStore(userID,storeID);
         }
 
         public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID)

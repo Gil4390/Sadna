@@ -34,14 +34,16 @@ namespace SadnaExpress.DomainLayer
 
         public void NotifyObservers(Guid storeID , string message, Guid userId)
         {
-            List<Member> owners  = storeOwners[storeID];
-            foreach (Member member in owners)
+            if (storeOwners.ContainsKey(storeID))
             {
-                Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
-                if (member.LoggedIn)
-                    member.showMessage();
-                else
-                    member.addToAwaitingNotification(notification);
+                foreach (Member member in storeOwners[storeID])
+                {
+                    Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
+                    if (member.LoggedIn)
+                        member.showMessage();
+                    else
+                        member.addToAwaitingNotification(notification);
+                }
             }
         }
         
@@ -88,7 +90,11 @@ namespace SadnaExpress.DomainLayer
           
         }
 
-  
+        public void NotifyObserversInStores(ICollection<Guid> stores, string message, Guid userID)
+        {
+            foreach (Guid storeID in stores)
+                NotifyObservers(storeID, message, userID);
+        }
     }
     
 }
