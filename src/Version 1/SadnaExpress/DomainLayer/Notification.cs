@@ -1,7 +1,7 @@
-﻿namespace SadnaExpress.DomainLayer;
-using System;
-using NodaTime;
+﻿using System;
 
+namespace SadnaExpress.DomainLayer
+{
     public class Notification
     {
         private DateTime time;
@@ -41,3 +41,4 @@ using NodaTime;
             set => time = value;
         }
     }
+}

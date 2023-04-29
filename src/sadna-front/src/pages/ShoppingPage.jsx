@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { StoreItem } from '../components/StoreItem';
 
-function ShoppingPage() {
+function ShoppingPage(props) {
 
   const items = [
     { id: 1, name: 'Product 1', price: 10.99 },
@@ -59,7 +59,8 @@ function ShoppingPage() {
   };
 
   return (
-    <div>
+    props.isInit?
+    (<div>
       <Container>
         <Row className="mt-3">
           <Col>
@@ -122,7 +123,10 @@ function ShoppingPage() {
         </Row>
       </Container>
       
-    </div>
+    </div>):(<div><h1 class="font-weight-light">About</h1>
+            <p>
+              "system is not initialized"
+            </p></div>)
   );
 }
 

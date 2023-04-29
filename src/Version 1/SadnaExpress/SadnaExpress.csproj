@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\Controllers\AdminController.cs" />
     <Compile Include="API\Controllers\APIConstants.cs" />
     <Compile Include="API\Controllers\GuestController.cs" />
     <Compile Include="API\Controllers\MemberController.cs" />
@@ -59,6 +60,8 @@
     <Compile Include="API\WebClient\WebClientServer\WebClientServiceHost.cs" />
     <Compile Include="DomainLayer\Notification.cs" />
     <Compile Include="DomainLayer\IObserver.cs" />
+    <Compile Include="DomainLayer\Store\DiscountPolicy\Condition.cs" />
+    <Compile Include="DomainLayer\Store\DiscountPolicy\DiscountPolicy.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\IOrders.cs" />
     <Compile Include="DomainLayer\Store\IStoreFacade.cs" />

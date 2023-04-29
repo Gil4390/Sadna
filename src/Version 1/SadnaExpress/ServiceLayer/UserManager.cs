@@ -432,14 +432,20 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                List<Member> storesOwners =  userFacade.GetStoreOwnerOfStores(stores);
+                List<Member> storesOwners = userFacade.GetStoreOwnerOfStores(stores);
                 return new ResponseT<List<Member>>(storesOwners);
 
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(  nameof(UserManager)+": "+nameof(GetStoreOwnerOfStores)+": "+ex.Message);
+                Logger.Instance.Error(nameof(UserManager) + ": " + nameof(GetStoreOwnerOfStores) + ": " + ex.Message);
                 return new ResponseT<List<Member>>(ex.Message);
-            }        }
+            }
+        }
+
+        public bool IsSystemInitialize()
+        {
+            return userFacade.IsSystemInitialize();
+        }
     }
 }

@@ -437,6 +437,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetNotifications(userID);
         }
-        
+
+        public bool IsSystemInitialize()
+        {
+            return userManager.IsSystemInitialize();
+        }
     }
 }

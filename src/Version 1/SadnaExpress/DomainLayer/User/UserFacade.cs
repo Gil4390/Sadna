@@ -651,5 +651,10 @@ namespace SadnaExpress.DomainLayer.User
             
             throw new Exception("User with id " + userID + " does not exist");
         }
+
+        public bool IsSystemInitialize()
+        {
+            return _isTSInitialized;
+        }
     }
 }

@@ -49,5 +49,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Notification>> GetNotifications(Guid userId);
         ResponseT<List<Member>> getAllStoreOwners(ConcurrentDictionary<Guid, Store> stores);
         ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
+
+        bool IsSystemInitialize();
     }
 }

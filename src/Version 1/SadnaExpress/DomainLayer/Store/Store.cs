@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer.Store
@@ -13,12 +14,13 @@ namespace SadnaExpress.DomainLayer.Store
         public Inventory itemsInventory;
         private Guid storeID;
         public Guid StoreID {get=>storeID;}
-        //private Policy policy; // not for this version
 
         private bool active;
         public bool Active { get => active; set => active = value; }
 
         private int storeRating;
+        private DiscountPolicyTree discountPolicyTree;
+        public DiscountPolicyTree DiscountPolicyTree { get => discountPolicyTree; set => discountPolicyTree = value;}
         public int StoreRating {  get => storeRating ; set => StoreRating = value; }
 
         public Store(string name) {
@@ -27,7 +29,7 @@ namespace SadnaExpress.DomainLayer.Store
             storeRating = 0;
             storeID = Guid.NewGuid();
             active = true;
-            //this.policy = new Policy();
+            discountPolicyTree = null;
         }
 
         public Item GetItemsByName(string itemName, int minPrice, int maxPrice, string category, int ratingItem)
@@ -85,6 +87,62 @@ namespace SadnaExpress.DomainLayer.Store
         public int GetItemByQuantity(Guid itemID)
         {
             return itemsInventory.GetItemByQuantity(itemID);
+        }
+
+        public DiscountPolicy.DiscountPolicy AddSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
+        {
+            SimpleDiscount<T> simpleDiscount = new SimpleDiscount<T>(level, percent, startDate, endDate);
+            return simpleDiscount;
+        }
+        public Condition AddCondition<T>(T level, string type, int val)
+        {
+            switch (type)
+            {
+               case "min value":
+                   MinValueCondition<T> minValue = new MinValueCondition<T>(level, val);
+                   return minValue;
+               case "min quantity":
+                   MinQuantityCondition<T> minQuantity = new MinQuantityCondition<T>(level, val);
+                   return minQuantity;
+               default:
+                   throw new Exception("the condition not fine");
+            }
+            
+        }
+        public DiscountPolicy.DiscountPolicy AddComplexPolicy(string op, params object[] policys)
+        {
+            switch (op)
+            {
+                case "xor":
+                    XorDiscount xor = new XorDiscount((DiscountPolicy.DiscountPolicy)policys[0], (DiscountPolicy.DiscountPolicy)policys[1]);
+                    return xor;
+                case "and":
+                    AndDiscount and = new AndDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
+                    return and;
+                case "or":
+                    OrDiscount or = new OrDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
+                    return or;
+                case "if":
+                    ConditionalDiscount ifCond = new ConditionalDiscount((Condition)policys[0],(DiscountPolicy.DiscountPolicy)policys[1]);
+                    return ifCond;
+                case "max":
+                    MaxDiscount max = new MaxDiscount((DiscountPolicy.DiscountPolicy)policys[0], (DiscountPolicy.DiscountPolicy)policys[1]);
+                    return max;
+                case "add":
+                    AddDiscount add = new AddDiscount((DiscountPolicy.DiscountPolicy)policys[0], (DiscountPolicy.DiscountPolicy)policys[1]);
+                    return add;
+                default:
+                    throw new Exception("the op not exist");
+            }
+        }
+
+        public DiscountPolicyTree AddToTree(DiscountPolicy.DiscountPolicy discountPolicy)
+        {
+            if (discountPolicyTree == null)
+                discountPolicyTree = new DiscountPolicyTree(discountPolicy);
+            else
+                discountPolicyTree.Root = new AddDiscount(discountPolicyTree, discountPolicy);
+            return discountPolicyTree;
         }
     }
 }
