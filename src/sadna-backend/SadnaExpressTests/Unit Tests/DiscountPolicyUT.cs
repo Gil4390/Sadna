@@ -13,10 +13,12 @@ namespace SadnaExpressTests.Unit_Tests
         private Guid item1;
         private Guid item2;
         private Guid item3;
-        private DiscountPolicy policy1;
-        private DiscountPolicy policy2;
-        private DiscountPolicy policy3;
-        private Condition cond1;
+        private DiscountPolicy policy1; //20% on all the store
+        private DiscountPolicy policy2; //50% on bisli
+        private DiscountPolicy policy3; //50% on Food
+        private DiscountPolicy policy4; //10% on ipad
+
+        private Condition cond1; //
         private Condition cond2;
         private Condition cond3;
         private Condition cond4;
@@ -35,8 +37,10 @@ namespace SadnaExpressTests.Unit_Tests
                 new DateTime(2024, 4, 30));
             policy3 = store.AddSimplePolicy("Food", 50, new DateTime(2022, 4, 30),
                 new DateTime(2024, 4, 30));
+            policy4 = store.AddSimplePolicy(store.GetItemById(item3), 10, new DateTime(2022, 4, 30),
+                new DateTime(2024, 4, 30));
             basket = new Dictionary<Item, int> {{store.GetItemById(item1), 1}, {store.GetItemById(item2), 1},
-                    {store.GetItemById(item3), 1}};
+                {store.GetItemById(item3), 1}};
             cond1 = store.AddCondition(store, "min value", 50);
             cond2 = store.AddCondition(store.GetItemById(item3), "min quantity", 2);
             cond3 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
@@ -219,23 +223,10 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
         [TestMethod]
-        public void CalculateXorPolicyTwoOkCondSuccess()
-        {
-            //Arrange
-            DiscountPolicy or = store.AddComplexPolicy("or", cond1, cond3, policy1); //if I buy more than 50 nis or more than one bisli I get 20% on the items
-            store.AddToTree(or);
-            //Act
-            Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
-            //Assert
-            Assert.AreEqual(8, items[store.GetItemById(item1)].Key); // changed
-            Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
-            Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
-        }
-        [TestMethod]
         public void CalculateXorPolicyOnItemFail()
         {
             //Arrange
-            DiscountPolicy or = store.AddComplexPolicy("or", cond2, cond4, policy1); //if I buy more than 100 nis Food and more than one Ipad I get 20% on the items
+            DiscountPolicy or = store.AddComplexPolicy("xor", cond2, cond4, policy1); //if I buy more than 100 nis Food and more than one Ipad I get 20% on the items
             store.AddToTree(or);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
