@@ -48,5 +48,12 @@ namespace SadnaExpress.API.Controllers
 
             public const string openStore = "open-store";
         }
+
+        public static class AdminData
+        {
+            public const string root = "admin";
+
+            public const string isInit = "is-system-init";
+        }
     }
 }
