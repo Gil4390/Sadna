@@ -3,13 +3,17 @@ export { default as ShoppingPage } from "./ShoppingPage";
 export { default as CartPage } from "./CartPage";
 export { default as PaymentPage } from "./PaymentPage";
 export { default as About } from "./About";
-export { default as LoginPage } from "./LoginPage";
-export { default as RegisterPage } from "./RegisterPage";
-export { default as StoresManagementPage } from "./StoresManagementPage";
-export { default as AdminViewAllUsersPage } from "./AdminViewAllUsersPage";
-export { default as AdminManageAllStoresPage } from "./AdminManageAllStoresPage";
-export { default as AdminViewAllPurchasesPage } from "./AdminViewAllPurchasesPage";
-export { default as AdminManageComplaintsPage } from "./AdminManageComplaintsPage";
-export { default as PoliciesPage } from "./PoliciesPage";
+export { default as LoginPage } from "./Guest/LoginPage";
+export { default as RegisterPage } from "./Guest/RegisterPage";
+export { default as StoresManagementPage } from "./Member/StoresManagementPage";
+export { default as AdminViewAllUsersPage } from "./Admin/AdminViewAllUsersPage";
+export { default as AdminManageAllStoresPage } from "./Admin/AdminManageAllStoresPage";
+export { default as AdminViewAllPurchasesPage } from "./Admin/AdminViewAllPurchasesPage";
+export { default as AdminManageComplaintsPage } from "./Admin/AdminManageComplaintsPage";
+export { default as AdminInitializeSystemPage } from "./Admin/AdminInitializeSystemPage";
+
+export { default as PoliciesPage } from "./Member/PoliciesPage";
+export { default as ManageStoreEmployeesPage } from "./Member/ManageStoreEmployeesPage";
+export { default as ManageItemsPage } from "./Member/ManageItemsPage";
 
 

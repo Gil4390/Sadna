@@ -10,7 +10,7 @@ function MemberNav(handleLogout) {
         <div className="container">
 
           <div>
-            <ul className="navbar-nav">
+            <ul className="navbar-nav" >
               <li className="nav-item">
                 <NavLink className="nav-link" to="/">
                   Home
@@ -20,6 +20,11 @@ function MemberNav(handleLogout) {
               <li className="nav-item">
                 <NavLink className="nav-link" to="/" onClick={() => handleLogout()}>
                   Logout
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/AdminInitializeSystemPage">
+                  Initialize-System
                 </NavLink>
               </li>
               <li className="nav-item">

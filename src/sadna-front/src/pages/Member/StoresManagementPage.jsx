@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import { Store } from '../components/Store';
+import { Store } from '../../components/Store';
 
 
 function StoresManagementPage() {
