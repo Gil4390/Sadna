@@ -81,41 +81,49 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         }
     }
 
-    public class XorDiscount: DiscountPolicy
+    
+    public abstract class LogicalPolicy : DiscountPolicy
     {
-        private DiscountPolicy discountPolicy1;
-        private DiscountPolicy discountPolicy2;
+        public Condition cond1;
+        public Condition Cond1 {get=>cond1;}
 
-        public XorDiscount(DiscountPolicy discountPolicy1, DiscountPolicy discountPolicy2)
+        public Condition cond2;
+        public Condition Cond2 {get=>cond2;}
+        public DiscountPolicy discountPolicy;
+        public DiscountPolicy DiscountPolicy {get=>discountPolicy;}
+
+
+        public LogicalPolicy(Condition cond1, Condition cond2, DiscountPolicy discountPolicy)
         {
-            this.discountPolicy1 = discountPolicy1;
-            this.discountPolicy2 = discountPolicy2;
+            this.cond1 = cond1;
+            this.cond2 = cond2;
+            this.discountPolicy = discountPolicy;
         }
-
+    }
+    
+    public class XorDiscount: LogicalPolicy
+    {
+        public XorDiscount(Condition cond1, Condition cond2, DiscountPolicy discountPolicy) : base(cond1, cond2, discountPolicy)
+        {
+        }
         public override Dictionary<Item, KeyValuePair<double, DateTime>> calculate(Store store,
             Dictionary<Item, int> basket)
         {
-            double discount1 = 0;
-            double discount2 = 0;
-            Dictionary<Item, KeyValuePair<double, DateTime>> discountDict1 = discountPolicy1.calculate(store, basket);
-            Dictionary<Item, KeyValuePair<double, DateTime>> discountDict2 = discountPolicy2.calculate(store, basket);
-            foreach (Item item in discountDict1.Keys)
-                discount1 = basket[item]*(item.Price - discountDict1[item].Key); //calculate how much discount (in NIS)
-            foreach (Item item in discountDict2.Keys)
-                discount2 = basket[item]* (item.Price - discountDict2[item].Key); //calculate how much discount (in NIS)
-            if (discount1 > discount2) //with who I pay less
-                return discountDict1;
-            return discountDict2;
+            bool oneOfThem = cond1.Evaluate(store, basket) || cond2.Evaluate(store, basket);
+            bool bothOfThem = cond1.Evaluate(store, basket) && cond2.Evaluate(store, basket);
+            if (oneOfThem && !bothOfThem)
+                return discountPolicy.calculate(store, basket);
+            return null;
         }
     }
 
-    public class AndDiscount : DiscountPolicy
+    public class AndDiscount : LogicalPolicy
     {
         private Condition cond1;
         private Condition cond2;
         private DiscountPolicy discountPolicy;
 
-        public AndDiscount(Condition cond1, Condition cond2, DiscountPolicy discountPolicy)
+        public AndDiscount(Condition cond1, Condition cond2, DiscountPolicy discountPolicy) : base(cond1, cond2, discountPolicy)
         {
             this.cond1 = cond1;
             this.cond2 = cond2;
@@ -131,13 +139,13 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         }
     }
 
-    public class OrDiscount : DiscountPolicy
+    public class OrDiscount : LogicalPolicy
     {
         private Condition cond1;
         private Condition cond2;
         private DiscountPolicy discountPolicy;
 
-        public OrDiscount(Condition cond1, Condition cond2, DiscountPolicy discountPolicy)
+        public OrDiscount(Condition cond1, Condition cond2, DiscountPolicy discountPolicy):base(cond1, cond2, discountPolicy)
         {
             this.cond1 = cond1;
             this.cond2 = cond2;
@@ -171,17 +179,22 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();
             Dictionary<Item, KeyValuePair<double, DateTime>> discountDict1 = discountPolicy1.calculate(store, basket);
             Dictionary<Item, KeyValuePair<double, DateTime>> discountDict2 = discountPolicy2.calculate(store, basket);
-            foreach (Item item in discountDict1.Keys)
+            double sum1 = 0;
+            double sum2 = 0;
+            foreach (Item item in basket.Keys)
             {
-                if (discountDict2.ContainsKey(item) && discountDict1[item].Key > discountDict2[item].Key) //the price of discount 2 is lower
-                    output.Add(item, discountDict2[item]);
+                if (discountDict1 != null && discountDict1.ContainsKey(item))
+                    sum1 += discountDict1[item].Key * basket[item];
                 else
-                    output.Add(item, discountDict1[item]);
+                    sum1 += item.Price * basket[item];
+                if (discountDict2 != null && discountDict2.ContainsKey(item))
+                    sum2 += discountDict2[item].Key * basket[item];
+                else
+                    sum2 += item.Price * basket[item];
             }
-            foreach (Item item in discountDict2.Keys)
-                if (!output.ContainsKey(item))
-                    output.Add(item, discountDict2[item]);
-            return output;
+            if (sum1 > sum2)
+                return discountDict2;
+            return discountDict1;
         }
     }
 
@@ -228,18 +241,52 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
 
     public class DiscountPolicyTree : DiscountPolicy
     {
-        private DiscountPolicy root;
-        public DiscountPolicy Root { get => root; set => root = value;}
+        private List<DiscountPolicy> roots;
+        public List<DiscountPolicy> Roots {get => roots;}
 
-    public DiscountPolicyTree(DiscountPolicy root)
-        {   
-            this.root = root;
+        public DiscountPolicyTree(DiscountPolicy root)
+        {
+            roots = new List<DiscountPolicy>{root};
+        }
+
+        public void AddPolicy(DiscountPolicy discountPolicy)
+        {
+            roots.Add(discountPolicy);
         }
 
         public override Dictionary<Item, KeyValuePair<double, DateTime>> calculate(Store store,
             Dictionary<Item, int> basket)
         {
-            return root.calculate(store, basket);
+            Dictionary<Item, KeyValuePair<double, DateTime>> output = null;
+            foreach (DiscountPolicy root in roots)
+            {
+                Dictionary<Item, KeyValuePair<double, DateTime>> discountDict = root.calculate(store, basket);
+                double sum1 = 0;
+                double sum2 = 0;
+                foreach (Item item in basket.Keys)
+                {
+                    if (output != null && output.ContainsKey(item))
+                        sum1 += output[item].Key * basket[item];
+                    else
+                        sum1 += item.Price * basket[item];
+                    if (discountDict != null && discountDict.ContainsKey(item))
+                        sum2 += discountDict[item].Key * basket[item];
+                    else
+                        sum2 += item.Price * basket[item];
+                }
+
+                if (sum1 > sum2)
+                    output = discountDict;
+            }
+
+            return output;
         }
+
+        public void RemovePolicy(DiscountPolicy discountPolicy)
+        {
+            if (!roots.Remove(discountPolicy))
+                throw new Exception("policy not found");
+        }
+
     }
 }
