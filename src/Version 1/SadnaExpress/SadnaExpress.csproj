@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,12 +34,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="NodaTime, Version=3.1.9.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NodaTime.3.1.9\lib\netstandard2.0\NodaTime.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DomainLayer\Notification.cs" />
+    <Compile Include="DomainLayer\IObserver.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\IOrders.cs" />
     <Compile Include="DomainLayer\Store\IStoreFacade.cs" />
@@ -46,7 +56,9 @@
     <Compile Include="DomainLayer\Store\ItemForOrder.cs" />
     <Compile Include="DomainLayer\Store\Order.cs" />
     <Compile Include="DomainLayer\Store\Orders.cs" />
+    <Compile Include="DomainLayer\ISubject.cs" />
     <Compile Include="DomainLayer\User\IRegistration.cs" />
+    <Compile Include="DomainLayer\User\NotificationSystem.cs" />
     <Compile Include="DomainLayer\User\Registration.cs" />
     <Compile Include="DomainLayer\User\ShoppingBasket.cs" />
     <Compile Include="DomainLayer\User\ShoppingCart.cs" />
@@ -75,6 +87,9 @@
     <Compile Include="ServiceLayer\UserManager.cs" />
     <Compile Include="ExternalServices\IPaymentService.cs" />
     <Compile Include="ExternalServices\ISupplierService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
