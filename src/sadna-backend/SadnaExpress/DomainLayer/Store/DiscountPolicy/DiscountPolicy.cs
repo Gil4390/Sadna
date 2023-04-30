@@ -29,15 +29,16 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         public override Dictionary<Item, KeyValuePair<double, DateTime>> calculate(Store store,
             Dictionary<Item, int> basket)
         {
+            Dictionary<Item, KeyValuePair<double, DateTime>> output =
+                             new Dictionary<Item, KeyValuePair<double, DateTime>>();
             if (startDate <= DateTime.Now && endDate >= DateTime.Now)
             {
-                Dictionary<Item, KeyValuePair<double, DateTime>> output =
-                    new Dictionary<Item, KeyValuePair<double, DateTime>>();
+                
                 switch (level)
                 {
                     case Store storeType:
                         if (!store.Equals(storeType))
-                            return null;
+                            return output;
                         foreach (Item item in basket.Keys)
                             output.Add(item, new KeyValuePair<double, DateTime>((100 - percent) * item.Price / 100, endDate));
                         return output;
@@ -57,7 +58,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
                 }
             }
 
-            return null;
+            return output;
         }
     }
 
@@ -77,7 +78,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         {
             if (cond.Evaluate(store, basket))
                 return discountPolicy.calculate(store, basket);
-            return null;
+            return new Dictionary<Item, KeyValuePair<double, DateTime>>();
         }
     }
 
@@ -113,7 +114,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             bool bothOfThem = cond1.Evaluate(store, basket) && cond2.Evaluate(store, basket);
             if (oneOfThem && !bothOfThem)
                 return discountPolicy.calculate(store, basket);
-            return null;
+            return new Dictionary<Item, KeyValuePair<double, DateTime>>();
         }
     }
 
@@ -135,7 +136,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         {
             if (cond1.Evaluate(store, basket) && (cond2.Evaluate(store, basket)))
                 return discountPolicy.calculate(store, basket);
-            return null;
+            return new Dictionary<Item, KeyValuePair<double, DateTime>>();
         }
     }
 
@@ -157,7 +158,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         {
             if (cond1.Evaluate(store, basket) || (cond2.Evaluate(store, basket)))
                 return discountPolicy.calculate(store, basket);
-            return null;
+            return new Dictionary<Item, KeyValuePair<double, DateTime>>();
         }
     }
     
@@ -257,28 +258,21 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         public override Dictionary<Item, KeyValuePair<double, DateTime>> calculate(Store store,
             Dictionary<Item, int> basket)
         {
-            Dictionary<Item, KeyValuePair<double, DateTime>> output = null;
+            Dictionary<Item, KeyValuePair<double, DateTime>> output = new Dictionary<Item, KeyValuePair<double, DateTime>>();
             foreach (DiscountPolicy root in roots)
             {
-                Dictionary<Item, KeyValuePair<double, DateTime>> discountDict = root.calculate(store, basket);
-                double sum1 = 0;
-                double sum2 = 0;
+                Dictionary<Item, KeyValuePair<double, DateTime>> rootDict = root.calculate(store, basket);
                 foreach (Item item in basket.Keys)
                 {
-                    if (output != null && output.ContainsKey(item))
-                        sum1 += output[item].Key * basket[item];
-                    else
-                        sum1 += item.Price * basket[item];
-                    if (discountDict != null && discountDict.ContainsKey(item))
-                        sum2 += discountDict[item].Key * basket[item];
-                    else
-                        sum2 += item.Price * basket[item];
+                    if (output.ContainsKey(item) && rootDict.ContainsKey(item))
+                    {
+                        if (output[item].Key > rootDict[item].Key)
+                            output[item] = rootDict[item];
+                    }
+                    else if (rootDict.ContainsKey(item))
+                        output.Add(item, rootDict[item]);
                 }
-
-                if (sum1 > sum2)
-                    output = discountDict;
             }
-
             return output;
         }
 

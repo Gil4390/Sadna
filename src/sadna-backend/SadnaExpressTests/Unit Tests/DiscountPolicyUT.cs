@@ -97,7 +97,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.IsNull(items); 
+            Assert.AreEqual(0,items.Count); 
         }
         #endregion
         
@@ -125,7 +125,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.IsNull(items); //the cond not pass
+            Assert.AreEqual(0,items.Count); //the cond not pass
         }
         #endregion
         
@@ -152,7 +152,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.IsNull(items);
+            Assert.AreEqual(0,items.Count);
         }
         [TestMethod]
         public void CalculateAndPolicyTwoFail()
@@ -163,7 +163,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.IsNull(items);
+            Assert.AreEqual(0,items.Count);
         }
         #endregion
         
@@ -203,7 +203,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.IsNull(items);
+            Assert.AreEqual(0,items.Count);
         }
         #endregion
         
@@ -217,7 +217,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.IsNull(items);
+            Assert.AreEqual(0,items.Count);
         }
         [TestMethod]
         public void CalculateXorPolicyOneSuccess()
@@ -241,7 +241,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.IsNull(items);
+            Assert.AreEqual(0,items.Count);
         }
         #endregion
         
@@ -298,13 +298,13 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1, cond2, policy1); //if I buy more than 50 nis xor more than two ipad I get 20% on the items
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond3, policy2); //if I buy more than 50 nis and more than one bisli I get 20% on the items
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond3, policy2); //if I buy more than 50 nis and more than one bisli I get 50% on the bisli
             store.AddPolicy(xor);
             store.AddPolicy(and);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.AreEqual(8, items[store.GetItemById(item1)].Key); // changed
+            Assert.AreEqual(5, items[store.GetItemById(item1)].Key); // changed
             Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
@@ -312,17 +312,49 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateLongAddAndPolicy()
         {
             //Arrange
-            DiscountPolicy add = store.CreateComplexPolicy("add", policy1, policy2);
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1, cond2, policy3); 
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond3, xor); 
+            DiscountPolicy add = store.CreateComplexPolicy("add", policy1, policy2); //I have 70% on bisli and the rest 20%
+            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1, cond2, policy3); //if I buy more than 50 nis xor more than two ipad I get 50% on the "Food"
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond3, xor);  //if I buy more than 50 nis and more than one bisli
             store.AddPolicy(add);
             store.AddPolicy(and);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
             Assert.AreEqual(3, items[store.GetItemById(item1)].Key); // changed
-            Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
+            Assert.AreEqual(4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
+        }
+
+        [TestMethod]
+        public void CalculateTwoNotCommonPolicys()
+        {
+            //Arrange
+            DiscountPolicy add = store.CreateComplexPolicy("add", policy1, policy2); //I have 70% on bisli and the rest 20%
+
+            store.AddPolicy(policy4);
+            store.AddPolicy(add);
+            //Act
+            Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
+            //Assert
+            Assert.AreEqual(3, items[store.GetItemById(item1)].Key); // changed
+            Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
+            Assert.AreEqual(2800, items[store.GetItemById(item3)].Key); // changed
+        }
+
+        [TestMethod]
+        public void CalculateOneCondNotPolicys()
+        {
+            //Arrange
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond2, policy2); //I have 70% on bisli and the rest 20%
+            store.AddPolicy(policy4);
+            store.AddPolicy(and);
+            
+            //Act
+            Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
+            //Assert
+            Assert.IsFalse(items.ContainsKey(store.GetItemById(item1))); //not return
+            Assert.IsFalse(items.ContainsKey(store.GetItemById(item2))); //not return
+            Assert.AreEqual(2800, items[store.GetItemById(item3)].Key); // changed
         }
         #endregion
         
