@@ -357,9 +357,9 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetCurrent_Users();
         }
-        public ConcurrentDictionary<Guid, Member> GetMembers()
+        public ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID)
         {
-            return userManager.GetMembers();
+            return userManager.GetMembers(userID);
         }
         public ConcurrentDictionary<Guid , Store> GetStores()
         {

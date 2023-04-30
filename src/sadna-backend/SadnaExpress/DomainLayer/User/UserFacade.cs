@@ -455,9 +455,15 @@ namespace SadnaExpress.DomainLayer.User
             return current_Users;
         }
 
-        public ConcurrentDictionary<Guid, Member> GetMembers()
+        public ConcurrentDictionary<Guid, Member> GetMembers(Guid userID)
         {
-            return members;
+            if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
+            {
+                Logger.Instance.Info(userID, nameof(UserFacade)+": requested to display all members");
+                return members;
+            }
+
+            throw new Exception("Don't have permissions");
         }
 
         public ShoppingCart ShowShoppingCart(Guid userID)

@@ -57,7 +57,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
         ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
         ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID);//6.4
-        
+        ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID);
         void CleanUp();
         ResponseT<bool> InitializeTradingSystem(Guid userID);
         Response DeleteStore(Guid userID, Guid storeID);

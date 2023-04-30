@@ -205,6 +205,11 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetStorePurchases(userID, storeID);
         }
+        
+        public ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID)
+        {
+            return _realBridge.GetMembers(userID);
+        }
 
         public Response DeleteStore(Guid id, Guid storeID)
         {
