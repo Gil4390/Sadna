@@ -35,7 +35,7 @@ namespace SadnaExpress.DomainLayer.User
         bool InitializeTradingSystem(Guid userID);
         void CleanUp();
         ConcurrentDictionary<Guid, User> GetCurrent_Users();
-        ConcurrentDictionary<Guid, Member> GetMembers();
+        ConcurrentDictionary<Guid, Member> GetMembers(Guid userID);
         bool hasPermissions(Guid userId, Guid storeID, List<string> per);
         ShoppingCart ShowShoppingCart(Guid userID);
         void SetSecurityQA(Guid userID,string q, string a);

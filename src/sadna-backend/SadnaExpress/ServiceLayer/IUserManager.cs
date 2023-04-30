@@ -32,7 +32,7 @@ namespace SadnaExpress.ServiceLayer
         void CleanUp();
        
         ConcurrentDictionary<Guid, User> GetCurrent_Users();
-        ConcurrentDictionary<Guid, Member> GetMembers();
+        ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID);
         ResponseT<ShoppingCart> ShowShoppingCart(Guid userID);
         ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a);
 
