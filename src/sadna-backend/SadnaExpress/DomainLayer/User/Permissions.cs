@@ -106,12 +106,6 @@ namespace SadnaExpress.DomainLayer.User
             ((PromotedMember)manager).removePermission(storeID, permission);
         }
 
-        public void closeStore(int storeID)
-        {
-            throw new NotImplementedException();
-            //in the next version should send a message to all the employees
-        }
-
         public List<PromotedMember> GetEmployeeInfoInStore(Guid storeID, PromotedMember member)
         {
             List<PromotedMember> employees = new List<PromotedMember>();

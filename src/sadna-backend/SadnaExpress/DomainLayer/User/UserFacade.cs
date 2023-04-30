@@ -274,7 +274,7 @@ namespace SadnaExpress.DomainLayer.User
                 members[newOwnerID] = owner;
             }
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
-            notificationSystem.RegisterObserver(storeID,GetMember(userID));
+            notificationSystem.RegisterObserver(storeID,GetMember(newOwnerID));
         }
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)

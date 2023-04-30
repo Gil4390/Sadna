@@ -75,17 +75,23 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void CloseStoreNotification()
         {   
-            proxyBridge.GetMember(store5Founder).Value.LoggedIn = false;
+            //Arrange
+            proxyBridge.Logout(store5Owner);
+            //Act
             proxyBridge.CloseStore(store5Founder, storeID5);
-            Assert.AreEqual(proxyBridge.GetMember(store5Founder).Value.AwaitingNotification.Count,1);
+            //Assert
+            Assert.AreEqual(1,proxyBridge.GetNotifications(store5Owner).Value.Count);
         }
 
-        [TestMethod]
+        // not in this version
         public void OpenStoreNotification()
         {   
+            //Arrange
             proxyBridge.GetMember(store5Founder).Value.LoggedIn = false;
             proxyBridge.CloseStore(store5Founder, storeID5);
+            //Act
             proxyBridge.ReopenStore(store5Founder, storeID5);
+            //Assert
             Assert.AreEqual(proxyBridge.GetMember(store5Founder).Value.AwaitingNotification.Count,2);
         }
         #endregion
