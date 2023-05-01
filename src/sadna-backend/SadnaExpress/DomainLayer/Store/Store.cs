@@ -89,7 +89,7 @@ namespace SadnaExpress.DomainLayer.Store
             return itemsInventory.GetItemByQuantity(itemID);
         }
 
-        public DiscountPolicy.DiscountPolicy AddSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
+        public DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
         {
             SimpleDiscount<T> simpleDiscount = new SimpleDiscount<T>(level, percent, startDate, endDate);
             return simpleDiscount;
@@ -109,12 +109,12 @@ namespace SadnaExpress.DomainLayer.Store
             }
             
         }
-        public DiscountPolicy.DiscountPolicy AddComplexPolicy(string op, params object[] policys)
+        public DiscountPolicy.DiscountPolicy CreateComplexPolicy(string op, params object[] policys)
         {
             switch (op)
             {
                 case "xor":
-                    XorDiscount xor = new XorDiscount((DiscountPolicy.DiscountPolicy)policys[0], (DiscountPolicy.DiscountPolicy)policys[1]);
+                    XorDiscount xor = new XorDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
                     return xor;
                 case "and":
                     AndDiscount and = new AndDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
@@ -136,13 +136,18 @@ namespace SadnaExpress.DomainLayer.Store
             }
         }
 
-        public DiscountPolicyTree AddToTree(DiscountPolicy.DiscountPolicy discountPolicy)
+        public DiscountPolicyTree AddPolicy(DiscountPolicy.DiscountPolicy discountPolicy)
         {
             if (discountPolicyTree == null)
                 discountPolicyTree = new DiscountPolicyTree(discountPolicy);
             else
-                discountPolicyTree.Root = new AddDiscount(discountPolicyTree, discountPolicy);
+                discountPolicyTree.AddPolicy(discountPolicy);
             return discountPolicyTree;
+        }
+
+        public void RemovePolicy(DiscountPolicy.DiscountPolicy discountPolicy)
+        {
+            discountPolicyTree.RemovePolicy(discountPolicy);
         }
     }
 }
