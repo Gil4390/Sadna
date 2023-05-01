@@ -17,6 +17,9 @@ export function Store({ name }) {
       <Button variant="dark" onClick={() => navigate("/ManageStoreEmployeesPage")} style={{margin: "5px"}} >
         View Employees
       </Button>
+      <Button variant="dark" onClick={() => navigate("/PurchasedStoreItemsPage")} style={{margin: "5px"}} >
+        View Purchase History
+      </Button>
     </div>
   );
 }

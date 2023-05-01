@@ -5,7 +5,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigation, Footer} from "./components";
 import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPage, StoresManagementPage,
          AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage,
-         AdminInitializeSystemPage, PoliciesPage, ManageItemsPage, ManageStoreEmployeesPage } from "./pages";
+         AdminInitializeSystemPage, PoliciesPage, ManageItemsPage, ManageStoreEmployeesPage,
+        PurchasedItemsPage, PurchasedStoreItemsPage } from "./pages";
 import { ShoppingCartProvider } from "./context/CartContext";
 
 
@@ -41,7 +42,13 @@ const App:React.FC=()=>{
         <Route path="/about" element={<About id={id} isInit={isInit} />} />
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/RegisterPage" element={<RegisterPage />} />
+
         <Route path="/StoresManagementPage" element={<StoresManagementPage />} />
+        <Route path="/PurchasedItemsPage" element={<PurchasedItemsPage />} />
+        <Route path="/PoliciesPage" element={<PoliciesPage />} />
+        <Route path="/ManageStoreEmployeesPage" element={<ManageStoreEmployeesPage />} />
+        <Route path="/ManageItemsPage" element={<ManageItemsPage />} />
+        <Route path="/PurchasedStoreItemsPage" element={<PurchasedStoreItemsPage />} />
 
         <Route path="/AdminViewAllUsersPage" element={<AdminViewAllUsersPage />} />
         <Route path="/AdminManageAllStoresPage" element={<AdminManageAllStoresPage />} />
@@ -49,9 +56,6 @@ const App:React.FC=()=>{
         <Route path="/AdminManageComplaintsPage" element={<AdminManageComplaintsPage />} />
         <Route path="/AdminInitializeSystemPage" element={<AdminInitializeSystemPage />} />
         
-        <Route path="/PoliciesPage" element={<PoliciesPage />} />
-        <Route path="/ManageStoreEmployeesPage" element={<ManageStoreEmployeesPage />} />
-        <Route path="/ManageItemsPage" element={<ManageItemsPage />} />
       </Routes>
       <Footer />
 

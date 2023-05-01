@@ -30,6 +30,11 @@ function MemberNav(handleLogout) {
                 </NavLink>
               </li>
               <li className="nav-item">
+                <NavLink className="nav-link" to="/PurchasedItemsPage">
+                  Purchased-Items
+                </NavLink>
+              </li>
+              <li className="nav-item">
                 <NavLink className="nav-link" to="/StoresManagementPage">
                   Manage-Stores
                 </NavLink>
