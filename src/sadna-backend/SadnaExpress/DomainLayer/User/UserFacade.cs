@@ -232,8 +232,6 @@ namespace SadnaExpress.DomainLayer.User
             if (founder != null)
                 members[userID] = founder;
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
-
-
         }
 
     
@@ -318,7 +316,9 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             Member manager = IsMember(email);
 
-            members[userID].RemoveStoreManagerPermissions(storeID, manager,permission);
+            Member member = members[userID].RemoveStoreManagerPermissions(storeID, manager,permission);
+            if (member != null)
+                members[manager.UserId] = member;
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveStoreManagerPermissions)+"System removed "+userID+" manager permissions in store "+storeID+": "+permission);
         }
 
@@ -330,6 +330,22 @@ namespace SadnaExpress.DomainLayer.User
             return employees;
         }
 
+        public void RemoveUserMembership(Guid userID, string email)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+            if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
+            {
+                Member memberToRemove = IsMember(email);
+                if (memberToRemove.GetType() != typeof(Member))
+                {
+                    throw new Exception($"The user {email} has permissions, its illegal to remove him");
+                }
+                members.TryRemove(memberToRemove.UserId, out memberToRemove);
+                if (memberToRemove.LoggedIn)
+                    current_Users.TryAdd(userID, new User(memberToRemove));
+            }
+        }
         public void UpdateFirst(Guid userID, string newFirst)
         {
             IsTsInitialized();
@@ -469,7 +485,6 @@ namespace SadnaExpress.DomainLayer.User
         public ShoppingCart ShowShoppingCart(Guid userID)
         {
             IsTsInitialized();
-            isLoggedIn(userID);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(ShowShoppingCart)+" requested to display his shopping cart");
             if (current_Users.ContainsKey(userID))
                 return current_Users[userID].ShoppingCart;

@@ -39,6 +39,18 @@ namespace SadnaExpress.DomainLayer.User
             securityQuestions = new Dictionary<string, string>();
             awaitingNotification = new List<Notification>();
         }
+
+        public Member(PromotedMember promotedMember)
+        {
+            userId = promotedMember.userId;
+            email = promotedMember.email;
+            firstName = promotedMember.FirstName;
+            lastName = promotedMember.lastName;
+            password = promotedMember.Password;
+            LoggedIn = promotedMember.LoggedIn;
+            securityQuestions = promotedMember.SecurityQuestions;
+            awaitingNotification = promotedMember.awaitingNotification;
+        }
         public void addToAwaitingNotification(Notification notification) {
             this.awaitingNotification.Add(notification);
         }

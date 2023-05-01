@@ -96,14 +96,21 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
+        public Member RemoveStoreManagerPermissions(PromotedMember directManager, Guid storeID, Member manager, string permission)
         {
             lock (manager)
             {
                 if (!manager.hasPermissions(storeID, new List<string> { permission }))
                     throw new Exception($"The member {manager.Email} dosen't have the permission");
             }
-            ((PromotedMember)manager).removePermission(storeID, permission);
+            PromotedMember promanager = (PromotedMember)manager;
+            promanager.removePermission(storeID, permission);
+            if (promanager.Permission.Count == 0)
+            {
+                directManager.removeAppoint(storeID, promanager);
+                return new Member(promanager);
+            }
+            return null;
         }
 
         public List<PromotedMember> GetEmployeeInfoInStore(Guid storeID, PromotedMember member)

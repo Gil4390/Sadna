@@ -200,7 +200,11 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetEmployeeInfoInStore(id, storeID);
         }
-
+        
+        public Response RemoveUserMembership(Guid userID, string email)
+        {
+            return _realBridge.RemoveUserMembership(userID, email);
+        }
         public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
         {
             return _realBridge.GetStorePurchases(userID, storeID);
