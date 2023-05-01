@@ -25,13 +25,18 @@ namespace SadnaExpress.DomainLayer.User
          * get employees info
          * product management permissions
          */
-        public PromotedMember(Guid id, string email, string firstName, string lastName, string password) : base(id,
+        public PromotedMember(Guid id, string email, string firstName, string lastName, string password, ShoppingCart shoppingCart=null, bool login=false) : base(id,
             email, firstName, lastName, password)
         {
             directSupervisor = new ConcurrentDictionary<Guid, PromotedMember>();
             appoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
             permissions = new ConcurrentDictionary<Guid, List<string>>();
             permissionsHolder = Permissions.Instance;
+            LoggedIn = login;
+            if (shoppingCart == null)
+                ShoppingCart = new ShoppingCart();
+            else
+                ShoppingCart = shoppingCart;
         }
 
         public void createOwner(Guid storeID, PromotedMember directSupervisor)
@@ -126,10 +131,10 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("The member doesn’t have permissions to add new owner");
         }
 
-        public override void RemoveStoreOwner(Guid storeID, Member storeOwner)
+        public override List<Member> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "remove owner"}))
-                permissionsHolder.RemoveStoreOwner(storeID, this, storeOwner);
+                return permissionsHolder.RemoveStoreOwner(storeID, this, storeOwner);
             else
                 throw new Exception($"The member doesn’t have permissions to remove {storeOwner.Email}");
         }

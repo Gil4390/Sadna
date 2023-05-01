@@ -433,7 +433,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //error not occured 
-            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(store5Owner).Value));
+            Assert.AreNotEqual(typeof(PromotedMember), proxyBridge.GetMember(store5Owner).Value.GetType());
         }
         [TestMethod]
         [TestCategory("Concurrency")]
@@ -459,13 +459,15 @@ namespace SadnaExpressTests.Acceptance_Tests
             bool situation2 = clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured;
             Assert.IsTrue(situation1 || situation2);
             // check them both not employee in store
-            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(store5Owner).Value));
-            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(memberId).Value));
+            Assert.AreNotEqual(typeof(PromotedMember), proxyBridge.GetMember(store5Owner).Value.GetType());
+            Assert.AreNotEqual(typeof(PromotedMember), proxyBridge.GetMember(memberId).Value.GetType());
         }
         [TestMethod]
         [TestCategory("Concurrency")]
         public void StoreOwnerAddAppointWhileFounderRemoveHim_Good()
         {
+            Assert.AreEqual(typeof(PromotedMember), proxyBridge.GetMember(store5Owner).Value.GetType());
+
             Task<Response>[] clientTasks = new Task<Response>[] {
                 Task.Run(() =>
                 {
@@ -487,12 +489,15 @@ namespace SadnaExpressTests.Acceptance_Tests
             // check them both not employee in store
             if (situation1)
                 Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(memberId).Value));
-            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(store5Owner).Value));
+            Assert.AreNotEqual(typeof(PromotedMember), proxyBridge.GetMember(store5Owner).Value.GetType());
         }
+        
         [TestMethod]
         [TestCategory("Concurrency")]
         public void StoreOwnerAddItemWhileFounderRemoveHim_Good()
         {
+            Assert.AreEqual(typeof(PromotedMember), proxyBridge.GetMember(store5Owner).Value.GetType());
+
             Task<ResponseT<Guid>> task1 = Task.Run(() => {
                 return proxyBridge.AddItemToStore(store5Owner, storeID5, "bamba","food", 5, 3);
             });
@@ -519,7 +524,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             else
                 Assert.ThrowsException<Exception>(()=>proxyBridge.GetStore(storeID5).Value.GetItemById(task1.Result.Value));
             // in both of the situation he need to removed
-            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.GetEmployeeInfoInStore(storeID5).Contains((PromotedMember)proxyBridge.GetMember(store5Owner).Value));
+            Assert.AreNotEqual(typeof(PromotedMember), proxyBridge.GetMember(store5Owner).Value.GetType());
         }
         #endregion
         #region Appointing a new store manager 4.6

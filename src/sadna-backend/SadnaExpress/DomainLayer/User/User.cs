@@ -66,7 +66,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to close");
         }
-        public virtual void RemoveStoreOwner(Guid storeID, Member storeOwner)
+        public virtual List<Member> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             throw new Exception("The user unauthorised to remove store owner");
         }

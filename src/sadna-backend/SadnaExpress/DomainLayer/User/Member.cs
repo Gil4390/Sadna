@@ -48,6 +48,7 @@ namespace SadnaExpress.DomainLayer.User
             lastName = promotedMember.lastName;
             password = promotedMember.Password;
             LoggedIn = promotedMember.LoggedIn;
+            shoppingCart = promotedMember.ShoppingCart;
             securityQuestions = promotedMember.SecurityQuestions;
             awaitingNotification = promotedMember.awaitingNotification;
         }
@@ -57,7 +58,7 @@ namespace SadnaExpress.DomainLayer.User
         
         
         public PromotedMember promoteToMember() {
-            return new PromotedMember(UserId, email, firstName, lastName, password);
+            return new PromotedMember(UserId, email, firstName, lastName, password, shoppingCart, loggedIn);
         }
         public virtual PromotedMember openNewStore(Guid storeID)
         {
