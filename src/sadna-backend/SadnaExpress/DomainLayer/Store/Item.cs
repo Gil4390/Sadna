@@ -26,5 +26,10 @@ namespace SadnaExpress.DomainLayer.Store
             rating = 0;
             itemID = Guid.NewGuid(); 
         }
+        public bool Equals(Item item)
+        {
+            return item.name == name && item.itemID == itemID && item.category == category && item.price == price &&
+                   item.rating == rating;
+        }
     }
 }

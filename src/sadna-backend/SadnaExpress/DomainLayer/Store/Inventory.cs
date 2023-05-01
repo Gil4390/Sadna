@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
 namespace SadnaExpress.DomainLayer.Store
@@ -13,6 +14,12 @@ namespace SadnaExpress.DomainLayer.Store
         {
             items_quantity = new ConcurrentDictionary<Item, int>();
         }
+
+        public bool Equals(ConcurrentDictionary<Item, int> newItems_quantity)
+        {
+            return items_quantity.Count == newItems_quantity.Count && !items_quantity.Except(newItems_quantity).Any();
+        }
+        
         
         // name is unique
         public Item GetItemByName(string itemName, int minPrice, int maxPrice, string category, int ratingItem)
