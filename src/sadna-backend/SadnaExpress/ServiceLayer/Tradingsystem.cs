@@ -422,6 +422,11 @@ namespace SadnaExpress.ServiceLayer
             return userManager.GetNotifications(userID);
         }
 
+        // this functions needs to notify to offline members their notifications.
+        public void getNotificationsForOfflineMembers()
+        {
+            throw new NotImplementedException();
+        }
         public bool IsSystemInitialize()
         {
             return userManager.IsSystemInitialize();

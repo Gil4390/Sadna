@@ -284,6 +284,9 @@ namespace SadnaExpress.DomainLayer.User
             Guid storeOwnerID = IsMember(email).UserId;
             
             members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
+            notificationSystem.update(GetMember(storeOwnerID),"remove store owner",userID);
+            notificationSystem.RemoveObserver(storeID,GetMember(storeOwnerID));
+            
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +storeOwnerID +" removed as store owner");
         }
         public void AppointStoreManager(Guid userID, Guid storeID, string email)

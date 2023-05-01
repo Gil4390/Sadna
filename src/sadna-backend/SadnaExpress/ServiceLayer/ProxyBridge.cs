@@ -314,5 +314,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.IsSystemInitialize();
         }
+
+        public void getNotificationsForOfflineMembers()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

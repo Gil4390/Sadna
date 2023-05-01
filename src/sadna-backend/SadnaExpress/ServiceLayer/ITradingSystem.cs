@@ -81,6 +81,8 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Notification>> GetNotifications(Guid userID);
         bool IsSystemInitialize();
 
+        // this functions needs to notify to offline members their notifications.
+        public void getNotificationsForOfflineMembers();
 
     }
 }

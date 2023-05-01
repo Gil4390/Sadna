@@ -94,6 +94,18 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Assert
             Assert.AreEqual(proxyBridge.GetMember(store5Founder).Value.AwaitingNotification.Count,2);
         }
+        [TestMethod]
+        public void removeStoreOwnerNotification()
+        {   
+            //Arrange
+            proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
+            proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
+
+            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            //Assert
+            Assert.AreEqual(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification.Count,1);
+        }
+    
         #endregion
 
         #endregion
