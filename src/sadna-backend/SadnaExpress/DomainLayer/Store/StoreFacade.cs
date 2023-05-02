@@ -245,7 +245,7 @@ namespace SadnaExpress.DomainLayer.Store
         public void CleanUp()
         {
            stores.Clear();
-           _orders = null;
+           _orders.CleanUp();
            while (!reviews.IsEmpty)
            {
                reviews.TryTake(out _);

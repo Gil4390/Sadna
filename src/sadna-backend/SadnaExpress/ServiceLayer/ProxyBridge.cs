@@ -181,11 +181,6 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.RemoveStoreOwner(id, storeID, userEmail);
         }
 
-        public Response RemovetStoreManager(Guid id, Guid storeID, Guid userID)
-        {
-            return _realBridge.RemoveStoreManager(id, storeID, userID);
-        }
-
         public Response CloseStore(Guid id, Guid storeID)
         {
             return _realBridge.CloseStore(id, storeID);

@@ -354,7 +354,7 @@ namespace SadnaExpress.ServiceLayer
         }
         public void CleanUp()
         {
-            userFacade.CleanUp();
+            storeFacade.CleanUp();
         }
         public ConcurrentDictionary<Guid, Store> GetStores()
         {
