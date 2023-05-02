@@ -5,8 +5,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigation, Footer} from "./components";
 import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPage, StoresManagementPage,
          AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage,
-         AdminInitializeSystemPage, PoliciesPage, ManageItemsPage, ManageStoreEmployeesPage,
-        PurchasedItemsPage, PurchasedStoreItemsPage } from "./pages";
+         AdminInitializeSystemPage, ManageItemsPage, ManageStoreEmployeesPage, PurchasePoliciesPage,
+        DiscountPoliciesPage, PurchasedItemsPage, PurchasedStoreItemsPage } from "./pages";
 import { ShoppingCartProvider } from "./context/CartContext";
 
 
@@ -45,7 +45,8 @@ const App:React.FC=()=>{
 
         <Route path="/StoresManagementPage" element={<StoresManagementPage />} />
         <Route path="/PurchasedItemsPage" element={<PurchasedItemsPage />} />
-        <Route path="/PoliciesPage" element={<PoliciesPage />} />
+        <Route path="/DiscountPoliciesPage" element={<DiscountPoliciesPage />} />
+        <Route path="/PurchasePoliciesPage" element={<PurchasePoliciesPage />} />
         <Route path="/ManageStoreEmployeesPage" element={<ManageStoreEmployeesPage />} />
         <Route path="/ManageItemsPage" element={<ManageItemsPage />} />
         <Route path="/PurchasedStoreItemsPage" element={<PurchasedStoreItemsPage />} />
