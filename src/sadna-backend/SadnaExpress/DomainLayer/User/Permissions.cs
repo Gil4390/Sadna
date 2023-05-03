@@ -42,7 +42,7 @@ namespace SadnaExpress.DomainLayer.User
             return owner;
         }
 
-        public void RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
+        public List<Member> RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
         {            
             if (!member.hasPermissions(storeID, new List<string> {"owner permissions"}))
                 throw new Exception($"The member {member.Email} isn't owner");
@@ -51,6 +51,7 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception($"{directOwner.Email} isn't the direct owner of {storeOwner.Email}");
             // remove the appoints
             Stack<PromotedMember> stack = new Stack<PromotedMember>();
+            List<Member> regMembers = new List<Member>();
             stack.Push(storeOwner);
 
             while (stack.Count > 0)
@@ -63,9 +64,12 @@ namespace SadnaExpress.DomainLayer.User
                         stack.Push(child);
                 }
                 current.removeAllDictOfStore(storeID);
+                if (current.Permission.Count == 0)
+                    regMembers.Add(new Member(current));
             }
             //remove the owner from appoint
-            directOwner.removeAppoint(storeID, storeOwner); 
+            directOwner.removeAppoint(storeID, storeOwner);
+            return regMembers;
         }
         
         public PromotedMember AppointStoreManager(Guid storeID, PromotedMember directSupervisor, Member newManager)
@@ -96,14 +100,21 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
+        public Member RemoveStoreManagerPermissions(PromotedMember directManager, Guid storeID, Member manager, string permission)
         {
             lock (manager)
             {
                 if (!manager.hasPermissions(storeID, new List<string> { permission }))
                     throw new Exception($"The member {manager.Email} dosen't have the permission");
             }
-            ((PromotedMember)manager).removePermission(storeID, permission);
+            PromotedMember promanager = (PromotedMember)manager;
+            promanager.removePermission(storeID, permission);
+            if (promanager.Permission.Count == 0)
+            {
+                directManager.removeAppoint(storeID, promanager);
+                return new Member(promanager);
+            }
+            return null;
         }
 
         public List<PromotedMember> GetEmployeeInfoInStore(Guid storeID, PromotedMember member)

@@ -39,13 +39,26 @@ namespace SadnaExpress.DomainLayer.User
             securityQuestions = new Dictionary<string, string>();
             awaitingNotification = new List<Notification>();
         }
+
+        public Member(PromotedMember promotedMember)
+        {
+            userId = promotedMember.userId;
+            email = promotedMember.email;
+            firstName = promotedMember.FirstName;
+            lastName = promotedMember.lastName;
+            password = promotedMember.Password;
+            LoggedIn = promotedMember.LoggedIn;
+            shoppingCart = promotedMember.ShoppingCart;
+            securityQuestions = promotedMember.SecurityQuestions;
+            awaitingNotification = promotedMember.awaitingNotification;
+        }
         public void addToAwaitingNotification(Notification notification) {
             this.awaitingNotification.Add(notification);
         }
         
         
         public PromotedMember promoteToMember() {
-            return new PromotedMember(UserId, email, firstName, lastName, password);
+            return new PromotedMember(UserId, email, firstName, lastName, password, shoppingCart, loggedIn);
         }
         public virtual PromotedMember openNewStore(Guid storeID)
         {

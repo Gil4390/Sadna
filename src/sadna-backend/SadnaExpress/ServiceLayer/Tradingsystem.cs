@@ -308,6 +308,11 @@ namespace SadnaExpress.ServiceLayer
             return userManager.GetEmployeeInfoInStore(userID, storeID);
         }
 
+        public Response RemoveUserMembership(Guid userID, string email)
+        {
+            return userManager.RemoveUserMembership(userID, email);
+        }
+
         public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
         {
             return storeManager.GetStorePurchases(userID, storeID);

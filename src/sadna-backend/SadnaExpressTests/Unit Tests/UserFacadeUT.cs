@@ -16,10 +16,12 @@ namespace SadnaExpressTests.Unit_Tests
         private IUserFacade _userFacade;
         private Guid userId1;
         private Guid userId2;
-        private Guid storeID;
+        private Guid storeID = Guid.NewGuid();
         private ConcurrentDictionary<Guid, Member> members;
+        private Member member;
         private Guid memberid = Guid.NewGuid();
         private Guid systemManagerid = Guid.NewGuid();
+        private Guid founderid = Guid.NewGuid();
 
         #endregion
 
@@ -29,10 +31,17 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             members = new ConcurrentDictionary<Guid, Member>();
-            members.TryAdd(memberid, new Member(memberid, "AssiAzar@gmail.com", "shay", "kresner", "ShaY1787%$%"));
+            member = new Member(memberid, "AssiAzar@gmail.com", "shay", "kresner", "ShaY1787%$%");
+            members.TryAdd(memberid, member);
+            PromotedMember founder = new PromotedMember(founderid, "ani@gmail.com", "noga",
+                "schwartz", "ShaY1787%$%");
+            founder.createFounder(storeID);
+            founder.LoggedIn = true;
+            members.TryAdd(founderid, founder);
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga",
                 "schwartz", "ShaY1787%$%");
             systemManager.createSystemManager();
+            systemManager.LoggedIn = true;
             members.TryAdd(systemManagerid, systemManager);
             _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,
                 new ConcurrentDictionary<Guid, string>(), new PasswordHash(), new Mock_PaymentService(),
@@ -40,7 +49,6 @@ namespace SadnaExpressTests.Unit_Tests
             _userFacade.SetIsSystemInitialize(true);
             userId1 = _userFacade.Enter();
             userId2 = _userFacade.Enter();
-            storeID = Guid.NewGuid();
         }
 
         #endregion
@@ -261,7 +269,8 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.ThrowsException<Exception>(() =>
                 _userFacade.AppointStoreOwner(userId1, storeID, "nogaschw@gmail.com"));
         }
-
+        #endregion
+        
         #region Founder Tests
 
         [TestMethod]
@@ -418,6 +427,46 @@ namespace SadnaExpressTests.Unit_Tests
         }
 
         #endregion
+        
+        #region System Manager Tests
+
+        [TestMethod]
+        public void RemoveMemberSuccess()
+        {
+            //Arrange
+            member.LoggedIn = true;
+            //Act
+            _userFacade.RemoveUserMembership(systemManagerid, "AssiAzar@gmail.com");
+            //Assert
+            Assert.ThrowsException<Exception>(() =>
+                _userFacade.GetMember(memberid)); //member not exist
+            Assert.AreEqual(member.ShoppingCart, _userFacade.GetUser(memberid).ShoppingCart); //the shopping cart stay
+        }
+
+
+        [TestMethod]
+        public void RemoveStoreFounderFail()
+        {
+            //Assert
+            Assert.ThrowsException<Exception>(() =>_userFacade.RemoveUserMembership(systemManagerid, "ani@gmail.com"));
+        }
+
+        [TestMethod]
+        public void RemovePreviousManagerSuccess()
+        {
+            //Arrange
+            member.ShoppingCart.AddItemToCart(storeID, Guid.NewGuid(), 2);
+            member.LoggedIn = true;
+            _userFacade.AppointStoreOwner(founderid,storeID,"AssiAzar@gmail.com");            
+            _userFacade.RemoveStoreManagerPermissions(founderid,storeID,"AssiAzar@gmail.com", "owner permissions");
+            //Act
+            _userFacade.RemoveUserMembership(systemManagerid, "AssiAzar@gmail.com");
+            //Assert
+            Assert.ThrowsException<Exception>(() =>
+                _userFacade.GetMember(memberid)); //member not exist
+            Assert.AreEqual(member.ShoppingCart, _userFacade.GetUser(memberid).ShoppingCart); //the shopping cart stay
+        }
+        #endregion
 
         #region Register
 
@@ -436,7 +485,7 @@ namespace SadnaExpressTests.Unit_Tests
 
         #endregion
 
-        #endregion
+        
 
         #region CleanUp
 

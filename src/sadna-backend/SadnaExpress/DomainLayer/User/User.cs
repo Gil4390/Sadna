@@ -18,6 +18,11 @@ namespace SadnaExpress.DomainLayer.User
             userId = Guid.NewGuid();
             shoppingCart = new ShoppingCart();
         }
+        public User(Member member)
+        {
+            userId = member.userId;
+            shoppingCart = member.ShoppingCart;
+        }
         public void AddItemToCart(Guid storeID, Guid itemID, int itemAmount)
         {
             shoppingCart.AddItemToCart(storeID, itemID, itemAmount);
@@ -49,7 +54,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to remove permissions");
         }
-        public virtual void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
+        public virtual Member RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
             throw new Exception("The user unauthorised to remove permissions");
         }
@@ -61,7 +66,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to close");
         }
-        public virtual void RemoveStoreOwner(Guid storeID, Member storeOwner)
+        public virtual List<Member> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             throw new Exception("The user unauthorised to remove store owner");
         }

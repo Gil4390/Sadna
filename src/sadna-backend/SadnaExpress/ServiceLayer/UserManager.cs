@@ -80,7 +80,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(Login)+": "+ex.Message);
+                Logger.Instance.Error($"{userID} {email} {nameof(UserManager) }"+nameof(Login)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
@@ -181,7 +181,22 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<List<PromotedMember>>(ex.Message);
             }
         }
-        
+
+        public Response RemoveUserMembership(Guid userID, string email)
+        {
+            try
+            {
+                userFacade.RemoveUserMembership(userID, email);
+                Logger.Instance.Info($"User id: {userID} requested to removing user {email} membership");
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(RemoveUserMembership)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+
         public void CleanUp()
         {
             userFacade.CleanUp();
@@ -269,13 +284,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<ShoppingCart>(ex.Message);
             }
         }
-
-        public bool isLoggedIn(Guid userID)
-        {
-            return userFacade.isLoggedIn(userID);
-        }
-
-
+        
         public ResponseT<Guid> UpdateFirst(Guid userID, string newFirst)
         {
             try
@@ -360,6 +369,7 @@ namespace SadnaExpress.ServiceLayer
             try
             {
                 User user = userFacade.GetUser(userID);
+                Logger.Instance.Info(userID , nameof(UserManager)+": "+nameof(GetUser));
                 return new ResponseT<User>(user);
             }
             catch (Exception ex)
@@ -374,6 +384,7 @@ namespace SadnaExpress.ServiceLayer
             try
             {
                 Member member = userFacade.GetMember(userID);
+                Logger.Instance.Info(userID , nameof(UserManager)+": "+nameof(GetMember));
                 return new ResponseT<Member>(member);
             }
             catch (Exception ex)
