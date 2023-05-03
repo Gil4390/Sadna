@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.Services;
@@ -396,6 +397,51 @@ namespace SadnaExpress.ServiceLayer
             {
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStore) + ": " + ex.Message);
                 return new ResponseT<Item>(ex.Message);
+            }
+        }
+
+        public ResponseT<Condition> GetCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        {
+            try
+            {
+                Condition cond = storeFacade.GetCondition(store , entity,type,value,dt,entityRes , typeRes , valueRes);
+                return new ResponseT<Condition>(cond);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetCondition) + ": " + ex.Message);
+                return new ResponseT<Condition>(ex.Message);
+            }
+        }
+
+        public ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        {
+            try
+            {
+                Condition cond = storeFacade.GetCondition(store ,entity,type,value,dt,entityRes , typeRes , valueRes);
+                if (cond != null)
+                    return new ResponseT<Condition>(storeFacade.AddCondition(store, entity, type, value,dt, entityRes,
+                        typeRes, valueRes));
+                else
+                    return null;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(AddCondition) + ": " + ex.Message);
+                return new ResponseT<Condition>(ex.Message);
+            }
+        }
+
+        public void RemoveCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        {
+            try
+            {
+                Condition cond = storeFacade.GetCondition(store ,entity,type,value,dt,entityRes , typeRes , valueRes);
+                storeFacade.RemoveCondition(store ,cond);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemoveCondition) + ": " + ex.Message);
             }
         }
     }

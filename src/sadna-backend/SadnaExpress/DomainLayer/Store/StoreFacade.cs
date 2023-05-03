@@ -2,6 +2,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.ServiceLayer;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -336,6 +338,37 @@ namespace SadnaExpress.DomainLayer.Store
         public void SetTSOrders(IOrders orders)
         {
             _orders = orders;
+        }
+
+        public Condition GetCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        {
+            IsStoreExist(store);
+            Condition conditionToGet = GetStore(store).AddCondition(entity, type, value, dt);
+            if (entityRes != null)
+            {
+                conditionToGet =
+                    GetStore(store).AddConditioning(conditionToGet, entity as Item, typeRes, value);
+            }
+            return GetStore(store).GetCondition(conditionToGet);
+        }
+
+        public Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        {
+            IsStoreExist(store);
+            Condition newCond = GetStore(store).AddCondition(entity, type, value, dt);
+            if (entityRes != null)
+            {
+                ConditioningCondition newCondCond =
+                    GetStore(store).AddConditioning(newCond, entity as Item, typeRes, value);
+                return newCondCond;
+            }
+            return newCond;
+        }
+
+        public void RemoveCondition(Guid store ,Condition cond)
+        {
+            IsStoreExist(store);
+            GetStore(store).RemoveCondition(cond);
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -82,6 +83,11 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Notification>> GetNotifications(Guid userID);
         bool IsSystemInitialize();
 
-
+        ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value, DateTime dt=default, M entityRes = default,
+            string typeRes = default, double valueRes = default);
+        ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
+            string typeRes = default, double valueRes = default);
+        void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
+            string typeRes = default, double valueRes = default);
     }
 }

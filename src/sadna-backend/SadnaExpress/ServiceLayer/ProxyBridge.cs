@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -312,6 +313,24 @@ namespace SadnaExpress.ServiceLayer
         public bool IsSystemInitialize()
         {
             return _realBridge.IsSystemInitialize();
+        }
+
+        public ResponseT<Condition> GetCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
+            M entityRes = default, string typeRes = default, double valueRes = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<Condition> AddCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
+            M entityRes = default, string typeRes = default, double valueRes = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
+            M entityRes = default, string typeRes = default, double valueRes = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

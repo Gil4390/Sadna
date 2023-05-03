@@ -135,7 +135,7 @@ namespace SadnaExpress.DomainLayer.Store
             SimpleDiscount<T> simpleDiscount = new SimpleDiscount<T>(level, percent, startDate, endDate);
             return simpleDiscount;
         }
-        public Condition AddCondition<T>(T entity, string type, int val, DateTime dt=default)
+        public Condition AddCondition<T>(T entity, string type, double val, DateTime dt=default)
         {
             if (val < 0)
                 throw new Exception("value must be positive");

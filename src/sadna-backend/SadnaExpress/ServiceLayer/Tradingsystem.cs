@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.Services;
@@ -430,6 +431,24 @@ namespace SadnaExpress.ServiceLayer
         public bool IsSystemInitialize()
         {
             return userManager.IsSystemInitialize();
+        }
+
+        public ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes = default, string typeRes = default,
+            double valueRes = default)
+        {
+            return storeManager.GetCondition(store ,entity,type,value, dt,entityRes , typeRes , valueRes);
+        }
+
+        public ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes = default, string typeRes = default,
+            double valueRes = default)
+        {
+            return storeManager.AddCondition(store , entity,type,value,dt,entityRes , typeRes , valueRes);
+        }
+
+        public void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default, string typeRes = default,
+            double valueRes = default)
+        {
+            storeManager.RemoveCondition(store ,entity,type,value,dt ,entityRes , typeRes , valueRes);
         }
     }
 }

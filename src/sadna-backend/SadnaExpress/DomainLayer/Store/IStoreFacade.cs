@@ -3,6 +3,7 @@ using SadnaExpress.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -35,5 +36,8 @@ namespace SadnaExpress.DomainLayer.Store
         Store GetStore(Guid storeID);
         Item GetItemByID(Guid storeID, Guid itemID); //for tests
         void SetTSOrders(IOrders orders);
+        Condition GetCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
+        Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default,  M entityRes=default, string typeRes=default, double valueRes=default);
+        void RemoveCondition(Guid store ,Condition cond);
     }
 }
