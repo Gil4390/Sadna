@@ -120,6 +120,17 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return itemsInventory.PurchaseCart(items, ref itemForOrders, storeID);
         }
+        public bool CheckPurchasePolicy(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders)
+        {
+            Dictionary<Item, int> basket = new Dictionary<Item, int>();
+            foreach (Guid itemID in items.Keys)
+            {
+                basket.Add(GetItemById(itemID),items[itemID]);
+            }
+
+            return PurchasePolicy.Evaluate(this, basket);
+        }
+        
 
         public Item GetItemById(Guid itemID)
         {

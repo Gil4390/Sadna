@@ -106,8 +106,11 @@ namespace SadnaExpress.DomainLayer.Store
                     IsStoreExist(storeID); // not possible but still...
                     if (!stores[storeID].Active)
                         throw new Exception($"The store: {storeID} not active");
-                     sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders);
-                    storeUpdated.Add(storeID, items[storeID]);
+                    if (stores[storeID].CheckPurchasePolicy(items[storeID], ref itemForOrders))
+                    {
+                        sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders);
+                        storeUpdated.Add(storeID, items[storeID]);
+                    }
                 }
                 return sum;
             }
