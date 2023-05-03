@@ -33,20 +33,20 @@ function MemberNav(handleLogout) {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/AdminManageAllStoresPage">
-                  Manage-All-Stores
-                </NavLink>
-              </li>
-              <li className="nav-item">
                 <NavLink className="nav-link" to="/AdminViewAllPurchasesPage">
                   View-All-Purchases
                 </NavLink>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
+                <NavLink className="nav-link" to="/AdminManageAllStoresPage">
+                  Manage-All-Stores
+                </NavLink>
+              </li> */}
+              {/* <li className="nav-item">
                 <NavLink className="nav-link" to="/AdminManageComplaintsPage">
                   Manage-Complaints
                 </NavLink>
-              </li>
+              </li> */}
             </ul>
           </div>
 
