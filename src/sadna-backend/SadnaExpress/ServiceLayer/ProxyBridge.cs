@@ -315,6 +315,12 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.IsSystemInitialize();
         }
 
+        public ResponseT<Condition[]> GetAllConditions(Guid store)
+        {
+            throw new NotImplementedException();
+        }
+
+
         public ResponseT<Condition> GetCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
             M entityRes = default, string typeRes = default, double valueRes = default)
         {
@@ -329,6 +335,31 @@ namespace SadnaExpress.ServiceLayer
 
         public void RemoveCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
             M entityRes = default, string typeRes = default, double valueRes = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
         {
             throw new NotImplementedException();
         }
