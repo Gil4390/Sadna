@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
+import {ResponseT} from '../../models/Response.tsx';
+import { handleLogin } from '../../actions/GuestActions.tsx';
 
-function LoginPage() {
+
+function LoginPage(props) {
+
+  const [localId, setLocalId] = useState(props.id);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const [response, setResponse] = useState<ResponseT>();
+  const [message, setMessage] = useState<string>('');
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -13,9 +21,32 @@ function LoginPage() {
     setPassword(event.target.value);
   };
 
+  const LoginSuccess = () =>{
+    setEmail("");
+    setPassword("");
+    setMessage("Login completed successfully!");
+    setLocalId(response?.value);
+    props.onIdChange(response?.value);
+  }
+
+  useEffect(() => {
+    if(response !=undefined){
+      console.log("err? "+response?.errorOccured);
+      console.log("errmsg? "+response?.errorMessage);
+      response?.errorOccured ? setMessage(response?.errorMessage) : LoginSuccess();
+    }
+ }, [response])
+
   const handleLoginSubmit = (event) => {
     event.preventDefault();
     console.log(`Email: ${email}, Password: ${password}`);
+
+    handleLogin(props.id,email,password).then(
+      value => {
+        setResponse(value as ResponseT);
+      })
+      .catch(error => alert(error));
+    
     // do something with login credentials
   };
 
@@ -37,7 +68,9 @@ function LoginPage() {
               Log In
             </Button>
           </div>
-          
+          <div className="text-center">
+            {message}
+          </div>
         </Form>
       </Card.Body>
     </Card>

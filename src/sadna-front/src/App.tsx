@@ -9,29 +9,27 @@ import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPa
         DiscountPoliciesPage, PurchasedItemsPage, PurchasedStoreItemsPage, DiscountPoliciesCreatePage, DiscountPoliciesCompoundPage } from "./pages";
 import { ShoppingCartProvider } from "./context/CartContext";
 
-
 import { useEffect, useState } from 'react';
-// @ts-ignore
-import { GuestThunks } from './services/guest.thunk.ts';
-// @ts-ignore
-import { AdminThunks } from './services/admin.thunk.ts';
 import React from 'react';
+import { handleIsSystemInit, handleEnter } from './actions/GuestActions.tsx';
+
 
 const App:React.FC=()=>{
-  const [id, setid] = useState(null);
-  const [isInit, setisInit] = useState(null);
+  const [id, setid] = useState<string>("");
+  const [isInit, setisInit] = useState<boolean>(false);
+
+  const handleIdChange = (newId) => {
+    setid(newId);
+  }
 
   useEffect(() => {
-    setisInit(AdminThunks.IsSystemInitialize());
-   
-    setid(GuestThunks.Enter());
+    handleIsSystemInit().then(value => {setisInit(value);}).catch(error => alert(error));
+    handleEnter().then(value => {setid(value);}).catch(error => alert(error)); 
  }, [])
   
   console.log(id);
   console.log(isInit);
   return (
-    <ShoppingCartProvider>
-
       <Router>
         <Navigation />
         <Routes>
@@ -40,8 +38,8 @@ const App:React.FC=()=>{
         <Route path="/CartPage" element={<CartPage />} />
         <Route path="/PaymentPage" element={<PaymentPage />} />
         <Route path="/about" element={<About id={id} isInit={isInit} />} />
-        <Route path="/LoginPage" element={<LoginPage />} />
-        <Route path="/RegisterPage" element={<RegisterPage />} />
+        <Route path="/LoginPage" element={<LoginPage id={id} onIdChange={handleIdChange} isInit={isInit}/>} />
+        <Route path="/RegisterPage" element={<RegisterPage id={id} isInit={isInit}/>} />
 
         <Route path="/StoresManagementPage" element={<StoresManagementPage />} />
         <Route path="/PurchasedItemsPage" element={<PurchasedItemsPage />} />
@@ -63,8 +61,6 @@ const App:React.FC=()=>{
       <Footer />
 
       </Router>
-
-    </ShoppingCartProvider>
   );
 }
 

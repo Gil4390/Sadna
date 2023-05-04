@@ -84,7 +84,7 @@ return (
           <Form.Group>
               <Form.Label>Entity</Form.Label>
               <Form.Control
-                as="Select"
+                as="select"
                 value={EntityChoice}
                 onChange={(e) => setEntityChoice(e.target.value)}
               >
@@ -106,7 +106,7 @@ return (
             <Form.Group>
               <Form.Label>Which Condition</Form.Label>
               <Form.Control
-                as="Select"
+                as="select"
                 value={WhichCond}
                 onChange={(e) => setWhichCond(e.target.value)}
               >
@@ -142,7 +142,7 @@ return (
                     <Form.Group>
                       <Form.Label>Entity</Form.Label>
                       <Form.Control
-                        as="Select"
+                        as="select"
                         value={EntityChoice2}
                         onChange={(e) => setEntityChoice2(e.target.value)} >
                         <option>Store</option>
@@ -163,7 +163,7 @@ return (
                     <Form.Group>
                       <Form.Label>Which Condition</Form.Label>
                       <Form.Control
-                        as="Select"
+                        as="select"
                         value={WhichCond2}
                         onChange={(e) => setWhichCond2(e.target.value)}
                       >

@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import { Button, Modal, Table, Form } from "react-bootstrap";
 
+type Employee = {
+  firstName: string,
+  lastName: string,
+  permissions: string,
+}
+
 const ManageStoreEmployeesPage = () => {
-  const [employees, setEmployees] = useState([
+  const [employees, setEmployees] = useState<Employee[]>([
     { firstName: "John", lastName: "Doe", permissions: "Founder" },
     { firstName: "Jane", lastName: "Doe", permissions: "Manager" },
     { firstName: "Bob", lastName: "Smith", permissions: "Manager, addEmployees" },
   ]);
   const [showModal, setShowModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee|null>(null);
 
   const handleAddModalClose = () => setShowAddModal(false);
   const handleAddModalShow = () => setShowAddModal(true);
@@ -27,7 +33,7 @@ const ManageStoreEmployeesPage = () => {
 
   const handleModalSubmit = (permissions) => {
     const newEmployees = [...employees];
-    const index = newEmployees.indexOf(selectedEmployee);
+    const index = newEmployees.indexOf( {firstName: "John", lastName: "Doe", permissions: "Founder" });
     newEmployees[index].permissions = permissions;
     setEmployees(newEmployees);
     setShowModal(false);
@@ -36,10 +42,10 @@ const ManageStoreEmployeesPage = () => {
   const handleAddEmployee = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const newEmp = {
-      firstName: formData.get('firstName'),
-      LastName: formData.get('LastName'),
-      permissions: formData.get('permissions')
+    const newEmp : Employee= {
+      firstName: formData.get('firstName') as string,
+      lastName: formData.get('LastName') as string,
+      permissions: formData.get('permissions') as string
     };
     setEmployees([...employees, newEmp]);
     setShowAddModal(false);

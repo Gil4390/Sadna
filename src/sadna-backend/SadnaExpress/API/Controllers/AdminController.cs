@@ -9,7 +9,7 @@ using System.Web.Http.Description;
 
 namespace SadnaExpress.API.Controllers
 {
-    [RoutePrefix(APIConstants.AdminData.root)]
+    [RoutePrefix(APIConstants.ApiRoot + APIConstants.AdminData.root)]
     public class AdminController : ApiController
     {
         ITradingSystem tradingSystem;
@@ -24,7 +24,8 @@ namespace SadnaExpress.API.Controllers
         [HttpGet]
         public IHttpActionResult IsSystemInitialize()
         {
-            return Ok(tradingSystem.IsSystemInitialize());
+            bool res = tradingSystem.IsSystemInitialize();
+            return Ok(res);
         }
     }
 }
