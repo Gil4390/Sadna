@@ -15,11 +15,11 @@ export { default as AdminViewAllPurchasesPage } from "./Admin/AdminViewAllPurcha
 export { default as AdminManageComplaintsPage } from "./Admin/AdminManageComplaintsPage.tsx";
 export { default as AdminInitializeSystemPage } from "./Admin/AdminInitializeSystemPage.tsx";
 
-export { default as PurchasePoliciesPage } from "./Member/PurchasePoliciesPage";
-export { default as DiscountPoliciesCompoundPage } from "./Member/DiscountPoliciesCompoundPage";
-export { default as DiscountPoliciesCreatePage } from "./Member/DiscountPoliciesCreatePage";
-export { default as DiscountPoliciesPage } from "./Member/DiscountPoliciesPage";
-export { default as ManageStoreEmployeesPage } from "./Member/ManageStoreEmployeesPage";
-export { default as ManageItemsPage } from "./Member/ManageItemsPage";
+export { default as PurchasePoliciesPage } from "./Member/PurchasePoliciesPage.tsx";
+export { default as DiscountPoliciesCompoundPage } from "./Member/DiscountPoliciesCompoundPage.tsx";
+export { default as DiscountPoliciesCreatePage } from "./Member/DiscountPoliciesCreatePage.tsx";
+export { default as DiscountPoliciesPage } from "./Member/DiscountPoliciesPage.tsx";
+export { default as ManageStoreEmployeesPage } from "./Member/ManageStoreEmployeesPage.tsx";
+export { default as ManageItemsPage } from "./Member/ManageItemsPage.tsx";
 
 

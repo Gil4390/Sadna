@@ -7,7 +7,6 @@ import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPa
          AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage,
          AdminInitializeSystemPage, ManageItemsPage, ManageStoreEmployeesPage, PurchasePoliciesPage,
         DiscountPoliciesPage, PurchasedItemsPage, PurchasedStoreItemsPage, DiscountPoliciesCreatePage, DiscountPoliciesCompoundPage } from "./pages";
-import { ShoppingCartProvider } from "./context/CartContext";
 
 import { useEffect, useState } from 'react';
 import React from 'react';
