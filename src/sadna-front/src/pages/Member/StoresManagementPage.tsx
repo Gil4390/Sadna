@@ -8,7 +8,7 @@ const stores = [
   { id: 3, name: 'Store C', isOpne: true},
 ];
 
-function StoresManagementPage() {
+function StoresManagementPage(props) {
 
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -36,6 +36,7 @@ function StoresManagementPage() {
   };
 
   return (
+  <dev>
     <Container className="my-5">
       <h1>Stores Management</h1>
       <Row className="my-3">
@@ -73,6 +74,7 @@ function StoresManagementPage() {
         ))}
       </Row>
     </Container>
+    </dev>
   );
 }
 

@@ -16,8 +16,6 @@ export { default as AdminManageComplaintsPage } from "./Admin/AdminManageComplai
 export { default as AdminInitializeSystemPage } from "./Admin/AdminInitializeSystemPage.tsx";
 
 export { default as PurchasePoliciesPage } from "./Member/PurchasePoliciesPage.tsx";
-export { default as DiscountPoliciesCompoundPage } from "./Member/DiscountPoliciesCompoundPage.tsx";
-export { default as DiscountPoliciesCreatePage } from "./Member/DiscountPoliciesCreatePage.tsx";
 export { default as DiscountPoliciesPage } from "./Member/DiscountPoliciesPage.tsx";
 export { default as ManageStoreEmployeesPage } from "./Member/ManageStoreEmployeesPage.tsx";
 export { default as ManageItemsPage } from "./Member/ManageItemsPage.tsx";

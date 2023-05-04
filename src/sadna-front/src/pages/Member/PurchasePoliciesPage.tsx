@@ -1,9 +1,17 @@
 
 import { Container, ListGroup } from 'react-bootstrap';
 import React, { useState } from 'react';
-import { Button, Modal, Form } from 'react-bootstrap';
+import { Button, Modal, Form , Row, Col } from 'react-bootstrap';
+import { Condition } from '../../components/Condition';
+
 
 function PurchasePoliciesPage() {
+  const items = [
+    { id: 1 ,  entity:'Item' , entityID:11 , type:'min quantity' , value:0},
+  ];
+  const [allItems, setAllItems] = useState(items);
+
+
   const [showModal, setShowModal] = useState(false);
   const [entity, setEntity] = useState('');
   const [EntityChoice, setEntityChoice] = useState('');
@@ -44,11 +52,11 @@ return (
           <h5>Create New Store Policy</h5>
          </ListGroup>
          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <Button variant="primary" onClick={openModal} style={{ marginLeft: '10px' }}>
+      <Button variant="dark"  onClick={openModal} style={{ marginLeft: '10px' }}>
         Add Condition
       </Button>
        <span>                                               </span>
-      <Button onClick={handleButtonClick} style={{ marginLeft: '10px' }}>
+      <Button variant="dark" onClick={handleButtonClick} style={{ marginLeft: '10px' }}>
         Remove Condition
       </Button>
       {showTextbox && (
@@ -60,20 +68,13 @@ return (
       </div>
       <p></p>
 
-      <table className="table" style={{background: "white"}}>
-        <thead>
-          <tr>
-            <th>Number</th>
-            <th>Entity</th>
-            <th>ID</th>
-            <th>Term</th>
-            <th>Term Value</th>
-            <th>Operator on next Condition</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
+      <Row className="mt-3">
+          {allItems.map((item) => (
+            <Col sm={8} md={5} lg={4} xl={3} key={item.id} className="mt-3">
+              <Condition {...item}></Condition>
+            </Col>
+            ))}
+        </Row>
 
       <Modal show={showModal} onHide={closeModal}>
         <Modal.Header closeButton>
