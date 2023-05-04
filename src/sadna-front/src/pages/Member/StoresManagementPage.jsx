@@ -3,9 +3,9 @@ import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap'
 import { Store } from '../../components/Store';
 
 const stores = [
-  { id: 1, name: 'Store A'},
-  { id: 2, name: 'Store B'},
-  { id: 3, name: 'Store C'},
+  { id: 1, name: 'Store A', isOpne: true},
+  { id: 2, name: 'Store B', isOpne: true},
+  { id: 3, name: 'Store C', isOpne: true},
 ];
 
 function StoresManagementPage() {
@@ -24,6 +24,7 @@ function StoresManagementPage() {
     const newStore = {
       id: Math.max(...stores.map((store) => store.id)) + 1,
       name: formData.get('name'),
+      isOpne: true,
     };
     setstoresList([...storesList, newStore]);
     setShowAddModal(false);
@@ -65,7 +66,7 @@ function StoresManagementPage() {
           <Col xs={12} md={6} lg={4} key={store.id} className="my-3">
             <Card>
               <Card.Body>
-                <Store name={store.name} />
+                <Store store={store} />
               </Card.Body>
             </Card>
           </Col>
