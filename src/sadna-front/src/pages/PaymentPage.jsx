@@ -8,6 +8,8 @@ function PaymentPage() {
   const [cardHolderName, setCardHolderName] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
+  const [city, setCity] = useState('');
+  const [adress, setAdress] = useState('');
 
   const handleCardNumberChange = (event) => {
     setCardNumber(event.target.value);
@@ -23,6 +25,14 @@ function PaymentPage() {
 
   const handleCvvChange = (event) => {
     setCvv(event.target.value);
+  };
+
+  const handleCityChange = (event) => {
+    setCity(event.target.value);
+  };
+
+  const handleAdressChange = (event) => {
+    setAdress(event.target.value);
   };
 
   const handleSubmit = (event) => {
@@ -73,6 +83,31 @@ function PaymentPage() {
                 placeholder="Enter CVV"
                 value={cvv}
                 onChange={handleCvvChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col>
+            <Form.Group controlId="city">
+              <Form.Label>City</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter City"
+                value={city}
+                onChange={handleCityChange}
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="adress">
+              <Form.Label>Adress</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Adress"
+                value={adress}
+                onChange={handleAdressChange}
               />
             </Form.Group>
           </Col>
