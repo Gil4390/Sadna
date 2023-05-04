@@ -8,10 +8,10 @@ function AdminInitializeSystemPage() {
 
   return (
     <div className="AdminInitializeSystemPage">
-      <div class="container">
-        <div class="row align-items-center my-5">
-          <div class="col-lg-5">
-            <h2 class="font-weight-light">Admin Initialize System Page </h2>
+      <div className="container">
+        <div className="row align-items-center my-5">
+          <div className="col-lg-5">
+            <h2 className="font-weight-light">Admin Initialize System Page </h2>
             <p>
               <Button onClick={handleIntialize}>
                 Initialize System

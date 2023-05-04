@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, ListGroup, Button } from 'react-bootstrap';
-import { CartItem } from '../components/CartItem';
+import { CartItem } from '../components/CartItem.tsx';
 import { useNavigate } from "react-router-dom";
 
 function CartPage() {

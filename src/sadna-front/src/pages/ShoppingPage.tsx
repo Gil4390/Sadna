@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import { StoreItem } from '../components/StoreItem';
+import { StoreItem } from '../components/StoreItem.tsx';
+import SystemNotInit from './SystemNotInit.tsx';
 
 function ShoppingPage(props) {
 
@@ -64,7 +65,7 @@ function ShoppingPage(props) {
       <Container>
         <Row className="mt-3">
           <Col>
-            <Form inline onSubmit={handleSearchSubmit}>
+            <Form onSubmit={handleSearchSubmit}>
               <Row>
                 <Col sm={6}>
                   <Form.Control type="text" placeholder="Search" className="mr-sm-2" value={searchQuery} onChange={handleSearchQueryChange} />
@@ -123,10 +124,7 @@ function ShoppingPage(props) {
         </Row>
       </Container>
       
-    </div>):(<div><h1 class="font-weight-light">About</h1>
-            <p>
-              "system is not initialized"
-            </p></div>)
+    </div>):(<SystemNotInit/>)
   );
 }
 

@@ -25,7 +25,7 @@ const PurchasedStoreItemsPage = () => {
     <Container>
       <h1>Purchases</h1>
       <Table striped bordered hover>
-        <thead class="thead-dark">
+        <thead className="thead-dark">
           <tr>
             <th>User ID</th>
             <th>Item ID</th>

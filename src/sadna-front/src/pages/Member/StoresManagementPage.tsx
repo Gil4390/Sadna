@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
-import { Store } from '../../components/Store';
+import { Store } from '../../components/Store.tsx';
 
 const stores = [
   { id: 1, name: 'Store A', isOpne: true},
@@ -26,7 +26,7 @@ function StoresManagementPage() {
       name: formData.get('name'),
       isOpne: true,
     };
-    setstoresList([...storesList, newStore]);
+    //setstoresList([...storesList, newStore]);
     setShowAddModal(false);
   };
 
@@ -45,7 +45,7 @@ function StoresManagementPage() {
           </Button>
           <Modal show={showAddModal} onHide={handleAddModalClose}>
             <Modal.Header closeButton>
-              <h5 class="modal-title">Create New Store</h5>
+              <h5 className="modal-title">Create New Store</h5>
             </Modal.Header>
             <Modal.Body>
               <Form onSubmit={handleAddStore}>

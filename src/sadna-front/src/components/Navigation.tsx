@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { NavLink } from "react-router-dom";
-
-import { useShoppingCart } from "../context/CartContext";
-import GuestNav from './GuestNav';
-import MemberNav from './MemberNav';
-import AdminNav from './AdminNav';
+import GuestNav from './GuestNav.tsx';
+import MemberNav from './MemberNav.tsx';
+import AdminNav from './AdminNav.tsx';
 
 function Navigation() {
-  const { cartQuantity } = useShoppingCart()
-  const [UserType, setUserType] = useState("admin")
+  const [UserType, setUserType] = useState("guest")
 
   const handleLogout = () => {
     setUserType("guest");

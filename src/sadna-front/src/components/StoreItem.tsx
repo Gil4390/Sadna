@@ -1,14 +1,19 @@
-import React from "react";
+
+import React, { useState } from 'react';
 import { Button, Card } from "react-bootstrap"
-import { useShoppingCart } from "../context/CartContext";
 
 
 export function StoreItem({ id, name, price }) {
-  const {getItemQuantity,
-    increaseCartQuantity,
-    decreaseCartQuantity,
-    removeFromCart } = useShoppingCart()
-  const amountInCart = getItemQuantity(id)
+  // const {getItemQuantity,
+  //   increaseCartQuantity,
+  //   decreaseCartQuantity,
+  //   removeFromCart } = useShoppingCart()
+  const [amountInCart, setAmountInCart] = useState(0);
+  const getItemQuantity = (id) : number => {return 5;}
+  const increaseCartQuantity =(id) => {}
+  const decreaseCartQuantity =(id) => {}
+  const removeFromCart =(id) => {}
+  setAmountInCart(getItemQuantity(id));
   return (
     <Card className="h-100">
       <Card.Body className="d-flex flex-column">

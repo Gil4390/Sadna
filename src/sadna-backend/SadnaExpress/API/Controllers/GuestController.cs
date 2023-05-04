@@ -1,4 +1,5 @@
-﻿using SadnaExpress.API.Controllers;
+﻿using SadnaExpress.API.ClientRequests;
+using SadnaExpress.API.Controllers;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using System;
@@ -11,7 +12,7 @@ using System.Web.Http.Description;
 
 namespace SadnaExpress.API.Controllers
 {
-    [RoutePrefix(APIConstants.GuestData.root)]
+    [RoutePrefix(APIConstants.ApiRoot + APIConstants.GuestData.root)]
     public class GuestController : ApiController
     {
         ITradingSystem tradingSystem;
@@ -39,12 +40,21 @@ namespace SadnaExpress.API.Controllers
         }
 
         [Route(APIConstants.GuestData.register)]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
-        public IHttpActionResult Register(Guid userID, string email, string firstName, string lastName, string password)
+        public IHttpActionResult Register([FromBody] RegisterRequest request)
         {
-            tradingSystem.Register(userID, email, firstName, lastName, password);
-            return Ok();
+            Response res=tradingSystem.Register(request.userID, request.Email, request.FirstName, request.LastName, request.Password);
+            return Ok(res);
+        }
+
+        [Route(APIConstants.GuestData.login)]
+        [ResponseType(typeof(ResponseT<Guid>))]
+        [HttpPost]
+        public IHttpActionResult Login([FromBody] LoginRequest request)
+        {
+            ResponseT<Guid> res = tradingSystem.Login(request.userID, request.Email, request.Password);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.storeInfo)]

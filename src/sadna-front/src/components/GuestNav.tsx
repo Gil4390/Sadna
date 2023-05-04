@@ -41,7 +41,7 @@ function GuestNav() {
             style={{ width : "4rem",  height : "3rem", padding: "0.5px", position: "relative", background: "darkgray"}}
           >
             <img
-              class="img-fluid rounded mb-4 mb-lg-0"
+              className="img-fluid rounded mb-4 mb-lg-0"
               src={CartImg}
               alt="logo"
               style={{padding: "0px", transform: "translate(0%, 10%)"} }

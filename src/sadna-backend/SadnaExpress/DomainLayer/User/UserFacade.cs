@@ -117,7 +117,10 @@ namespace SadnaExpress.DomainLayer.User
             if (_isTSInitialized == false) //if user id not system manager and system is not initialized user cannot login
                 IsTSSystemManagerID(id);
 
-            if(current_Users.ContainsKey(id)==false)
+            if (members.ContainsKey(id) && members[id].LoggedIn)
+                throw new Exception($"Hi {members[id].FirstName} you are already logged in!");
+
+            if (current_Users.ContainsKey(id)==false)
                 throw new Exception("User should enter the system before logging in");
 
             email = email.ToLower();
@@ -127,11 +130,11 @@ namespace SadnaExpress.DomainLayer.User
                 {
                     if (!_ph.Rehash(password+macs[member.UserId], member.Password))
                     {
-                        throw new Exception(password + " is wrong password for email");
+                        throw new Exception("Incorrect email or password");
                     }
                     //correct email & password:
                     if (member.LoggedIn == true)
-                        throw new Exception("member is already logged in!");
+                        throw new Exception($"Hi {member.FirstName} you are already logged in!");
                     String internedKey = String.Intern(member.UserId.ToString());
 
                     lock (internedKey)
@@ -145,7 +148,7 @@ namespace SadnaExpress.DomainLayer.User
                         }
                         else
                         {
-                            throw new Exception(email +" doesn't exist");
+                            throw new Exception("Incorrect email or password");
                         }
                     }
                     Logger.Instance.Info($"{member} {member.Email} logged in");
@@ -154,7 +157,7 @@ namespace SadnaExpress.DomainLayer.User
                 }
             }
             //email not found
-            throw new Exception(email +" doesn't exist");
+            throw new Exception("Incorrect email or password");
         }
 
         public Guid Logout(Guid id)

@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
 
-const items = [
+type Item = {
+  id: number,
+  name: string,
+  price: number,
+  category : string,
+  quantity : number
+}
+
+const items:Item[] = [
   { id: 1, name: 'Item 1', price: 10, category: 'Category 1', quantity: 5 },
   { id: 2, name: 'Item 2', price: 20, category: 'Category 2', quantity: 10 },
   { id: 3, name: 'Item 3', price: 30, category: 'Category 3', quantity: 15 },
@@ -10,7 +18,7 @@ const items = [
 const ManageItemsPage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editedItem, setEditedItem] = useState(null);
+  const [editedItem, setEditedItem] = useState<Item>();
   const [itemsList, setItemsList] = useState(items);
 
   const handleAddModalClose = () => setShowAddModal(false);
@@ -22,35 +30,36 @@ const ManageItemsPage = () => {
     setShowEditModal(true);
   };
 
-  const handleAddItem = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const newItem = {
-      id: Math.max(...itemsList.map((item) => item.id)) + 1,
-      name: formData.get('name'),
-      price: formData.get('price'),
-      category: formData.get('category'),
-      quantity: formData.get('quantity'),
-    };
-    setItemsList([...itemsList, newItem]);
-    setShowAddModal(false);
-  };
+  const handleAddItem = (event) => {}
+  // const handleAddItem = (event) => {
+  //   event.preventDefault();
+  //   const formData = new FormData(event.target);
+  //   const newItem:Item = {
+  //     id: Math.max(...itemsList.map((item) => item.id)) + 1,
+  //     name: formData.get('name') as string,
+  //     price: parseInt(formData.get('price')),
+  //     category: formData.get('category') as string,
+  //     quantity: formData.get('quantity') as number,
+  //   };
+   // setItemsList([...itemsList, newItem]);
+    //setShowAddModal(false);
+  //};
 
   const handleEditItem = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const updatedItem = {
-      id: editedItem.id,
-      name: formData.get('name'),
-      price: formData.get('price'),
-      category: formData.get('category'),
-      quantity: formData.get('quantity'),
-    };
-    const updatedItemsList = itemsList.map((item) =>
-      item.id === editedItem.id ? updatedItem : item
-    );
-    setItemsList(updatedItemsList);
-    setShowEditModal(false);
+    // event.preventDefault();
+    // const formData = new FormData(event.target);
+    // const updatedItem = {
+    //   id: editedItem.id,
+    //   name: formData.get('name'),
+    //   price: formData.get('price'),
+    //   category: formData.get('category'),
+    //   quantity: formData.get('quantity'),
+    // };
+    // const updatedItemsList = itemsList.map((item) =>
+    //   item.id === editedItem.id ? updatedItem : item
+    // );
+    // setItemsList(updatedItemsList);
+    // setShowEditModal(false);
   };
 
   return (
@@ -92,7 +101,7 @@ const ManageItemsPage = () => {
 
       <Modal show={showAddModal} onHide={handleAddModalClose}>
         <Modal.Header closeButton>
-          <h5 class="modal-title">Add New Item</h5>
+          <h5 className="modal-title">Add New Item</h5>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAddItem}>
