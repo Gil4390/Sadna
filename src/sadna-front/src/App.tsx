@@ -6,7 +6,7 @@ import { Navigation, Footer} from "./components";
 import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPage, StoresManagementPage,
          AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage,
          AdminInitializeSystemPage, ManageItemsPage, ManageStoreEmployeesPage, PurchasePoliciesPage,
-        DiscountPoliciesPage, PurchasedItemsPage, PurchasedStoreItemsPage } from "./pages";
+        DiscountPoliciesPage, PurchasedItemsPage, PurchasedStoreItemsPage, DiscountPoliciesCreatePage, DiscountPoliciesCompoundPage } from "./pages";
 import { ShoppingCartProvider } from "./context/CartContext";
 
 
@@ -46,6 +46,8 @@ const App:React.FC=()=>{
         <Route path="/StoresManagementPage" element={<StoresManagementPage />} />
         <Route path="/PurchasedItemsPage" element={<PurchasedItemsPage />} />
         <Route path="/DiscountPoliciesPage" element={<DiscountPoliciesPage />} />
+        <Route path="/DiscountPoliciesCompoundPage" element={<DiscountPoliciesCompoundPage />} />
+        <Route path="/DiscountPoliciesCreatePage" element={<DiscountPoliciesCreatePage />} />
         <Route path="/PurchasePoliciesPage" element={<PurchasePoliciesPage />} />
         <Route path="/ManageStoreEmployeesPage" element={<ManageStoreEmployeesPage />} />
         <Route path="/ManageItemsPage" element={<ManageItemsPage />} />
