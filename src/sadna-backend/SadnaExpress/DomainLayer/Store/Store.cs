@@ -50,6 +50,8 @@ namespace SadnaExpress.DomainLayer.Store
             set => purchasePolicy = value;
         }
 
+        public List<Condition> PurchasePolicyList { get; set; }
+
         public int StoreRating
         {
             get => storeRating;
@@ -240,6 +242,11 @@ namespace SadnaExpress.DomainLayer.Store
             discountPolicyTree.RemovePolicy(discountPolicy);
         }
 
+        public void AddNewConditionToPurchasePolicy(Condition c)
+        {
+            PurchasePolicyList.Add(c);
+        }
+
         public void AddSimplePurchaseCondition(Condition newPurchasePolicy1,Condition newPurchasePolicy2=null , Operator _op = null)
         {
             if (purchasePolicy == null)
@@ -273,11 +280,6 @@ namespace SadnaExpress.DomainLayer.Store
                 if (searchCond2 != null)
                     return searchCond2;
             }
-            // if (cond.GetType() == typeof(ConditioningCondition))
-            // {
-            //     if (cond.Equals(tree))
-            //         
-            // }
             if (tree == null)
             {
                 if (cond.Equals(PurchasePolicy.cond1) || cond.Equals(PurchasePolicy.cond2))
@@ -291,28 +293,44 @@ namespace SadnaExpress.DomainLayer.Store
         {
             if (cond == null || PurchasePolicy == null)
             {
-                
+                throw new Exception("Condition now exists");
             }
-            else if (cond.GetType() == typeof(ComplexCondition))
+            if (cond.GetType() == typeof(ComplexCondition))
             {
                 if (tree == null)
                     tree = PurchasePolicy;
                 Condition searchCond1 = GetCondition(cond ,(ComplexCondition)tree.cond1);
                 if (searchCond1 != null)
+                {
                     tree.cond1 = null;
+                    PurchasePolicyList.Remove(searchCond1);
+                }
                 Condition searchCond2 = GetCondition(cond ,(ComplexCondition)tree.cond2);
                 if (searchCond2 != null)
+                {
                     tree.cond2 = null;
+                    PurchasePolicyList.Remove(searchCond2);
+                }
+
             }
             else if (tree == null)
             {
                 if (cond.Equals(PurchasePolicy.cond1))
+                {
+                    PurchasePolicyList.Remove(PurchasePolicy.cond1);
                     PurchasePolicy = null;
+                }
                 else if (cond.Equals(PurchasePolicy.cond2))
+                {
+                    PurchasePolicyList.Remove(PurchasePolicy.cond2);
                     PurchasePolicy.cond2 = null;
+                }
             }
             else if (cond.Equals(tree))
+            {
+                PurchasePolicyList = new List<Condition>();
                 PurchasePolicy = null;
+            }
         }
 
         public bool EvaluatePurchasePolicy(Store store, Dictionary<Item, int> basket)
@@ -320,6 +338,11 @@ namespace SadnaExpress.DomainLayer.Store
             if (purchasePolicy != null)
                 return purchasePolicy.Evaluate(store , basket);
             return true;
+        }
+
+        public Condition[] GetAllConditions()
+        {
+            return PurchasePolicyList.ToArray();
         }
     }
 }

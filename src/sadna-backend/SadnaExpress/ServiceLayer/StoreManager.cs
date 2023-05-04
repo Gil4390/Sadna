@@ -444,5 +444,82 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemoveCondition) + ": " + ex.Message);
             }
         }
+
+        public ResponseT<Condition[]> GetAllConditions(Guid store)
+        {
+            try
+            {
+                return new ResponseT<Condition[]>(storeFacade.GetAllConditions(store));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetAllConditions) + ": " + ex.Message);
+                return new ResponseT<Condition[]>(ex.Message);
+            }
+        }
+
+        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
+        {
+            try
+            {
+                return new ResponseT<Condition>(storeFacade.AddDiscountCondition(store, entity, type, value));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(AddDiscountCondition) + ": " + ex.Message);
+                return new ResponseT<Condition>(ex.Message);
+            }
+        }
+
+        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                return new ResponseT<DiscountPolicy>(storeFacade.CreateSimplePolicy(store, level, percent, startDate , endDate));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CreateSimplePolicy) + ": " + ex.Message);
+                return new ResponseT<DiscountPolicy>(ex.Message);
+            }
+        }
+
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, object[] policys)
+        {
+            try
+            {
+                return new ResponseT<DiscountPolicy>(storeFacade.CreateComplexPolicy(store, op , policys));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CreateComplexPolicy) + ": " + ex.Message);
+                return new ResponseT<DiscountPolicy>(ex.Message);
+            }
+        }
+
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy)
+        {
+            try
+            {
+                return new ResponseT<DiscountPolicyTree>(storeFacade.AddPolicy(store, discountPolicy));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(AddPolicy) + ": " + ex.Message);
+                return new ResponseT<DiscountPolicyTree>(ex.Message);
+            }
+        }
+
+        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
+        {
+            try
+            {
+                storeFacade.RemovePolicy(store, discountPolicy);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemovePolicy) + ": " + ex.Message);
+            }
+        }
     }
 }

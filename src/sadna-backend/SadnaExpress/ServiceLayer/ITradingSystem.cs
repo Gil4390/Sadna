@@ -83,11 +83,23 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Notification>> GetNotifications(Guid userID);
         bool IsSystemInitialize();
 
+        ResponseT<Condition[]> GetAllConditions(Guid store);
+
         ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value, DateTime dt=default, M entityRes = default,
             string typeRes = default, double valueRes = default);
         ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
             string typeRes = default, double valueRes = default);
         void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
             string typeRes = default, double valueRes = default);
+
+        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
+
+        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
+            DateTime endDate);
+
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys);
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
+        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
+
     }
 }

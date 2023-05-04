@@ -354,15 +354,45 @@ namespace SadnaExpress.DomainLayer.Store
             }
             return GetStore(store).GetCondition(conditionToGet);
         }
+        public Condition AddDiscountCondition<T>(Guid store ,T entity, string type, double value)
+        {
+            IsStoreExist(store);
+            Condition newCond = GetStore(store).AddCondition(entity, type, value);
+            return newCond;
+        }
+        public DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(Guid store ,T level, int percent, DateTime startDate, DateTime endDate)
+        {
+            IsStoreExist(store);
+            return GetStore(store).CreateSimplePolicy(level, percent, startDate, endDate);
+        }
+
+        public DiscountPolicy.DiscountPolicy CreateComplexPolicy(Guid store, string op, params object[] policys)
+        {
+            IsStoreExist(store);
+            return GetStore(store).CreateComplexPolicy(op, policys);
+        }
+        
+        public DiscountPolicyTree AddPolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy)
+        {
+            IsStoreExist(store);
+            return GetStore(store).AddPolicy(discountPolicy);
+        }
+        public void RemovePolicy(Guid store,DiscountPolicy.DiscountPolicy discountPolicy)
+        {
+            IsStoreExist(store);
+            GetStore(store).RemovePolicy(discountPolicy);
+        }
 
         public Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
         {
             IsStoreExist(store);
             Condition newCond = GetStore(store).AddCondition(entity, type, value, dt);
+            GetStore(store).AddNewConditionToPurchasePolicy(newCond);
             if (entityRes != null)
             {
                 ConditioningCondition newCondCond =
                     GetStore(store).AddConditioning(newCond, entity as Item, typeRes, value);
+                GetStore(store).AddNewConditionToPurchasePolicy(newCondCond);
                 return newCondCond;
             }
             return newCond;
@@ -372,6 +402,12 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsStoreExist(store);
             GetStore(store).RemoveCondition(cond);
+        }
+
+        public Condition[] GetAllConditions(Guid store)
+        {
+            IsStoreExist(store);
+            return GetStore(store).GetAllConditions();
         }
     }
 }
