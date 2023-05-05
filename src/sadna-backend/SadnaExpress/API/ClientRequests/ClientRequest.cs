@@ -36,13 +36,14 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class SearchItemRequest : ClientRequest
     {
-        public string ItemName { get; set; }
-        public string Category { get; set; }
+        //Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1
+        public string KeyWord { get; set; }
         public int MinPrice { get; set; }
         public int MaxPrice { get; set; }
         public int RatingItem { get; set; }
+        public string Category { get; set; }
         public int RatingStore { get; set; }
-        public string KeyWord { get; set; }
+       
     }
     public class PurchaseRequest : ClientRequest
     {

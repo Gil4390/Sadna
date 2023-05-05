@@ -41,7 +41,7 @@ const App:React.FC=()=>{
         <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/ShoppingPage" element={<ShoppingPage id={id} isInit={isInit} />} />
-        <Route path="/CartPage" element={<CartPage />} />
+        <Route path="/CartPage" element={<CartPage id={id} isInit={isInit}/>} />
         <Route path="/PaymentPage" element={<PaymentPage />} />
         <Route path="/about" element={<About id={id} isInit={isInit} />} />
         <Route path="/LoginPage" element={<LoginPage id={id} onIdChange={handleIdChange} isInit={isInit}/>} />

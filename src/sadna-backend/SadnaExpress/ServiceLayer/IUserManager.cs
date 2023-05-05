@@ -52,5 +52,6 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
 
         bool IsSystemInitialize();
+       
     }
 }

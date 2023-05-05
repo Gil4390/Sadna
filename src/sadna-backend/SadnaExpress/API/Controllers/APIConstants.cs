@@ -29,7 +29,7 @@ namespace SadnaExpress.API.Controllers
 
             public const string itemByCategory = "item-by-category";
 
-            public const string itemByKeysWord = "item-by-keys-word";
+            public const string searchItems = "search-items";
 
             public const string addItemCart = "add-item-cart";
 

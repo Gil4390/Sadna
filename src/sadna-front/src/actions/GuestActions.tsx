@@ -110,8 +110,9 @@ export function handleStoreInfo(storeID) {
         return Promise.resolve(data)
     })
 }
-export function handleItemByName(userID,itemName, minPrice, maxPrice, ratingItem, category, ratingStore) {
-    let url = "http://localhost:8080/api/guest/item-by-name";
+
+export function handleSearchItems(userID,keyWord="", minPrice=0, maxPrice=-1, ratingItem=-1, category="",ratingStore=-1) {
+    let url = "http://localhost:8080/api/guest/search-items";
 
     return fetch(url, {
         method: 'POST',
@@ -119,57 +120,11 @@ export function handleItemByName(userID,itemName, minPrice, maxPrice, ratingItem
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userID: userID,
-            minPrice:minPrice,
-            maxPrice:maxPrice,
-            ratingItem:ratingItem,
-            category : category,
-            ratingStore:ratingStore,
-            itemName:itemName
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-export function handleItemByCategory(userID,category, minPrice, maxPrice, ratingItem, ratingStore) {
-    let url = "http://localhost:8080/api/guest/item-by-category";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID: userID,
-            minPrice:minPrice,
-            maxPrice:maxPrice,
-            ratingItem:ratingItem,
-            category : category,
-            ratingStore:ratingStore,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-export function handleItemByKeyWord(userID,keyWord, minPrice=0, maxPrice=Number.MAX_VALUE, ratingItem=-1, ratingStore=-1) {
-    let url = "http://localhost:8080/api/guest/item-by-keys-word";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID: userID,
-            minPrice:minPrice,
-            maxPrice:maxPrice,
-            ratingItem:ratingItem,
             keyWord : keyWord,
+            minPrice:minPrice,
+            maxPrice:maxPrice,
+            ratingItem:ratingItem,
+            category : category,
             ratingStore:ratingStore,
         })
     }).then(async response => {
@@ -177,10 +132,10 @@ export function handleItemByKeyWord(userID,keyWord, minPrice=0, maxPrice=Number.
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
-export function handleAddItemCart(userID,storeID , itemID , itemAmount) {
+export function handleAddItemCart(userID,storeID , itemID , itemAmount=1) {
     let url = "http://localhost:8080/api/guest/add-item-cart";
 
     return fetch(url, {
@@ -201,7 +156,7 @@ export function handleAddItemCart(userID,storeID , itemID , itemAmount) {
         return Promise.resolve(data)
     })
 }
-export function handleRemoveItemCart(userID,storeID , itemID , itemAmount) {
+export function handleRemoveItemCart(userID,storeID , itemID) {
     let url = "http://localhost:8080/api/guest/rm-item-cart";
 
     return fetch(url, {
@@ -212,7 +167,7 @@ export function handleRemoveItemCart(userID,storeID , itemID , itemAmount) {
             userID: userID,
             storeID: storeID,
             itemID: itemID,
-            itemAmount : null
+            itemAmount : 0,
         })
     }).then(async response => {
         const data = await response.json();
@@ -258,7 +213,7 @@ export function handleGetDetailsOnCart(userID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 export function handlePurchaseCart(userID) {

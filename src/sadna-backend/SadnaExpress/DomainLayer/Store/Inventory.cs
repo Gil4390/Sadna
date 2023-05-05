@@ -58,9 +58,9 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 if (item.Name.ToLower().Contains(keyWords.ToLower()) && item.Price >= minPrice && item.Price <= maxPrice)
                 {
-                    if (ratingItem != -1 && item.Rating != ratingItem)
+                    if (ratingItem != -1 && item.Rating < ratingItem)
                         continue;
-                    if (category != null && item.Category != category)
+                    if (category != null && item.Category.ToLower().Contains(category.ToLower()) ==false)
                         continue;
                     items.Add(item);
                 }

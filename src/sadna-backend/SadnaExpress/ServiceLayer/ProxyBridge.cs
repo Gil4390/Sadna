@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.ServiceLayer.Obj;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -376,24 +377,14 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public ResponseT<ConcurrentDictionary<Guid, Store>> GetStores()
+        public ResponseT<List<SItem>> GetCartItems(Guid userID)
         {
-            throw new NotImplementedException();
+            return _realBridge.GetCartItems(userID);
         }
 
-        public ResponseT<List<Member>> GetStoreOwners()
+        public ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0, int maxPrice = int.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
-            throw new NotImplementedException();
-        }
-
-        public ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
-        {
-            throw new NotImplementedException();
+            return _realBridge.GetItemsForClient(userID, keyWords, minPrice, maxPrice, ratingItem, category, ratingStore);
         }
     }
 }

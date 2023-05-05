@@ -43,11 +43,6 @@ function RegisterPage(props) {
     setMessage("Registration completed successfully!");
   }
 
-//   useEffect(() => {
-//     if(message!='')
-//       alert(message);
-//  }, [message])
-
   useEffect(() => {
     if(response !=undefined){
       console.log("err? "+response?.errorOccured);
