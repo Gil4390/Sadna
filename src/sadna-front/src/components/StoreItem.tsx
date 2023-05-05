@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button, Card } from "react-bootstrap"
 
 
-export function StoreItem({ id, name, price }) {
+export function StoreItem({ id, name, price, rating }) {
   // const {getItemQuantity,
   //   increaseCartQuantity,
   //   decreaseCartQuantity,
@@ -20,7 +20,7 @@ export function StoreItem({ id, name, price }) {
         <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
           <span className="fs-2">{name}</span>
           <span className="ms-2 text-muted">{price} ₪</span>
-
+          <span className="ms-2 text-muted">{rating} ₪</span>
         </Card.Title>
         <Card.Text>
           <span className="ms-2 text-muted">items left: 5</span>
