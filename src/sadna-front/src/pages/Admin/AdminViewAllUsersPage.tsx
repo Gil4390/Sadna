@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'react-bootstrap';
 import { Member } from '../../models/User';
-import {Response} from '../../models/Response.tsx';
+import { handleGetAllMembers } from '../../actions/AdminActions';
 
 const AdminViewAllUsersPage = (props) => {
   const [members, setMembers] = useState<Member[]>([]);
