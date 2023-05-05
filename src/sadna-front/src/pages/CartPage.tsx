@@ -4,7 +4,7 @@ import { CartItem } from '../components/CartItem.tsx';
 import { useNavigate } from "react-router-dom";
 import { Item } from '../models/Shop.tsx';
 import SystemNotInit from './SystemNotInit.tsx';
-import { handleGetShoppingCart } from '../actions/GuestActions.tsx';
+import { handleGetDetailsOnCart } from '../actions/GuestActions.tsx';
 
 function CartPage(props) {
 
@@ -17,7 +17,7 @@ function CartPage(props) {
     setTotalPrice(price);
   }
   const getShoppingCartItems=()=>{
-    handleGetShoppingCart(props.id).then(
+    handleGetDetailsOnCart(props.id).then(
       value => {
         setCartItems(value as Item[]);
       })
