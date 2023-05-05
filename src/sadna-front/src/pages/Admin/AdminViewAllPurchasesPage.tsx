@@ -25,6 +25,8 @@ const purchasesData = [
 ];
 
 const AdminViewAllPurchasesPage = () => {
+  const [storeOrUser, setStoreOrUser] = useState('store');
+
   const [purchaseType, setPurchaseType] = useState('store');
   const purchases = purchasesData.filter(purchase => purchase.type === purchaseType);
 
