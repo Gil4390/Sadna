@@ -1,31 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'react-bootstrap';
+import { Member } from '../../models/User';
+import { handleGetAllMembers, handleRemoveUserMembership } from '../../actions/AdminActions.tsx';
 
-const AdminViewAllUsersPage = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john.doe@example.com', membershipType: 'member' },
-    { id: 2, name: 'Jane Doe', email: 'jane.doe@example.com', membershipType: 'guest' },
-    { id: 3, name: 'Bob Smith', email: 'bob.smith@example.com', membershipType: 'member' },
-    { id: 4, name: 'Alice Brown', email: 'alice.brown@example.com', membershipType: 'guest' },
-  ]);
+const AdminViewAllUsersPage = (props) => {
+  const [members, setMembers] = useState<Member[]>([]);
+
+
+  const getAllMembers = ()=>{
+    handleGetAllMembers(props.id).then(
+      value => {
+        setMembers(value as Member[]);
+      })
+      .catch(error => alert(error));
+  }
 
   useEffect(() => {
-    // const fetchUsers = async () => {
-    //   const response = await fetch('/api/users');
-    //   const data = await response.json();
-    //   setUsers(data);
-    // };
-
-    // fetchUsers();
+    getAllMembers();
   }, []);
 
-  const handleRemoveUser = async (userId) => {
-    // Send a request to API to remove user
-    const response = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
-    if (response.ok) {
-      // If user was removed successfully, update the state
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-    }
+  const handleClickRemoveMember = (memberEmail) => {
+    handleRemoveUserMembership(props.id, memberEmail).then(
+      value => {
+        getAllMembers();
+      })
+      .catch(error => alert(error));
   };
 
   return (
@@ -33,25 +32,26 @@ const AdminViewAllUsersPage = () => {
       <thead>
         <tr>
           <th>User ID</th>
-          <th>Name</th>
+          <th>First Name</th>
+          <th>Last Name</th>
           <th>Email</th>
-          <th>Membership Type</th>
-          <th>Actions</th>
+          <th>LoggedIn</th>
+          <th>Permissions</th>
         </tr>
       </thead>
       <tbody>
-        {users.map((user) => (
-          <tr key={user.id}>
-            <td>{user.id}</td>
-            <td>{user.name}</td>
-            <td>{user.email}</td>
-            <td>{user.membershipType}</td>
+        {members.map((member) => (
+          <tr key={member.id}>
+            <td>{member.id}</td>
+            <td>{member.firstName}</td>
+            <td>{member.lastName}</td>
+            <td>{member.email}</td>
+            <td>{member.loggedIn}</td>
+            <td>{member.permissions}</td>
             <td>
-              {user.membershipType === 'member' && (
-                <Button variant="danger" onClick={() => handleRemoveUser(user.id)}>
-                  Remove
-                </Button>
-              )}
+              <Button variant="danger" onClick={() => handleClickRemoveMember(member.email)}>
+                Remove
+              </Button>
             </td>
           </tr>
         ))}

@@ -1,9 +1,10 @@
 import React from "react";
 import { Button } from "react-bootstrap";
+import { handleInitializeSystem } from "../../actions/AdminActions.tsx";
 
-function AdminInitializeSystemPage() {
-  const handleIntialize = () => {
-    //request server
+function AdminInitializeSystemPage(props) {
+  const handleClickIntialize = () => {
+    handleInitializeSystem(props.id);
   };
 
   return (
@@ -13,7 +14,7 @@ function AdminInitializeSystemPage() {
           <div className="col-lg-5">
             <h2 className="font-weight-light">Admin Initialize System Page </h2>
             <p>
-              <Button onClick={handleIntialize}>
+              <Button onClick={handleClickIntialize}>
                 Initialize System
               </Button>
             </p>
