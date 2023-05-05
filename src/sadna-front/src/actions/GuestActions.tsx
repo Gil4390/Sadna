@@ -139,7 +139,7 @@ export function handleItemByCategory(userID,category, minPrice, maxPrice, rating
         return Promise.resolve(data)
     })
 }
-export function handleItemByWord(userID,category, minPrice, maxPrice, ratingItem, ratingStore) {
+export function handleItemByKeyWord(userID,keyWord, minPrice=0, maxPrice=Number.MAX_VALUE, ratingItem=-1, ratingStore=-1) {
     let url = "http://localhost:8080/api/guest/item-by-keys-word";
 
     return fetch(url, {
@@ -151,7 +151,7 @@ export function handleItemByWord(userID,category, minPrice, maxPrice, ratingItem
             minPrice:minPrice,
             maxPrice:maxPrice,
             ratingItem:ratingItem,
-            category : category,
+            keyWord : keyWord,
             ratingStore:ratingStore,
         })
     }).then(async response => {

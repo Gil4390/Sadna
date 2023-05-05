@@ -16,9 +16,16 @@ import { handleIsSystemInit, handleEnter } from './actions/GuestActions.tsx';
 const App:React.FC=()=>{
   const [id, setid] = useState<string>("");
   const [isInit, setisInit] = useState<boolean>(false);
+  const [userType, setUserType] = useState("guest");
 
   const handleIdChange = (newId) => {
     setid(newId);
+    setUserType("member");
+  }
+
+  const handleLogout = (newId) => {
+    setid(newId);
+    setUserType("guest");
   }
 
   useEffect(() => {
@@ -30,7 +37,7 @@ const App:React.FC=()=>{
   console.log(isInit);
   return (
       <Router>
-        <Navigation />
+        <Navigation id={id} userType={userType} onLogout={handleLogout}/>
         <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/ShoppingPage" element={<ShoppingPage id={id} isInit={isInit} />} />

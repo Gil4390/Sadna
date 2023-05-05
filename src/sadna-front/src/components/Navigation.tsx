@@ -4,11 +4,12 @@ import GuestNav from './GuestNav.tsx';
 import MemberNav from './MemberNav.tsx';
 import AdminNav from './AdminNav.tsx';
 
-function Navigation() {
-  const [UserType, setUserType] = useState("guest")
+function Navigation(props) {
+ 
 
   const handleLogout = () => {
-    setUserType("guest");
+    //calling to server
+    props.onLogout();
   }
 
   return (
@@ -23,11 +24,11 @@ function Navigation() {
               
               <div>
 
-              {UserType === 'guest' ? (
+              {props.userType === 'guest' ? (
                 <div>
                   <GuestNav />
                 </div>
-                ) : UserType === 'admin' ? (
+                ) : props.userType === 'admin' ? (
                   <div>
                     <AdminNav handleLogout={handleLogout}/>
                   </div>

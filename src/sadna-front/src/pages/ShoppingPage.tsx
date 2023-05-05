@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { StoreItem } from '../components/StoreItem.tsx';
 import SystemNotInit from './SystemNotInit.tsx';
+import { handleItemByKeyWord } from '../actions/GuestActions.tsx';
+import {Item} from '../models/Shop.tsx';
 
 function ShoppingPage(props) {
+  const [allItems, setAllItems] = useState<Item[]>([]);
 
-  const items = [
-    { id: 1, name: 'Product 1', price: 10.99 },
-    { id: 2, name: 'Product 2', price: 19.99 },
-    { id: 3, name: 'Product 3', price: 5.99 },
-    { id: 4, name: 'Product 4', price: 29.99 },
-    { id: 5, name: 'Product 5', price: 9.99 },
-    { id: 6, name: 'Product 6', price: 9.99 },
-    { id: 7, name: 'Product 7', price: 9.99 },
-    { id: 8, name: 'Product 8', price: 9.99 },
-    { id: 9, name: 'Product 9', price: 9.99 },
-  ];
+  const getAllItems =()=>{
+    handleItemByKeyWord(props.id,"").then(
+      value => {
+       setAllItems(value as Item[]);
+      })
+      .catch(error => alert(error));
+  }
 
-  const [allItems, setAllItems] = useState(items);
-  //get request with all items
+  useEffect(() => {
+    getAllItems();
+ }, [])
 
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState('product');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
+  const [minPrice, setMinPrice] = useState<number>();
+  const [maxPrice, setMaxPrice] = useState<number>();
   const [minStoreRating, setMinStoreRating] = useState('');
   const [minItemRating, setMinItemRating] = useState('');
 
@@ -116,7 +116,7 @@ function ShoppingPage(props) {
           </Col>
         </Row>
         <Row className="mt-3">
-          {allItems.map((item) => (
+          {allItems.length===0? (<div>  No Items </div>): allItems.map((item) => (
             <Col sm={8} md={5} lg={4} xl={3} key={item.id} className="mt-3">
               <StoreItem {...item} />
             </Col>
