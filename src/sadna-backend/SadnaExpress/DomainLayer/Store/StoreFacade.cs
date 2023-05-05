@@ -395,6 +395,19 @@ namespace SadnaExpress.DomainLayer.Store
 
         }
 
+        public List<Item> GetItemsInStore(Guid storeId)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeId);
+            List<Item> items = new List<Item>();
+            foreach (Item item in GetStore(storeId).itemsInventory.items_quantity.Keys)
+            {
+                item.Quantity = GetStore(storeId).itemsInventory.items_quantity[item];
+                items.Add(item);
+            }
+            return items;
+        }
+
         public Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
         {
             IsStoreExist(store);

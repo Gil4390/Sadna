@@ -46,5 +46,6 @@ namespace SadnaExpress.DomainLayer.Store
         DiscountPolicyTree AddPolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy); 
         void RemovePolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy);
         void EditItem(Guid userId, Guid storeId,Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
+        List<Item> GetItemsInStore(Guid storeId);
     }
 }

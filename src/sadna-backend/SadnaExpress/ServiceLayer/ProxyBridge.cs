@@ -390,5 +390,10 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
+
+        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

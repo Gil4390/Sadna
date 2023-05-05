@@ -410,6 +410,11 @@ namespace SadnaExpress.ServiceLayer
             return userManager.GetStoreOwnerOfStores(stores);
         }
 
+        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
+        {
+            return storeManager.GetItemsInStore(storeId);
+        }
+
         public void SetPaymentService(IPaymentService paymentService)
         {
             userManager.SetPaymentService(paymentService);

@@ -118,6 +118,8 @@ namespace SadnaExpress.API.Controllers
             public const string removePolicy = "rm-policy";
             
             public const string getNotifications = "get-notifications";
+            
+            public const string getItems = "get-items";
 
 
         }

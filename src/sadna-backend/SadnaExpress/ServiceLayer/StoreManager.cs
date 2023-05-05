@@ -537,5 +537,18 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
+
+        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
+        {
+            try
+            {
+                return new ResponseT<List<Item>>(storeFacade.GetItemsInStore(storeId));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetItemsInStore) + ": " + ex.Message);
+                return new ResponseT<List<Item>>(ex.Message);
+            }
+        }
     }
 }
