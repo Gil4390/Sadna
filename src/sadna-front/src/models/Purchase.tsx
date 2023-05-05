@@ -1,22 +1,18 @@
-export interface UserPurchase { 
-  userId: string,
-  items: ItemUserPurchase[],
-};
-export interface ItemUserPurchase {
-  ItemId: string,
-  storeId: string,
-  price: number,
-  quantity: number,
+export interface Orders { 
+  orders: Map<string, Order[]>
 };
 
-
-export interface StorePurchase {
-  storeId: string,
-  items: ItemStorePurchase[],
+export interface Order { 
+  order: ItemForOrder[],
 };
-export interface ItemStorePurchase {
+
+export interface ItemForOrder {
   ItemId: string,
-  userId: string,
+  storeId: string,
+  name: string,
+  category: string,
   price: number,
-  quantity: number,
+  rating: number,
+  userEmail: string,
+  storeName: string,
 };
