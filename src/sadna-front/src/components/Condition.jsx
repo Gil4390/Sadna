@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Card } from "react-bootstrap"
 
-export function Condition ({id , entity , entityID , type , value  ,op  , entityRes=null , entityIDRes=null , typeRes=null , valueRes=null , opCond=null })
+export function Condition ({id , entity , entityID , type , value  ,op=null , entityRes=null , entityIDRes=null , typeRes=null , valueRes=null , opCond=null })
 {
     return (
         <Card className="h-100">

@@ -74,3 +74,190 @@ export function handleLogin(userId, email , password) {
         return Promise.resolve(data)
     })
 }
+export function handleStoreInfo(storeID) {
+    let url = "http://localhost:8080/api/guest/store-info";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            storeID: storeID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+export function handleItemByName(userID,itemName, minPrice, maxPrice, ratingItem, category, ratingStore) {
+    let url = "http://localhost:8080/api/guest/item-by-name";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            minPrice:minPrice,
+            maxPrice:maxPrice,
+            ratingItem:ratingItem,
+            category : category,
+            ratingStore:ratingStore,
+            itemName:itemName
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+export function handleItemByCategory(userID,category, minPrice, maxPrice, ratingItem, ratingStore) {
+    let url = "http://localhost:8080/api/guest/item-by-category";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            minPrice:minPrice,
+            maxPrice:maxPrice,
+            ratingItem:ratingItem,
+            category : category,
+            ratingStore:ratingStore,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+export function handleItemByWord(userID,category, minPrice, maxPrice, ratingItem, ratingStore) {
+    let url = "http://localhost:8080/api/guest/item-by-keys-word";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            minPrice:minPrice,
+            maxPrice:maxPrice,
+            ratingItem:ratingItem,
+            category : category,
+            ratingStore:ratingStore,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+export function handleAddItemCart(userID,storeID , itemID , itemAmount) {
+    let url = "http://localhost:8080/api/guest/add-item-cart";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            storeID: storeID,
+            itemID: itemID,
+            itemAmount : itemAmount
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+export function handleRemoveItemCart(userID,storeID , itemID , itemAmount) {
+    let url = "http://localhost:8080/api/guest/rm-item-cart";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            storeID: storeID,
+            itemID: itemID,
+            itemAmount : null
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+export function handleEditItemCart(userID,storeID , itemID , itemAmount) {
+    let url = "http://localhost:8080/api/guest/edit-item-cart";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            storeID: storeID,
+            itemID: itemID,
+            itemAmount : itemAmount
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+export function handleGetShoppingCart(userID) {
+    let url = "http://localhost:8080/api/guest/shopping-cart";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+export function handlePurchaseCart(userID) {
+    let url = "http://localhost:8080/api/guest/purchase-cart";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}

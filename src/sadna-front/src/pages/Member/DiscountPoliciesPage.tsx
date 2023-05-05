@@ -204,7 +204,7 @@ return (
             </Form.Group>
             <Form.Group>
             <Form.Control
-                as="Select"
+                as="select"
                 value={policy1_3}
                 onChange={(e) => setPolicy_1(e.target.value)}
               >
@@ -218,7 +218,7 @@ return (
       <div style={styles.form}>
       <Form.Group>
               <Form.Control
-                as="Select"
+                as="select"
                 value={cond2_2}
                 onChange={(e) => setCond2_2(e.target.value)}
               >
@@ -227,7 +227,7 @@ return (
             </Form.Group>
             <Form.Group>
             <Form.Control
-                as="Select"
+                as="select"
                 value={policy_2}
                 onChange={(e) => setPolicy_2(e.target.value)}
               >
@@ -241,7 +241,7 @@ return (
       <div style={styles.form}>
       <Form.Group>
               <Form.Control
-                as="Select"
+                as="select"
                 value={policy1_3}
                 onChange={(e) => setPolicy1_3(e.target.value)}
               >
@@ -250,7 +250,7 @@ return (
             </Form.Group>
             <Form.Group>
             <Form.Control
-                as="Select"
+                as="select"
                 value={policy2_3}
                 onChange={(e) => setPolicy2_3(e.target.value)}
               >

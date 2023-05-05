@@ -49,8 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\ClientRequests\ClientRequest.cs" />
-    <Compile Include="API\ClientRequests\LoginRequest.cs" />
-    <Compile Include="API\ClientRequests\RegisterRequest.cs" />
     <Compile Include="API\Controllers\AdminController.cs" />
     <Compile Include="API\Controllers\APIConstants.cs" />
     <Compile Include="API\Controllers\GuestController.cs" />
