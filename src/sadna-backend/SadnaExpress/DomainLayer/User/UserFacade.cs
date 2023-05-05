@@ -8,6 +8,7 @@ using SadnaExpress.DomainLayer.Store;
 using System.Security.Cryptography.X509Certificates;
 using SadnaExpress.ServiceLayer;
 using System.Threading.Tasks;
+using NodaTime;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -712,6 +713,62 @@ namespace SadnaExpress.DomainLayer.User
         public bool IsSystemInitialize()
         {
             return _isTSInitialized;
+        }
+
+        public int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID)
+        {
+            if (current_Users.ContainsKey(userID))
+                return current_Users[userID].ShoppingCart.GetItemQuantityInCart(storeID,itemID);
+            if (isLoggedIn(userID))
+                return members[userID].ShoppingCart.GetItemQuantityInCart(storeID, itemID);
+
+            throw new Exception("User with id " + userID + " does not exist");
+        }
+
+        public void LoadData(Guid storeid1, Guid storeid2)
+        {
+            Guid systemManagerid = Guid.NewGuid();
+            Guid memberId = Guid.NewGuid();
+            Guid memberId2 = Guid.NewGuid();
+            Guid memberId3 = Guid.NewGuid();
+            Guid memberId4 = Guid.NewGuid();
+            Guid storeOwnerid1 = Guid.NewGuid();
+            Guid storeOwnerid2 = Guid.NewGuid();
+
+            string newMac = _ph.Mac();
+            macs.TryAdd(memberId, newMac);
+            Member member = new Member(memberId, "gil@gmail.com", "Gil", "Gil", _ph.Hash("asASD876!@" + newMac));
+            newMac = _ph.Mac();
+            macs.TryAdd(memberId2, newMac);
+            Member member2 = new Member(memberId2, "sebatian@gmail.com", "Sebatian", "Sebatian", _ph.Hash("asASD123!@" + newMac));
+            newMac = _ph.Mac();
+            macs.TryAdd(memberId3, newMac);
+            Member member3 = new Member(memberId3, "amihai@gmail.com", "Amihai", "Amihai", _ph.Hash("asASD753!@" + newMac));
+            newMac = _ph.Mac();
+            macs.TryAdd(memberId4, newMac);
+            Member member4 = new Member(memberId4, "bar@gmail.com", "Bar", "Bar", _ph.Hash("asASD159!@" + newMac));
+
+            newMac = _ph.Mac();
+            macs.TryAdd(systemManagerid, newMac);
+            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", _ph.Hash("AS87654askj" + newMac));
+            newMac = _ph.Mac();
+            macs.TryAdd(storeOwnerid1, newMac);
+
+            PromotedMember storeOwner1 = new PromotedMember(storeOwnerid1, "AsiAzar@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
+            systemManager.createSystemManager();
+            storeOwner1.createFounder(storeid1);
+
+
+            PromotedMember storeOwner2 = new PromotedMember(storeOwnerid2, "dani@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
+            systemManager.createSystemManager();
+            storeOwner2.createFounder(storeid2);
+
+            members.TryAdd(systemManagerid, systemManager);
+            members.TryAdd(memberId, member);
+            members.TryAdd(memberId2, member2);
+            members.TryAdd(memberId3, member3);
+            members.TryAdd(memberId4, member4);
+            members.TryAdd(storeOwnerid1, storeOwner1);
         }
     }
 }

@@ -2,35 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { Container, ListGroup, Button } from 'react-bootstrap';
 import { CartItem } from '../components/CartItem.tsx';
 import { useNavigate } from "react-router-dom";
+import { Item } from '../models/Shop.tsx';
+import SystemNotInit from './SystemNotInit.tsx';
+import { handleGetShoppingCart } from '../actions/GuestActions.tsx';
 
-function CartPage() {
-  const items = [
-    { id: 1, name: 'Product 1', price: 10.99 },
-    { id: 2, name: 'Product 2', price: 19.99 },
-    { id: 3, name: 'Product 3', price: 5.99 },
-  ];
+function CartPage(props) {
 
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState(items);
+  const [cartItems, setCartItems] = useState<Item[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
+  const getShoppingCartItems=()=>{
+    handleGetShoppingCart(props.id).then(
+      value => {
+        setCartItems(value as Item[]);
+      })
+      .catch(error => alert(error));
+  }
   useEffect(() => {
-    const fetchData = async () => {
-      // const response = await fetch('/api/cart');
-      // const data = await response.json();
-      // setCartItems(data.items);
-      // setTotalPrice(data.totalPrice);
-    };
-
-    fetchData();
+    getShoppingCartItems();
   }, []);
 
-  const handleRemoveItem = (itemId) => {
+  const shoppingCartChanged = () => {
     //post requset to remove item from cart
+    getShoppingCartItems();
   };
 
   return (
-    <Container className="my-5">
+    props.isInit?
+    (<Container className="my-5">
       <h1>Checkout</h1>
       {cartItems.length === 0 ? (
         <p>Your cart is empty.</p>
@@ -38,7 +38,7 @@ function CartPage() {
         <div>
           <ListGroup>
             {cartItems.map((item) => (
-              <CartItem key={item.id} item={item} onRemoveItem={handleRemoveItem} />
+              <CartItem key={item.itemId} item={item} id={props.id} onShoppingCartChanged={shoppingCartChanged} />
             ))}
           </ListGroup>
           <hr />
@@ -46,7 +46,7 @@ function CartPage() {
           <Button variant="success" size="lg" onClick={() => navigate("/PaymentPage")}>Checkout Now</Button>
         </div>
       )}
-    </Container>
+    </Container>):(<SystemNotInit/>)
   );
 }
 

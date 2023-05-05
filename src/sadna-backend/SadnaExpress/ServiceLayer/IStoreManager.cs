@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.ServiceLayer.Obj;
 
 namespace SadnaExpress.ServiceLayer.ServiceObjects
 {
@@ -50,7 +51,10 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, object[] policys);
         ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
         void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
-        Response EditItem(Guid userId, Guid storeId,Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
-        ResponseT<List<Item>> GetItemsInStore(Guid storeId);
+
+        void LoadData();
+        Guid GetItemStoreId(Guid Itemid);
+        ResponseT<List<SItem>> GetCartItems(Guid userID);
+        ResponseT<int> GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
     }
 }

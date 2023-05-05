@@ -138,6 +138,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return itemsInventory.GetItemById(itemID);
         }
+
         public int GetItemByQuantity(Guid itemID)
         {
             return itemsInventory.GetItemByQuantity(itemID);
@@ -343,6 +344,11 @@ namespace SadnaExpress.DomainLayer.Store
         public Condition[] GetAllConditions()
         {
             return PurchasePolicyList.ToArray();
+        }
+
+        public bool ItemExist(Guid itemid)
+        {
+            return itemsInventory.ItemExist(itemid);
         }
     }
 }

@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.Services;
 
@@ -33,7 +34,31 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<ShoppingCart>(ex.Message);
             }
         }
-        
+
+        public ResponseT<List<SItem>> GetCartItems(Guid userID)
+        {
+            try
+            {
+                ShoppingCart shoppingCart=userFacade.GetDetailsOnCart(userID);
+                List<SItem> items = new List<SItem>();
+                foreach(ShoppingBasket shoppingBasket in shoppingCart.Baskets)
+                {
+                    foreach (Guid itemid in shoppingBasket.ItemsInBasket.Keys)
+                    {
+                        int quantity = storeFacade.GetItemByQuantity(shoppingBasket.StoreID, itemid);
+                        items.Add(new SItem(storeFacade.GetItemByID(shoppingBasket.StoreID, itemid), shoppingBasket.StoreID, quantity>0, shoppingBasket.ItemsInBasket[itemid]));
+                    }
+                }
+
+                return new ResponseT<List<SItem>>(items);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID, nameof(StoreManager) + ": " + nameof(GetDetailsOnCart) + ": " + ex.Message);
+                return new ResponseT<List<SItem>>(ex.Message);
+            }
+        }
+
         public Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
         {
             try
@@ -523,31 +548,33 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity)
+        public void LoadData()
         {
-            try
-            {
-                userFacade.EditItem(userId, storeId);
-                storeFacade.EditItem(userId, storeId,itemId, itemName, itemCategory, itemPrice, quantity);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userId , nameof(StoreManager)+": "+nameof(EditItem)+": "+ex.Message);
-                return new Response(ex.Message);
-            }
+            Store store1 = new Store("Zara");
+            Guid storeid1 = store1.StoreID;
+
+            Store store2 = new Store("Fox");
+            Guid storeid2 = store2.StoreID;
+
+            storeFacade.LoadData(store1, store2);
+            userFacade.LoadData(storeid1, storeid2);
         }
 
-        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
+        public Guid GetItemStoreId(Guid itemid)
+        {
+            return storeFacade.GetItemStoreId(itemid);
+        }
+
+        public ResponseT<int> GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID)
         {
             try
             {
-                return new ResponseT<List<Item>>(storeFacade.GetItemsInStore(storeId));
+                return new ResponseT<int> (userFacade.GetItemQuantityInCart(userID, storeID, itemID));
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetItemsInStore) + ": " + ex.Message);
-                return new ResponseT<List<Item>>(ex.Message);
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetItemQuantityInCart) + ": " + ex.Message);
+                return new ResponseT<int>(ex.Message);
             }
         }
     }

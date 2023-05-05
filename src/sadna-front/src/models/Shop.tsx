@@ -1,7 +1,11 @@
 
 export interface Item  {
-    id: string, 
+    itemId: string, 
     name: string,
+    category: string,
     price: number,
-    rating : number,   
+    rating : number, 
+    storeId: string,   
+    inStock: boolean,  
+    count: number,  
 };

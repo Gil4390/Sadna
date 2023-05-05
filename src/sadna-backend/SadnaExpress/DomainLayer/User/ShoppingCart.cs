@@ -65,7 +65,7 @@ namespace SadnaExpress.DomainLayer.Store
             ShoppingBasket shoppingBasket = new ShoppingBasket(storeID);
             bool exist = baskets.TryGetValue(shoppingBasket, out shoppingBasket);
             if (!exist)
-                throw new Exception("The cart doesn't include the store");
+                return 0;
             return shoppingBasket.GetItemQuantity(itemID);  
         }
 

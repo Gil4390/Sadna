@@ -59,5 +59,7 @@ namespace SadnaExpress.DomainLayer.User
         List<Member> GetStoreOwnerOfStores(List<Guid> stores);
 
         bool IsSystemInitialize();
+        void LoadData(Guid storeid1,Guid storeid2);
+        int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
     }
 }
