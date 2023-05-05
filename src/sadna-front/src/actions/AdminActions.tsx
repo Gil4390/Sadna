@@ -16,7 +16,7 @@ export function handleInitializeSystem(userID) {
         return Promise.resolve(data)
     })
 }
-export function handleGetAllMembers() {
+export function handleGetAllMembers(userId) {
     let url = "http://localhost:8080/api/admin/all-members";
 
     return fetch(url, {
@@ -24,6 +24,7 @@ export function handleGetAllMembers() {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userId : userId
         })
     }).then(async response => {
         const data = await response.json();
@@ -33,7 +34,7 @@ export function handleGetAllMembers() {
         return Promise.resolve(data)
     })
 }
-export function handleGetAllPurchases() {
+export function handleGetAllPurchases(userId) {
     let url = "http://localhost:8080/api/admin/all-purchases";
 
     return fetch(url, {
@@ -41,7 +42,7 @@ export function handleGetAllPurchases() {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            
+            userId : userId
         })
     }).then(async response => {
         const data = await response.json();
