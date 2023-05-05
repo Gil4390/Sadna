@@ -1,9 +1,10 @@
 import React from "react";
 import { Button } from "react-bootstrap";
+import { handleInitializeSystem } from "../../actions/AdminActions.tsx";
 
 function AdminInitializeSystemPage(props) {
   const handleClickIntialize = () => {
-    handleInitialize(props.id);
+    handleInitializeSystem(props.id);
   };
 
   return (
