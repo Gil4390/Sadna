@@ -180,7 +180,9 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
-            ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail, userManager.GetMember(userID).Value.Email );
+            string email = userManager.GetMember(userID).Value != null ? userManager.GetMember(userID).Value.Email : "guest-no-email";
+
+            ResponseT <List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail, email);
             return response;
         }
         
