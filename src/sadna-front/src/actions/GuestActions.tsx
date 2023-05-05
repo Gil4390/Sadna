@@ -14,6 +14,24 @@ export function handleEnter() {
         return Promise.resolve(data)
     })
 }
+export function handleExit(userID) {
+    let url = "http://localhost:8080/api/guest/exit";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
 
 export function handleIsSystemInit() {
     let url = "http://localhost:8080/api/admin/is-system-init";
@@ -225,7 +243,7 @@ export function handleEditItemCart(userID,storeID , itemID , itemAmount) {
         return Promise.resolve(data)
     })
 }
-export function handleGetShoppingCart(userID) {
+export function handleGetDetailsOnCart(userID) {
     let url = "http://localhost:8080/api/guest/shopping-cart";
 
     return fetch(url, {

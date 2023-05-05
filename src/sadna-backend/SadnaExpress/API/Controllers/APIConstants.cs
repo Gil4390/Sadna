@@ -49,6 +49,16 @@ namespace SadnaExpress.API.Controllers
             public const string logout = "logout";
 
             public const string openStore = "open-store";
+            
+            public const string writeItemReview = "write-item-review";
+            
+            public const string itemReviews = "item-reviews";
+            
+            public const string addItemToStore = "add-item-store";
+            
+            public const string removeItemToStore = "rm-item-store";
+            
+            public const string editItemToStore = "edit-item-store";
         }
 
         public static class AdminData
@@ -56,6 +66,12 @@ namespace SadnaExpress.API.Controllers
             public const string root = "admin";
 
             public const string isInit = "is-system-init";
+            
+            public const string allMembers = "all-members";
+            
+            public const string allpurchases = "all-purchases";
+            
+            public const string removeMember = "rm-member";
         }
     }
 }

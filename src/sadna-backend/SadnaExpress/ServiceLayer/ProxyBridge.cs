@@ -152,6 +152,12 @@ namespace SadnaExpress.ServiceLayer
             // if you want remove put -i and to add +i
             return _realBridge.EditItemQuantity(userID, storeID, itemID, quantity);
         }
+
+        public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            throw new NotImplementedException();
+        }
+
         public Response AppointStoreOwner(Guid id, Guid storeID, string userEmail)
         {
             return _realBridge.AppointStoreOwner(id, storeID, userEmail);

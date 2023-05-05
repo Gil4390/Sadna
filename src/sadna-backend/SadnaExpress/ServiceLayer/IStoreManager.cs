@@ -50,5 +50,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, object[] policys);
         ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
         void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
+        Response EditItem(Guid userId, Guid storeId,Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
     }
 }
