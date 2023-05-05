@@ -1,5 +1,5 @@
 export function handleInitializeSystem(userID) {
-    let url = "http://localhost:8080/api/admin/is-system-init";
+    let url = "http://localhost:8080/api/admin/system-init";
 
     return fetch(url, {
         method: 'POST',

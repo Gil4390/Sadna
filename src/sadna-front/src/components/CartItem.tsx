@@ -24,6 +24,7 @@ export function CartItem(props) {
   useEffect(() => {
     if(responseAddItemCart!=undefined)
       responseAddItemCart?.errorOccured ? alert(responseAddItemCart.errorMessage) : setAmountInCart(amountInCart+1);
+      props.onShoppingCartChanged(props.item.itemId,amountInCart);
   }, [responseAddItemCart])
 
   const decreaseCartQuantity =(id) => {
@@ -37,20 +38,21 @@ export function CartItem(props) {
   useEffect(() => {
     if(responseDecreaseCartQuantity!=undefined)
     responseDecreaseCartQuantity?.errorOccured ? alert(responseDecreaseCartQuantity.errorMessage) : setAmountInCart(amountInCart-1);
+    props.onShoppingCartChanged(props.item.itemId,amountInCart);
   }, [responseDecreaseCartQuantity])
 
   const removeFromCart =(id) => {
     handleRemoveItemCart(props.id,props.item.storeId,id).then(
       value => {
         setResponseRemoveItemFromCart(value);
-        props.onShoppingCartChanged();
       })
       .catch(error => alert(error));
   }
 
   useEffect(() => {
     if(responseRemoveItemFromCart!=undefined)
-    responseRemoveItemFromCart?.errorOccured ? alert(responseRemoveItemFromCart.errorMessage) : setAmountInCart(0);
+    responseRemoveItemFromCart?.errorOccured ? alert(responseRemoveItemFromCart.errorMessage) : (setAmountInCart(0));
+    props.onShoppingCartChanged(props.item.itemId,amountInCart);
   }, [responseRemoveItemFromCart])
 
 
