@@ -54,12 +54,18 @@ function RegisterPage(props) {
   const handleRegisterSubmit = (event) => {
     event.preventDefault();
     console.log(`First Name: ${firstName}, Last Name: ${lastName}, Email: ${email}, Password: ${password}, Confirm Password: ${confirmPassword}`);
-    handleRegister(props.id,email,firstName,lastName,password).then(
-      value => {
-        setResponse(value as Response);
-      })
-      .catch(error => alert(error));
-    
+    if(password.localeCompare(confirmPassword, undefined, {sensitivity: 'accent'}) === 0 && password === confirmPassword)
+    {
+      handleRegister(props.id,email,firstName,lastName,password).then(
+        value => {
+          setResponse(value as Response);
+        })
+        .catch(error => alert(error));
+    }
+    else
+     {
+      setMessage("Password and Confirm Password do not match");
+     }
     // do something with registration data
   };
 
