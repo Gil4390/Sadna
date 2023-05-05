@@ -56,5 +56,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Guid GetItemStoreId(Guid Itemid);
         ResponseT<List<SItem>> GetCartItems(Guid userID);
         ResponseT<int> GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
+        Response EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
+        ResponseT<List<Item>> GetItemsInStore(Guid storeId);
     }
 }

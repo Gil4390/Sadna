@@ -49,6 +49,8 @@ namespace SadnaExpress.DomainLayer.Store
         void LoadData(Store store1, Store store2);
         Guid GetItemStoreId(Guid Itemid);
         int GetItemByQuantity(Guid storeid, Guid itemid);
+        void EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
+        List<Item> GetItemsInStore(Guid storeId);
 
     }
 }
