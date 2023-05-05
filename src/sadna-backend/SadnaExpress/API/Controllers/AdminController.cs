@@ -24,6 +24,14 @@ namespace SadnaExpress.API.Controllers
 
         [Route(APIConstants.AdminData.isInit)]
         [ResponseType(typeof(ResponseT<bool>))]
+        [HttpGet]
+        public IHttpActionResult IsSystemInitialize()
+        {
+            return Ok(tradingSystem.IsSystemInitialize());
+        }
+
+        [Route(APIConstants.AdminData.InitTradingSystem)]
+        [ResponseType(typeof(ResponseT<bool>))]
         [HttpPost]
         public IHttpActionResult Initialize([FromBody] ClientRequest request)
         {

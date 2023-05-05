@@ -4,33 +4,45 @@ import { CartItem } from '../components/CartItem.tsx';
 import { useNavigate } from "react-router-dom";
 import { Item } from '../models/Shop.tsx';
 import SystemNotInit from './SystemNotInit.tsx';
-import { handleGetShoppingCart } from '../actions/GuestActions.tsx';
+import { handleGetDetailsOnCart } from '../actions/GuestActions.tsx';
 
 function CartPage(props) {
 
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<Item[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const calculatePrice=(items:Item[])=>{
-    var price=0;
-    cartItems.map((item)=>price+=(item.price)*item.count);
-    setTotalPrice(price);
+
+  const calculatePrice=()=>{
+    const sum = cartItems.reduce((acc, item) => acc + (item.price*item.count), 0);
+    console.log("pricee "+sum);
+    setTotalPrice(sum);
   }
+  
   const getShoppingCartItems=()=>{
-    handleGetShoppingCart(props.id).then(
+    handleGetDetailsOnCart(props.id).then(
       value => {
         setCartItems(value as Item[]);
+        calculatePrice();
       })
       .catch(error => alert(error));
   }
+
   useEffect(() => {
     getShoppingCartItems();
+    calculatePrice();
   }, []);
 
+  useEffect(() => {
+    calculatePrice();
+  }, [cartItems]);
+
   const shoppingCartChanged = () => {
-    //post requset to remove item from cart
     getShoppingCartItems();
+    calculatePrice(); 
   };
+
+  
+
 
   return (
     props.isInit?
@@ -42,7 +54,7 @@ function CartPage(props) {
         <div>
           <ListGroup>
             {cartItems.map((item) => (
-              <CartItem key={item.itemId} item={item} id={props.id} onShoppingCartChanged={shoppingCartChanged} />
+              <CartItem key={item.itemId} item={item} id={props.id} onShoppingCartChanged={shoppingCartChanged}/>
             ))}
           </ListGroup>
           <hr />
