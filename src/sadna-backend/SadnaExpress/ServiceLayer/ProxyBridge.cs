@@ -386,5 +386,25 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetItemsForClient(userID, keyWords, minPrice, maxPrice, ratingItem, category, ratingStore);
         }
+
+        public ResponseT<ConcurrentDictionary<Guid, Store>> GetStores()
+        {
+            return _realBridge.GetStores();
+        }
+
+        public ResponseT<List<Member>> GetStoreOwners()
+        {
+            return _realBridge.GetStoreOwners();
+        }
+
+        public ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores)
+        {
+            return _realBridge.GetStoreOwnerOfStores(stores);
+        }
+
+        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
+        {
+            return _realBridge.GetItemsInStore(storeId);
+        }
     }
 }
