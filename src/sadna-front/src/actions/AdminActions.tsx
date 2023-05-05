@@ -54,7 +54,7 @@ export function handleRemoveUserMembership(userID , email) {
         return Promise.resolve(data)
     })
 }
-export function GetAllStorePurchases(userID) {
+export function handleGetAllStorePurchases(userID) {
     let url = "http://localhost:8080/api/admin/all-purchases-stores";
 
     return fetch(url, {
@@ -74,7 +74,7 @@ export function GetAllStorePurchases(userID) {
 }
 
 
-export function GetAllUserPurchases(userID) {
+export function handleGetAllUserPurchases(userID) {
     let url = "http://localhost:8080/api/admin/all-purchases-users";
 
     return fetch(url, {

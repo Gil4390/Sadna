@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Table } from 'react-bootstrap';
+import { handleGetAllStorePurchases, handleGetAllUserPurchases } from '../../actions/AdminActions.tsx';
 
 const purchasesData = [
   {
@@ -24,18 +25,47 @@ const purchasesData = [
   // Add more purchase data here
 ];
 
-const AdminViewAllPurchasesPage = () => {
+const AdminViewAllPurchasesPage = (props) => {
   const [storeOrUser, setStoreOrUser] = useState('store');
+  const [userPurchases, setUserPurchases] = useState([]);
+  const [storePurchases, setStorePurchases] = useState([]);
 
-  const [purchaseType, setPurchaseType] = useState('store');
-  const purchases = purchasesData.filter(purchase => purchase.type === purchaseType);
+
+  const getAllUserPurchases = ()=>{
+    handleGetAllUserPurchases(props.id).then(
+      value => {
+        setUserPurchases(value);
+      })
+      .catch(error => alert(error));
+  }
+  const handleClickUser = () => {
+    getAllUserPurchases();
+    setStoreOrUser('user')
+  };
+
+  const getAllStorePurchases = ()=>{
+    handleGetAllStorePurchases(props.id).then(
+      value => {
+        setStorePurchases(value);
+      })
+      .catch(error => alert(error));
+  }
+  const handleClickStore = () => {
+    getAllStorePurchases();
+    setStoreOrUser('store')
+  };  
+
+  useEffect(() => {
+    getAllUserPurchases();
+    getAllStorePurchases();
+  }, []);
 
   return (
     <Container>
       <Row>
         <Col>
-          <Button onClick={() => setPurchaseType('store')} active={purchaseType === 'store'}>Store Purchases</Button>
-          <Button onClick={() => setPurchaseType('user')} active={purchaseType === 'user'}>User Purchases</Button>
+          <Button onClick={handleClickStore}>Store Purchases</Button>
+          <Button onClick={handleClickUser}>User Purchases</Button>
         </Col>
       </Row>
       <Row>
@@ -51,7 +81,7 @@ const AdminViewAllPurchasesPage = () => {
               </tr>
             </thead>
             <tbody>
-              {purchases.map(purchase => (
+              {userPurchases.map(purchase => (
                 <tr key={`${purchase.type}-${purchase.userId}-${purchase.storeId}`}>
                   <td>{`${purchase.type}-${purchase.userId}-${purchase.storeId}`}</td>
                   <td>{purchase.userId}</td>
