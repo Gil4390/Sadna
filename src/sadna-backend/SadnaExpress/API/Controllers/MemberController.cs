@@ -208,7 +208,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetStoreOwnerOfStores([FromBody] ListGuidRequest request)
         {
-            return Ok(tradingSystem.GetStoreOwnerOfStores(request.stores));
+            return Ok(tradingSystem.GetStoreOwnerOfStores(request.storeId));
         }
         
         [Route(APIConstants.MemberData.getUser)]
@@ -314,7 +314,7 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.MemberData.getItems)]
         [ResponseType(typeof( ResponseT<List<Item>>))]
         [HttpPost]
-        public IHttpActionResult RemovePolicy([FromBody] StoreIDRequest request)
+        public IHttpActionResult GetItemsInStore([FromBody] StoreIDRequest request)
         {
             return Ok(tradingSystem.GetItemsInStore(request.storeId));
 

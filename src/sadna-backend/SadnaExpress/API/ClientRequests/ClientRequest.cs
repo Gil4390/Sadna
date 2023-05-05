@@ -102,7 +102,7 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class ListGuidRequest : ClientRequest
     {
-        public List<Guid> stores { get; set; }
+        public List<Guid> storeId { get; set; }
     }
     public class ConditionRequest<T,M> : StoreManagerRequest
     {

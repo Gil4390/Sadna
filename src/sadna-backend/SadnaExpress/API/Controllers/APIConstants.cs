@@ -67,10 +67,8 @@ namespace SadnaExpress.API.Controllers
             
             public const string appointStoreManagerPer = "appoint-store-manager-per";
             
-            public const string removeStoreManagerPer =  "remove-store-manager-per";
-                
-            public const string removeStoreManager = "rm-store-manager";
-                
+            public const string removeStoreManagerPer =  "rm-store-manager-per";
+            
             public const string removeStoreOwner = "rm-store-owner";
 
             public const string closeStore = "close-store";
@@ -113,7 +111,7 @@ namespace SadnaExpress.API.Controllers
 
             public const string createComplexPolicy = "create-complex-policy";
 
-            public const string addPolicy = "add-policyt";
+            public const string addPolicy = "add-policy";
 
             public const string removePolicy = "rm-policy";
             
