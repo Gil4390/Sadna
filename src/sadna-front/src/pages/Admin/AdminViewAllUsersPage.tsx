@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'react-bootstrap';
 import { Member } from '../../models/User';
-import { handleGetAllMembers } from '../../actions/AdminActions';
+import { handleGetAllMembers, handleRemoveUserMembership } from '../../actions/AdminActions';
 
 const AdminViewAllUsersPage = (props) => {
   const [members, setMembers] = useState<Member[]>([]);
@@ -15,14 +15,12 @@ const AdminViewAllUsersPage = (props) => {
       .catch(error => alert(error));
   }
 
-
-
   useEffect(() => {
     getAllMembers();
   }, []);
 
-  const handleClickRemoveMember = (memberId) => {
-    handleRemoveMember(props.id, memberId).then(
+  const handleClickRemoveMember = (memberEmail) => {
+    handleRemoveUserMembership(props.id, memberEmail).then(
       value => {
         getAllMembers();
       })
@@ -51,7 +49,7 @@ const AdminViewAllUsersPage = (props) => {
             <td>{member.loggedIn}</td>
             <td>{member.permissions}</td>
             <td>
-              <Button variant="danger" onClick={() => handleClickRemoveMember(member.id)}>
+              <Button variant="danger" onClick={() => handleClickRemoveMember(member.email)}>
                 Remove
               </Button>
             </td>
