@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using SadnaExpress.API.ClientRequests;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.API.Controllers
@@ -124,7 +126,7 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.MemberData.closeStore)]
         [ResponseType(typeof(Response))]
         [HttpPost]
-        public IHttpActionResult CloseStore([FromBody] StoreOnlyRequest request)
+        public IHttpActionResult CloseStore([FromBody] StoreIDRequest request)
         {
             return Ok(tradingSystem.CloseStore(request.UserID, request.storeId));
         }
@@ -132,7 +134,7 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.MemberData.getEmployee)]
         [ResponseType(typeof(ResponseT<List<PromotedMember>>))]
         [HttpPost]
-        public IHttpActionResult GetEmployeeInfoInStore([FromBody] StoreOnlyRequest request)
+        public IHttpActionResult GetEmployeeInfoInStore([FromBody] StoreIDRequest request)
         {
             return Ok(tradingSystem.GetEmployeeInfoInStore(request.UserID, request.storeId));
         }
@@ -140,7 +142,7 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.MemberData.getStorePurchases)]
         [ResponseType(typeof(ResponseT<List<Order>>))]
         [HttpPost]
-        public IHttpActionResult GetStorePurchases([FromBody] StoreOnlyRequest request)
+        public IHttpActionResult GetStorePurchases([FromBody] StoreIDRequest request)
         {
             return Ok(tradingSystem.GetStorePurchases(request.UserID, request.storeId));
         }
@@ -148,7 +150,7 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.MemberData.deleteStore)]
         [ResponseType(typeof(Response))]
         [HttpPost]
-        public IHttpActionResult DeleteStore([FromBody] StoreOnlyRequest request)
+        public IHttpActionResult DeleteStore([FromBody] StoreIDRequest request)
         {
             return Ok(tradingSystem.DeleteStore(request.UserID, request.storeId));
         }
@@ -184,6 +186,61 @@ namespace SadnaExpress.API.Controllers
         {
             return Ok(tradingSystem.SetSecurityQA(request.UserID, request.field, request.field2));
         }
-
+        
+        [Route(APIConstants.MemberData.getStores)]
+        [ResponseType(typeof(ResponseT<List<Store>>))]
+        [HttpPost]
+        public IHttpActionResult GetStores([FromBody] ClientRequest request)
+        {
+            return Ok(tradingSystem.GetStores());
+        }
+        
+        [Route(APIConstants.MemberData.getStoreOwners)]
+        [ResponseType(typeof(ResponseT<List<Member>>))]
+        [HttpPost]
+        public IHttpActionResult GetStoreOwners([FromBody] ClientRequest request)
+        {
+            return Ok(tradingSystem.GetStoreOwners());
+        }
+        
+        [Route(APIConstants.MemberData.getStoresOwnerList)]
+        [ResponseType(typeof(ResponseT<List<Member>>))]
+        [HttpPost]
+        public IHttpActionResult GetStoreOwnerOfStores([FromBody] ListGuidRequest request)
+        {
+            return Ok(tradingSystem.GetStoreOwnerOfStores(request.stores));
+        }
+        
+        [Route(APIConstants.MemberData.getUser)]
+        [ResponseType(typeof(ResponseT<User>))]
+        [HttpPost]
+        public IHttpActionResult GetUser([FromBody] ClientRequest request)
+        {
+            return Ok(tradingSystem.GetUser(request.UserID));
+        }
+        
+        [Route(APIConstants.MemberData.getMember)]
+        [ResponseType(typeof(ResponseT<Member>))]
+        [HttpPost]
+        public IHttpActionResult GetMember([FromBody] ClientRequest request)
+        {
+            return Ok(tradingSystem.GetMember(request.UserID));
+        }
+        
+        [Route(APIConstants.MemberData.getNotifications)]
+        [ResponseType(typeof(ResponseT<List<Notification>>))]
+        [HttpPost]
+        public IHttpActionResult GetNotifications([FromBody] ClientRequest request)
+        {
+            return Ok(tradingSystem.GetNotifications(request.UserID));
+        }
+        
+        [Route(APIConstants.MemberData.getAllConditions)]
+        [ResponseType(typeof(ResponseT<List<Condition>>))]
+        [HttpPost]
+        public IHttpActionResult GetAllConditions([FromBody] StoreIDRequest request)
+        {
+            return Ok(tradingSystem.GetAllConditions(request.storeId));
+        }
     }
 }

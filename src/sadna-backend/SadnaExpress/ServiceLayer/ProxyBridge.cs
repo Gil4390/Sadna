@@ -132,7 +132,7 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<Order>> GetPurchasesInfoUserOnlu(Guid userID)
+        public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
         {
             throw new NotImplementedException();
         }
@@ -372,6 +372,21 @@ namespace SadnaExpress.ServiceLayer
         }
 
         public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<ConcurrentDictionary<Guid, Store>> GetStores()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<Member>> GetStoreOwners()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores)
         {
             throw new NotImplementedException();
         }

@@ -54,24 +54,6 @@ export function handleRemoveUserMembership(userID , email) {
         return Promise.resolve(data)
     })
 }
-export function GetAllPurchases(userID ) {
-    let url = "http://localhost:8080/api/admin/all-purchases";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID:userID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
 export function GetAllStorePurchases(userID ) {
     let url = "http://localhost:8080/api/admin/all-purchases";
 

@@ -38,7 +38,7 @@ namespace SadnaExpress.ServiceLayer
         Response WriteMessageToStore(Guid userID, Guid storeID, string message); //3.5  (not in this version)
         Response ComplainToAdmin(Guid userID, string message); //3.6 (not in this version)
         ResponseT<List<Order>> GetPurchasesInfoUser(Guid userID); //3.7 (not in this version)
-        ResponseT<List<Order>> GetPurchasesInfoUserOnlu(Guid userID); //3.7 (not in this version)
+        ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID); //3.7 (not in this version)
 
         //3.8 and 3.9 (not in this version)
         //4.1
@@ -105,6 +105,12 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys);
         public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
         public void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
+
+        ResponseT<ConcurrentDictionary<Guid, Store>> GetStores();
+
+        ResponseT<List<Member>> GetStoreOwners();
+
+        ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
 
     }
 }

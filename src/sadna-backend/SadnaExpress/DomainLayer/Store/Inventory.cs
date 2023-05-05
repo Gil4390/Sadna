@@ -156,7 +156,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("You can't add to the cart, the quantity in the inventory not enough");
         }
 
-        public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, Guid storeID)
+        public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, Guid storeID , string storeName, string email)
         {
             Dictionary<Item, int> itemsUpdated = new Dictionary<Item, int>(); //items that the quantity already updated (need to be save in case of error)  
             try
@@ -170,7 +170,10 @@ namespace SadnaExpress.DomainLayer.Store
                         if (items_quantity[item] - items[itemID] < 0)
                             throw new Exception($"The item {item.Name} finished");
                         items_quantity[item] -= items[itemID];
-                        itemForOrders.Add(new ItemForOrder(item, storeID));
+                        ItemForOrder ifo = new ItemForOrder(item, storeID);
+                        ifo.UserEmail = email;
+                        ifo.StoreName = storeName;
+                        itemForOrders.Add(ifo);
                     }
                     sum += item.Price;
                     itemsUpdated.Add(item, items[itemID]);

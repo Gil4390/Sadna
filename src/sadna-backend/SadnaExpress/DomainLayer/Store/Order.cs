@@ -9,13 +9,10 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private List<ItemForOrder> listItems;
         public List<ItemForOrder> ListItems { get=>listItems; }
-        private DateTime date;
-        public DateTime Date;
 
         public Order(List<ItemForOrder> listItems)
         {
             this.listItems = listItems;
-            date = DateTime.Now;
         }
 
         public double CalculatorAmount()

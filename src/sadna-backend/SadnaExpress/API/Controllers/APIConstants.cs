@@ -91,9 +91,9 @@ namespace SadnaExpress.API.Controllers
 
             public const string getStores = "get-stores";
             
-            public const string getStoresOwners = "get-stores-owners";
+            public const string getStoreOwners = "get-stores-owners";
             
-            public const string getStoreOwner = "get-store-owner";
+            public const string getStoresOwnerList = "get-store-owner";
 
             public const string getUser = "get-user";
 
@@ -116,6 +116,8 @@ namespace SadnaExpress.API.Controllers
             public const string addPolicy = "add-policyt";
 
             public const string removePolicy = "rm-policy";
+            
+            public const string getNotifications = "get-notifications";
 
 
         }

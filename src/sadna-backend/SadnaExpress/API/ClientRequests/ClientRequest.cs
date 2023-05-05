@@ -77,12 +77,12 @@ namespace SadnaExpress.API.ClientRequests
 
     }
     
-    public class StoreOnlyRequest : ItemRequest
+    public class StoreIDRequest : ClientRequest
     {
         public Guid storeId { get; set; }
 
     }
-    
+
     public class StoreManagerRequest : ClientRequest
     {
         public Guid storeId { get; set; }
@@ -100,5 +100,9 @@ namespace SadnaExpress.API.ClientRequests
         public string field { get; set; }
         public string field2 { get; set; }
 
+    }
+    public class ListGuidRequest : ClientRequest
+    {
+        public List<Guid> stores { get; set; }
     }
 }

@@ -94,7 +94,7 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             return _orders.GetStoreOrders();
         }
-        public double PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemForOrders)
+        public double PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemForOrders, string email)
         {
             IsTsInitialized();
             double sum = 0; 
@@ -108,7 +108,7 @@ namespace SadnaExpress.DomainLayer.Store
                         throw new Exception($"The store: {storeID} not active");
                     if (stores[storeID].CheckPurchasePolicy(items[storeID], ref itemForOrders))
                     {
-                        sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders);
+                        sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders,email);
                         storeUpdated.Add(storeID, items[storeID]);
                     }
                 }

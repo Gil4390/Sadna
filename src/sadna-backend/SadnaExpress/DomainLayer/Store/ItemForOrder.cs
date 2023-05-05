@@ -16,6 +16,22 @@ namespace SadnaExpress.DomainLayer.Store
         public double Price {get => price;}
         private int rating;
         public int Rating {get => rating;}
+        
+        private string userEmail;
+
+        public string UserEmail
+        {
+            get => userEmail;
+            set => userEmail = value;
+        }
+
+        private string storeName;
+
+        public string StoreName
+        {
+            get => storeName;
+            set => storeName = value;
+        }
 
         public ItemForOrder(Item item, Guid storeID)
         {
@@ -25,7 +41,7 @@ namespace SadnaExpress.DomainLayer.Store
             price = item.Price;
             rating = item.Rating;
             this.storeID = storeID;
+
         }
-        
     }
 }
