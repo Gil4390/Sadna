@@ -127,7 +127,9 @@ namespace SadnaExpress.API.Controllers
             public const string root = "admin";
 
             public const string isInit = "is-system-init";
-            
+
+            public const string InitTradingSystem = "system-init";
+
             public const string allMembers = "all-members";
             
             public const string allpurchases = "all-purchases";
