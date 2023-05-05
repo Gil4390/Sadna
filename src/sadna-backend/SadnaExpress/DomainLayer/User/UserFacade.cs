@@ -769,6 +769,7 @@ namespace SadnaExpress.DomainLayer.User
             members.TryAdd(memberId3, member3);
             members.TryAdd(memberId4, member4);
             members.TryAdd(storeOwnerid1, storeOwner1);
+            members.TryAdd(storeOwnerid2, storeOwner2);
         }
     }
 }

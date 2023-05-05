@@ -47,7 +47,6 @@ function CartPage(props) {
   return (
     props.isInit?
     (<Container className="my-5">
-      <h1>Checkout</h1>
       {cartItems.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (
