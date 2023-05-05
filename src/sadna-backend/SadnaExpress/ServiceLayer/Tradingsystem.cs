@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.Services;
 
@@ -153,10 +154,28 @@ namespace SadnaExpress.ServiceLayer
         }
 
         public ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0,
-            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+         int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
             return storeManager.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category,
                 ratingStore);
+        }
+
+        public ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
+            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+        {
+            ResponseT<List<Item>> res= storeManager.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category,
+                ratingStore);
+
+            List<SItem> items = new List<SItem>();
+            foreach (Item item in res.Value)
+            {
+                Guid itemStoreid= storeManager.GetItemStoreId(item.ItemID);
+                bool inStock = storeManager.GetStore(itemStoreid).Value.GetItemByQuantity(item.ItemID) > 0;
+                int countInCart = storeManager.GetItemQuantityInCart(userID,itemStoreid, item.ItemID).Value;
+                items.Add(new SItem(item,itemStoreid, inStock, countInCart));
+            }
+
+            return new ResponseT<List<SItem>>(items);
         }
 
         public Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
@@ -178,6 +197,12 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetDetailsOnCart(userID);
         }
+
+        public ResponseT<List<SItem>> GetCartItems(Guid userID)
+        {
+            return storeManager.GetCartItems(userID);
+        }
+
         public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
             ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail, userManager.GetMember(userID).Value.Email );
@@ -410,6 +435,11 @@ namespace SadnaExpress.ServiceLayer
             return userManager.GetStoreOwnerOfStores(stores);
         }
 
+        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
+        {
+            return storeManager.GetItemsInStore(storeId);
+        }
+
         public void SetPaymentService(IPaymentService paymentService)
         {
             userManager.SetPaymentService(paymentService);
@@ -506,6 +536,11 @@ namespace SadnaExpress.ServiceLayer
         public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
         {
             storeManager.RemovePolicy(store, discountPolicy);
+        }
+
+        public void LoadData()
+        {
+            storeManager.LoadData();
         }
     }
 }

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.ServiceLayer.Obj;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -97,20 +98,25 @@ namespace SadnaExpress.ServiceLayer
         void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
             string typeRes = default, double valueRes = default);
 
-        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
+        ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
 
-        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
+        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
             DateTime endDate);
 
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys);
-        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
-        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
+        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys);
+        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
+        void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
+
+        ResponseT<List<SItem>> GetCartItems(Guid userID);
+        ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
+            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
 
         ResponseT<ConcurrentDictionary<Guid, Store>> GetStores();
 
         ResponseT<List<Member>> GetStoreOwners();
 
         ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
+        ResponseT<List<Item>> GetItemsInStore(Guid storeId);
 
     }
 }

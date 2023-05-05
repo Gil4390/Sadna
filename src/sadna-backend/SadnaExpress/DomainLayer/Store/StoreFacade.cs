@@ -239,7 +239,7 @@ namespace SadnaExpress.DomainLayer.Store
                 {
                     if (!store.Active)
                         continue;
-                    if (ratingStore != -1 && store.StoreRating != ratingStore)
+                    if (ratingStore != -1 && store.StoreRating < ratingStore)
                         continue;
                     allItems.AddRange(store.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category));
                 }
@@ -395,6 +395,19 @@ namespace SadnaExpress.DomainLayer.Store
 
         }
 
+        public List<Item> GetItemsInStore(Guid storeId)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeId);
+            List<Item> items = new List<Item>();
+            foreach (Item item in GetStore(storeId).itemsInventory.items_quantity.Keys)
+            {
+                item.Quantity = GetStore(storeId).itemsInventory.items_quantity[item];
+                items.Add(item);
+            }
+            return items;
+        }
+
         public Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
         {
             IsStoreExist(store);
@@ -421,5 +434,38 @@ namespace SadnaExpress.DomainLayer.Store
             IsStoreExist(store);
             return GetStore(store).GetAllConditions();
         }
+
+        public void LoadData(Store store1, Store store2)
+        {
+            store1.AddItem("Tshirt", "clothes", 99.8, 40);
+            store1.AddItem("Ipad", "electronic", 99.8, 2);
+            store1.AddItem("Dress", "clothes", 70, 45);
+
+            store2.AddItem("Pants", "clothes", 150, 200);
+            store2.AddItem("Towel", "Home", 40, 450);
+            store2.AddItem("Teddy bear toy", "children toys", 65, 120);
+            store2.AddItem("mouse", "animals", 65, 0);
+
+            stores.TryAdd(store1.StoreID, store1);
+            stores.TryAdd(store2.StoreID, store2);
+        }
+
+        public Guid GetItemStoreId(Guid itemid)
+        {
+            foreach (Store store in stores.Values)
+            {
+                if (store.ItemExist(itemid))
+                    return store.StoreID;
+            }
+
+            throw new Exception("Item does not exist");
+        }
+
+        public int GetItemByQuantity(Guid storeid, Guid itemid)
+        {
+            IsStoreExist(storeid);
+            return stores[storeid].GetItemByQuantity(itemid);
+        }
+
     }
 }

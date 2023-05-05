@@ -2,6 +2,7 @@
 using SadnaExpress.API.Controllers;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.ServiceLayer.Obj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,28 +66,15 @@ namespace SadnaExpress.API.Controllers
             return Ok(tradingSystem.GetStore(request.StoreId));
         }
 
-        [Route(APIConstants.GuestData.itemByName)]
-        [ResponseType(typeof(List<ResponseT<Item>>))]
-        [HttpPost]
-        public IHttpActionResult GetItemsByName([FromBody] SearchItemRequest request)
-        {
-            return Ok(tradingSystem.GetItemsByName(request.UserID, request.ItemName, request.MinPrice, request.MaxPrice, request.RatingItem, request.Category, request.RatingStore));
-        }
-
-        [Route(APIConstants.GuestData.itemByCategory)]
-        [ResponseType(typeof(List<ResponseT<Item>>))]
-        [HttpPost]
-        public IHttpActionResult GetItemsByCategory([FromBody] SearchItemRequest request)
-        {
-            return Ok(tradingSystem.GetItemsByCategory(request.UserID,request.Category, request.MinPrice, request.MaxPrice, request.RatingItem,  request.RatingStore));
-        }
-
-        [Route(APIConstants.GuestData.itemByKeysWord)]
-        [ResponseType(typeof(List<ResponseT<Item>>))]
+        [Route(APIConstants.GuestData.searchItems)]
+        [ResponseType(typeof(ResponseT<List<SItem>>))]
         [HttpPost]
         public IHttpActionResult GetItemsByKeysWord([FromBody] SearchItemRequest request)
         {
-            return Ok(tradingSystem.GetItemsByKeysWord(request.UserID, request.KeyWord, request.MinPrice, request.MaxPrice, request.RatingItem, request.Category,  request.RatingStore));
+            if (request.MaxPrice == -1)
+                request.MaxPrice = Int32.MaxValue;
+            ResponseT<List<SItem>> res = tradingSystem.GetItemsForClient(request.UserID, request.KeyWord, request.MinPrice, request.MaxPrice, request.RatingItem, request.Category, request.RatingStore);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.addItemCart)]
@@ -94,7 +82,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult AddItemToCart([FromBody] ItemCartRequest request)
         {
-            return Ok(tradingSystem.AddItemToCart(request.UserID, request.StoreId, request.ItemId, request.ItemAmount));
+            Response res = tradingSystem.AddItemToCart(request.UserID, request.StoreId, request.ItemId, request.ItemAmount);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.removeItemCart)]
@@ -102,7 +91,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult RemoveItemFromCart([FromBody] ItemCartRequest request)
         {
-            return Ok(tradingSystem.RemoveItemFromCart(request.UserID, request.StoreId, request.ItemId));
+            Response res = tradingSystem.RemoveItemFromCart(request.UserID, request.StoreId, request.ItemId);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.editItemCart)]
@@ -110,15 +100,17 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult EditItemFromCart([FromBody] ItemCartRequest request)
         {
-            return Ok(tradingSystem.EditItemFromCart(request.UserID, request.StoreId, request.ItemId, request.ItemAmount));
+            Response res = tradingSystem.EditItemFromCart(request.UserID, request.StoreId, request.ItemId, request.ItemAmount);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.shoppingCart)]
-        [ResponseType(typeof(ResponseT<ShoppingBasket>))]
+        [ResponseType(typeof(ResponseT<List<SItem>>))]
         [HttpPost]
         public IHttpActionResult GetDetailsOnCart([FromBody] ClientRequest request)
         {
-            return Ok(tradingSystem.GetDetailsOnCart(request.UserID));
+            ResponseT<List<SItem>> res = tradingSystem.GetCartItems(request.UserID);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.purchaseCart)]

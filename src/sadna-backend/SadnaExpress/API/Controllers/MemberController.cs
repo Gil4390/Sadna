@@ -208,7 +208,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetStoreOwnerOfStores([FromBody] ListGuidRequest request)
         {
-            return Ok(tradingSystem.GetStoreOwnerOfStores(request.stores));
+            return Ok(tradingSystem.GetStoreOwnerOfStores(request.storeId));
         }
         
         [Route(APIConstants.MemberData.getUser)]
@@ -242,5 +242,83 @@ namespace SadnaExpress.API.Controllers
         {
             return Ok(tradingSystem.GetAllConditions(request.storeId));
         }
+        
+        [Route(APIConstants.MemberData.getCondition)]
+        [ResponseType(typeof(ResponseT<Condition>))]
+        [HttpPost]
+        public IHttpActionResult GetCondition<T , M>([FromBody] ConditionRequest<T , M> request)
+        {
+            return Ok(tradingSystem.GetCondition(request.storeId, request.entity, request.type,
+                request.value, request.dt, request.entityRes, request.typeRes, request.valueRes));
+        }
+        
+        [Route(APIConstants.MemberData.addCondition)]
+        [ResponseType(typeof(ResponseT<Condition>))]
+        [HttpPost]
+        public IHttpActionResult AddCondition<T , M>([FromBody] ConditionRequest<T , M> request)
+        {
+            return Ok(tradingSystem.AddCondition(request.storeId, request.entity, request.type,
+                request.value, request.dt, request.entityRes, request.typeRes, request.valueRes));
+        }
+        [Route(APIConstants.MemberData.removeCondition)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult RemoveCondition<T , M>([FromBody] ConditionRequest<T , M> request)
+        {
+            tradingSystem.RemoveCondition(request.storeId, request.entity, request.type,
+                request.value, request.dt, request.entityRes, request.typeRes, request.valueRes);
+            return Ok(new Response());
+        }
+        
+        [Route(APIConstants.MemberData.addDiscountCondition)]
+        [ResponseType(typeof(ResponseT<Condition>))]
+        [HttpPost]
+        public IHttpActionResult AddDiscountCondition<T , M>([FromBody] ConditionRequest<T , M> request)
+        {
+            return Ok(tradingSystem.AddDiscountCondition(request.storeId, request.entity, request.type, request.value));
+        }
+        
+        [Route(APIConstants.MemberData.createSimplePolicy)]
+        [ResponseType(typeof( ResponseT<DiscountPolicy>))]
+        [HttpPost]
+        public IHttpActionResult createSimplePolicy<T>([FromBody] PolicyRequest<T> request)
+        {
+            return Ok(tradingSystem.CreateSimplePolicy(request.storeId,request.level,request.percent,request.startDate,request.endDate));
+        }
+        
+        [Route(APIConstants.MemberData.createComplexPolicy)]
+        [ResponseType(typeof( ResponseT<DiscountPolicy>))]
+        [HttpPost]
+        public IHttpActionResult CreateComplexPolicy([FromBody] ComplexConditionRequest request)
+        {
+            return Ok(tradingSystem.CreateComplexPolicy(request.storeId,request.op, request.policys));
+        }
+        
+        [Route(APIConstants.MemberData.addPolicy)]
+        [ResponseType(typeof( ResponseT<DiscountPolicyTree>))]
+        [HttpPost]
+        public IHttpActionResult AddPolicy([FromBody] DiscountPolicyRequest request)
+        {
+            return Ok(tradingSystem.AddPolicy(request.storeId,request.discountPolicy));
+        }
+        
+        [Route(APIConstants.MemberData.removePolicy)]
+        [ResponseType(typeof( ResponseT<DiscountPolicyTree>))]
+        [HttpPost]
+        public IHttpActionResult RemovePolicy([FromBody] DiscountPolicyRequest request)
+        {
+            tradingSystem.RemovePolicy(request.storeId,request.discountPolicy);
+            return Ok(new Response());
+        }
+        
+        [Route(APIConstants.MemberData.getItems)]
+        [ResponseType(typeof( ResponseT<List<Item>>))]
+        [HttpPost]
+        public IHttpActionResult GetItemsInStore([FromBody] StoreIDRequest request)
+        {
+            return Ok(tradingSystem.GetItemsInStore(request.storeId));
+
+        }
+
     }
 }
