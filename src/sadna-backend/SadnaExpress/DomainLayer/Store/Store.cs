@@ -118,9 +118,9 @@ namespace SadnaExpress.DomainLayer.Store
             itemsInventory.AddItemToCart(itemID, quantity);
         }
 
-        public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders)
+        public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, string email)
         {
-            return itemsInventory.PurchaseCart(items, ref itemForOrders, storeID);
+            return itemsInventory.PurchaseCart(items, ref itemForOrders, storeID , storeName,email);
         }
         public bool CheckPurchasePolicy(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders)
         {

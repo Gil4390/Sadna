@@ -49,7 +49,7 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.AdminData.allpurchasesStore)]
         [ResponseType(typeof(ResponseT<List<Order>>))]
         [HttpPost]
-        public IHttpActionResult GetAllPurchasesFromStore([FromBody] StoreOnlyRequest request)
+        public IHttpActionResult GetAllPurchasesFromStore([FromBody] StoreIDRequest request)
         {
             //per stores
             return Ok(tradingSystem.GetAllStorePurchases(request.UserID).Value[request.storeId]);
@@ -65,7 +65,7 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.AdminData.allpurchasesUser)]
-        [ResponseType(typeof(ResponseT<List<Order>>))]
+        [ResponseType(typeof(ResponseT<List<ItemForOrder>>))]
         [HttpPost]
         public IHttpActionResult GetPurchasesInfoUserOnlu([FromBody] ClientRequest request)
         {

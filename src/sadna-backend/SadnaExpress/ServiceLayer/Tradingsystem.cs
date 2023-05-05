@@ -180,7 +180,7 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
-            ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
+            ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail, userManager.GetMember(userID).Value.Email );
             return response;
         }
         
@@ -242,10 +242,14 @@ namespace SadnaExpress.ServiceLayer
             
             return new ResponseT<List<Order>>(orders);
         }
-        public ResponseT<List<Order>> GetPurchasesInfoUserOnlu(Guid userID)
+        public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
         {
-            
-            return new ResponseT<List<Order>>(Orders.Instance.GetUserOrders()[userID]);
+            List<ItemForOrder> list = new List<ItemForOrder>();
+            foreach (Order order in Orders.Instance.GetUserOrders()[userID])
+            {
+                list.AddRange(order.ListItems);
+            }
+            return new ResponseT<List<ItemForOrder>>(list);
         }
 
         public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID,  string itemName, string itemCategory, double itemPrice, int quantity)
@@ -390,9 +394,9 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetMembers(userID);
         }
-        public ConcurrentDictionary<Guid , Store> GetStores()
+        public ResponseT<ConcurrentDictionary<Guid , Store>> GetStores()
         {
-            return storeManager.GetStores();
+            return new ResponseT<ConcurrentDictionary<Guid, Store>>(storeManager.GetStores());
         }
 
         public ResponseT<List<Member>> GetStoreOwners()
