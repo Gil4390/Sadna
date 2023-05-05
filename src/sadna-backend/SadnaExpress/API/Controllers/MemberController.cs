@@ -9,6 +9,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using SadnaExpress.API.ClientRequests;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.API.Controllers
 {
@@ -79,5 +80,110 @@ namespace SadnaExpress.API.Controllers
             return Ok(tradingSystem.EditItem(request.UserID, request.storeID, request.itemId,request.itemName, request.itemCategory, request.itemPrice, request.quantity ));
         }
         
+        
+        [Route(APIConstants.MemberData.appointStoreManager)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult AppointStoreManager([FromBody] StoreManagerRequest request)
+        {
+            return Ok(tradingSystem.AppointStoreManager(request.UserID, request.storeId, request.email));
+        }
+        
+        [Route(APIConstants.MemberData.appointStoreManagerPer)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult AddStoreManagerPermissions([FromBody] StoreManagerPerRequest request)
+        {
+            return Ok(tradingSystem.AddStoreManagerPermissions(request.UserID, request.storeId, request.email,request.permission));
+        }
+        
+        [Route(APIConstants.MemberData.appointStoreOwner)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult AppointStoreOwner([FromBody] StoreManagerRequest request)
+        {
+            return Ok(tradingSystem.AppointStoreOwner(request.UserID, request.storeId, request.email));
+        }
+        
+        [Route(APIConstants.MemberData.removeStoreManagerPer)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult RemoveStoreManagerPermissions([FromBody] StoreManagerPerRequest request)
+        {
+            return Ok(tradingSystem.RemoveStoreManagerPermissions(request.UserID, request.storeId, request.email,request.permission));
+        }
+        
+        [Route(APIConstants.MemberData.removeStoreOwner)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult RemoveStoreOwner([FromBody] StoreManagerRequest request)
+        {
+            return Ok(tradingSystem.RemoveStoreOwner(request.UserID, request.storeId, request.email));
+        }
+        
+        [Route(APIConstants.MemberData.closeStore)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult CloseStore([FromBody] StoreOnlyRequest request)
+        {
+            return Ok(tradingSystem.CloseStore(request.UserID, request.storeId));
+        }
+        
+        [Route(APIConstants.MemberData.getEmployee)]
+        [ResponseType(typeof(ResponseT<List<PromotedMember>>))]
+        [HttpPost]
+        public IHttpActionResult GetEmployeeInfoInStore([FromBody] StoreOnlyRequest request)
+        {
+            return Ok(tradingSystem.GetEmployeeInfoInStore(request.UserID, request.storeId));
+        }
+        
+        [Route(APIConstants.MemberData.getStorePurchases)]
+        [ResponseType(typeof(ResponseT<List<Order>>))]
+        [HttpPost]
+        public IHttpActionResult GetStorePurchases([FromBody] StoreOnlyRequest request)
+        {
+            return Ok(tradingSystem.GetStorePurchases(request.UserID, request.storeId));
+        }
+        
+        [Route(APIConstants.MemberData.deleteStore)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult DeleteStore([FromBody] StoreOnlyRequest request)
+        {
+            return Ok(tradingSystem.DeleteStore(request.UserID, request.storeId));
+        }
+        
+        [Route(APIConstants.MemberData.updateFirst)]
+        [ResponseType(typeof(ResponseT<Guid>))]
+        [HttpPost]
+        public IHttpActionResult UpdateFirst([FromBody] SQARequest request)
+        {
+            return Ok(tradingSystem.UpdateFirst(request.UserID, request.field));
+        }
+        
+        [Route(APIConstants.MemberData.updateLast)]
+        [ResponseType(typeof(ResponseT<Guid>))]
+        [HttpPost]
+        public IHttpActionResult UpdateLast([FromBody] SQARequest request)
+        {
+            return Ok(tradingSystem.UpdateLast(request.UserID, request.field));
+        }
+        
+        [Route(APIConstants.MemberData.updatePass)]
+        [ResponseType(typeof(ResponseT<Guid>))]
+        [HttpPost]
+        public IHttpActionResult UpdatePassword([FromBody] SQARequest request)
+        {
+            return Ok(tradingSystem.UpdatePassword(request.UserID, request.field));
+        }
+        
+        [Route(APIConstants.MemberData.setSQA)]
+        [ResponseType(typeof(ResponseT<Guid>))]
+        [HttpPost]
+        public IHttpActionResult SetSecurityQA([FromBody] SQARequest request)
+        {
+            return Ok(tradingSystem.SetSecurityQA(request.UserID, request.field, request.field2));
+        }
+
     }
 }

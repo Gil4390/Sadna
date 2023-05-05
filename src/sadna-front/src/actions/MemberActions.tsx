@@ -142,3 +142,45 @@ export function handleEditItemStore(userID , storeID, itemName , itemCategory , 
         return Promise.resolve(data)
     })
 }
+
+export function handleAppointStoreManager(userID, storeID, userEmail) {
+    let url = "http://localhost:8080/api/member/appoint-store-manager";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID:userID,
+            storeID: storeID,
+            userEmail: userEmail
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+export function handleAppointStoreManagerPremission(userID, storeID, userEmail , premissions) {
+    let url = "http://localhost:8080/api/member/appoint-store-manager-per";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID:userID,
+            storeID: storeID,
+            userEmail: userEmail,
+            premissions:premissions
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}

@@ -108,6 +108,7 @@ namespace SadnaExpress.ServiceLayer
                     throw new Exception("The supply not work!");
                 }
                 Orders.Instance.AddOrder(userID, itemForOrders);
+                
                 userFacade.PurchaseCart(userID);
                 NotificationSystem.Instance.NotifyObserversInStores(cart.Keys, "purchase cart", userID);
                 return new ResponseT<List<ItemForOrder>>(itemForOrders);

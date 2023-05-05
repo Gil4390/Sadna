@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 
 namespace SadnaExpress.API.Controllers
 {
@@ -59,6 +60,64 @@ namespace SadnaExpress.API.Controllers
             public const string removeItemToStore = "rm-item-store";
             
             public const string editItemToStore = "edit-item-store";
+            
+            public const string appointStoreOwner = "appoint-store-owner";
+            
+            public const string appointStoreManager = "appoint-store-manager";
+            
+            public const string appointStoreManagerPer = "appoint-store-manager-per";
+            
+            public const string removeStoreManagerPer =  "remove-store-manager-per";
+                
+            public const string removeStoreManager = "rm-store-manager";
+                
+            public const string removeStoreOwner = "rm-store-owner";
+
+            public const string closeStore = "close-store";
+
+            public const string getEmployee = "get-employees";
+
+            public const string getStorePurchases = "get-store-purchases";
+
+            public const string deleteStore = "rm-store";
+
+            public const string updateFirst = "update-first";
+                
+            public const string updateLast = "update-last";
+                
+            public const string updatePass = "update-pass";
+                
+            public const string setSQA = "set-sqa";
+
+            public const string getStores = "get-stores";
+            
+            public const string getStoresOwners = "get-stores-owners";
+            
+            public const string getStoreOwner = "get-store-owner";
+
+            public const string getUser = "get-user";
+
+            public const string getMember = "get-member";
+
+            public const string getAllConditions = "get-conds";
+
+            public const string getCondition = "get-cond";
+
+            public const string addCondition = "add-cond";
+                
+            public const string removeCondition = "rm-cond";
+
+            public const string addDiscountCondition = "add-discount-cond";
+
+            public const string createSimplePolicy = "create-simple-policy";
+
+            public const string createComplexPolicy = "create-complex-policy";
+
+            public const string addPolicy = "add-policyt";
+
+            public const string removePolicy = "rm-policy";
+
+
         }
 
         public static class AdminData
@@ -70,6 +129,12 @@ namespace SadnaExpress.API.Controllers
             public const string allMembers = "all-members";
             
             public const string allpurchases = "all-purchases";
+            
+            public const string allpurchasesUser = "all-purchases-user";
+            
+            public const string allpurchasesUsers = "all-purchases-users";
+            
+            public const string allpurchasesStore= "all-purchases-store";
             
             public const string removeMember = "rm-member";
         }

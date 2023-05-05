@@ -127,10 +127,16 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.ComplainToAdmin(id, message);
         }
 
-        public Response GetPurchasesInfoUser(Guid id)
+        public ResponseT<List<Order>> GetPurchasesInfoUser(Guid userID)
         {
-            return _realBridge.GetPurchasesInfoUser(id);
+            throw new NotImplementedException();
         }
+
+        public ResponseT<List<Order>> GetPurchasesInfoUserOnlu(Guid userID)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public Response EditItemCategory(Guid userID,  Guid storeID, Guid itemID, string category)
         {

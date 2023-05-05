@@ -37,7 +37,9 @@ namespace SadnaExpress.ServiceLayer
         Response RateItem(Guid userID, int itemID, int score); //3.4 (not in this version)
         Response WriteMessageToStore(Guid userID, Guid storeID, string message); //3.5  (not in this version)
         Response ComplainToAdmin(Guid userID, string message); //3.6 (not in this version)
-        Response GetPurchasesInfoUser(Guid userID); //3.7 (not in this version)
+        ResponseT<List<Order>> GetPurchasesInfoUser(Guid userID); //3.7 (not in this version)
+        ResponseT<List<Order>> GetPurchasesInfoUserOnlu(Guid userID); //3.7 (not in this version)
+
         //3.8 and 3.9 (not in this version)
         //4.1
         ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
