@@ -49,6 +49,16 @@ namespace SadnaExpress.API.Controllers
             public const string logout = "logout";
 
             public const string openStore = "open-store";
+            
+            public const string writeItemReview = "write-item-review";
+            
+            public const string itemReviews = "item-reviews";
+            
+            public const string addItemToStore = "add-item-store";
+            
+            public const string removeItemToStore = "rm-item-store";
+            
+            public const string editItemToStore = "edit-item-store";
         }
 
         public static class AdminData

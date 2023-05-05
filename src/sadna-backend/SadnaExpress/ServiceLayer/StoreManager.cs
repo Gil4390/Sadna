@@ -521,5 +521,20 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemovePolicy) + ": " + ex.Message);
             }
         }
+
+        public Response EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            try
+            {
+                userFacade.EditItem(userId, storeId);
+                storeFacade.EditItem(userId, storeId,itemId, itemName, itemCategory, itemPrice, quantity);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userId , nameof(StoreManager)+": "+nameof(EditItem)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
     }
 }

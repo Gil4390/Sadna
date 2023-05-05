@@ -259,10 +259,17 @@ namespace SadnaExpress.ServiceLayer
             // if you want remove put -i and to add +i
             return storeManager.EditItemQuantity(userID, storeID, itemID, quantity);
         }
+
+        public Response EditItem(Guid userID, Guid storeID,  Guid itemID,  string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            return storeManager.EditItem(userID, storeID,itemID, itemName, itemCategory, itemPrice, quantity);
+        }
+
         public Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
             return userManager.AppointStoreOwner(userID, storeID, userEmail);
         }
+        
 
         public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {

@@ -45,7 +45,10 @@ namespace SadnaExpress.ServiceLayer
         Response EditItemCategory(Guid userID, Guid storeID,  Guid itemID, string category);
         Response EditItemPrice(Guid userID, Guid storeID,  Guid itemID, int price); 
         Response EditItemName(Guid userID, Guid storeID,  Guid itemID, string name); 
-        Response EditItemQuantity(Guid userID, Guid storeID,  Guid itemID, int quantity); 
+        Response EditItemQuantity(Guid userID, Guid storeID,  Guid itemID, int quantity);
+
+        public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice,
+            int quantity);
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
         Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6

@@ -31,11 +31,11 @@ namespace SadnaExpress.API.Controllers
         }
 
         [Route(APIConstants.GuestData.exit)]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
-        public IHttpActionResult Exit(Guid id)
+        public IHttpActionResult Exit([FromBody] ClientRequest request)
         {
-            tradingSystem.Exit(id);
+            tradingSystem.Exit(request.UserID);
             return Ok();
         }
 
@@ -122,7 +122,7 @@ namespace SadnaExpress.API.Controllers
         }
 
         [Route(APIConstants.GuestData.purchaseCart)]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
         public IHttpActionResult PurchaseCart([FromBody] PurchaseRequest request)
         {

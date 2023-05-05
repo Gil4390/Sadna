@@ -383,6 +383,18 @@ namespace SadnaExpress.DomainLayer.Store
             GetStore(store).RemovePolicy(discountPolicy);
         }
 
+        public void EditItem(Guid userId, Guid storeID,Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeID);
+            stores[storeID].EditItemQuantity(itemID, quantity);
+            stores[storeID].EditItemName(itemID, itemName);
+            stores[storeID].EditItemPrice(itemID, (int)itemPrice);
+            stores[storeID].EditItemCategory(itemID, itemCategory);
+            Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItem)+" edited item from store "+ storeID + "- "+storeID );
+
+        }
+
         public Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
         {
             IsStoreExist(store);
