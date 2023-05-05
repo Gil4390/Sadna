@@ -36,7 +36,6 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class SearchItemRequest : ClientRequest
     {
-        //Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1
         public string ItemName { get; set; }
         public string Category { get; set; }
         public int MinPrice { get; set; }
@@ -47,13 +46,11 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class PurchaseRequest : ClientRequest
     {
-        //Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1
         public string PaymentDetails { get; set; }
         public string UsersDetail { get; set; }
     }
     public class WriteItemReviewRequest : ClientRequest
     {
-        //Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1
         public Guid StoreId { get; set; }
         public Guid ItemId { get; set; }
         public string Review { get; set; }
@@ -77,6 +74,31 @@ namespace SadnaExpress.API.ClientRequests
     public class ItemEditRequest : ItemRequest
     {
         public Guid itemId { get; set; }
+
+    }
+    
+    public class StoreOnlyRequest : ItemRequest
+    {
+        public Guid storeId { get; set; }
+
+    }
+    
+    public class StoreManagerRequest : ClientRequest
+    {
+        public Guid storeId { get; set; }
+        public string email { get; set; }
+
+    }
+    public class StoreManagerPerRequest : StoreManagerRequest
+    {
+        public string permission { get; set; }
+
+    }
+    
+    public class SQARequest : ClientRequest
+    {
+        public string field { get; set; }
+        public string field2 { get; set; }
 
     }
 }

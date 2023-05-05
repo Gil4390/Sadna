@@ -227,9 +227,25 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response GetPurchasesInfoUser(Guid userID)
+        public ResponseT<List<Order>> GetPurchasesInfoUser(Guid userID)
         {
-            throw new NotImplementedException();
+            List<Order> orders = new List<Order>();
+            foreach (User user in GetCurrent_Users().Values)
+            {
+                orders.AddRange(Orders.Instance.GetUserOrders()[user.UserId]);
+            }
+            foreach (Member mem in GetMembers(userID).Value.Values)
+            {
+                orders.AddRange(Orders.Instance.GetUserOrders()[mem.UserId]);
+            }
+            
+            
+            return new ResponseT<List<Order>>(orders);
+        }
+        public ResponseT<List<Order>> GetPurchasesInfoUserOnlu(Guid userID)
+        {
+            
+            return new ResponseT<List<Order>>(Orders.Instance.GetUserOrders()[userID]);
         }
 
         public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID,  string itemName, string itemCategory, double itemPrice, int quantity)

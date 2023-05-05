@@ -42,7 +42,35 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetAllPurchases([FromBody] ClientRequest request)
         {
+            //all stores
             return Ok(tradingSystem.GetAllStorePurchases(request.UserID).Value.Values.ToList());
+        }
+        
+        [Route(APIConstants.AdminData.allpurchasesStore)]
+        [ResponseType(typeof(ResponseT<List<Order>>))]
+        [HttpPost]
+        public IHttpActionResult GetAllPurchasesFromStore([FromBody] StoreOnlyRequest request)
+        {
+            //per stores
+            return Ok(tradingSystem.GetAllStorePurchases(request.UserID).Value[request.storeId]);
+        }
+        
+        [Route(APIConstants.AdminData.allpurchasesUsers)]
+        [ResponseType(typeof(ResponseT<List<Order>>))]
+        [HttpPost]
+        public IHttpActionResult GetAllPurchasesFromUser([FromBody] ClientRequest request)
+        {
+            //all users
+            return Ok(tradingSystem.GetPurchasesInfoUser(request.UserID));
+        }
+        
+        [Route(APIConstants.AdminData.allpurchasesUser)]
+        [ResponseType(typeof(ResponseT<List<Order>>))]
+        [HttpPost]
+        public IHttpActionResult GetPurchasesInfoUserOnlu([FromBody] ClientRequest request)
+        {
+            //per user
+            return Ok(tradingSystem.GetPurchasesInfoUserOnlu(request.UserID));
         }
         
         [Route(APIConstants.AdminData.removeMember)]
