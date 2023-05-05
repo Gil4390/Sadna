@@ -753,3 +753,43 @@ export function handlegetItems(storeID) {
         return Promise.resolve(data)
     })
 }
+
+export function GetAllPurchasesFromStore(userID , storeId) {
+    let url = "http://localhost:8080/api/member/store-purchase";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID:userID,
+            storeId:storeId,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+
+export function GetPurchasesInfoOfUser(userID) {
+    let url = "http://localhost:8080/api/member/user-purchases";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID:userID,
+            userIDToWatch:userID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
