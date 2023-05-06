@@ -30,11 +30,12 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Guid OpenNewStore(string storeName)
         {
-            String internedKey = String.Intern(storeName.ToLower());
-
             IsTsInitialized();
+
             if (storeName.Length == 0)
                 throw new Exception("Store name can not be empty");
+
+            String internedKey = String.Intern(storeName.ToLower());
 
             lock (internedKey)
             {
@@ -126,6 +127,14 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             return stores.Values.ToList();
         }
+
+        public Store GetStoreInfo(Guid storeId)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeId);
+            return stores[storeId];
+        }
+
         public void AddItemToStores(Dictionary<Guid, Dictionary<Guid, int>> items)
         {
             foreach (Guid storeID in items.Keys)

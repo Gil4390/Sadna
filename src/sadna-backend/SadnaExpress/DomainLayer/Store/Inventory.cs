@@ -92,44 +92,57 @@ namespace SadnaExpress.DomainLayer.Store
         public void EditItemQuantity(Guid itemID, int quantity)
         {
             Item item = GetItemById(itemID);
-            lock (item)
+            if (item.Quantity != quantity)
             {
-                if (items_quantity[item] + quantity < 0)
-                    throw new Exception("Edit item quantity failed, item quantity cant be negative");
-                items_quantity[item] += quantity;
+                lock (item)
+                {
+                    if (items_quantity[item] + quantity < 0)
+                        throw new Exception("Edit item quantity failed, item quantity cant be negative");
+                    items_quantity[item] += quantity;
+                }
             }
         }
         public void EditItemName(Guid itemID, string name)
         {
             Item item = GetItemById(itemID);
-            lock (item)
+            if (item.Name != name)
             {
-                if (name.Equals(""))
-                    throw new Exception("Edit item failed, item name cant be empty");
-                if (itemExistsByName(name))
-                    throw new Exception(
-                        "Edit item failed, item name cant be edited to a name that belongs to another item in the store");
-                item.Name = name;
+                lock (item)
+                {
+                    if (name.Equals(""))
+                        throw new Exception("Edit item failed, item name cant be empty");
+                    if (itemExistsByName(name))
+                        throw new Exception(
+                            "Edit item failed, item name cant be edited to a name that belongs to another item in the store");
+                    item.Name = name;
+                }
             }
         }
+
         public void EditItemCategory(Guid itemID, string category)
         {
             Item item = GetItemById(itemID);
-            lock (item)
+            if (item.Category != category)
             {
-                if (category.Equals(""))
-                    throw new Exception("Edit item failed, item category cant be empty");
-                item.Category = category;
+                lock (item)
+                {
+                    if (category.Equals(""))
+                        throw new Exception("Edit item failed, item category cant be empty");
+                    item.Category = category;
+                }
             }
         }
         public void EditItemPrice(Guid itemId, double price)
         {
             Item item = GetItemById(itemId);
-            lock(item)
+            if (item.Price != price)
             {
-                if (price < 0)
-                    throw new Exception("Edit item failed, item price cant be negative");
-                item.Price = price;
+                lock (item)
+                {
+                    if (price < 0)
+                        throw new Exception("Edit item failed, item price cant be negative");
+                    item.Price = price;
+                }
             }
         }
         private bool itemExistsByName(string itemName)
@@ -141,6 +154,7 @@ namespace SadnaExpress.DomainLayer.Store
             }
             return false;
         }
+
         public Item GetItemById(Guid itemId)
         {
             foreach (Item item in items_quantity.Keys)

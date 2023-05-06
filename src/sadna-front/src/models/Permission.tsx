@@ -1,4 +1,4 @@
-export interface Permissions { 
+export interface PermissionPerStore { 
   [key: string]:Permission[]
 };
 

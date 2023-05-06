@@ -123,6 +123,7 @@ namespace SadnaExpress.API.Controllers
 
             public const string getMemberPermissions = "get-member-permissions";
 
+            public const string getStoreInfo = "get-store-info";
 
         }
 

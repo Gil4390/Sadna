@@ -50,7 +50,7 @@ export function handleIsSystemInit() {
     })
 }
 
-export function handleRegister(userId, email , firstName , lastName, password) {
+export function handleRegister(userID, email , firstName , lastName, password) {
     let url = "http://localhost:8080/api/guest/register";
 
     return fetch(url, {
@@ -58,7 +58,7 @@ export function handleRegister(userId, email , firstName , lastName, password) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            userId: userId,
+            userID: userID,
             email: email,
             firstName: firstName,
             lastName: lastName,
@@ -73,7 +73,7 @@ export function handleRegister(userId, email , firstName , lastName, password) {
     })
 }
 
-export function handleLogin(userId, email , password) {
+export function handleLogin(userID, email , password) {
     let url = "http://localhost:8080/api/guest/login";
 
     return fetch(url, {
@@ -81,7 +81,7 @@ export function handleLogin(userId, email , password) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            userId: userId,
+            userID: userID,
             email: email,
             password :password,
         })

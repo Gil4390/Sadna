@@ -86,7 +86,7 @@ export function handleAddItemStore(userID , storeID, itemName , itemCategory , i
         body: JSON.stringify({
             userID:userID,
             storeID: storeID,
-            itemID:itemName,
+            itemName:itemName,
             itemCategory:itemCategory,
             itemPrice:itemPrice,
             quantity:quantity,
@@ -119,7 +119,7 @@ export function handleRemoveItemStore(userID,storeID, itemID) {
         return Promise.resolve(data)
     })
 }
-export function handleEditItemStore(userID , storeID, itemName , itemCategory , itemPrice , quantity) {
+export function handleEditItemStore(userID , storeID, itemID,itemName , itemCategory , itemPrice , quantity) {
     let url = "http://localhost:8080/api/member/edit-item-store";
 
     return fetch(url, {
@@ -129,7 +129,8 @@ export function handleEditItemStore(userID , storeID, itemName , itemCategory , 
         body: JSON.stringify({
             userID:userID,
             storeID: storeID,
-            itemID:itemName,
+            itemID:itemID,
+            itemName:itemName,
             itemCategory:itemCategory,
             itemPrice:itemPrice,
             quantity:quantity,
@@ -460,7 +461,7 @@ export function handleGetStoresOwners( ) {
     })
 }
 //All employees that is store owners in specific store
-export function handleGetStoresOwnersSpecificStore(storeId) {
+export function handleGetStoresOwnersSpecificStore(storeID) {
     let url = "http://localhost:8080/api/member/get-stores-owner";
 
     return fetch(url, {
@@ -468,7 +469,7 @@ export function handleGetStoresOwnersSpecificStore(storeId) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            storeId:storeId,
+            storeID:storeID,
         })
     }).then(async response => {
         const data = await response.json();
@@ -478,45 +479,6 @@ export function handleGetStoresOwnersSpecificStore(storeId) {
         return Promise.resolve(data)
     })
 }
-
-
-export function handleGetUser(UserID) {
-    let url = "http://localhost:8080/api/member/get-user";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            UserID:UserID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-export function handleGetMember(UserID) {
-    let url = "http://localhost:8080/api/member/get-user";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            UserID:UserID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-
 
 export function handleGetUserNotification(UserID) {
     let url = "http://localhost:8080/api/member/get-notifications";
@@ -735,14 +697,15 @@ export function handleRemovePolicy(storeID , discountPolicy) {
 }
 
 
-export function handlegetItems(storeID) {
-    let url = "http://localhost:8080/api/member/rm-policy";
+export function handleGetItems(userID,storeID) {
+    let url = "http://localhost:8080/api/member/get-items";
 
     return fetch(url, {
         method: 'POST',
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userID:userID,
             storeID:storeID,
         })
     }).then(async response => {
@@ -750,11 +713,11 @@ export function handlegetItems(storeID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 
-export function GetAllPurchasesFromStore(userID , storeId) {
+export function GetAllPurchasesFromStore(userID , storeID) {
     let url = "http://localhost:8080/api/member/store-purchase";
 
     return fetch(url, {
@@ -763,7 +726,7 @@ export function GetAllPurchasesFromStore(userID , storeId) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userID:userID,
-            storeId:storeId,
+            storeID:storeID,
         })
     }).then(async response => {
         const data = await response.json();
@@ -810,5 +773,25 @@ export function handleGetMemberPermissions(userID) {
             return Promise.reject(data.error);
         }
         return Promise.resolve(data.value)
+    })
+}
+
+export function handleGetStoreInfo(userID, storeID) {
+    let url = "http://localhost:8080/api/member/get-store-info";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID:userID,
+            storeID:storeID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
     })
 }
