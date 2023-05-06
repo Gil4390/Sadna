@@ -8,6 +8,7 @@ using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ExternalServices;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 
@@ -553,6 +554,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<bool> IsAdmin(Guid userID)
         {
             return userManager.isAdmin(userID);
+        }
+
+        public ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID)
+        {
+            return userManager.GetMemberPermissions(userID);
         }
     }
 }

@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
 import { Store } from '../../components/Store.tsx';
+import { handleGetMemberPermissions } from '../../actions/MemberActions.tsx';
 
 const stores = [
   { id: 1, name: 'Store A', isOpne: true},
@@ -9,6 +10,28 @@ const stores = [
 ];
 
 function StoresManagementPage(props) {
+  const [permissions, setPermissions] = useState<Permissions>();
+
+  const getPermissions =()=>{
+    handleGetMemberPermissions(props.id).then(
+      value => {
+        setPermissions(value as Permissions);
+      })
+      .catch(error => alert(error));
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      console.log(`Permissions for key ${key}:`);
+      const permissionList = permissions[key];
+      console.log(permissionList);
+    }
+   }, [permissions])
+
+  useEffect(() => {
+    console.log(props.id);
+    getPermissions();
+  }, [])
 
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -36,7 +59,7 @@ function StoresManagementPage(props) {
   };
 
   return (
-  <dev>
+  <div>
     <Container className="my-5">
       <h1>Stores Management</h1>
       <Row className="my-3">
@@ -74,7 +97,7 @@ function StoresManagementPage(props) {
         ))}
       </Row>
     </Container>
-    </dev>
+    </div>
   );
 }
 

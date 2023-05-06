@@ -121,6 +121,8 @@ namespace SadnaExpress.API.Controllers
             
             public const string getItems = "get-items";
 
+            public const string getMemberPermissions = "get-member-permissions";
+
 
         }
 

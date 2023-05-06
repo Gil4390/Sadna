@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.ServiceLayer.Obj;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -410,6 +411,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<bool> IsAdmin(Guid userID)
         {
             return _realBridge.IsAdmin(userID);
+        }
+
+        public ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID)
+        {
+            return _realBridge.GetMemberPermissions(userID);
         }
     }
 }

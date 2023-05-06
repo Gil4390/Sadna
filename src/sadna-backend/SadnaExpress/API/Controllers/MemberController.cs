@@ -12,10 +12,11 @@ using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.API.Controllers
 {
-    [RoutePrefix(APIConstants.MemberData.root)]
+    [RoutePrefix(APIConstants.ApiRoot + APIConstants.MemberData.root)]
     public class MemberController : ApiController
     {
         ITradingSystem tradingSystem;
@@ -317,7 +318,14 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult GetItemsInStore([FromBody] StoreIDRequest request)
         {
             return Ok(tradingSystem.GetItemsInStore(request.storeId));
+        }
 
+        [Route(APIConstants.MemberData.getMemberPermissions)]
+        [ResponseType(typeof(ResponseT<Dictionary<Guid, SPermission>>))]
+        [HttpPost]
+        public IHttpActionResult GetMemberPermissions([FromBody] ClientRequest request)
+        {
+            return Ok(tradingSystem.GetMemberPermissions(request.UserID));
         }
 
     }

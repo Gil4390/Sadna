@@ -38,9 +38,7 @@ const App:React.FC=()=>{
  useEffect(() => {
   if (login){
     handleIsAdmin(id).then(
-      value => {
-        console.log("aaaaaa:" + (value.value as boolean));
-        
+      value => {       
         if (value.value as boolean) {
           setUserType("admin")
         }
@@ -66,7 +64,7 @@ const App:React.FC=()=>{
         <Route path="/LoginPage" element={<LoginPage id={id} onIdChange={handleLogin} isInit={isInit}/>} />
         <Route path="/RegisterPage" element={<RegisterPage id={id} isInit={isInit}/>} />
 
-        <Route path="/StoresManagementPage" element={<StoresManagementPage />} />
+        <Route path="/StoresManagementPage" element={<StoresManagementPage id={id}/>} />
         <Route path="/PurchasedItemsPage" element={<PurchasedItemsPage />} />
         <Route path="/DiscountPoliciesPage" element={<DiscountPoliciesPage />} />
         <Route path="/PurchasePoliciesPage" element={<PurchasePoliciesPage />} />

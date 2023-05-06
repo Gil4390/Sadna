@@ -18,9 +18,6 @@ function ShoppingPage(props) {
       .catch(error => alert(error));
   }
 
-  useEffect(() => {
-    console.log("all items: "+allItems)
- }, [allItems])
 
   useEffect(() => {
     getAllItems();
