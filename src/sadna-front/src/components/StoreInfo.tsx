@@ -50,9 +50,9 @@ export function StoreInfo(props) {
       .catch(error => alert(error));
   }
 
-  function handleViewItemsClick(uId, sId) {
+  function handleNavigate(windowName,uId, sId) {
     console.log("user id "+uId+" store id "+sId)
-    navigate("/ManageItemsPage", { state: { 
+    navigate(windowName, { state: { 
       userId: uId,
       storeId: sId ,
     }, });
@@ -68,10 +68,10 @@ export function StoreInfo(props) {
   return (
     <div>
       <h2>{store?.name}</h2>
-      <Button variant="dark" onClick={() =>handleViewItemsClick(props.id,props.store)} style={{margin: "5px"}}>
+      <Button variant="dark" onClick={() =>handleNavigate("/ManageItemsPage",props.id,props.store)} style={{margin: "5px"}}>
         View Items
       </Button>
-      {permission.get_employees_info &&<Button variant="dark" onClick={() => navigate("/ManageStoreEmployeesPage")} style={{margin: "5px"}} >
+      {permission.get_employees_info &&<Button variant="dark" onClick={() => handleNavigate("/ManageStoreEmployeesPage",props.id,props.store)} style={{margin: "5px"}} >
         View Employees
       </Button>}
       {permission.get_store_history && (<Button variant="dark" onClick={() => navigate("/PurchasedStoreItemsPage")} style={{margin: "5px"}} >

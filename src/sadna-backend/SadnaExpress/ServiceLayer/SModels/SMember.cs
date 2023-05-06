@@ -51,4 +51,20 @@ namespace SadnaExpress.ServiceLayer.SModels
         public bool LoggedIn { get => loggedIn; set => loggedIn = value; }
         public List<string> Permissions { get => permissions; set => permissions = value; }
     }
+
+    public class SMemberForStore : SMember
+    {
+        public SMemberForStore(Member member, Guid storeID) : base(member)
+        {
+            this.Permissions = new List<string>();
+
+            if (member is PromotedMember)
+            {
+                PromotedMember pmember = (PromotedMember)member;
+
+                if(pmember.Permission.ContainsKey(storeID))
+                    this.Permissions.AddRange(pmember.Permission[storeID]);
+            }
+        }
+    }
 }

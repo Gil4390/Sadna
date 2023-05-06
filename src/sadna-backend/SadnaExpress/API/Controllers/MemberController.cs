@@ -91,15 +91,15 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult AppointStoreManager([FromBody] StoreManagerRequest request)
         {
-            return Ok(tradingSystem.AppointStoreManager(request.userID, request.storeID, request.email));
+            return Ok(tradingSystem.AppointStoreManager(request.userID, request.storeID, request.userEmail));
         }
         
-        [Route(APIConstants.MemberData.appointStoreManagerPer)]
+        [Route(APIConstants.MemberData.addStoreManagerPer)]
         [ResponseType(typeof(Response))]
         [HttpPost]
         public IHttpActionResult AddStoreManagerPermissions([FromBody] StoreManagerPerRequest request)
         {
-            return Ok(tradingSystem.AddStoreManagerPermissions(request.userID, request.storeID, request.email,request.permission));
+            return Ok(tradingSystem.AddStoreManagerPermissions(request.userID, request.storeID, request.userEmail,request.permission));
         }
         
         [Route(APIConstants.MemberData.appointStoreOwner)]
@@ -107,7 +107,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult AppointStoreOwner([FromBody] StoreManagerRequest request)
         {
-            return Ok(tradingSystem.AppointStoreOwner(request.userID, request.storeID, request.email));
+            return Ok(tradingSystem.AppointStoreOwner(request.userID, request.storeID, request.userEmail));
         }
         
         [Route(APIConstants.MemberData.removeStoreManagerPer)]
@@ -115,7 +115,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult RemoveStoreManagerPermissions([FromBody] StoreManagerPerRequest request)
         {
-            return Ok(tradingSystem.RemoveStoreManagerPermissions(request.userID, request.storeID, request.email,request.permission));
+            return Ok(tradingSystem.RemoveStoreManagerPermissions(request.userID, request.storeID, request.userEmail,request.permission));
         }
         
         [Route(APIConstants.MemberData.removeStoreOwner)]
@@ -123,7 +123,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult RemoveStoreOwner([FromBody] StoreManagerRequest request)
         {
-            return Ok(tradingSystem.RemoveStoreOwner(request.userID, request.storeID, request.email));
+            return Ok(tradingSystem.RemoveStoreOwner(request.userID, request.storeID, request.userEmail));
         }
         
         [Route(APIConstants.MemberData.closeStore)]
@@ -136,7 +136,7 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.MemberData.getEmployee)]
-        [ResponseType(typeof(ResponseT<List<PromotedMember>>))]
+        [ResponseType(typeof(ResponseT<List<SMemberForStore>>))]
         [HttpPost]
         public IHttpActionResult GetEmployeeInfoInStore([FromBody] StoreIDRequest request)
         {
@@ -213,22 +213,6 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult GetStoreOwnerOfStores([FromBody] ListGuidRequest request)
         {
             return Ok(tradingSystem.GetStoreOwnerOfStores(request.storeID));
-        }
-        
-        [Route(APIConstants.MemberData.getUser)]
-        [ResponseType(typeof(ResponseT<User>))]
-        [HttpPost]
-        public IHttpActionResult GetUser([FromBody] ClientRequest request)
-        {
-            return Ok(tradingSystem.GetUser(request.userID));
-        }
-        
-        [Route(APIConstants.MemberData.getMember)]
-        [ResponseType(typeof(ResponseT<Member>))]
-        [HttpPost]
-        public IHttpActionResult GetMember([FromBody] ClientRequest request)
-        {
-            return Ok(tradingSystem.GetMember(request.userID));
         }
         
         [Route(APIConstants.MemberData.getNotifications)]

@@ -93,7 +93,7 @@ namespace SadnaExpress.API.ClientRequests
     public class StoreManagerRequest : ClientRequest
     {
         public Guid storeID { get; set; }
-        public string email { get; set; }
+        public string userEmail { get; set; }
 
     }
     public class StoreManagerPerRequest : StoreManagerRequest

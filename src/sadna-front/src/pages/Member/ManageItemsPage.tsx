@@ -10,9 +10,6 @@ import { ResponseT,Response } from '../../models/Response.tsx';
 const ManageItemsPage = (props) => {
   const location = useLocation();
   const { userId, storeId } = location.state;
-  //const [userId, setUserId]=useState<string>(location.state.userId);
-  //const [storeId, setStoreId]=useState<string>(location.state.storeId);
-  console.log("hereeee user id "+userId+" store id "+storeId);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);

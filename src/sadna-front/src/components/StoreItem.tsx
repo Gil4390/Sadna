@@ -59,7 +59,7 @@ export function StoreItem(props) {
       <Card.Body className="d-flex flex-column">
         <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
           <span className="fs-2">{props.item.name}</span>
-          <span className="ms-2 text-muted">{props.item.price} ₪</span>
+          <span className="ms-2 text-muted">{props.item.price} $</span>
           {/* <span className="ms-2 text-muted">{props.item.rating} ₪</span> */}
         </Card.Title>
         {props.item.inStock==0? (<Card.Text>

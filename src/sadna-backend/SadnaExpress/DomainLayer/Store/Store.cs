@@ -106,7 +106,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             itemsInventory.RemoveItem(itemID);
         }
-        public void EditItemPrice(Guid itemID, int price)
+        public void EditItemPrice(Guid itemID, double price)
         {
             itemsInventory.EditItemPrice(itemID, price);
         }

@@ -26,7 +26,7 @@ namespace SadnaExpress.ServiceLayer
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
         Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
-        ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID); //4.11
+        ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID); //4.11
         Response RemoveUserMembership(Guid userID, string email);
         //system manager actions 
         

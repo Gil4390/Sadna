@@ -358,7 +358,7 @@ namespace SadnaExpress.ServiceLayer
             //return storeManager.ReopenStore(userID,storeID);
         }
 
-        public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
+        public ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             return userManager.GetEmployeeInfoInStore(userID, storeID);
         }
