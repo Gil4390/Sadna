@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Condition } from '../../components/Condition';
 import Exit from "../Exit.tsx";
 
-function DiscountPoliciesPage() {
+function DiscountPoliciesPage(props) {
   const styles = {
     container: {
       background: 'white',

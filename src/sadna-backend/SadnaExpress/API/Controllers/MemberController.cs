@@ -340,5 +340,23 @@ namespace SadnaExpress.API.Controllers
             return Ok(tradingSystem.GetMemberPermissions(request.userID));
         }
 
+        [Route(APIConstants.MemberData.getUserPurchases)]
+        [ResponseType(typeof(ResponseT<Dictionary<Guid, List<Order>>>))]
+        [HttpPost]
+        public IHttpActionResult GetPurchasesOfUser([FromBody] ClientRequest request)
+        {
+            var res = tradingSystem.GetPurchasesInfoUserOnlu(request.userID);
+            return Ok(res);
+        }
+
+        [Route(APIConstants.MemberData.getStorePurchases)]
+        [ResponseType(typeof(ResponseT<Dictionary<Guid, List<Order>>>))]
+        [HttpPost]
+        public IHttpActionResult GetPurchasesOfStore([FromBody] StoreIDRequest request)
+        {
+            var res = tradingSystem.GetStorePurchases(request.userID, request.storeID);
+            return Ok(res);
+        }
+
     }
 }

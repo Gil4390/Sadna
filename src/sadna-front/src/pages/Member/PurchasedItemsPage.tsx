@@ -1,27 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import Exit from "../Exit.tsx";
+import { Order, ItemForOrder } from '../../models/Purchase.tsx';
+import { handleGetPurchasesOfUser } from '../../actions/MemberActions.tsx';
 
-const purchases = [
-  {
-    name: 'Product 1',
-    price: 10.99,
-    category: 'Electronics',
-    quantity: 2,
-  },
-  {
-    name: 'Product 2',
-    price: 15.99,
-    category: 'Home',
-    quantity: 1,
-  },
-  {
-    name: 'Product 3',
-    price: 8.99,
-    category: 'Clothing',
-    quantity: 3,
-  },
-];
+
+interface OrderTableRow {
+  itemName: string;
+  storeName: string;
+  itemPrice: number;
+  category: number;
+
+}
 
 const ReviewsModal = ({ show, handleClose, product }) => {
   const [review, setReview] = useState('');
@@ -39,7 +29,7 @@ const ReviewsModal = ({ show, handleClose, product }) => {
         <Modal.Title>Write a Review</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{`Product: ${product.name}`}</p>
+        <p>{`Product: ${product.itemName}`}</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="review">Review</label>
@@ -64,6 +54,18 @@ const PurchasedItemsPage = (props) => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  const [purchases, setPurchases] = useState<ItemForOrder[]>([]);
+
+  const getUserPurchases = ()=>{
+    handleGetPurchasesOfUser(props.id).then(
+      value => {
+        console.log(value);
+        
+        setPurchases(value as ItemForOrder[]);
+      })
+      .catch(error => alert(error));
+  }
+
   const handleReviewClick = (product) => {
     setSelectedProduct(product);
     setShowReviewModal(true);
@@ -74,6 +76,28 @@ const PurchasedItemsPage = (props) => {
     setShowReviewModal(false);
   };
 
+  useEffect(() => {
+    getUserPurchases();
+  }, []);
+
+
+
+
+  const getOrderTableRows = (): OrderTableRow[] => {
+    const orderTableRows: OrderTableRow[] = [];
+      for (const item of purchases) {
+          orderTableRows.push({
+            storeName: item.storeName,
+            itemName: item.name,
+            itemPrice: item.price,
+            category: item.category,
+          });
+        }
+    
+
+  return orderTableRows;
+  };
+
   return (
     <div className="container">
       <Exit id={props.id}/>
@@ -81,22 +105,22 @@ const PurchasedItemsPage = (props) => {
       <table className="table" style={{background: "white"}}>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Item Name</th>
+            <th>Store Name</th>
             <th>Price</th>
             <th>Category</th>
-            <th>Quantity</th>
             <th>Review</th>
           </tr>
         </thead>
         <tbody>
-          {purchases.map((product) => (
-            <tr key={product.name}>
-              <td>{product.name}</td>
-              <td>{product.price}</td>
-              <td>{product.category}</td>
-              <td>{product.quantity}</td>
+          {getOrderTableRows().map((row, index) => (
+            <tr key={index}>
+              <td>{row.itemName}</td>
+              <td>{row.storeName}</td>
+              <td>{row.itemPrice}$</td>
+              <td>{row.category}</td>
               <td>
-                <Button onClick={() => handleReviewClick(product)}>
+                <Button onClick={() => handleReviewClick(row)}>
                   Write a Review
                 </Button>
               </td>

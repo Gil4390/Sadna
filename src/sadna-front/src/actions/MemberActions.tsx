@@ -717,8 +717,8 @@ export function handleGetItems(userID,storeID) {
     })
 }
 
-export function GetAllPurchasesFromStore(userID , storeID) {
-    let url = "http://localhost:8080/api/member/store-purchase";
+export function handleGetAllPurchasesFromStore(userID , storeID) {
+    let url = "http://localhost:8080/api/member/get-store-purchases";
 
     return fetch(url, {
         method: 'POST',
@@ -733,12 +733,12 @@ export function GetAllPurchasesFromStore(userID , storeID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 
-export function GetPurchasesInfoOfUser(userID) {
-    let url = "http://localhost:8080/api/member/user-purchases";
+export function handleGetPurchasesOfUser(userID) {
+    let url = "http://localhost:8080/api/member/get-user-purchases";
 
     return fetch(url, {
         method: 'POST',
@@ -753,7 +753,7 @@ export function GetPurchasesInfoOfUser(userID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 

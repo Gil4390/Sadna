@@ -269,9 +269,12 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
         {
             List<ItemForOrder> list = new List<ItemForOrder>();
-            foreach (Order order in Orders.Instance.GetUserOrders()[userID])
+            if (Orders.Instance.GetUserOrders().ContainsKey(userID))
             {
-                list.AddRange(order.ListItems);
+                foreach (Order order in Orders.Instance.GetUserOrders()[userID])
+                {
+                    list.AddRange(order.ListItems);
+                }
             }
             return new ResponseT<List<ItemForOrder>>(list);
         }

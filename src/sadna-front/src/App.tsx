@@ -69,12 +69,12 @@ const App:React.FC=()=>{
         <Route path="/RegisterPage" element={<RegisterPage id={id} isInit={isInit}/>} />
 
         <Route path="/StoresManagementPage" element={<StoresManagementPage id={id}/>} />
-        <Route path="/PurchasedItemsPage" element={<PurchasedItemsPage />} />
-        <Route path="/DiscountPoliciesPage" element={<DiscountPoliciesPage />} />
-        <Route path="/PurchasePoliciesPage" element={<PurchasePoliciesPage />} />
-        <Route path="/ManageStoreEmployeesPage" element={<ManageStoreEmployeesPage />} />
-        <Route path="/ManageItemsPage" element={<ManageItemsPage />} />
-        <Route path="/PurchasedStoreItemsPage" element={<PurchasedStoreItemsPage />} />
+        <Route path="/PurchasedItemsPage" element={<PurchasedItemsPage id={id} />} />
+        <Route path="/DiscountPoliciesPage" element={<DiscountPoliciesPage id={id}/>} />
+        <Route path="/PurchasePoliciesPage" element={<PurchasePoliciesPage id={id}/>} />
+        <Route path="/ManageStoreEmployeesPage" element={<ManageStoreEmployeesPage id={id}/>} />
+        <Route path="/ManageItemsPage" element={<ManageItemsPage id={id}/>} />
+        <Route path="/PurchasedStoreItemsPage" element={<PurchasedStoreItemsPage id={id}/>} />
 
         <Route path="/AdminViewAllUsersPage" element={<AdminViewAllUsersPage id={id}/>} />
         <Route path="/AdminManageAllStoresPage" element={<AdminManageAllStoresPage id={id}/>} />

@@ -79,6 +79,8 @@ namespace SadnaExpress.API.Controllers
 
             public const string getStorePurchases = "get-store-purchases";
 
+            public const string getUserPurchases = "get-user-purchases";
+
             public const string deleteStore = "rm-store";
 
             public const string updateFirst = "update-first";

@@ -93,11 +93,7 @@ const AdminViewAllPurchasesPage = (props) => {
             });
           }
     }
-
-
-
   }
-
   return orderTableRows;
   };
 
