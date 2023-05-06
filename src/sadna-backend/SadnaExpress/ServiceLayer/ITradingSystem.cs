@@ -62,7 +62,7 @@ namespace SadnaExpress.ServiceLayer
         Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
-        ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
+        ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
         ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
         Response RemoveUserMembership(Guid userID, string email); //6.2
         ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID);//6.4

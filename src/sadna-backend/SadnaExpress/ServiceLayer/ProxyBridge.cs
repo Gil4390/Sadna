@@ -129,11 +129,6 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.ComplainToAdmin(id, message);
         }
 
-        public ResponseT<List<Order>> GetPurchasesInfoUser(Guid userID)
-        {
-            throw new NotImplementedException();
-        }
-
         public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
         {
             throw new NotImplementedException();
@@ -206,7 +201,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.ReopenStore(id, storeID);
         }
 
-        public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid id, Guid storeID)
+        public ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid id, Guid storeID)
         {
             return _realBridge.GetEmployeeInfoInStore(id, storeID);
         }
@@ -419,12 +414,12 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetStoreInfo(userID, storeId);
         }
 
-        ResponseT<List<SMember>> ITradingSystem.GetMembers(Guid userID)
+        public ResponseT<List<SMember>> GetMembers(Guid userID)
         {
             return _realBridge.GetMembers(userID);
         }
 
-        ResponseT<Dictionary<Guid, List<Order>>> ITradingSystem.GetPurchasesInfoUser(Guid userID)
+        public ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID)
         {
             return _realBridge.GetPurchasesInfoUser(userID);
         }

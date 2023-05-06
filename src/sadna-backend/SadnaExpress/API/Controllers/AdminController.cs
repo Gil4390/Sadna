@@ -9,6 +9,7 @@ using System.Web.Http.Description;
 using SadnaExpress.API.ClientRequests;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.API.Controllers
 {
@@ -39,7 +40,7 @@ namespace SadnaExpress.API.Controllers
             return Ok(res);
         }
         [Route(APIConstants.AdminData.allMembers)]
-        [ResponseType(typeof(ResponseT<List<Member>>))]
+        [ResponseType(typeof(ResponseT<List<SMember>>))]
         [HttpPost]
         public IHttpActionResult GetAllMembers([FromBody] ClientRequest request)
         {

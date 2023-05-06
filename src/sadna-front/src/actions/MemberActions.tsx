@@ -164,8 +164,8 @@ export function handleAppointStoreManager(userID, storeID, userEmail) {
         return Promise.resolve(data)
     })
 }
-export function handleAppointStoreManagerPremission(userID, storeID, userEmail , premissions) {
-    let url = "http://localhost:8080/api/member/appoint-store-manager-per";
+export function handleAddStoreManagerPermission(userID, storeID, userEmail , permission) {
+    let url = "http://localhost:8080/api/member/add-store-manager-per";
 
     return fetch(url, {
         method: 'POST',
@@ -175,7 +175,7 @@ export function handleAppointStoreManagerPremission(userID, storeID, userEmail ,
             userID:userID,
             storeID: storeID,
             userEmail: userEmail,
-            premissions:premissions
+            permission:permission
         })
     }).then(async response => {
         const data = await response.json();
@@ -206,7 +206,7 @@ export function handleAppointStoreOwner(userID, storeID, userEmail ) {
     })
 }
 
-export function handleRemoveStoreManagerPer(userID, storeID, userEmail, premissions ) {
+export function handleRemoveStoreManagerPermission(userID, storeID, userEmail, permission ) {
     let url = "http://localhost:8080/api/member/rm-store-manager-per";
 
     return fetch(url, {
@@ -217,6 +217,7 @@ export function handleRemoveStoreManagerPer(userID, storeID, userEmail, premissi
             userID:userID,
             storeID: storeID,
             userEmail: userEmail,
+            permission:permission,
         })
     }).then(async response => {
         const data = await response.json();

@@ -398,7 +398,7 @@ namespace SadnaExpress.DomainLayer.Store
             IsStoreExist(storeID);
             stores[storeID].EditItemQuantity(itemID, quantity);
             stores[storeID].EditItemName(itemID, itemName);
-            stores[storeID].EditItemPrice(itemID, (int)itemPrice);
+            stores[storeID].EditItemPrice(itemID, itemPrice);
             stores[storeID].EditItemCategory(itemID, itemCategory);
             Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItem)+" edited item from store "+ storeID + "- "+storeID );
 

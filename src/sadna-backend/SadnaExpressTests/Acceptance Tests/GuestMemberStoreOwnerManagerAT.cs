@@ -7,6 +7,7 @@ using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpressTests.Acceptance_Tests
 {
@@ -808,7 +809,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void RequestStoreEmployeeInfo_Good()
         {
-            Task<ResponseT<List<PromotedMember>>> task = Task.Run(() => {
+            Task<ResponseT<List<SMemberForStore>>> task = Task.Run(() => {
                 return proxyBridge.GetEmployeeInfoInStore(store5Owner, storeID5);
             });
 
@@ -817,7 +818,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             int employeeCountBefore = task.Result.Value.Count;
 
-            Task<ResponseT<List<PromotedMember>>> task2 = Task.Run(() => {
+            Task<ResponseT<List<SMemberForStore>>> task2 = Task.Run(() => {
                 proxyBridge.AppointStoreManager(store5Owner, storeID5, "logmail1@gmail.com"); //added new employee
                 return proxyBridge.GetEmployeeInfoInStore(store5Owner, storeID5);
             });
@@ -833,14 +834,14 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void RequestStoreEmployeeInfoNoPermission_Good()
         {
-            Task<ResponseT<List<PromotedMember>>> task = Task.Run(() => {
+            Task<ResponseT<List<SMemberForStore>>> task = Task.Run(() => {
                 return proxyBridge.GetEmployeeInfoInStore(store5Manager, storeID5);
             });
 
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error occured
 
-            Task<ResponseT<List<PromotedMember>>> task2 = Task.Run(() => {
+            Task<ResponseT<List<SMemberForStore>>> task2 = Task.Run(() => {
                 proxyBridge.AddStoreManagerPermissions(store5Founder, storeID5, "storeManagerMail2@gmail.com", "get employees info");
                 return proxyBridge.GetEmployeeInfoInStore(store5Manager, storeID5);
             });

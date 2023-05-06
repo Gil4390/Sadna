@@ -169,17 +169,24 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
+        public ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             try
             {
                 List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(userID, storeID);
-                return new ResponseT<List<PromotedMember>>(employees);
+                List<SMemberForStore> sMembers = new List<SMemberForStore>();
+
+                foreach (PromotedMember member in employees)
+                {
+                    SMemberForStore sMember = new SMemberForStore(member, storeID);
+                    sMembers.Add(sMember);
+                }
+                return new ResponseT<List<SMemberForStore>>(sMembers);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(GetEmployeeInfoInStore)+": "+ex.Message);
-                return new ResponseT<List<PromotedMember>>(ex.Message);
+                return new ResponseT<List<SMemberForStore>>(ex.Message);
             }
         }
 
