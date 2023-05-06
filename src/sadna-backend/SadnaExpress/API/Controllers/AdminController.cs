@@ -43,7 +43,8 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult GetAllMembers([FromBody] ClientRequest request)
         {
             
-            return Ok(tradingSystem.GetMembers(request.UserID).Value.Values.ToList());
+            var res = tradingSystem.GetMembers(request.UserID);
+            return Ok(res);
         }
         [Route(APIConstants.AdminData.allpurchases)]
         [ResponseType(typeof(ResponseT<List<Order>>))]

@@ -1,11 +1,8 @@
-export interface User  {
+export interface Member {
   id: string, 
-};
-
-export interface Member extends User {
+  email: string,
   firstName: string,
   lastName: string,
-  email: string,
   loggedIn: boolean,
   permissions: string[]
 };
