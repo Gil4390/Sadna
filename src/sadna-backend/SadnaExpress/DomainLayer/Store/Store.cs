@@ -378,7 +378,7 @@ namespace SadnaExpress.DomainLayer.Store
                 {
                     conds.Add(new PurchaseCondition(((QuantityCondition<Item>)cond).ID,
                         "item",
-                        ((QuantityCondition<Item>)cond).entity.ItemID.ToString(),
+                        ((QuantityCondition<Item>)cond).entity.ItemID.ToString(),((QuantityCondition<Item>)cond).entity.Name,
                         ((QuantityCondition<Item>)cond).minmax + " quantity",((QuantityCondition<Item>)cond).Quantity
                     ));
                 }
@@ -386,7 +386,7 @@ namespace SadnaExpress.DomainLayer.Store
                 {
                     conds.Add(new PurchaseCondition(((ValueCondition<Item>)cond).ID,
                         "item",
-                        ((ValueCondition<Item>)cond).entity.ItemID.ToString(),
+                        ((ValueCondition<Item>)cond).entity.ItemID.ToString(),((ValueCondition<Item>)cond).entity.Name,
                         ((ValueCondition<Item>)cond).minmax + " sum",(int)((ValueCondition<Item>)cond).minPrice
                     ));
                 }

@@ -16,7 +16,7 @@ export function Condition (props)
                 <span className="fs-2">{props.condID}</span>
             </Card.Title>
             <Card.Text>
-          <span className="ms-2 text-muted">{props.entity}-{props.entityID}:{props.type} {props.value}<br /></span>
+          <span className="ms-2 "> {props.type} of {props.entity} {props.entityName} is {props.value}<br /></span>
           {props.op === 'Conditioning' && (
                     <span>{props.op} <br/> {props.entityRes !=null ? (<span className="ms-2 text-muted">{props.entityRes}-{props.entityIDRes}:{props.typeRes} {props.valueRes}<br /></span>):(<span></span>)}</span>
                 )}

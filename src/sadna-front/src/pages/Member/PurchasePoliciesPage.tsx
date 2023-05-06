@@ -68,6 +68,7 @@ function PurchasePoliciesPage(props) {
  }, [])
 
   const handleSubmit = () => {
+    
   };
 return (
     <div className="container mt-5">
@@ -80,9 +81,6 @@ return (
         Add Condition
       </Button>
        <span>                                               </span>
-      <Button variant="dark" onClick={handleButtonClick} style={{ marginLeft: '10px' }}>
-        Remove Condition
-      </Button>
       {showTextbox && (
         <div>
           <label>Enter condition's ID:</label>

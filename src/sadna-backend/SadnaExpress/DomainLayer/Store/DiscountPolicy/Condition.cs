@@ -424,6 +424,13 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             get => entityID;
             set => entityID = value;
         }
+        
+        private string entityName;
+        public string EntityName
+        {
+            get => entityName;
+            set => entityName = value;
+        }
 
         private string type;
         public string Type
@@ -459,6 +466,12 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             get => entityIDRes;
             set => entityIDRes = value;
         }
+        private string entityNameRes;
+        public string EntityNameRes
+        {
+            get => entityNameRes;
+            set => entityNameRes = value;
+        }
 
         private string typeRes;
         public string TypeRes
@@ -481,25 +494,29 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             set => opCond = value;
         }
 
-        public PurchaseCondition(int condId, string entity, string entityId, string type, int value, string op, string entityRes, string entityIdRes, string typeRes, int valueRes, int opCond)
+        public PurchaseCondition(int condId, string entity, string entityId, string entityName, string type, int value, string op, string entityRes, string entityIdRes, string entityNameRes, string typeRes, int valueRes, int opCond)
         {
-            this.condID = condId;
+            condID = condId;
             this.entity = entity;
             entityID = entityId;
+            this.entityName = entityName;
             this.type = type;
             this.value = value;
             this.op = op;
             this.entityRes = entityRes;
             entityIDRes = entityIdRes;
+            this.entityNameRes = entityNameRes;
             this.typeRes = typeRes;
             this.valueRes = valueRes;
             this.opCond = opCond;
         }
-        public PurchaseCondition(int condId, string entity, string entityId, string type, int value)
+        
+        public PurchaseCondition(int condId, string entity, string entityId,string entityName, string type, int value)
         {
             this.condID = condId;
             this.entity = entity;
             entityID = entityId;
+            this.entityName = entityName;
             this.type = type;
             this.value = value;
             this.op = "";
