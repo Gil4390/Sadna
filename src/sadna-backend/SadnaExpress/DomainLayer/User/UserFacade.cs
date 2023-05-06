@@ -770,10 +770,12 @@ namespace SadnaExpress.DomainLayer.User
             Guid memberId2 = Guid.NewGuid();
             Guid memberId3 = Guid.NewGuid();
             Guid memberId4 = Guid.NewGuid();
+            Guid memberId5 = Guid.NewGuid();
             Guid storeOwnerid1 = Guid.NewGuid();
             Guid storeOwnerid2 = Guid.NewGuid();
 
             string newMac = _ph.Mac();
+            
             macs.TryAdd(memberId, newMac);
             Member member = new Member(memberId, "gil@gmail.com", "Gil", "Gil", _ph.Hash("asASD876!@" + newMac));
             newMac = _ph.Mac();
@@ -799,12 +801,18 @@ namespace SadnaExpress.DomainLayer.User
 
             PromotedMember storeOwner2 = new PromotedMember(storeOwnerid2, "dani@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
             storeOwner2.createFounder(storeid2);
+            
+            newMac = _ph.Mac();
+            macs.TryAdd(memberId5, newMac);
+            Member member5 = new Member(memberId5, "tal@gmail.com", "Tal", "Galmor", _ph.Hash("w3ka!Tal" + newMac));
+
 
             members.TryAdd(systemManagerid, systemManager);
             members.TryAdd(memberId, member);
             members.TryAdd(memberId2, member2);
             members.TryAdd(memberId3, member3);
             members.TryAdd(memberId4, member4);
+            members.TryAdd(memberId5, member5);
             members.TryAdd(storeOwnerid1, storeOwner1);
             members.TryAdd(storeOwnerid2, storeOwner2);
         }

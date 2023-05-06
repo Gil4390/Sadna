@@ -1,6 +1,6 @@
 
 export function handleLogout(userID) {
-    let url = "http://localhost:8080/member/guest/logout";
+    let url = "http://localhost:8080/api/member/logout";
 
     return fetch(url, {
         method: 'POST',
@@ -18,7 +18,7 @@ export function handleLogout(userID) {
     })
 }
 export function handleOpenNewStore(userID , storeName) {
-    let url = "http://localhost:8080/api/guest/open-store";
+    let url = "http://localhost:8080/api/member/open-store";
 
     return fetch(url, {
         method: 'POST',

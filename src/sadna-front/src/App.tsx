@@ -11,9 +11,12 @@ import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPa
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { handleIsSystemInit, handleEnter, handleIsAdmin } from './actions/GuestActions.tsx';
+import { handleLogout } from '../actions/MemberActions.tsx';
+import { ResponseT } from "../models/Response";
 
 
 const App:React.FC=()=>{
+  const [response, setResponse] = useState<ResponseT>();
   const [id, setid] = useState<string>();
   const [isInit, setisInit] = useState<boolean>(false);
   const [userType, setUserType] = useState("guest");

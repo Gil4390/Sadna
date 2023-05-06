@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { NavLink } from "react-router-dom";
 import CartImg from '../images/cart.png'
 
-function MemberNav(handleLogout) {
 
-
+function MemberNav(props) {
+  const handleLogoutPress = () => {
+    console.log("bad2")
+    console.log(props)
+    props.handleLogout();
+  }
 
   return (
     <div className="navigation">
@@ -25,7 +29,7 @@ function MemberNav(handleLogout) {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/"  onClick={() => handleLogout()}>
+                <NavLink className="nav-link" to="/"  onClick={() => handleLogoutPress()}>
                   Logout
                 </NavLink>
               </li>

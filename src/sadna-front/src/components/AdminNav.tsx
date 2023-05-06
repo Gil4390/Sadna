@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import { NavLink } from "react-router-dom";
 
 
-function MemberNav(handleLogout) {
+
+function MemberNav(props) {
+
+  const handleLogoutPress = () => {
+    props.handleLogout();
+  }
+
   
   return (
     <div className="navigation">
@@ -18,7 +24,7 @@ function MemberNav(handleLogout) {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/" onClick={() => handleLogout()}>
+                <NavLink className="nav-link" to="/" onClick={() => handleLogoutPress()}>
                   Logout
                 </NavLink>
               </li>
