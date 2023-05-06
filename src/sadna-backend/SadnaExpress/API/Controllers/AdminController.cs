@@ -35,7 +35,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult Initialize([FromBody] ClientRequest request)
         {
-            return Ok(tradingSystem.InitializeTradingSystem(request.UserID));
+            var res = tradingSystem.InitializeTradingSystem(request.UserID);
+            return Ok(res);
         }
         [Route(APIConstants.AdminData.allMembers)]
         [ResponseType(typeof(ResponseT<List<Member>>))]

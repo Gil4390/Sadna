@@ -1,11 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { handleInitializeSystem } from "../../actions/AdminActions.tsx";
 import Exit from "../Exit.tsx";
+import { ResponseT } from "../../models/Response.js";
 
 function AdminInitializeSystemPage(props) {
+  const [response, setResponse] = useState<ResponseT>();
+
+
+  useEffect(() => {
+    if(response !=undefined){
+      response?.errorOccured ? alert(response?.errorMessage) : alert("System Initialized");
+    }
+ }, [response])
+
   const handleClickIntialize = () => {
-    handleInitializeSystem(props.id);
+    handleInitializeSystem(props.id).then(
+      value => {
+        setResponse(value as ResponseT);
+        props.setIsInit(true);
+      })
+      .catch(error => alert(error))
   };
 
   return (
