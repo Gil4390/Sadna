@@ -36,9 +36,9 @@ namespace SadnaExpress.ServiceLayer.SModels
         private bool get_employees_info = false;
         private bool product_management = false;
 
-        public SPermission(List<String> permissions)
+        public SPermission(List<string> permissions)
         {
-            foreach (String p in permissions)
+            foreach (string p in permissions)
             {
                 switch(p) {
                     case "owner permissions":
@@ -71,6 +71,17 @@ namespace SadnaExpress.ServiceLayer.SModels
                     case "product management permissions":
                         product_management = true;
                         break;
+                }
+
+                if (founder || owner)
+                {
+                    edit_manager = true;
+                    get_store_history = true;
+                    add_new_owner = true;
+                    remove_owner = true;
+                    add_new_manager = true;
+                    get_employees_info = true;
+                    product_management = true;
                 }
             }
         }

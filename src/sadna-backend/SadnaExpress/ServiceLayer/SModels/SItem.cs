@@ -36,4 +36,21 @@ namespace SadnaExpress.ServiceLayer.Obj
             this.count = count;
         }
     }
+
+    public class SStore
+    {
+        private Guid storeId;
+        public Guid StoreId { get => storeId; }
+        private string name;
+        public string Name { get => name; set => name = value; }
+        private bool isOpen;
+        public bool IsOpen { get => isOpen; }
+
+        public SStore(Store store)
+        {
+            this.storeId = store.StoreID;
+            this.name = store.StoreName;
+            this.isOpen = store.Active; 
+        }
+    }
 }

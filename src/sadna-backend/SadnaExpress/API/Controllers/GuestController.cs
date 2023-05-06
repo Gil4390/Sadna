@@ -36,7 +36,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult Exit([FromBody] ClientRequest request)
         {
-            tradingSystem.Exit(request.UserID);
+            tradingSystem.Exit(request.userID);
             return Ok();
         }
 
@@ -45,7 +45,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult Register([FromBody] RegisterRequest request)
         {
-            Response res=tradingSystem.Register(request.UserID, request.Email, request.FirstName, request.LastName, request.Password);
+            Response res=tradingSystem.Register(request.userID, request.Email, request.FirstName, request.LastName, request.Password);
             return Ok(res);
         }
 
@@ -54,7 +54,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult Login([FromBody] LoginRequest request)
         {
-            ResponseT<Guid> res = tradingSystem.Login(request.UserID, request.Email, request.Password);
+            ResponseT<Guid> res = tradingSystem.Login(request.userID, request.Email, request.Password);
             return Ok(res);
         }
 
@@ -63,7 +63,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult IsAdmin([FromBody] ClientRequest request)
         {
-            ResponseT<bool> res = tradingSystem.IsAdmin(request.UserID);
+            ResponseT<bool> res = tradingSystem.IsAdmin(request.userID);
             return Ok(res);
         }
 
@@ -72,7 +72,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetStoreInfo([FromBody] StoreRequest request)
         {
-            return Ok(tradingSystem.GetStore(request.StoreId));
+            return Ok(tradingSystem.GetStore(request.storeId));
         }
 
         [Route(APIConstants.GuestData.searchItems)]
@@ -82,7 +82,7 @@ namespace SadnaExpress.API.Controllers
         {
             if (request.MaxPrice == -1)
                 request.MaxPrice = Int32.MaxValue;
-            ResponseT<List<SItem>> res = tradingSystem.GetItemsForClient(request.UserID, request.KeyWord, request.MinPrice, request.MaxPrice, request.RatingItem, request.Category, request.RatingStore);
+            ResponseT<List<SItem>> res = tradingSystem.GetItemsForClient(request.userID, request.KeyWord, request.MinPrice, request.MaxPrice, request.RatingItem, request.Category, request.RatingStore);
             return Ok(res);
         }
 
@@ -91,7 +91,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult AddItemToCart([FromBody] ItemCartRequest request)
         {
-            Response res = tradingSystem.AddItemToCart(request.UserID, request.StoreId, request.ItemId, request.ItemAmount);
+            Response res = tradingSystem.AddItemToCart(request.userID, request.storeId, request.itemID, request.ItemAmount);
             return Ok(res);
         }
 
@@ -100,7 +100,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult RemoveItemFromCart([FromBody] ItemCartRequest request)
         {
-            Response res = tradingSystem.RemoveItemFromCart(request.UserID, request.StoreId, request.ItemId);
+            Response res = tradingSystem.RemoveItemFromCart(request.userID, request.storeId, request.itemID);
             return Ok(res);
         }
 
@@ -109,7 +109,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult EditItemFromCart([FromBody] ItemCartRequest request)
         {
-            Response res = tradingSystem.EditItemFromCart(request.UserID, request.StoreId, request.ItemId, request.ItemAmount);
+            Response res = tradingSystem.EditItemFromCart(request.userID, request.storeId, request.itemID, request.ItemAmount);
             return Ok(res);
         }
 
@@ -118,7 +118,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetDetailsOnCart([FromBody] ClientRequest request)
         {
-            ResponseT<List<SItem>> res = tradingSystem.GetCartItems(request.UserID);
+            ResponseT<List<SItem>> res = tradingSystem.GetCartItems(request.userID);
             return Ok(res);
         }
 
@@ -127,7 +127,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult PurchaseCart([FromBody] PurchaseRequest request)
         {
-            ResponseT<List<ItemForOrder>> res = tradingSystem.PurchaseCart(request.UserID, request.PaymentDetails, request.UsersDetails);
+            ResponseT<List<ItemForOrder>> res = tradingSystem.PurchaseCart(request.userID, request.PaymentDetails, request.UsersDetails);
             return Ok(new Response(res.ErrorMessage));
         }
 

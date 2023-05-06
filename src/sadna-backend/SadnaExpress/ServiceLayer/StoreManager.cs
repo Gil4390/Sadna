@@ -593,16 +593,32 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
+        public ResponseT<List<Item>> GetItemsInStore(Guid userId,Guid storeId)
         {
             try
             {
+                //add check from userfacade if hes premmisions (?)
                 return new ResponseT<List<Item>>(storeFacade.GetItemsInStore(storeId));
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetItemsInStore) + ": " + ex.Message);
                 return new ResponseT<List<Item>>(ex.Message);
+            }
+        }
+
+        public ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId)
+        {
+            try
+            {
+                ///maybe add here a check of credentials to userfacade? this func in called from client after we know that user has permissions on this store
+                Store s = storeFacade.GetStoreInfo(storeId);
+                return new ResponseT<SStore>(new SStore(s));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStoreInfo) + ": " + ex.Message);
+                return new ResponseT<SStore>(ex.Message);
             }
         }
     }

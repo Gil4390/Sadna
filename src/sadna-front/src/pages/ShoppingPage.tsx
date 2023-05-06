@@ -135,7 +135,7 @@ function ShoppingPage(props) {
         <Row className="mt-3">
           {allItems.length===0? (<div>  No Items </div>): (allItems.map((item) => (
             // <div key={item.name}>{item.name} </div>
-            <Col sm={8} md={5} lg={4} xl={3} key={item.itemId} className="mt-3">
+            <Col sm={8} md={5} lg={4} xl={3} key={item.itemID} className="mt-3">
               <StoreItem id={props.id} item={item} />
             </Col>
             )))}

@@ -9,7 +9,7 @@ namespace SadnaExpress.API.ClientRequests
 {
     public class ClientRequest
     {
-        public Guid UserID { get; set; }
+        public Guid userID { get; set; }
     }
     public class LoginRequest : ClientRequest
     {
@@ -23,15 +23,21 @@ namespace SadnaExpress.API.ClientRequests
         public string LastName { get; set; }
         public string Password { get; set; }
     }
+
+    public class OpenStoreRequest : ClientRequest
+    {
+        public string storeName { get; set; }
+    }
+
     public class StoreRequest : ClientRequest
     {
-        public Guid StoreId { get; set; }
+        public Guid storeId { get; set; }
         public string storeName{ get; set; }
     }
     public class ItemCartRequest : ClientRequest
     {
-        public Guid StoreId { get; set; }
-        public Guid ItemId { get; set; }
+        public Guid storeId { get; set; }
+        public Guid itemID { get; set; }
         public int ItemAmount { get; set; }
     }
     public class SearchItemRequest : ClientRequest
@@ -57,10 +63,10 @@ namespace SadnaExpress.API.ClientRequests
         public string Review { get; set; }
     }
 
-    public class ItemReview : ClientRequest
+    public class ItemIdRequest : ClientRequest
     {
-        public Guid StoreId { get; set; }
-        public Guid ItemId { get; set; }
+        public Guid StoreID { get; set; }
+        public Guid ItemID { get; set; }
     }
     public class ItemRequest : ClientRequest
     {
@@ -74,19 +80,19 @@ namespace SadnaExpress.API.ClientRequests
     
     public class ItemEditRequest : ItemRequest
     {
-        public Guid itemId { get; set; }
+        public Guid itemID { get; set; }
 
     }
     
     public class StoreIDRequest : ClientRequest
     {
-        public Guid storeId { get; set; }
+        public Guid storeID { get; set; }
 
     }
 
     public class StoreManagerRequest : ClientRequest
     {
-        public Guid storeId { get; set; }
+        public Guid storeID { get; set; }
         public string email { get; set; }
 
     }
@@ -103,11 +109,11 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class ListGuidRequest : ClientRequest
     {
-        public List<Guid> storeId { get; set; }
+        public List<Guid> storeID { get; set; }
     }
     public class ConditionRequest<T,M> : StoreManagerRequest
     {
-        public Guid storeId { get; set; }
+        public Guid storeID { get; set; }
         public T entity { get; set; }
         public string type { get; set; }
         public double value { get; set; }
@@ -119,7 +125,7 @@ namespace SadnaExpress.API.ClientRequests
     
     public class PolicyRequest<T> : ClientRequest
     {
-        public Guid storeId{ get; set; }
+        public Guid storeID{ get; set; }
         public T level{ get; set; }
         public int percent { get; set; }
         public DateTime startDate { get; set; }
@@ -127,13 +133,13 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class ComplexConditionRequest : ClientRequest
     {
-        public Guid storeId{ get; set; }
+        public Guid storeID{ get; set; }
         public string op{ get; set; }
         public Object[] policys{ get; set; }
     }
     public class DiscountPolicyRequest : ClientRequest
     {
-        public Guid storeId{ get; set; }
+        public Guid storeID{ get; set; }
         public DiscountPolicy discountPolicy{ get; set; }
     }
 }

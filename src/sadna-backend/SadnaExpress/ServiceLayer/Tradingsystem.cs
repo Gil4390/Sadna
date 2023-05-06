@@ -434,9 +434,9 @@ namespace SadnaExpress.ServiceLayer
             return userManager.GetStoreOwnerOfStores(stores);
         }
 
-        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
+        public ResponseT<List<Item>> GetItemsInStore(Guid userID, Guid storeId)
         {
-            return storeManager.GetItemsInStore(storeId);
+            return storeManager.GetItemsInStore(userID,storeId);
         }
 
         public void SetPaymentService(IPaymentService paymentService)
@@ -550,6 +550,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID)
         {
             return userManager.GetMemberPermissions(userID);
+        }
+
+        public ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId)
+        {
+            return storeManager.GetStoreInfo(userID, storeId);
         }
     }
 }

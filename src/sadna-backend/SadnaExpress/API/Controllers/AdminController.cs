@@ -53,7 +53,7 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult GetAllPurchases([FromBody] ClientRequest request)
         {
             //all stores
-            return Ok(tradingSystem.GetAllStorePurchases(request.UserID).Value.Values.ToList());
+            return Ok(tradingSystem.GetAllStorePurchases(request.userID).Value.Values.ToList());
         }
         
         [Route(APIConstants.AdminData.allpurchasesStore)]
@@ -62,7 +62,7 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult GetAllPurchasesFromStore([FromBody] StoreIDRequest request)
         {
             //per stores
-            return Ok(tradingSystem.GetAllStorePurchases(request.UserID).Value[request.storeId]);
+            return Ok(tradingSystem.GetAllStorePurchases(request.userID).Value[request.storeID]);
         }
         
         [Route(APIConstants.AdminData.allpurchasesUsers)]
@@ -81,7 +81,7 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult GetPurchasesInfoUserOnlu([FromBody] ClientRequest request)
         {
             //per user
-            return Ok(tradingSystem.GetPurchasesInfoUserOnlu(request.UserID));
+            return Ok(tradingSystem.GetPurchasesInfoUserOnlu(request.userID));
         }
         
         [Route(APIConstants.AdminData.removeMember)]

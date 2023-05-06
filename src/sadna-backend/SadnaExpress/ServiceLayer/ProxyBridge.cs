@@ -399,9 +399,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetStoreOwnerOfStores(stores);
         }
 
-        public ResponseT<List<Item>> GetItemsInStore(Guid storeId)
+        public ResponseT<List<Item>> GetItemsInStore(Guid userID, Guid storeId)
         {
-            return _realBridge.GetItemsInStore(storeId);
+            return _realBridge.GetItemsInStore(userID,storeId);
         }
 
         public ResponseT<bool> IsAdmin(Guid userID)
@@ -414,14 +414,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetMemberPermissions(userID);
         }
 
-        ResponseT<List<SMember>> ITradingSystem.GetMembers(Guid userID)
+        public ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId)
         {
-            return _realBridge.GetMembers(userID);
-        }
-
-        ResponseT<Dictionary<Guid, List<Order>>> ITradingSystem.GetPurchasesInfoUser(Guid userID)
-        {
-            return _realBridge.GetPurchasesInfoUser(userID);
+            return _realBridge.GetStoreInfo(userID, storeId);
         }
     }
 }

@@ -1,24 +1,27 @@
 import React, {useState, useEffect} from 'react';
 import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
-import { Store } from '../../components/Store.tsx';
-import { handleGetMemberPermissions } from '../../actions/MemberActions.tsx';
+import { StoreInfo } from '../../components/StoreInfo.tsx';
+import { handleGetMemberPermissions, handleOpenNewStore } from '../../actions/MemberActions.tsx';
 import Exit from '../Exit.tsx';
+import {PermissionPerStore} from '../../models/Permission.tsx';
+import { ResponseT } from '../../models/Response.tsx';
 
-
-
-const stores = [
-  { id: 1, name: 'Store A', isOpne: true},
-  { id: 2, name: 'Store B', isOpne: true},
-  { id: 3, name: 'Store C', isOpne: true},
-];
 
 function StoresManagementPage(props) {
-  const [permissions, setPermissions] = useState<Permissions>();
+  const [permissions, setPermissions] = useState<PermissionPerStore>({});
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [storesIdList, setStoresIdList] = useState<string[]>([]);
+  const [storeName, setStoreName] = useState<string>('');
+  const [addStoreResponse, setAddStoreResponse]=useState<ResponseT>();
+  const [refreshStores, setRefreshStores]=useState(0);
+  const handleAddModalClose = () => setShowAddModal(false);
+  const handleAddModalShow = () => setShowAddModal(true);
+
 
   const getPermissions =()=>{
     handleGetMemberPermissions(props.id).then(
       value => {
-        setPermissions(value as Permissions);
+        setPermissions(value as PermissionPerStore);
       })
       .catch(error => alert(error));
   }
@@ -29,37 +32,44 @@ function StoresManagementPage(props) {
       const permissionList = permissions[key];
       console.log(permissionList);
     }
-   }, [permissions])
+    setStoresIdList(Object.keys(permissions));
+   }, [permissions,refreshStores])
 
-  useEffect(() => {
+   useEffect(() => {
     console.log(props.id);
     getPermissions();
   }, [])
 
+  useEffect(() => {
+    if(addStoreResponse!=undefined)
+      if(addStoreResponse?.errorOccured)
+        alert(addStoreResponse?.errorMessage) 
+      else{
+        setShowAddModal(false);
+        setStoreName('');
+        getPermissions();
+      }
+      setAddStoreResponse(undefined);
+  }, [addStoreResponse])
 
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [storesList, setstoresList] = useState(stores);
-
-  const handleAddModalClose = () => setShowAddModal(false);
-  const handleAddModalShow = () => setShowAddModal(true);
-  
+  useEffect(() => {
+    for (const key in storesIdList) {
+      console.log(` key ${key}:`);
+    }
+  }, [storesIdList])
 
   const handleAddStore = (event) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
-    const newStore = {
-      id: Math.max(...stores.map((store) => store.id)) + 1,
-      name: formData.get('name'),
-      isOpne: true,
-    };
-    //setstoresList([...storesList, newStore]);
-    setShowAddModal(false);
+    handleOpenNewStore(props.id,storeName).then(
+      value => {
+        setAddStoreResponse(value as ResponseT);
+      })
+      .catch(error => alert(error));
   };
 
-
-  const handleDeleteStore = (event) => {
-    
-  };
+  const handleNameChange = (event) => {
+    setStoreName(event.target.value);
+  }
 
   return (
   <div>
@@ -78,7 +88,7 @@ function StoresManagementPage(props) {
               <Form onSubmit={handleAddStore}>
                 <Form.Group controlId="Store name">
                   <Form.Label>Name</Form.Label>
-                  <Form.Control type="text" placeholder="Enter name" />
+                  <Form.Control type="text" placeholder="Enter name" value={storeName} onChange={handleNameChange}/>
                 </Form.Group>
                 <Button variant="primary" type="submit" style={{margin: "0.5rem"}}>
                   Add
@@ -89,11 +99,11 @@ function StoresManagementPage(props) {
         </Col>
       </Row>
       <Row>
-        {storesList.map((store) => (
-          <Col xs={12} md={6} lg={4} key={store.id} className="my-3">
+        {storesIdList.map((storeId) => (
+          <Col xs={12} md={6} lg={4} key={storeId} className="my-3">
             <Card>
               <Card.Body>
-                <Store store={store} />
+                <StoreInfo id={props.id} store={storeId} permmisionsOnStore={permissions[storeId] || []}/>
               </Card.Body>
             </Card>
           </Col>

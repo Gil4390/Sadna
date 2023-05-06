@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, ListGroup, Button } from 'react-bootstrap';
 import { CartItem } from '../components/CartItem.tsx';
 import { useNavigate } from "react-router-dom";
-import { Item } from '../models/Shop.tsx';
+import { ItemCart } from '../models/Shop.tsx';
 import SystemNotInit from './SystemNotInit.tsx';
 import { handleGetDetailsOnCart } from '../actions/GuestActions.tsx';
 import Exit from './Exit.tsx';
@@ -10,7 +10,7 @@ import Exit from './Exit.tsx';
 function CartPage(props) {
 
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<Item[]>([]);
+  const [cartItems, setCartItems] = useState<ItemCart[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
   const calculatePrice=()=>{
@@ -21,7 +21,7 @@ function CartPage(props) {
   const getShoppingCartItems=()=>{
     handleGetDetailsOnCart(props.id).then(
       value => {
-        setCartItems(value as Item[]);
+        setCartItems(value as ItemCart[]);
         calculatePrice();
       })
       .catch(error => alert(error));
