@@ -87,7 +87,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult RemoveMember([FromBody] RegisterRequest request)
         {
-            return Ok(tradingSystem.RemoveUserMembership(request.UserID , request.Email));
+            var res = tradingSystem.RemoveUserMembership(request.UserID, request.Email);
+            return Ok(res);
         }
 
     }

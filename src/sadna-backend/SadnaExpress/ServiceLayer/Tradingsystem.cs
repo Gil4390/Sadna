@@ -267,11 +267,12 @@ namespace SadnaExpress.ServiceLayer
             {
                 orders.AddRange(Orders.Instance.GetUserOrders()[user.UserId]);
             }
-            foreach (Member mem in GetMembers(userID).Value.Values)
+            /*
+            foreach (Member mem in GetMembers(userID).Values)
             {
                 orders.AddRange(Orders.Instance.GetUserOrders()[mem.UserId]);
             }
-            
+            */
             
             return new ResponseT<List<Order>>(orders);
         }

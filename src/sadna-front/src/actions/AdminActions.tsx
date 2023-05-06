@@ -31,11 +31,11 @@ export function handleGetAllMembers(userId) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 
-export function handleRemoveUserMembership(userID , email) {
+export function handleRemoveUserMembership(userID, email) {
     let url = "http://localhost:8080/api/admin/rm-member";
 
     return fetch(url, {

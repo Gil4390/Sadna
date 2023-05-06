@@ -31,16 +31,13 @@ namespace SadnaExpress.ServiceLayer.SModels
             if (member is PromotedMember)
             {
                 PromotedMember pmember = (PromotedMember)member;
-                string result = "";
 
-                foreach (var storeID in pmember.Permission.Keys)
+                foreach (Guid storeID in pmember.Permission.Keys)
                 {
-                    result += storeID;
-                    foreach (var s in pmember.Permission[storeID])
+                    if (!storeID.Equals(Guid.Empty))
                     {
-                        result += s + ", ";
+                        this.permissions.Add(storeID.ToString() + ": ");
                     }
-                    result = result.Substring(0, result.Length - 2);
                     this.permissions.AddRange(pmember.Permission[storeID]);
                 }
 
