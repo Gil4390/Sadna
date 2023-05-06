@@ -35,7 +35,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult Initialize([FromBody] ClientRequest request)
         {
-            var res = tradingSystem.InitializeTradingSystem(request.UserID);
+            var res = tradingSystem.InitializeTradingSystem(request.userID);
             return Ok(res);
         }
         [Route(APIConstants.AdminData.allMembers)]
@@ -44,7 +44,7 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult GetAllMembers([FromBody] ClientRequest request)
         {
             
-            var res = tradingSystem.GetMembers(request.UserID);
+            var res = tradingSystem.GetMembers(request.userID);
             return Ok(res);
         }
         [Route(APIConstants.AdminData.allpurchases)]
@@ -71,7 +71,7 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult GetAllPurchasesFromUser([FromBody] ClientRequest request)
         {
             //all users
-            var res = tradingSystem.GetPurchasesInfoUser(request.UserID);
+            var res = tradingSystem.GetPurchasesInfoUser(request.userID);
             return Ok(res);
         }
         
@@ -89,7 +89,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult RemoveMember([FromBody] RegisterRequest request)
         {
-            var res = tradingSystem.RemoveUserMembership(request.UserID, request.Email);
+            var res = tradingSystem.RemoveUserMembership(request.userID, request.Email);
             return Ok(res);
         }
 

@@ -717,7 +717,7 @@ export function handleGetItems(userID,storeID) {
     })
 }
 
-export function GetAllPurchasesFromStore(userID , storeId) {
+export function GetAllPurchasesFromStore(userID , storeID) {
     let url = "http://localhost:8080/api/member/store-purchase";
 
     return fetch(url, {
@@ -726,7 +726,7 @@ export function GetAllPurchasesFromStore(userID , storeId) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userID:userID,
-            storeId:storeId,
+            storeID:storeID,
         })
     }).then(async response => {
         const data = await response.json();

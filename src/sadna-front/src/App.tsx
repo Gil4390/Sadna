@@ -30,6 +30,7 @@ const App:React.FC=()=>{
   const handleLogout = (newId) => {
     setid(newId);
     setUserType("guest");
+    setLogin(false);
   }
 
   useEffect(() => {
