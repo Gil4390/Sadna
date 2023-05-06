@@ -741,6 +741,21 @@ namespace SadnaExpress.DomainLayer.User
 
         }
 
+        public ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID)
+        {
+            var member = GetMember(userID);
+            if (member is PromotedMember)
+            {
+                var promoted = (PromotedMember)member;
+                return promoted.Permission;
+            }
+            else
+            {
+                return new ConcurrentDictionary<Guid, List<string>>();
+            }
+
+        }
+
         public void LoadData(Guid storeid1, Guid storeid2)
         {
             Guid systemManagerid = Guid.NewGuid();
@@ -769,14 +784,13 @@ namespace SadnaExpress.DomainLayer.User
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", _ph.Hash("AS87654askj" + newMac));
             newMac = _ph.Mac();
             macs.TryAdd(storeOwnerid1, newMac);
+            systemManager.createSystemManager();
 
             PromotedMember storeOwner1 = new PromotedMember(storeOwnerid1, "AsiAzar@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
-            systemManager.createSystemManager();
             storeOwner1.createFounder(storeid1);
 
 
             PromotedMember storeOwner2 = new PromotedMember(storeOwnerid2, "dani@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
-            systemManager.createSystemManager();
             storeOwner2.createFounder(storeid2);
 
             members.TryAdd(systemManagerid, systemManager);

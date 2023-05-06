@@ -63,5 +63,7 @@ namespace SadnaExpress.DomainLayer.User
         int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
         public bool IsUserAdmin(Guid userID);
         string GetUserEmail(Guid userID);
+
+        ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID);
     }
 }

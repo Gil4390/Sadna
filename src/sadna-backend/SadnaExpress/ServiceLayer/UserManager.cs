@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
@@ -471,6 +472,27 @@ namespace SadnaExpress.ServiceLayer
             {
                 Logger.Instance.Error($"{userID}" + nameof(isAdmin) + ": " + ex.Message);
                 return new ResponseT<bool>(ex.Message);
+            }
+        }
+
+        public ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID)
+        {
+            try
+            {
+                ConcurrentDictionary<Guid, List<String>> permissions = userFacade.GetMemberPermissions(userID);
+                Dictionary<Guid, SPermission> Spermissions = new Dictionary<Guid, SPermission>();
+
+                foreach (Guid storeID in permissions.Keys)
+                {
+                    Spermissions.Add(storeID, new SPermission(permissions[storeID]));
+                }
+                return new ResponseT<Dictionary<Guid, SPermission>>(Spermissions);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"{userID}" + nameof(GetMemberPermissions) + ": " + ex.Message);
+                return new ResponseT<Dictionary<Guid, SPermission>>(ex.Message);
             }
         }
     }

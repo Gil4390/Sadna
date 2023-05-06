@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
@@ -53,5 +54,7 @@ namespace SadnaExpress.ServiceLayer
 
         bool IsSystemInitialize();
         ResponseT<bool> isAdmin(Guid userID);
+
+        ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID);
     }
 }
