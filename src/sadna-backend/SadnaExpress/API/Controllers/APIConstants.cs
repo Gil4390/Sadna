@@ -19,6 +19,8 @@ namespace SadnaExpress.API.Controllers
 
             public const string login = "login";
 
+            public const string isAdmin = "is-admin";
+
             public const string exit = "exit";
 
             public const string enter = "enter";

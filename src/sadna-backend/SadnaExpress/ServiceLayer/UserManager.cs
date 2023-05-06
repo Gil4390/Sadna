@@ -458,5 +458,20 @@ namespace SadnaExpress.ServiceLayer
         {
             return userFacade.IsSystemInitialize();
         }
+
+        public ResponseT<bool> isAdmin(Guid userID)
+        {
+            try
+            {
+                var response = userFacade.IsUserAdmin(userID);
+                return new ResponseT<bool>(response);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"{userID}" + nameof(isAdmin) + ": " + ex.Message);
+                return new ResponseT<bool>(ex.Message);
+            }
+        }
     }
 }

@@ -542,5 +542,10 @@ namespace SadnaExpress.ServiceLayer
         {
             storeManager.LoadData();
         }
+
+        public ResponseT<bool> IsAdmin(Guid userID)
+        {
+            return userManager.isAdmin(userID);
+        }
     }
 }
