@@ -48,7 +48,7 @@ namespace SadnaExpress.API.ClientRequests
     public class PurchaseRequest : ClientRequest
     {
         public string PaymentDetails { get; set; }
-        public string UsersDetail { get; set; }
+        public string UsersDetails { get; set; }
     }
     public class WriteItemReviewRequest : ClientRequest
     {

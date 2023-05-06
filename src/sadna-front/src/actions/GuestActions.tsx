@@ -216,7 +216,7 @@ export function handleGetDetailsOnCart(userID) {
         return Promise.resolve(data.value)
     })
 }
-export function handlePurchaseCart(userID) {
+export function handlePurchaseCart(userID, paymentDetails, usersDetails ) {
     let url = "http://localhost:8080/api/guest/purchase-cart";
 
     return fetch(url, {
@@ -225,6 +225,8 @@ export function handlePurchaseCart(userID) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userID: userID,
+            paymentDetails: paymentDetails,
+            usersDetails:usersDetails,
         })
     }).then(async response => {
         const data = await response.json();
