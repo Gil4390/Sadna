@@ -47,23 +47,16 @@ namespace SadnaExpress.API.Controllers
             var res = tradingSystem.GetMembers(request.userID);
             return Ok(res);
         }
-        [Route(APIConstants.AdminData.allpurchases)]
-        [ResponseType(typeof(ResponseT<List<Order>>))]
+        [Route(APIConstants.AdminData.allpurchasesStore)]
+        [ResponseType(typeof(ResponseT<Dictionary<Guid, List<Order>>>))]
         [HttpPost]
         public IHttpActionResult GetAllPurchases([FromBody] ClientRequest request)
         {
             //all stores
-            return Ok(tradingSystem.GetAllStorePurchases(request.userID).Value.Values.ToList());
+            var res = tradingSystem.GetAllStorePurchases(request.userID);
+            return Ok(res);
         }
         
-        [Route(APIConstants.AdminData.allpurchasesStore)]
-        [ResponseType(typeof(ResponseT<List<Order>>))]
-        [HttpPost]
-        public IHttpActionResult GetAllPurchasesFromStore([FromBody] StoreIDRequest request)
-        {
-            //per stores
-            return Ok(tradingSystem.GetAllStorePurchases(request.userID).Value[request.storeID]);
-        }
         
         [Route(APIConstants.AdminData.allpurchasesUsers)]
         [ResponseType(typeof(ResponseT<Dictionary<Guid, List<Order>>>))]
@@ -75,14 +68,6 @@ namespace SadnaExpress.API.Controllers
             return Ok(res);
         }
         
-        [Route(APIConstants.AdminData.allpurchasesUser)]
-        [ResponseType(typeof(ResponseT<List<ItemForOrder>>))]
-        [HttpPost]
-        public IHttpActionResult GetPurchasesInfoUserOnlu([FromBody] ClientRequest request)
-        {
-            //per user
-            return Ok(tradingSystem.GetPurchasesInfoUserOnlu(request.userID));
-        }
         
         [Route(APIConstants.AdminData.removeMember)]
         [ResponseType(typeof(Response))]
