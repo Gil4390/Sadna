@@ -240,11 +240,12 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.MemberData.getAllConditions)]
-        [ResponseType(typeof(ResponseT<List<Condition>>))]
+        [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
         [HttpPost]
         public IHttpActionResult GetAllConditions([FromBody] StoreIDRequest request)
         {
-            return Ok(tradingSystem.GetAllConditions(request.storeID));
+            ResponseT<PurchaseCondition[] > a = tradingSystem.GetAllConditions(request.storeID);
+            return Ok(a);
         }
         
         [Route(APIConstants.MemberData.getCondition)]

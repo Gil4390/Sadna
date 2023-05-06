@@ -24,3 +24,19 @@ export interface Item  {
     rating : number,  
     quantity: number,  
 };
+
+export interface PurcahseCondition {
+    condID: number, 
+    entity: string
+    entityID: string,
+    type: string,
+    value: number,
+    op : string,  
+    entityRes: string,  
+    entityIDRes: string,  
+    typeRes: string,  
+    valueRes: number,  
+    opCond: number,  
+};
+
+

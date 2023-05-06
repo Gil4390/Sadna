@@ -56,6 +56,7 @@ const ManageItemsPage = (props) => {
     handleGetItems(userId,storeId).then(
       value => {
         setItemsList(value as Item[]);
+
       })
       .catch(error => alert(error));
   }

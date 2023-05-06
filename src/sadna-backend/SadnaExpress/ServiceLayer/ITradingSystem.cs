@@ -90,7 +90,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Notification>> GetNotifications(Guid userID);
         bool IsSystemInitialize();
 
-        ResponseT<Condition[]> GetAllConditions(Guid store);
+        ResponseT<PurchaseCondition[] > GetAllConditions(Guid store);
 
         ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value, DateTime dt=default, M entityRes = default,
             string typeRes = default, double valueRes = default);

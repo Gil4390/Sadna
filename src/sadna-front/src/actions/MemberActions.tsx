@@ -513,7 +513,7 @@ export function handleGetAllPurchaseConditions(storeID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 export function handleGetPurchaseCondition(storeID , entity , type, value , dt=null , entiryRes=null , typeRes=null , valueRes=null) {

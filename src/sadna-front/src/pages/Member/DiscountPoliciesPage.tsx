@@ -5,6 +5,7 @@ import { Button, Modal, Form , Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { Condition } from '../../components/Condition';
 import Exit from "../Exit.tsx";
+import { handleGetAllPurchaseConditions } from '../../actions/MemberActions';
 
 function DiscountPoliciesPage(props) {
   const styles = {
@@ -85,6 +86,7 @@ function DiscountPoliciesPage(props) {
     setShowTable2(!showTable2);
   };
 
+
 return (
     <div className="container mt-5">
       <Exit id={props.id}/>
@@ -106,7 +108,7 @@ return (
       <div style={styles.form}>
       <Form.Group>
               <Form.Control
-                as="Select"
+                as="select"
                 value={EntityChoice}
                 onChange={(e) => setEntityChoice(e.target.value)}
               >
@@ -180,7 +182,7 @@ return (
       <div style={styles.form}>
       <Form.Group>
               <Form.Control
-                as="Select"
+                as="select"
                 value={cond1_1}
                 onChange={(e) => setCond1_1(e.target.value)}
               >
@@ -197,7 +199,7 @@ return (
             </Form.Group>
             <Form.Group>
             <Form.Control
-                as="Select"
+                as="select"
                 value={cond2_1}
                 onChange={(e) => setCond2_1(e.target.value)}
               >

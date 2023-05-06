@@ -325,11 +325,11 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.IsSystemInitialize();
         }
 
-        public ResponseT<Condition[]> GetAllConditions(Guid store)
+        public ResponseT<PurchaseCondition[]> GetAllConditions(Guid store)
         {
             throw new NotImplementedException();
         }
-
+        
 
         public ResponseT<Condition> GetCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
             M entityRes = default, string typeRes = default, double valueRes = default)

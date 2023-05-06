@@ -45,7 +45,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
         ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
         void RemoveCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
-        ResponseT<Condition[]> GetAllConditions(Guid store);
+        ResponseT<PurchaseCondition[] > GetAllConditions(Guid store);
         ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
         ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
         ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, object[] policys);

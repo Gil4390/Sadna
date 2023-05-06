@@ -6,6 +6,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
 {
     public abstract class Condition
     {
+        public int ID;
         public abstract bool Evaluate(Store store, Dictionary<Item, int> basket);
         public abstract bool Equals(Condition cond);
     }
@@ -49,8 +50,8 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
     }
     public class ConditioningCondition : Condition
     {
-        private Condition cond;
-        private ConditioningResult res;
+        public Condition cond;
+        public ConditioningResult res;
 
         public ConditioningCondition(Condition cond1, ConditioningResult result)
         {
@@ -92,7 +93,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
     
     public class ConditioningResultQuantity : ConditioningResult
     {
-        private int quantity;
+        public int quantity;
         public ConditioningResultQuantity(Item item , int q) : base(item)
         {
             this.quantity = q;
@@ -121,7 +122,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
     }
     public class ConditioningResultSum : ConditioningResult
     {
-        private double sum;
+        public double sum;
         public ConditioningResultSum(Item item , int s) : base(item)
         {
             this.sum = s;
@@ -151,9 +152,9 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
 
     public class ValueCondition<T> : Condition
     {
-        private T entity;
-        private double minPrice;
-        private string minmax;
+        public T entity;
+        public double minPrice;
+        public string minmax;
 
         // T can be store or category(string)
         public ValueCondition(T entity, double minPrice, string minmax)
@@ -248,9 +249,9 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
     
     public class QuantityCondition<T> : Condition
     {
-        private T entity;
-        private int Quantity;
-        private string minmax;
+        public T entity;
+        public int Quantity;
+        public string minmax;
 
         // T can be store or item or category(string)
         public QuantityCondition(T entity, int Quantity , string minmax)
@@ -343,9 +344,9 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
     
     public class TimeCondition<T> : Condition
     {
-        private T entity;
-        private DateTime timing;
-        private string beforeAfter;
+        public T entity;
+        public DateTime timing;
+        public string beforeAfter;
 
         // T can be store or item or category(string)
         public TimeCondition(T entity, DateTime timing , string beforeAfter)
@@ -399,5 +400,116 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
                     throw new Exception("Need to be one of this operators");
             }
         }
+    }
+
+    public class PurchaseCondition
+    {
+        private int condID;
+        public int CondID
+        {
+            get => condID;
+            set => condID = value;
+        }
+
+        private string entity;
+        public string Entity
+        {
+            get => entity;
+            set => entity = value;
+        }
+
+        private string entityID;
+        public string EntityID
+        {
+            get => entityID;
+            set => entityID = value;
+        }
+
+        private string type;
+        public string Type
+        {
+            get => type;
+            set => type = value;
+        }
+
+        private int value;
+        public int Value
+        {
+            get => value;
+            set => this.value = value;
+        }
+
+        private string op;
+        public string Op
+        {
+            get => op;
+            set => op = value;
+        }
+
+        private string entityRes;
+        public string EntityRes
+        {
+            get => entityRes;
+            set => entityRes = value;
+        }
+
+        private string entityIDRes;
+        public string EntityIDRes
+        {
+            get => entityIDRes;
+            set => entityIDRes = value;
+        }
+
+        private string typeRes;
+        public string TypeRes
+        {
+            get => typeRes;
+            set => typeRes = value;
+        }
+
+        private int valueRes;
+        public int ValueRes
+        {
+            get => valueRes;
+            set => valueRes = value;
+        }
+
+        private int opCond;
+        public int OpCond
+        {
+            get => opCond;
+            set => opCond = value;
+        }
+
+        public PurchaseCondition(int condId, string entity, string entityId, string type, int value, string op, string entityRes, string entityIdRes, string typeRes, int valueRes, int opCond)
+        {
+            this.condID = condId;
+            this.entity = entity;
+            entityID = entityId;
+            this.type = type;
+            this.value = value;
+            this.op = op;
+            this.entityRes = entityRes;
+            entityIDRes = entityIdRes;
+            this.typeRes = typeRes;
+            this.valueRes = valueRes;
+            this.opCond = opCond;
+        }
+        public PurchaseCondition(int condId, string entity, string entityId, string type, int value)
+        {
+            this.condID = condId;
+            this.entity = entity;
+            entityID = entityId;
+            this.type = type;
+            this.value = value;
+            this.op = "";
+            this.entityRes = "";
+            entityIDRes = "";
+            this.typeRes = "";
+            this.valueRes = -1;
+            this.opCond = -1;
+        }
+
+        
     }
 }

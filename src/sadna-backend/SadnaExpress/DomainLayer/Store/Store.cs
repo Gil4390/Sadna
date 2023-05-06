@@ -50,6 +50,13 @@ namespace SadnaExpress.DomainLayer.Store
             set => purchasePolicy = value;
         }
 
+        public int purchasePolicyCounter;
+        public int PurchasePolicyCounter
+        {
+            get => purchasePolicyCounter;
+            set => purchasePolicyCounter = value;
+        }
+
         public List<Condition> PurchasePolicyList { get; set; }
 
         public int StoreRating
@@ -67,6 +74,8 @@ namespace SadnaExpress.DomainLayer.Store
             active = true;
             discountPolicyTree = null;
             purchasePolicy = null;
+            PurchasePolicyList = new List<Condition>();
+            purchasePolicyCounter = 0;
 
         }
         public bool Equals(Store store)
@@ -169,21 +178,33 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 case "min value":
                     ValueCondition<T> minValue = new ValueCondition<T>(entity, val, "min");
+                    minValue.ID = purchasePolicyCounter++;
+                    PurchasePolicyList.Add(minValue);
                     return minValue;
                 case "max value":
                     ValueCondition<T> maxValue = new ValueCondition<T>(entity, val, "max");
+                    maxValue.ID = purchasePolicyCounter++;
+                    PurchasePolicyList.Add(maxValue);
                     return maxValue;
                 case "min quantity":
                     QuantityCondition<T> minQuantity = new QuantityCondition<T>(entity, (int)val, "min");
+                    minQuantity.ID = purchasePolicyCounter++;
+                    PurchasePolicyList.Add(minQuantity);
                     return minQuantity;
                 case "max quantity":
                     QuantityCondition<T> maxQuantity = new QuantityCondition<T>(entity, (int)val, "max");
+                    maxQuantity.ID = purchasePolicyCounter++;
+                    PurchasePolicyList.Add(maxQuantity);
                     return maxQuantity;
                 case "before time":
                     TimeCondition<T> timeBefore = new TimeCondition<T>(entity, dt, "before");
+                    timeBefore.ID = purchasePolicyCounter++;
+                    PurchasePolicyList.Add(timeBefore);
                     return timeBefore;
                 case "after time":
                     TimeCondition<T> timeAfter = new TimeCondition<T>(entity, dt, "after");
+                    timeAfter.ID = purchasePolicyCounter++;
+                    PurchasePolicyList.Add(timeAfter);
                     return timeAfter;
                 default:
                     throw new Exception("the condition not fine");
@@ -192,13 +213,22 @@ namespace SadnaExpress.DomainLayer.Store
 
         public ConditioningCondition AddConditioning(Condition cond ,Item item ,string type ,  double val)
         {
+            ConditioningCondition cc;
             switch (type)
             {
                 case "sum":
                     ConditioningResultSum crs = new ConditioningResultSum(item,(int)val);
+                     cc = new ConditioningCondition(cond,crs);
+                    PurchasePolicyList.Remove(cond);
+                    cc.ID = purchasePolicyCounter++;;
+                    PurchasePolicyList.Add(cc);
                     return new ConditioningCondition(cond,crs);
                 case "quantity":
                     ConditioningResultQuantity crq = new ConditioningResultQuantity(item, (int)val);
+                    cc = new ConditioningCondition(cond,crq);
+                    PurchasePolicyList.Remove(cond);
+                    cc.ID = purchasePolicyCounter++;;
+                    PurchasePolicyList.Add(cc);
                     return new ConditioningCondition(cond,crq);
                 default:
                     throw new Exception("the condition not fine");
@@ -244,11 +274,6 @@ namespace SadnaExpress.DomainLayer.Store
         public void RemovePolicy(DiscountPolicy.DiscountPolicy discountPolicy)
         {
             discountPolicyTree.RemovePolicy(discountPolicy);
-        }
-
-        public void AddNewConditionToPurchasePolicy(Condition c)
-        {
-            PurchasePolicyList.Add(c);
         }
 
         public void AddSimplePurchaseCondition(Condition newPurchasePolicy1,Condition newPurchasePolicy2=null , Operator _op = null)
@@ -344,9 +369,30 @@ namespace SadnaExpress.DomainLayer.Store
             return true;
         }
 
-        public Condition[] GetAllConditions()
+        public PurchaseCondition[] GetAllConditions()
         {
-            return PurchasePolicyList.ToArray();
+            List<PurchaseCondition> conds = new List<PurchaseCondition>();
+            foreach (Condition cond in PurchasePolicyList)
+            {
+                if(typeof(QuantityCondition<Item>) == cond.GetType())
+                {
+                    conds.Add(new PurchaseCondition(((QuantityCondition<Item>)cond).ID,
+                        "item",
+                        ((QuantityCondition<Item>)cond).entity.ItemID.ToString(),
+                        ((QuantityCondition<Item>)cond).minmax + " quantity",((QuantityCondition<Item>)cond).Quantity
+                    ));
+                }
+                if(typeof(ValueCondition<Item>) == cond.GetType())
+                {
+                    conds.Add(new PurchaseCondition(((ValueCondition<Item>)cond).ID,
+                        "item",
+                        ((ValueCondition<Item>)cond).entity.ItemID.ToString(),
+                        ((ValueCondition<Item>)cond).minmax + " sum",(int)((ValueCondition<Item>)cond).minPrice
+                    ));
+                }
+            }
+
+            return conds.ToArray();
         }
 
         public bool ItemExist(Guid itemid)

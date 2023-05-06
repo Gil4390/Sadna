@@ -492,7 +492,7 @@ namespace SadnaExpress.ServiceLayer
             return userManager.IsSystemInitialize();
         }
 
-        public ResponseT<Condition[]> GetAllConditions(Guid store)
+        public ResponseT<PurchaseCondition[] > GetAllConditions(Guid store)
         {
             return storeManager.GetAllConditions(store);
         }

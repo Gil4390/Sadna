@@ -39,7 +39,7 @@ namespace SadnaExpress.DomainLayer.Store
         Condition GetCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
         Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default,  M entityRes=default, string typeRes=default, double valueRes=default);
         void RemoveCondition(Guid store ,Condition cond);
-        Condition[] GetAllConditions(Guid store);
+        PurchaseCondition[]  GetAllConditions(Guid store);
         Condition AddDiscountCondition<T>(Guid store, T entity, string type, double value);
         DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
         DiscountPolicy.DiscountPolicy CreateComplexPolicy(Guid store, string op, object[] policys);

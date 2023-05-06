@@ -471,16 +471,16 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<Condition[]> GetAllConditions(Guid store)
+        public ResponseT<PurchaseCondition[] > GetAllConditions(Guid store)
         {
-            try
+            try 
             {
-                return new ResponseT<Condition[]>(storeFacade.GetAllConditions(store));
+                return new ResponseT<PurchaseCondition[] >(storeFacade.GetAllConditions(store));
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetAllConditions) + ": " + ex.Message);
-                return new ResponseT<Condition[]>(ex.Message);
+                return new ResponseT<PurchaseCondition[] >(ex.Message);
             }
         }
 

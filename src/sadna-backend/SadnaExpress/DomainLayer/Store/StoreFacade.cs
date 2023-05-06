@@ -363,6 +363,8 @@ namespace SadnaExpress.DomainLayer.Store
             }
             return GetStore(store).GetCondition(conditionToGet);
         }
+        
+
         public Condition AddDiscountCondition<T>(Guid store ,T entity, string type, double value)
         {
             IsStoreExist(store);
@@ -421,12 +423,10 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsStoreExist(store);
             Condition newCond = GetStore(store).AddCondition(entity, type, value, dt);
-            GetStore(store).AddNewConditionToPurchasePolicy(newCond);
             if (entityRes != null)
             {
                 ConditioningCondition newCondCond =
                     GetStore(store).AddConditioning(newCond, entity as Item, typeRes, value);
-                GetStore(store).AddNewConditionToPurchasePolicy(newCondCond);
                 return newCondCond;
             }
             return newCond;
@@ -438,7 +438,7 @@ namespace SadnaExpress.DomainLayer.Store
             GetStore(store).RemoveCondition(cond);
         }
 
-        public Condition[] GetAllConditions(Guid store)
+        public PurchaseCondition[]  GetAllConditions(Guid store)
         {
             IsStoreExist(store);
             return GetStore(store).GetAllConditions();
@@ -446,8 +446,8 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void LoadData(Store store1, Store store2)
         {
-            store1.AddItem("Tshirt", "clothes", 99.8, 40);
-            store1.AddItem("Ipad", "electronic", 99.8, 2);
+            Guid i1 = store1.AddItem("Tshirt", "clothes", 99.8, 40);
+            Guid i2 = store1.AddItem("Ipad", "electronic", 99.8, 2);
             store1.AddItem("Dress", "clothes", 70, 45);
 
             store2.AddItem("Pants", "clothes", 150, 200);
@@ -457,6 +457,11 @@ namespace SadnaExpress.DomainLayer.Store
 
             stores.TryAdd(store1.StoreID, store1);
             stores.TryAdd(store2.StoreID, store2);
+            
+            Condition cond1 = store1.AddCondition(store1.GetItemById(i1), "min quantity", 0);
+            Condition cond2 = store1.AddCondition(store1.GetItemById(i2), "min value", 0);
+            store1.AddSimplePurchaseCondition(cond1);
+            store1.AddSimplePurchaseCondition(cond2);
         }
 
         public Guid GetItemStoreId(Guid itemid)
