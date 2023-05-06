@@ -3,9 +3,10 @@ import { Container, ListGroup } from 'react-bootstrap';
 import React, { useState } from 'react';
 import { Button, Modal, Form , Row, Col } from 'react-bootstrap';
 import { Condition } from '../../components/Condition';
+import Exit from "../Exit.tsx";
 
 
-function PurchasePoliciesPage() {
+function PurchasePoliciesPage(props) {
   const items = [
     { id: 1 ,  entity:'Item' , entityID:11 , type:'min quantity' , value:0},
   ];
@@ -48,6 +49,7 @@ function PurchasePoliciesPage() {
   };
 return (
     <div className="container mt-5">
+            <Exit id={props.id}/>
         <ListGroup>
           <h5>Create New Store Policy</h5>
          </ListGroup>

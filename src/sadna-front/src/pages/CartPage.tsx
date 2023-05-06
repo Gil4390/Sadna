@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Item } from '../models/Shop.tsx';
 import SystemNotInit from './SystemNotInit.tsx';
 import { handleGetDetailsOnCart } from '../actions/GuestActions.tsx';
+import Exit from './Exit.tsx';
 
 function CartPage(props) {
 
@@ -48,6 +49,7 @@ function CartPage(props) {
   return (
     props.isInit?
     (<Container className="my-5">
+      <Exit id={props.id}/>
       {cartItems.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'react-bootstrap';
 import { Member } from '../../models/User';
 import { handleGetAllMembers, handleRemoveUserMembership } from '../../actions/AdminActions.tsx';
+import Exit from "../Exit.tsx";
 
 const AdminViewAllUsersPage = (props) => {
   const [members, setMembers] = useState<Member[]>([]);
@@ -29,6 +30,7 @@ const AdminViewAllUsersPage = (props) => {
 
   return (
     <Table striped bordered hover>
+      <Exit id={props.id}/>
       <thead>
         <tr>
           <th>User ID</th>

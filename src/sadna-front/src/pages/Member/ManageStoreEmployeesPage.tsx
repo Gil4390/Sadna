@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Modal, Table, Form } from "react-bootstrap";
+import Exit from "../Exit.tsx";
 
 type Employee = {
   firstName: string,
@@ -7,7 +8,7 @@ type Employee = {
   permissions: string,
 }
 
-const ManageStoreEmployeesPage = () => {
+const ManageStoreEmployeesPage = (props) => {
   const [employees, setEmployees] = useState<Employee[]>([
     { firstName: "John", lastName: "Doe", permissions: "Founder" },
     { firstName: "Jane", lastName: "Doe", permissions: "Manager" },
@@ -53,6 +54,7 @@ const ManageStoreEmployeesPage = () => {
 
   return (
     <div>
+      <Exit id={props.id}/>
       <h1>Employees</h1>
       <Button variant="primary" onClick={handleAddModalShow} style={{margin: "0.5rem"}}>
         Add New Employee

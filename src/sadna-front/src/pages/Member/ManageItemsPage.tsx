@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
+import Exit from "../Exit.tsx";
 
 type Item = {
   id: number,
@@ -15,7 +16,7 @@ const items:Item[] = [
   { id: 3, name: 'Item 3', price: 30, category: 'Category 3', quantity: 15 },
 ];
 
-const ManageItemsPage = () => {
+const ManageItemsPage = (props) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedItem, setEditedItem] = useState<Item>();
@@ -64,6 +65,7 @@ const ManageItemsPage = () => {
 
   return (
     <div>
+      <Exit id={props.id}/>
       <h1>Manage Items</h1>
       <Button variant="primary" onClick={handleAddModalShow} style={{margin: "0.5rem"}}>
         Add New Item

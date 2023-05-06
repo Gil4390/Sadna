@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+<<<<<<< Updated upstream
 import { useNavigate, useLocation } from "react-router-dom";
 import { Response } from '../models/Response.tsx';
 import { handlePurchaseCart } from '../actions/GuestActions.tsx';
+import Exit from "./Exit.tsx";
 
 function PaymentPage(props) {
 
+
+function PaymentPage(props) {
+
+=======
+import { useNavigate } from "react-router-dom";
+import Exit from "./Exit.tsx";
+
+function PaymentPage(props) {
+>>>>>>> Stashed changes
   const navigate = useNavigate();
   const location = useLocation();
   const id = location.state.id;
@@ -76,6 +87,7 @@ function PaymentPage(props) {
 
   return (
     <Container className="my-5">
+            <Exit id={props.id}/>
       <h1>Payment</h1>
       <Form>
         <Form.Group controlId="cardNumber">

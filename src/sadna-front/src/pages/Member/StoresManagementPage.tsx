@@ -1,6 +1,9 @@
 import React, {useState} from 'react';
 import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
 import { Store } from '../../components/Store.tsx';
+import Exit from '../Exit.tsx';
+
+
 
 const stores = [
   { id: 1, name: 'Store A', isOpne: true},
@@ -36,7 +39,8 @@ function StoresManagementPage(props) {
   };
 
   return (
-  <dev>
+    <div className="container mt-5">
+       <Exit id={props.id}/>
     <Container className="my-5">
       <h1>Stores Management</h1>
       <Row className="my-3">
@@ -74,7 +78,8 @@ function StoresManagementPage(props) {
         ))}
       </Row>
     </Container>
-    </dev>
+    </div>
+
   );
 }
 

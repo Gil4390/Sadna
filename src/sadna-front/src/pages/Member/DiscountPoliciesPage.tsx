@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Button, Modal, Form , Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { Condition } from '../../components/Condition';
+import Exit from "../Exit.tsx";
 
 function DiscountPoliciesPage() {
   const styles = {
@@ -86,6 +87,7 @@ function DiscountPoliciesPage() {
 
 return (
     <div className="container mt-5">
+      <Exit id={props.id}/>
         <ListGroup>
           <h5>Create New Store Policy</h5>
          </ListGroup>

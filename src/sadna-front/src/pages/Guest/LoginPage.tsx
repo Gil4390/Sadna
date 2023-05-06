@@ -1,7 +1,12 @@
 import React, { useState,useEffect } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
 import {ResponseT} from '../../models/Response.tsx';
+<<<<<<< Updated upstream
 import { handleIsAdmin, handleLogin } from '../../actions/GuestActions.tsx';
+=======
+import { handleLogin } from '../../actions/GuestActions.tsx';
+>>>>>>> Stashed changes
+import Exit from "../Exit.tsx";
 
 
 function LoginPage(props) {
@@ -52,6 +57,7 @@ function LoginPage(props) {
 
   return (
     <Card style={{ maxWidth: '500px', margin: 'auto' }}>
+      <Exit id={props.id}/>
       <Card.Body>
         <Card.Title className="text-center">Welcome Back!</Card.Title>
         <Form onSubmit={handleLoginSubmit}>

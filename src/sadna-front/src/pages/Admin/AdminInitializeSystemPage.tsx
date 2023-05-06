@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import { handleInitializeSystem } from "../../actions/AdminActions.tsx";
+import Exit from "../Exit.tsx";
 
 function AdminInitializeSystemPage(props) {
   const handleClickIntialize = () => {
@@ -9,6 +10,7 @@ function AdminInitializeSystemPage(props) {
 
   return (
     <div className="AdminInitializeSystemPage">
+      <Exit id={props.id}/>
       <div className="container">
         <div className="row align-items-center my-5">
           <div className="col-lg-5">

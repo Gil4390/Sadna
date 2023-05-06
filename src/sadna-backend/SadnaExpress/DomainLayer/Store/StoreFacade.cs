@@ -103,10 +103,10 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 foreach (Guid storeID in items.Keys)
                 {
-                    IsStoreExist(storeID); // not possible but still...
+                    IsStoreExist(storeID);
                     if (!stores[storeID].Active)
                         throw new Exception($"The store: {storeID} not active");
-                    if (stores[storeID].CheckPurchasePolicy(items[storeID], ref itemForOrders))
+                    if (stores[storeID].CheckPurchasePolicy(items[storeID]))
                     {
                         sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders,email);
                         storeUpdated.Add(storeID, items[storeID]);

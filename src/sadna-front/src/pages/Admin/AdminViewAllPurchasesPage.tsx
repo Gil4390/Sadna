@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Table } from 'react-bootstrap';
 import { handleGetAllStorePurchases, handleGetAllUserPurchases } from '../../actions/AdminActions.tsx';
 import { Orders, Order, ItemForOrder } from '../../models/Purchase.js';
+import Exit from "../Exit.tsx";
 
 const AdminViewAllPurchasesPage = (props) => {
   const [storeOrUser, setStoreOrUser] = useState('store');
@@ -40,6 +41,7 @@ const AdminViewAllPurchasesPage = (props) => {
 
   return (
     <Container>
+      <Exit id={props.id}/>
       <Row>
         <Col>
           <Button onClick={handleClickStore}>Store Purchases</Button>

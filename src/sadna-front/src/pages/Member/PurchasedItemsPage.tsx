@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import Exit from "../Exit.tsx";
 
 const purchases = [
   {
@@ -59,7 +60,7 @@ const ReviewsModal = ({ show, handleClose, product }) => {
   );
 };
 
-const PurchasedItemsPage = () => {
+const PurchasedItemsPage = (props) => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -75,6 +76,7 @@ const PurchasedItemsPage = () => {
 
   return (
     <div className="container">
+      <Exit id={props.id}/>
       <h1>Past Purchases</h1>
       <table className="table" style={{background: "white"}}>
         <thead>
