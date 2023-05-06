@@ -14,7 +14,6 @@ function CartPage(props) {
 
   const calculatePrice=()=>{
     const sum = cartItems.reduce((acc, item) => acc + (item.price*item.count), 0);
-    console.log("pricee "+sum);
     setTotalPrice(sum);
   }
   
@@ -41,9 +40,11 @@ function CartPage(props) {
     calculatePrice(); 
   };
 
+  const handleCheckout=(id)=>{
+    navigate('/PaymentPage', {state: {id}})
+  }
+
   
-
-
   return (
     props.isInit?
     (<Container className="my-5">
@@ -58,7 +59,7 @@ function CartPage(props) {
           </ListGroup>
           <hr />
           <h4>Total Price: ${totalPrice}</h4>
-          <Button variant="success" size="lg" onClick={() => navigate("/PaymentPage")}>Checkout Now</Button>
+          <Button variant="success" size="lg" onClick={() => handleCheckout(props.id)}>Checkout Now</Button>
         </div>
       )}
     </Container>):(<SystemNotInit/>)

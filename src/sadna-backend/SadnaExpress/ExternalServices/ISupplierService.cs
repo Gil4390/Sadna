@@ -8,7 +8,7 @@ namespace SadnaExpress.Services
 
         bool ShipOrder(string orderDetails, string userDetails);
 
-        void CancelOrder(string orderNum);
+        bool CancelOrder(string orderNum);
 
     }
 }

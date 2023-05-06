@@ -21,9 +21,9 @@ namespace SadnaExpressTests
                 isConnected = true;
             }
 
-            public virtual void CancelOrder(string orderNum)
+            public virtual bool CancelOrder(string orderNum)
             {
-
+                return true;
             }
 
             public virtual bool Connect()

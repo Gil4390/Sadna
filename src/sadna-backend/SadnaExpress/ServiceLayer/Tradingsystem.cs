@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ExternalServices;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.Services;
@@ -38,6 +39,12 @@ namespace SadnaExpress.ServiceLayer
 
         public TradingSystem(IPaymentService paymentService = null, ISupplierService supplierService=null)
         {
+            //if services are null initialized with default services
+            if (paymentService == null)
+                paymentService = new PaymentService();
+            if (supplierService == null)
+                supplierService = new SupplierService();
+
             IUserFacade userFacade = new UserFacade(paymentService, supplierService);
             IStoreFacade storeFacade = new StoreFacade();
             storeManager = new StoreManager(userFacade, storeFacade);
@@ -205,7 +212,7 @@ namespace SadnaExpress.ServiceLayer
 
         public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
-            ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail, userManager.GetMember(userID).Value.Email );
+            ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
             return response;
         }
         

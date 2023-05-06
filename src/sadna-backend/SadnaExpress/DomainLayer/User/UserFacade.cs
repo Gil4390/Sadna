@@ -19,6 +19,7 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private ConcurrentDictionary<Guid, string> macs;
 
+        private readonly string guestEmail = "guest";
         private bool _isTSInitialized;
         private IPasswordHash _ph = new PasswordHash();
         private IRegistration _reg = new Registration();
@@ -724,6 +725,14 @@ namespace SadnaExpress.DomainLayer.User
 
             throw new Exception("User with id " + userID + " does not exist");
         }
+        
+        public string GetUserEmail(Guid userID)
+        {
+            if (members.ContainsKey(userID))
+                return members[userID].Email;
+            return guestEmail;
+
+        }
 
         public void LoadData(Guid storeid1, Guid storeid2)
         {
@@ -771,5 +780,7 @@ namespace SadnaExpress.DomainLayer.User
             members.TryAdd(storeOwnerid1, storeOwner1);
             members.TryAdd(storeOwnerid2, storeOwner2);
         }
+
+
     }
 }

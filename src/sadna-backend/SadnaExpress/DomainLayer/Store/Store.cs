@@ -66,6 +66,8 @@ namespace SadnaExpress.DomainLayer.Store
             storeID = Guid.NewGuid();
             active = true;
             discountPolicyTree = null;
+            purchasePolicy = null;
+
         }
         public bool Equals(Store store)
         {
@@ -129,7 +131,8 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 basket.Add(GetItemById(itemID),items[itemID]);
             }
-
+            if (PurchasePolicy == null)
+                return true;
             return PurchasePolicy.Evaluate(this, basket);
         }
         

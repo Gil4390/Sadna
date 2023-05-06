@@ -118,7 +118,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult PurchaseCart([FromBody] PurchaseRequest request)
         {
-            return Ok(tradingSystem.PurchaseCart(request.UserID, request.PaymentDetails, request.UsersDetail));
+            ResponseT<List<ItemForOrder>> res = tradingSystem.PurchaseCart(request.UserID, request.PaymentDetails, request.UsersDetails);
+            return Ok(new Response(res.ErrorMessage));
         }
 
 
