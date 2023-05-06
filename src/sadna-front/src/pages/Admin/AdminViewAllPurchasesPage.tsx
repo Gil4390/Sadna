@@ -6,7 +6,11 @@ import Exit from "../Exit.tsx";
 import { ResponseT } from '../../models/Response.js';
 
 interface OrderTableRow {
-  userId: string;
+  userEmail: string;
+  in: OrderTableRowIn;
+}
+
+interface OrderTableRowIn {
   storeName: string;
   itemId: string;
   itemName: string;
@@ -14,9 +18,9 @@ interface OrderTableRow {
 }
 
 const AdminViewAllPurchasesPage = (props) => {
-  const [storeOrUser, setStoreOrUser] = useState('store');
+  const [storeOrUser, setStoreOrUser] = useState('user');
   const [userPurchases, setUserPurchases] = useState<Orders>({});
-  const [storePurchases, setStorePurchases] = useState<Orders>();
+  const [purchases, setPurchases] = useState<Orders>({});
 
   const [response, setResponse] = useState<ResponseT>();
 
@@ -26,27 +30,10 @@ const AdminViewAllPurchasesPage = (props) => {
       value => {
         console.log(value);
         
-        setUserPurchases(value as Orders);
+        setPurchases(value as Orders);
       })
       .catch(error => alert(error));
   }
-
-
-  useEffect(() => {
-    for (const orderId in userPurchases) {
-      console.log(`Order ${orderId}:`);
-      const order = userPurchases[orderId];
-      console.log(`  Number of orders: ${order.length}`);
-      for (const o of order){
-        for (const item of o.listItems) {
-          console.log(`  Item: ${item.name} (${item.itemID})`);
-          console.log(`    Store: ${item.storeName} (${item.storeID})`);
-          console.log(`    Price: ${item.price}`);
-        }
-      }
-    }
-  }, [userPurchases]);
-  
 
   const handleClickUser = () => {
     getAllUserPurchases();
@@ -56,34 +43,53 @@ const AdminViewAllPurchasesPage = (props) => {
   const getAllStorePurchases = ()=>{
     handleGetAllStorePurchases(props.id).then(
       value => {
-        setStorePurchases(value);
+        setPurchases(value);
       })
       .catch(error => alert(error));
-  }
-  const handleClickStore = () => {
-    getAllStorePurchases();
-    setStoreOrUser('store')
-  };  
-
-  useEffect(() => {
-    getAllUserPurchases();
-    //getAllStorePurchases();
-  }, []);
-
+    }
+    const handleClickStore = () => {
+      getAllStorePurchases();
+      setStoreOrUser('store')
+    };  
+    
+    useEffect(() => {
+      if (storeOrUser == "store"){
+        getAllStorePurchases();
+      }
+      else{
+        getAllUserPurchases();
+      }
+    }, [storeOrUser]);
+    
+    useEffect(() => {
+      for (const orderId in purchases) {
+        console.log(`Order ${orderId}:`);
+        const order = purchases[orderId];
+        console.log(`  Number of orders: ${order.length}`);
+        for (const o of order){
+          for (const item of o.listItems) {
+            console.log(`  Item: ${item.name} (${item.itemID})`);
+            console.log(`    Store: ${item.storeName} (${item.storeID})`);
+            console.log(`    Price: ${item.price}`);
+          }
+        }
+      }
+    }, [purchases]);
   
   const getOrderTableRows = (): OrderTableRow[] => {
     const orderTableRows: OrderTableRow[] = [];
 
-    for (const userId in userPurchases) {
-      const order = userPurchases[userId];
+    for (const userId in purchases) {
+      const order = purchases[userId];
       for (const o of order){
         for (const item of o.listItems) {
             orderTableRows.push({
-              userId,
-              storeName: item.storeName,
-              itemId: item.itemID,
-              itemName: item.name,
-              itemPrice: item.price,
+              userEmail: item.userEmail,
+              in: {
+                storeName: item.storeName,
+                itemId: item.itemID,
+                itemName: item.name,
+                itemPrice: item.price,}
             });
           }
     }
@@ -107,26 +113,26 @@ const AdminViewAllPurchasesPage = (props) => {
       <Row>
         <Col>
           <Table striped bordered hover>
-          <thead>
-        <tr>
-          <th>User ID</th>
-          <th>Store Name</th>
-          <th>Item ID</th>
-          <th>Item Name</th>
-          <th>Item Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        {getOrderTableRows().map((row, index) => (
-          <tr key={index}>
-            <td>{row.userId}</td>
-            <td>{row.storeName}</td>
-            <td>{row.itemId}</td>
-            <td>{row.itemName}</td>
-            <td>{row.itemPrice}</td>
-          </tr>
-        ))}
-      </tbody>
+            <thead>
+              <tr>
+                <th>User Email</th>
+                <th>Store Name</th>
+                <th>Item ID</th>
+                <th>Item Name</th>
+                <th>Item Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {getOrderTableRows().map((row, index) => (
+                <tr key={index}>
+                  <td>{row.userEmail}</td>
+                  <td>{row.in.storeName}</td>
+                  <td>{row.in.itemId}</td>
+                  <td>{row.in.itemName}</td>
+                  <td>{row.in.itemPrice}</td>
+                </tr>
+              ))}
+            </tbody>
           </Table>
         </Col>
       </Row>

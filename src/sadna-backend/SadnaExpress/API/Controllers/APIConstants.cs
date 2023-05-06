@@ -136,14 +136,10 @@ namespace SadnaExpress.API.Controllers
             public const string InitTradingSystem = "system-init";
 
             public const string allMembers = "all-members";
-            
-            public const string allpurchases = "all-purchases";
-            
-            public const string allpurchasesUser = "all-purchases-user";
-            
+
             public const string allpurchasesUsers = "all-purchases-users";
             
-            public const string allpurchasesStore= "all-purchases-store";
+            public const string allpurchasesStore= "all-purchases-stores";
             
             public const string removeMember = "rm-member";
         }

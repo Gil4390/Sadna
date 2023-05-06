@@ -69,7 +69,7 @@ export function handleGetAllStorePurchases(userID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 

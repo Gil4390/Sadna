@@ -185,10 +185,13 @@ namespace SadnaExpress.DomainLayer.Store
                         if (items_quantity[item] - items[itemID] < 0)
                             throw new Exception($"The item {item.Name} finished");
                         items_quantity[item] -= items[itemID];
-                        ItemForOrder ifo = new ItemForOrder(item, storeID);
-                        ifo.UserEmail = email;
-                        ifo.StoreName = storeName;
-                        itemForOrders.Add(ifo);
+                        for (int i = 0; i < items[itemID]; i++)
+                        {
+                            ItemForOrder ifo = new ItemForOrder(item, storeID);
+                            ifo.UserEmail = email;
+                            ifo.StoreName = storeName;
+                            itemForOrders.Add(ifo);
+                        }
                     }
                     sum += item.Price;
                     itemsUpdated.Add(item, items[itemID]);
