@@ -66,12 +66,13 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.AdminData.allpurchasesUsers)]
-        [ResponseType(typeof(ResponseT<List<Order>>))]
+        [ResponseType(typeof(ResponseT<Dictionary<Guid, List<Order>>>))]
         [HttpPost]
         public IHttpActionResult GetAllPurchasesFromUser([FromBody] ClientRequest request)
         {
             //all users
-            return Ok(tradingSystem.GetPurchasesInfoUser(request.UserID));
+            var res = tradingSystem.GetPurchasesInfoUser(request.UserID);
+            return Ok(res);
         }
         
         [Route(APIConstants.AdminData.allpurchasesUser)]
