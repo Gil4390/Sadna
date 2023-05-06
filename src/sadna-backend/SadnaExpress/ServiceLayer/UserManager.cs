@@ -231,16 +231,24 @@ namespace SadnaExpress.ServiceLayer
                 return new ConcurrentDictionary<Guid, User>();
             }
         }
-        public ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID)
+        public ResponseT<List<SMember>> GetMembers(Guid userID)
         {
             try
             {
-                return new ResponseT<ConcurrentDictionary<Guid, Member>>(userFacade.GetMembers(userID));
+                ConcurrentDictionary<Guid, Member> members = userFacade.GetMembers(userID);
+                List<SMember> sMembers = new List<SMember>();
+
+                foreach (Member member in members.Values)
+                {
+                    SMember sMember = new SMember(member);
+                    sMembers.Add(sMember);
+                }
+                return new ResponseT<List<SMember>>(sMembers);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message + " in " + nameof(GetMembers));
-                return new ResponseT<ConcurrentDictionary<Guid, Member>>(ex.Message);
+                return new ResponseT<List<SMember>>(ex.Message);
             }
         }
         public ResponseT<ShoppingCart> ShowShoppingCart(Guid userID)

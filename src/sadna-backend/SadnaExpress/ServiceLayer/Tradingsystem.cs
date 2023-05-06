@@ -267,11 +267,12 @@ namespace SadnaExpress.ServiceLayer
             {
                 orders.AddRange(Orders.Instance.GetUserOrders()[user.UserId]);
             }
-            foreach (Member mem in GetMembers(userID).Value.Values)
+            /*
+            foreach (Member mem in GetMembers(userID).Values)
             {
                 orders.AddRange(Orders.Instance.GetUserOrders()[mem.UserId]);
             }
-            
+            */
             
             return new ResponseT<List<Order>>(orders);
         }
@@ -423,7 +424,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetCurrent_Users();
         }
-        public ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID)
+        public ResponseT<List<SMember>> GetMembers(Guid userID)
         {
             return userManager.GetMembers(userID);
         }

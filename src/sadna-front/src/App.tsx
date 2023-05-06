@@ -75,11 +75,11 @@ const App:React.FC=()=>{
         <Route path="/ManageItemsPage" element={<ManageItemsPage />} />
         <Route path="/PurchasedStoreItemsPage" element={<PurchasedStoreItemsPage />} />
 
-        <Route path="/AdminViewAllUsersPage" element={<AdminViewAllUsersPage />} />
-        <Route path="/AdminManageAllStoresPage" element={<AdminManageAllStoresPage />} />
-        <Route path="/AdminViewAllPurchasesPage" element={<AdminViewAllPurchasesPage />} />
-        <Route path="/AdminManageComplaintsPage" element={<AdminManageComplaintsPage />} />
-        <Route path="/AdminInitializeSystemPage" element={<AdminInitializeSystemPage />} />
+        <Route path="/AdminViewAllUsersPage" element={<AdminViewAllUsersPage id={id}/>} />
+        <Route path="/AdminManageAllStoresPage" element={<AdminManageAllStoresPage id={id}/>} />
+        <Route path="/AdminViewAllPurchasesPage" element={<AdminViewAllPurchasesPage id={id}/>} />
+        <Route path="/AdminManageComplaintsPage" element={<AdminManageComplaintsPage id={id}/>} />
+        <Route path="/AdminInitializeSystemPage" element={<AdminInitializeSystemPage id={id}/>} />
         
       </Routes>
       <Footer />
