@@ -79,7 +79,7 @@ const App:React.FC=()=>{
         <Route path="/AdminManageAllStoresPage" element={<AdminManageAllStoresPage id={id}/>} />
         <Route path="/AdminViewAllPurchasesPage" element={<AdminViewAllPurchasesPage id={id}/>} />
         <Route path="/AdminManageComplaintsPage" element={<AdminManageComplaintsPage id={id}/>} />
-        <Route path="/AdminInitializeSystemPage" element={<AdminInitializeSystemPage id={id}/>} />
+        <Route path="/AdminInitializeSystemPage" element={<AdminInitializeSystemPage id={id} setIsInit={setisInit}/>} />
         
       </Routes>
       <Footer />

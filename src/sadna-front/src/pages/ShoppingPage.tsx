@@ -21,7 +21,9 @@ function ShoppingPage(props) {
 
 
   useEffect(() => {
-    getAllItems();
+    if (props.isInit){
+      getAllItems()
+    } 
  }, [])
 
 

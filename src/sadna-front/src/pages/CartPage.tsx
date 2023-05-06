@@ -28,8 +28,10 @@ function CartPage(props) {
   }
 
   useEffect(() => {
-    getShoppingCartItems();
-    calculatePrice();
+    if (props.isInit){
+      getShoppingCartItems();
+      calculatePrice();
+    }
   }, []);
 
   useEffect(() => {
