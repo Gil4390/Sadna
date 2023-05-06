@@ -1,11 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
 import {ResponseT} from '../../models/Response.tsx';
-<<<<<<< Updated upstream
 import { handleIsAdmin, handleLogin } from '../../actions/GuestActions.tsx';
-=======
-import { handleLogin } from '../../actions/GuestActions.tsx';
->>>>>>> Stashed changes
 import Exit from "../Exit.tsx";
 
 
