@@ -1,22 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Table } from 'react-bootstrap';
 import { handleGetAllStorePurchases, handleGetAllUserPurchases } from '../../actions/AdminActions.tsx';
-import { Orders, Order, ItemForOrder } from '../../models/Purchase.js';
+import { Orders, Order, ItemForOrder } from '../../models/Purchase.tsx';
 import Exit from "../Exit.tsx";
+import { ResponseT } from '../../models/Response.js';
+
+interface OrderTableRow {
+  userId: string;
+  storeName: string;
+  itemId: string;
+  itemName: string;
+  itemPrice: number;
+}
 
 const AdminViewAllPurchasesPage = (props) => {
   const [storeOrUser, setStoreOrUser] = useState('store');
-  const [userPurchases, setUserPurchases] = useState<Orders>({orders: new Map()});
+  const [userPurchases, setUserPurchases] = useState<Orders>({});
   const [storePurchases, setStorePurchases] = useState<Orders>();
+
+  const [response, setResponse] = useState<ResponseT>();
 
 
   const getAllUserPurchases = ()=>{
     handleGetAllUserPurchases(props.id).then(
       value => {
-        setUserPurchases(value);
+        console.log(value);
+        
+        setUserPurchases(value as Orders);
       })
       .catch(error => alert(error));
   }
+
+
+  useEffect(() => {
+    for (const orderId in userPurchases) {
+      console.log(`Order ${orderId}:`);
+      const order = userPurchases[orderId];
+      console.log(`  Number of orders: ${order.length}`);
+      for (const o of order){
+        for (const item of o.listItems) {
+          console.log(`  Item: ${item.name} (${item.itemID})`);
+          console.log(`    Store: ${item.storeName} (${item.storeID})`);
+          console.log(`    Price: ${item.price}`);
+        }
+      }
+    }
+  }, [userPurchases]);
+  
+
   const handleClickUser = () => {
     getAllUserPurchases();
     setStoreOrUser('user')
@@ -36,8 +67,33 @@ const AdminViewAllPurchasesPage = (props) => {
 
   useEffect(() => {
     getAllUserPurchases();
-    getAllStorePurchases();
+    //getAllStorePurchases();
   }, []);
+
+  
+  const getOrderTableRows = (): OrderTableRow[] => {
+    const orderTableRows: OrderTableRow[] = [];
+
+    for (const userId in userPurchases) {
+      const order = userPurchases[userId];
+      for (const o of order){
+        for (const item of o.listItems) {
+            orderTableRows.push({
+              userId,
+              storeName: item.storeName,
+              itemId: item.itemID,
+              itemName: item.name,
+              itemPrice: item.price,
+            });
+          }
+    }
+
+
+
+  }
+
+  return orderTableRows;
+  };
 
   return (
     <Container>
@@ -51,30 +107,26 @@ const AdminViewAllPurchasesPage = (props) => {
       <Row>
         <Col>
           <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>User ID</th>
-                <th>Store Name</th>
-                <th>Item ID</th>
-                <th>Item Name</th>
-                <th>Item Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from(userPurchases?.orders).map(([userId, orderList]) => (
-                orderList.map(({ order }) =>
-                  order.map(({ ItemId, storeName, name, price }) => (
-                    <tr key={`${userId}-${ItemId}`}>
-                      <td>{userId}</td>
-                      <td>{storeName}</td>
-                      <td>{ItemId}</td>
-                      <td>{name}</td>
-                      <td>{price}</td>
-                    </tr>
-                  ))
-                )
-              ))}
-            </tbody>
+          <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Store Name</th>
+          <th>Item ID</th>
+          <th>Item Name</th>
+          <th>Item Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {getOrderTableRows().map((row, index) => (
+          <tr key={index}>
+            <td>{row.userId}</td>
+            <td>{row.storeName}</td>
+            <td>{row.itemId}</td>
+            <td>{row.itemName}</td>
+            <td>{row.itemPrice}</td>
+          </tr>
+        ))}
+      </tbody>
           </Table>
         </Col>
       </Row>

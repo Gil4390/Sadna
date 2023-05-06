@@ -418,5 +418,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetMembers(userID);
         }
+
+        ResponseT<Dictionary<Guid, List<Order>>> ITradingSystem.GetPurchasesInfoUser(Guid userID)
+        {
+            return _realBridge.GetPurchasesInfoUser(userID);
+        }
     }
 }

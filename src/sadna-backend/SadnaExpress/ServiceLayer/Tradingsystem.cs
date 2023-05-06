@@ -260,21 +260,11 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public ResponseT<List<Order>> GetPurchasesInfoUser(Guid userID)
+        public ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID)
         {
-            List<Order> orders = new List<Order>();
-            foreach (User user in GetCurrent_Users().Values)
-            {
-                orders.AddRange(Orders.Instance.GetUserOrders()[user.UserId]);
-            }
-            /*
-            foreach (Member mem in GetMembers(userID).Values)
-            {
-                orders.AddRange(Orders.Instance.GetUserOrders()[mem.UserId]);
-            }
-            */
+            Dictionary<Guid, List<Order>> orders = Orders.Instance.GetUserOrders();
             
-            return new ResponseT<List<Order>>(orders);
+            return new ResponseT<Dictionary<Guid, List<Order>>>(orders);
         }
         public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
         {

@@ -1,14 +1,14 @@
 export interface Orders { 
-  orders: Map<string, Order[]>
+  [key: string]:Order[]
 };
 
 export interface Order { 
-  order: ItemForOrder[],
+  listItems: ItemForOrder[],
 };
 
 export interface ItemForOrder {
-  ItemId: string,
-  storeId: string,
+  itemID: string,
+  storeID: string,
   name: string,
   category: string,
   price: number,
