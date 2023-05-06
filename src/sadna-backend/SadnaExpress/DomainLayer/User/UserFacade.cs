@@ -667,13 +667,20 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        private void IsTSSystemManagerID(Guid userID)
+        private bool IsTSSystemManagerID(Guid userID)
         {
             if (members.ContainsKey(userID))
                 if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }) == false)                 
                    throw new Exception("System is not initialized");
-                else
-                    throw new Exception("System is not initialized");
+            return true;
+        }
+
+        public bool IsUserAdmin(Guid userID)
+        {
+            if (members.ContainsKey(userID))
+                if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
+                    return true;
+            return false;
         }
 
         private void IsTsInitialized()

@@ -406,5 +406,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetItemsInStore(storeId);
         }
+
+        public ResponseT<bool> IsAdmin(Guid userID)
+        {
+            return _realBridge.IsAdmin(userID);
+        }
     }
 }

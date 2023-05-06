@@ -58,6 +58,15 @@ namespace SadnaExpress.API.Controllers
             return Ok(res);
         }
 
+        [Route(APIConstants.GuestData.isAdmin)]
+        [ResponseType(typeof(ResponseT<Guid>))]
+        [HttpPost]
+        public IHttpActionResult IsAdmin([FromBody] ClientRequest request)
+        {
+            ResponseT<bool> res = tradingSystem.IsAdmin(request.UserID);
+            return Ok(res);
+        }
+
         [Route(APIConstants.GuestData.storeInfo)]
         [ResponseType(typeof(ResponseT<Store>))]
         [HttpPost]

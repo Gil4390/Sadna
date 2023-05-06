@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
 import {ResponseT} from '../../models/Response.tsx';
-import { handleLogin } from '../../actions/GuestActions.tsx';
+import { handleIsAdmin, handleLogin } from '../../actions/GuestActions.tsx';
 
 
 function LoginPage(props) {

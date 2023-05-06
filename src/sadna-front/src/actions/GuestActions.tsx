@@ -236,3 +236,23 @@ export function handlePurchaseCart(userID, paymentDetails, usersDetails ) {
         return Promise.resolve(data)
     })
 }
+
+
+export function handleIsAdmin(userID) {
+    let url = "http://localhost:8080/api/guest/is-admin";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}

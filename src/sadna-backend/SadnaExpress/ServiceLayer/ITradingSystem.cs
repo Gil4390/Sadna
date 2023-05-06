@@ -117,6 +117,6 @@ namespace SadnaExpress.ServiceLayer
 
         ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
         ResponseT<List<Item>> GetItemsInStore(Guid storeId);
-
+        ResponseT<bool> IsAdmin(Guid userID);
     }
 }

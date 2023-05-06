@@ -61,6 +61,7 @@ namespace SadnaExpress.DomainLayer.User
         bool IsSystemInitialize();
         void LoadData(Guid storeid1,Guid storeid2);
         int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
+        public bool IsUserAdmin(Guid userID);
         string GetUserEmail(Guid userID);
     }
 }
