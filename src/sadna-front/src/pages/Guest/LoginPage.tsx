@@ -2,6 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
 import {ResponseT} from '../../models/Response.tsx';
 import { handleIsAdmin, handleLogin } from '../../actions/GuestActions.tsx';
+import Exit from "../Exit.tsx";
 
 
 function LoginPage(props) {
@@ -52,6 +53,7 @@ function LoginPage(props) {
 
   return (
     <Card style={{ maxWidth: '500px', margin: 'auto' }}>
+      <Exit id={props.id}/>
       <Card.Body>
         <Card.Title className="text-center">Welcome Back!</Card.Title>
         <Form onSubmit={handleLoginSubmit}>

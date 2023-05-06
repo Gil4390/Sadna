@@ -2,6 +2,9 @@ import React, {useState, useEffect} from 'react';
 import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
 import { Store } from '../../components/Store.tsx';
 import { handleGetMemberPermissions } from '../../actions/MemberActions.tsx';
+import Exit from '../Exit.tsx';
+
+
 
 const stores = [
   { id: 1, name: 'Store A', isOpne: true},

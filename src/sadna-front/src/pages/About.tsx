@@ -1,8 +1,14 @@
 import React from "react";
+import Exit from './Exit.tsx';
 
-function About(id, isInit) {
+
+
+function About(props) {
   return (
-    isInit?
+
+    <div className="container mt-5">
+    <Exit id={props.id}/>
+    props.isInit?
     (<div className="about">
       <div className="container">
         <div className="row align-items-center my-5">
@@ -18,6 +24,7 @@ function About(id, isInit) {
             <p>
               "system is not initialized"
             </p></div>)
+    </div>
   );
 }
 

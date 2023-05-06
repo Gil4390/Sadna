@@ -124,7 +124,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return itemsInventory.PurchaseCart(items, ref itemForOrders, storeID , storeName,email);
         }
-        public bool CheckPurchasePolicy(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders)
+        public bool CheckPurchasePolicy(Dictionary<Guid, int> items)
         {
             Dictionary<Item, int> basket = new Dictionary<Item, int>();
             foreach (Guid itemID in items.Keys)

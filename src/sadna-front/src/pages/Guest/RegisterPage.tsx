@@ -3,6 +3,7 @@ import { Form, Button, Card } from 'react-bootstrap';
 import SystemNotInit from '../SystemNotInit.tsx';
 import { handleRegister } from '../../actions/GuestActions.tsx';
 import {Response} from '../../models/Response.tsx';
+import Exit from "../Exit.tsx";
 
 function RegisterPage(props) {
  
@@ -72,6 +73,7 @@ function RegisterPage(props) {
   return (
     props.isInit?(
     <Card style={{ maxWidth: '500px', margin: 'auto' }}>
+      <Exit id={props.id}/>
       <Card.Body>
         <Card.Title className="text-center">Register Now!</Card.Title>
         <Form onSubmit={handleRegisterSubmit}>

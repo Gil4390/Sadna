@@ -1,8 +1,10 @@
 import React from "react";
+import Exit from "../Exit.tsx";
 
-function AdminManageComplaintsPage() {
+function AdminManageComplaintsPage(props) {
   return (
     <div className="AdminManageComplaintsPage">
+      <Exit id={props.id}/>
       <div className="container">
         <div className="row align-items-center my-5">
           <div className="col-lg-5">

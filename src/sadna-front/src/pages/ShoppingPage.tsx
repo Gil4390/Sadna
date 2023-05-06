@@ -5,6 +5,7 @@ import SystemNotInit from './SystemNotInit.tsx';
 import { handleSearchItems } from '../actions/GuestActions.tsx';
 import {Item} from '../models/Shop.tsx';
 import { ResponseT } from '../models/Response.tsx';
+import Exit from "./Exit.tsx";
 
 function ShoppingPage(props) {
   const [allItems, setAllItems] = useState<Item[]>([]);
@@ -74,6 +75,7 @@ function ShoppingPage(props) {
   return (
     props.isInit?
     (<div>
+      <Exit id={props.id}/>
       <Container>
         <Row className="mt-3">
           <Col>

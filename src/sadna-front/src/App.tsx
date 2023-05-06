@@ -56,7 +56,7 @@ const App:React.FC=()=>{
       <Router>
         <Navigation id={id} userType={userType} onLogout={handleLogout}/>
         <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home id={id} />} />
         <Route path="/ShoppingPage" element={<ShoppingPage id={id} isInit={isInit} />} />
         <Route path="/CartPage" element={<CartPage id={id} isInit={isInit}/>} />
         <Route path="/PaymentPage" element={<PaymentPage />} />
