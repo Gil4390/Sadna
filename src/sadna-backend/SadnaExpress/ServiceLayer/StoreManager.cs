@@ -104,7 +104,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid userID, string paymentDetails, string usersDetail , string email)
+        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
             Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
             try
@@ -120,17 +120,17 @@ namespace SadnaExpress.ServiceLayer
                 foreach (ShoppingBasket basket in shoppingCart.Baskets) 
                     cart.Add(basket.StoreID, basket.ItemsInBasket);
                 // try to purchase the items. (the function update the quantity in the inventory in this function)
-                double amount = storeFacade.PurchaseCart(cart, ref itemForOrders , email);
+                double amount = storeFacade.PurchaseCart(cart, ref itemForOrders, userFacade.GetUserEmail(userID));
                 if (!userFacade.PlacePayment(amount, paymentDetails))
                 {
                     storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
-                    throw new Exception("The payment not work!");
+                    throw new Exception("Payment operation failed");
                 }
                 if (!userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail))
                 {
                     storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
                     userFacade.CancelPayment(amount, paymentDetails); // because we need to refund the user
-                    throw new Exception("The supply not work!");
+                    throw new Exception("Supply operation failed");
                 }
                 Orders.Instance.AddOrder(userID, itemForOrders);
                 
