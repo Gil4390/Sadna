@@ -250,7 +250,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             int count = proxyBridge.GetItemsByName(userid, "bisli").Value.Count;
             Assert.AreEqual(0, count); //item was removed
         }
-
+        [TestMethod]
         public void RemoveItemConcurrent_Good()
         {
             Task<Response> task1 = Task.Run(() => {
@@ -266,8 +266,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task2.Wait();
             bool error1occured = task1.Result.ErrorOccured;
             bool error2occured = task2.Result.ErrorOccured;
-            Assert.IsTrue(error1occured || error2occured); //at lest one should fail
-            Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
+            Assert.IsTrue(!error1occured && !error2occured); //need success
 
             int count = proxyBridge.GetItemsByName(userid, "bisli").Value.Count;
             Assert.AreEqual(0, count); //item was removed

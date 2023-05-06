@@ -85,7 +85,8 @@ namespace SadnaExpress.DomainLayer.Store
         public void RemoveItem(Guid itemID)
         {
             int outItem;
-            items_quantity.TryRemove(GetItemById(itemID), out outItem);
+            if (!items_quantity.TryRemove(GetItemById(itemID), out outItem))
+                throw new Exception("The item not exist");
         }
         
         public void EditItemQuantity(Guid itemID, int quantity)

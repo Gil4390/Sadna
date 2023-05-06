@@ -338,7 +338,11 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             Member manager = IsMember(email);
 
-            members[userID].AddStoreManagerPermissions(storeID, manager, permission);
+            String internedKey = String.Intern(manager.UserId.ToString());
+            lock (internedKey)
+            {
+                members[userID].AddStoreManagerPermissions(storeID, manager, permission);
+            }
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AddStoreManagerPermissions)+"System added "+userID+" manager permissions in store "+storeID+": "+permission);
         }
 
@@ -347,10 +351,13 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userID);
             Member manager = IsMember(email);
-
-            Member member = members[userID].RemoveStoreManagerPermissions(storeID, manager,permission);
-            if (member != null)
-                members[manager.UserId] = member;
+            String internedKey = String.Intern(manager.UserId.ToString());
+            lock (internedKey)
+            {
+                Member member = members[userID].RemoveStoreManagerPermissions(storeID, manager, permission);
+                if (member != null)
+                    members[manager.UserId] = member;
+            }
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveStoreManagerPermissions)+"System removed "+userID+" manager permissions in store "+storeID+": "+permission);
         }
 
