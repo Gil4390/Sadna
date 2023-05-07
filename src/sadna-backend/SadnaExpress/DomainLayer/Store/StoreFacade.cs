@@ -304,6 +304,7 @@ namespace SadnaExpress.DomainLayer.Store
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
             reviews.Add(new Review(userID, stores[storeID], store.GetItemById(itemID), reviewText));
+            NotificationSystem.Instance.NotifyObservers(storeID, "User just added a review on item "+ store.GetItemById(itemID).Name+" at store "+ store.StoreName, userID);
             Logger.Instance.Info(userID, nameof(StoreFacade)+": "+nameof(WriteItemReview) + userID +" write review to store "+storeID+" on "+itemID+"- "+ reviewText);
         }
         public List<Review> GetItemReviews(Guid itemID)
