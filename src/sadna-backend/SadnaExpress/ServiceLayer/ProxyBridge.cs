@@ -290,11 +290,6 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetMember(userID);
         }
 
-        public ResponseT<ShoppingCart> GetUserShoppingCart(Guid userID)
-        {
-            return _realBridge.GetUserShoppingCart(userID);
-        }
-
         public ResponseT<Store> GetStore(Guid storeID)
         {
             return _realBridge.GetStore(storeID);
@@ -427,6 +422,8 @@ namespace SadnaExpress.ServiceLayer
         public void getNotificationsForOfflineMembers()
         {
             throw new NotImplementedException();
+        }
+
         ResponseT<List<ItemForOrder>> ITradingSystem.GetStorePurchases(Guid userID, Guid storeID)
         {
             return _realBridge.GetStorePurchases(userID, storeID);

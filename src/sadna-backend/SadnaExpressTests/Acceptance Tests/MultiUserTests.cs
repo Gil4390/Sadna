@@ -78,7 +78,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     proxyBridge.Register(id5, "Obysania@amazon.io","Sami", "Obysania", "123AaC!@#");
                     Thread.Sleep(7);
                     id5 = proxyBridge.Login(id5, "Obysania@amazon.io", "123AaC!@#").Value;
-                    proxyBridge.GetUserShoppingCart(id5);
+                    proxyBridge.GetDetailsOnCart(id5);
                     Thread.Sleep(777);
                     proxyBridge.AddItemToCart(id5, storeid1, itemid11, 1);
                     proxyBridge.AddItemToCart(id5, storeid2, itemid2, 3);
@@ -129,22 +129,22 @@ namespace SadnaExpressTests.Acceptance_Tests
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
             Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id1).Value.Baskets.Count == 0);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(id1).Value.Baskets.Count == 0);
 
             Assert.IsFalse(clientTasks[1].Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id2).Value.Baskets.Count == 0);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(id2).Value.Baskets.Count == 0);
             Assert.IsTrue(clientTasks[2].Result.ErrorOccured || clientTasks[3].Result.ErrorOccured); //no error occurred
 
             Assert.IsFalse(clientTasks[4].Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id5).Value.Baskets.Count == 2);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(id5).Value.Baskets.Count == 2);
             Assert.IsTrue(clientTasks[5].Result.ErrorOccured || clientTasks[6].Result.ErrorOccured); //no error occurred
 
             Assert.IsFalse(clientTasks[7].Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id8).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(id8).Value.Baskets.Count == 1);
             
             Assert.IsFalse(clientTasks[8].Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id9).Value.Baskets.Count == 1);
-            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id9).Value.GetItemQuantityInCart(storeid1, itemid11) == 3);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(id9).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(id9).Value.GetItemQuantityInCart(storeid1, itemid11) == 3);
         }
 
         #endregion
@@ -315,7 +315,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
 
             Assert.IsTrue(clientTasks[1].Result.ErrorOccured);// error occurred
-            Assert.IsTrue(proxyBridge.GetUserShoppingCart(loggedId2).Value.Baskets.Count == 0); // failed to add item to cart
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(loggedId2).Value.Baskets.Count == 0); // failed to add item to cart
 
 
             // only one purhcase successed, 2 failed
@@ -431,7 +431,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 proxyBridge.Register(id5, "Obysania@amazon.io", "Sami", "Obysania", "123AaC!@#");
                 Thread.Sleep(7);
                 id5 = proxyBridge.Login(id5, "Obysania@amazon.io", "123AaC!@#").Value;
-                proxyBridge.GetUserShoppingCart(id5);
+                proxyBridge.GetDetailsOnCart(id5);
                 Thread.Sleep(777);
                 proxyBridge.AddItemToCart(id5, storeid1, itemid11, 1);
                 proxyBridge.AddItemToCart(id5, storeid2, itemid11, 3);
@@ -492,7 +492,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(task3.Result.ErrorOccured || task4.Result.ErrorOccured); //no error occurred
             
             Assert.IsFalse(task5.Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id5).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(id5).Value.Baskets.Count == 1);
             
             Assert.IsTrue(task6.Result.ErrorOccured); //no error occurred\   
 
@@ -577,7 +577,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 proxyBridge.Register(id5, "Obysania@amazon.io", "Sami", "Obysania", "123AaC!@#");
                 Thread.Sleep(7);
                 id5 = proxyBridge.Login(id5, "Obysania@amazon.io", "123AaC!@#").Value;
-                proxyBridge.GetUserShoppingCart(id5);
+                proxyBridge.GetDetailsOnCart(id5);
                 Thread.Sleep(777);
                 proxyBridge.AddItemToCart(id5, storeid1, itemid11, 1);
                 proxyBridge.AddItemToCart(id5, storeid2, itemid11, 3);
@@ -636,7 +636,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(task3.Result.ErrorOccured || task4.Result.ErrorOccured); //no error occurred
             
             Assert.IsFalse(task5.Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetUserShoppingCart(id5).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(id5).Value.Baskets.Count == 1);
             
             Assert.IsTrue(task6.Result.ErrorOccured); //no error occurred\   
             
@@ -831,7 +831,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
 
                 Assert.IsTrue(clientTasks[1].Result.ErrorOccured);// error occurred
-                Assert.IsTrue(proxyBridge.GetUserShoppingCart(loggedId2).Value.Baskets.Count == 0); // successed to add item to cart
+                Assert.IsTrue(proxyBridge.GetDetailsOnCart(loggedId2).Value.Baskets.Count == 0); // successed to add item to cart
 
 
                 // all 3 purchase attempts successed while store manager adding the item quantity
@@ -1147,7 +1147,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
 
                 Assert.IsTrue(clientTasks[1].Result.ErrorOccured);// error occurred
-                Assert.IsTrue(proxyBridge.GetUserShoppingCart(loggedId2).Value.Baskets.Count == 0); // failed to add item to cart
+                Assert.IsTrue(proxyBridge.GetDetailsOnCart(loggedId2).Value.Baskets.Count == 0); // failed to add item to cart
 
 
                 // all 3 purchase attempts fail while store manager removes the item
@@ -1363,7 +1363,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
 
                 Assert.IsFalse(clientTasks[1].Result.ErrorOccured);// no error occurred
-                Assert.IsFalse(proxyBridge.GetUserShoppingCart(loggedId2).Value.Baskets.Count == 0); // successed to add item to cart
+                Assert.IsFalse(proxyBridge.GetDetailsOnCart(loggedId2).Value.Baskets.Count == 0); // successed to add item to cart
 
 
                 // all 3 purchase attempts successed while store manager adding the item quantity

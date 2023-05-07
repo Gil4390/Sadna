@@ -142,7 +142,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(task1.Result.ErrorOccured || task2.Result.ErrorOccured); //no error should happen
             Assert.IsTrue(proxyBridge.GetMember(memberId).ErrorOccured); // the member should erase
             Assert.IsNotNull(proxyBridge.GetUser(memberId)); //the user still need to be in the system
-            Assert.AreEqual(0, proxyBridge.GetUserShoppingCart(memberId).Value.Baskets.Count); // the shopping cart need to be empty because the user buy 
+            Assert.AreEqual(0, proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count); // the shopping cart need to be empty because the user buy 
             // check order details
             Assert.AreEqual(2, proxyBridge.GetAllStorePurchases(systemManagerid).Value.Count);
             Assert.IsTrue(proxyBridge.GetAllStorePurchases(systemManagerid).Value.ContainsKey(storeid1));

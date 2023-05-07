@@ -271,19 +271,6 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<List<SMember>>(ex.Message);
             }
         }
-        public ResponseT<ShoppingCart> ShowShoppingCart(Guid userID)
-        {
-            try
-            {
-                ShoppingCart sc = userFacade.ShowShoppingCart(userID);
-                return new ResponseT<ShoppingCart>(sc);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(ShowShoppingCart)+": "+ex.Message);
-                return new ResponseT<ShoppingCart>(ex.Message);
-            }
-        }
 
         public ResponseT<Guid> SetSecurityQA(Guid userID, string q, string a)
         {
@@ -299,21 +286,6 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-
-        public ResponseT<ShoppingCart> GetShoppingCartById(Guid userID)
-        {
-            try
-            {
-                ShoppingCart Cart = userFacade.GetShoppingCartById(userID);
-                return new ResponseT<ShoppingCart>(Cart);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(GetShoppingCartById)+": "+ex.Message);
-                return new ResponseT<ShoppingCart>(ex.Message);
-            }
-        }
-        
         public ResponseT<Guid> UpdateFirst(Guid userID, string newFirst)
         {
             try
@@ -422,21 +394,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Member>(ex.Message);
             }
         }
-
-        public ResponseT<ShoppingCart> GetUserShoppingCart(Guid userID)
-        {
-            try
-            {
-                ShoppingCart shoppingCart = userFacade.GetUserShoppingCart(userID);
-                return new ResponseT<ShoppingCart>(shoppingCart);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(UserManager)+": "+nameof(GetUserShoppingCart)+": "+ex.Message);
-                return new ResponseT<ShoppingCart>(ex.Message);
-            }
-        }
-
+        
         public ResponseT<List<Notification>> GetNotifications(Guid userId)
         {
             try
