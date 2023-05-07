@@ -335,13 +335,5 @@ namespace SadnaExpress.API.Controllers
             var res = tradingSystem.GetStorePurchases(request.userID, request.storeID);
             return Ok(res);
         }
-
-/*        [Route(APIConstants.MemberData.getStorePurchases)]
-        [ResponseType(typeof(ResponseT<List<Order>>))]
-        [HttpPost]
-        public IHttpActionResult GetStorePurchases([FromBody] StoreIDRequest request)
-        {
-            return Ok(tradingSystem.GetStorePurchases(request.userID, request.storeID));
-        }*/
     }
 }
