@@ -217,12 +217,12 @@ namespace SadnaExpress.ServiceLayer
             return response;
         }
         
-        public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string review)
+        public Response WriteItemReview(Guid userID, Guid itemID, string review)
         {
             try
             {
                 Logger.Instance.Info("User id: " + userID + " WriteReview to itemID: " + itemID);
-                return storeManager.WriteItemReview(userID, storeID, itemID, review);
+                return storeManager.WriteItemReview(userID, itemID, review);
             }
             catch (Exception ex)
             {
