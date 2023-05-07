@@ -527,6 +527,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.AreNotEqual(typeof(PromotedMember), proxyBridge.GetMember(store5Owner).Value.GetType());
         }
         #endregion
+        
         #region Appointing a new store manager 4.6
 
         [TestMethod]
@@ -585,7 +586,6 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         #endregion
-
 
         #region changing a store manager permission 4.7
 
@@ -708,8 +708,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
 
         #endregion
-
-
+        
         #region closing a store 4.9
 
         [TestMethod]
@@ -803,7 +802,6 @@ namespace SadnaExpressTests.Acceptance_Tests
 
         #endregion
 
-
         #region request store employees� information 4.11
 
         [TestMethod]
@@ -829,6 +827,87 @@ namespace SadnaExpressTests.Acceptance_Tests
             int employeeCountAfter = task2.Result.Value.Count;
 
             Assert.AreEqual(employeeCountBefore + 1, employeeCountAfter);
+        }
+
+        [TestMethod]
+        public void RequestStoreEmployeeInfoOf10Employees_Good()
+        {
+            // create store founder
+            Guid storeFounder = proxyBridge.Enter().Value;
+            proxyBridge.Register(storeFounder, "storeFounderMail1@gmail.com", "radwan", "ganem", "A#!a12345678");
+            storeFounder = proxyBridge.Login(storeFounder, "storeFounderMail1@gmail.com", "A#!a12345678").Value;
+            Guid storeID = proxyBridge.OpenNewStore(storeFounder, "Store 1").Value;
+
+            // create owner 1
+            Response res1 = proxyBridge.AppointStoreOwner(storeFounder, storeID, "gil@gmail.com");
+            Console.WriteLine(res1.ErrorMessage);
+
+            //create appoint 1 to owner 1
+            Guid enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "gil@gmail.com", "asASD876!@");
+            proxyBridge.AppointStoreOwner(memberId, storeID, "sebatian@gmail.com");
+
+            //create appoint 2 to owner 1
+            Response res2 = proxyBridge.AppointStoreOwner(memberId, storeID, "amihai@gmail.com");
+
+            //create appoint 1 to member1
+            enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "sebatian@gmail.com", "asASD123!@");
+            proxyBridge.AppointStoreOwner(memberId2, storeID, "bar@gmail.com");
+
+            //create appoint 2 to member1
+            Guid memberId5 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId5, "member5@gmail.com", "member", "member", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(memberId2, storeID, "member5@gmail.com");
+
+            //create appoint 1 to member2
+            enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "amihai@gmail.com", "asASD753!@");
+            Guid memberId6 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId6, "member6@gmail.com", "member", "member", "A#!a12345678");
+            memberId6 = proxyBridge.Login(memberId6, "member6@gmail.com", "A#!a12345678").Value;
+            proxyBridge.AppointStoreOwner(memberId3, storeID, "member6@gmail.com");
+
+            //create appoint 2 to member2
+            Guid memberId7 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId7, "member7@gmail.com", "member", "member", "A#!a12345678");
+            proxyBridge.AppointStoreManager(memberId3, storeID, "member7@gmail.com");
+
+            //create appoint 1 to member6
+            enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "member6@gmail.com", "A#!a12345678");
+
+            Guid memberId8 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId8, "member8@gmail.com", "member", "member", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(memberId6, storeID, "member8@gmail.com");
+
+            //create appoint 1 to member 5
+            enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "member5@gmail.com", "A#!a12345678");
+
+            Guid memberId9 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId9, "member9@gmail.com", "member", "member", "A#!a12345678");
+            proxyBridge.AppointStoreManager(memberId5, storeID, "member9@gmail.com");
+
+            List<SMemberForStore> employees = proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value;
+            List<string> employeesEmail = new List<string>();
+            // convert employees to emails list in order
+            Console.WriteLine(proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).ErrorMessage);
+            foreach (SMemberForStore member in employees)
+            {
+                employeesEmail.Add(member.Email);
+            }
+            Assert.IsTrue(employeesEmail.Contains("storeFounderMail1@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("gil@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("amihai@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("sebatian@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("bar@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("member5@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("member5@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("member6@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("member7@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("member8@gmail.com"));
+            Assert.IsTrue(employeesEmail.Contains("member9@gmail.com"));
         }
 
         [TestMethod]

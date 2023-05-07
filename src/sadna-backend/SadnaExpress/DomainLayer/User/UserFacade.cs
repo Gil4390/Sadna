@@ -98,7 +98,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 foreach (Member m in members.Values)
                 {
-                    if (m.Email.ToLower() == email.ToLower())
+                    if (m.Email.ToLower().Equals(email.ToLower()))
                         throw new Exception("Member with this email already exists");
 
                 }
@@ -811,15 +811,11 @@ namespace SadnaExpress.DomainLayer.User
 
             newMac = _ph.Mac();
             macs.TryAdd(storeManagerid1, newMac);
-            PromotedMember storeManager1 = new PromotedMember(storeManagerid1, "kobi@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
-            storeManager1.createManager(storeid1, storeOwner1);
+            Member storeManager1 = new Member(storeManagerid1, "kobi@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
 
             newMac = _ph.Mac();
             macs.TryAdd(storeManagerid2, newMac);
-            PromotedMember storeManager2 = new PromotedMember(storeManagerid2, "zibi@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
-            storeManager2.createManager(storeid2, storeOwner2);
-
-
+            Member storeManager2 = new Member(storeManagerid2, "zibi@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
 
 
             members.TryAdd(systemManagerid, systemManager);
@@ -832,6 +828,14 @@ namespace SadnaExpress.DomainLayer.User
             members.TryAdd(storeOwnerid2, storeOwner2);
             members.TryAdd(storeManagerid1, storeManager1);
             members.TryAdd(storeManagerid2, storeManager2);
+            
+            //add managers
+            storeOwner1.LoggedIn = true;
+            storeOwner2.LoggedIn = true;
+            AppointStoreManager(storeOwnerid1, storeid1, "kobi@gmail.com");
+            AppointStoreManager(storeOwnerid2, storeid2, "zibi@gmail.com");
+            storeOwner1.LoggedIn = false;
+            storeOwner2.LoggedIn = false;
         }
 
 
