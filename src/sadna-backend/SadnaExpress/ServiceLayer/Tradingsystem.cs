@@ -324,7 +324,6 @@ namespace SadnaExpress.ServiceLayer
 
         }
         
-
         public Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
         {
             return userManager.AddStoreManagerPermissions(userID, storeID, userEmail, permission);
@@ -380,7 +379,10 @@ namespace SadnaExpress.ServiceLayer
             }
             return new ResponseT<List<ItemForOrder>>(list);
         }
-
+        public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
+        {
+            return userManager.RemovePermission(userID, storeID, userEmail, permission);
+        }
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             return storeManager.GetAllStorePurchases(userID);
