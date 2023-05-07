@@ -98,9 +98,9 @@ namespace SadnaExpress.DomainLayer.User
         }
 
 
-        public void Update(string message, Guid from)
+        public void Update(Notification notification)
         {
-            notificationSystem.update(this,message,from);
+            awaitingNotification.Add(notification);
         }
     }
 }

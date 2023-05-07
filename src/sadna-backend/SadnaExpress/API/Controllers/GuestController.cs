@@ -1,5 +1,7 @@
-﻿using SadnaExpress.API.ClientRequests;
+﻿using Microsoft.AspNet.SignalR;
+using SadnaExpress.API.ClientRequests;
 using SadnaExpress.API.Controllers;
+using SadnaExpress.API.WebClient.SignalR;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.Obj;
@@ -17,6 +19,7 @@ namespace SadnaExpress.API.Controllers
     public class GuestController : ApiController
     {
         ITradingSystem tradingSystem;
+        private readonly IHubContext<NotificationHub> _notificationHubContext;
 
         public GuestController()
         {

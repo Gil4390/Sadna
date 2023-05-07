@@ -27,9 +27,7 @@ const AdminViewAllPurchasesPage = (props) => {
 
   const getAllUserPurchases = ()=>{
     handleGetAllUserPurchases(props.id).then(
-      value => {
-        console.log(value);
-        
+      value => { 
         setPurchases(value as Orders);
       })
       .catch(error => alert(error));

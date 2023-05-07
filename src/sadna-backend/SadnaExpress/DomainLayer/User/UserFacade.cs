@@ -9,6 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 using SadnaExpress.ServiceLayer;
 using System.Threading.Tasks;
 using NodaTime;
+using Microsoft.AspNet.SignalR.Hosting;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -248,6 +249,7 @@ namespace SadnaExpress.DomainLayer.User
             PromotedMember founder = members[userID].openNewStore(storeID);
             if (founder != null)
                 members[userID] = founder;
+            NotificationSystem.Instance.RegisterObserver(storeID, founder);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
 
 
@@ -304,9 +306,10 @@ namespace SadnaExpress.DomainLayer.User
                 IsMember(email);
                 PromotedMember owner = members[userID].AppointStoreOwner(storeID, members[newOwnerID]);
                 members[newOwnerID] = owner;
+                notificationSystem.RegisterObserver(storeID, owner);
             }
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
-            notificationSystem.RegisterObserver(storeID,GetMember(newOwnerID));
+            
         }
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)

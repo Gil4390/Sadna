@@ -4,9 +4,6 @@ namespace SadnaExpress.DomainLayer
 {
     public interface IObserver
     {
-        void Update(string message ,Guid from);
-        
-
-
+        void Update(Notification notification);
     }
 }

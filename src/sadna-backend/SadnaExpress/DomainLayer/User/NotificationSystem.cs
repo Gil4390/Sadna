@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SadnaExpress.API.WebClient.SignalR;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer
@@ -38,25 +39,17 @@ namespace SadnaExpress.DomainLayer
             {
                 foreach (Member member in storeOwners[storeID])
                 {
-                    Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
-                    member.addToAwaitingNotification(notification);
+                    if (member.UserId != userId) //we do not want to update the user about an operation he preformed by himself
+                    {
+                        Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
+                        if (member.LoggedIn)
+                            NotificationNotifier.GetInstance().SendNotification(member.UserId, message);
+                        member.Update(notification);
+                    }
                 }
             }
         }
-        
-        public void update(Member member, string message, Guid userId)
-        { 
-            Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
-            member.addToAwaitingNotification(notification);
-        }
-        public void updateMany(List<Member> members, string message, Guid userId)
-        {
-            foreach (Member member in members)
-            {
-                Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
-                member.addToAwaitingNotification(notification);
-            }
-        }
+
         public void RegisterObserver(Guid storeID , Member observer)
         {
             List<Member> members;

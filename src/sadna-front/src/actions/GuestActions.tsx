@@ -15,7 +15,6 @@ export function handleEnter() {
     })
 }
 export function handleExit(userID) {
-    console.log(userID)
     let url = "http://localhost:8080/api/guest/exit";
 
     return fetch(url, {

@@ -137,12 +137,9 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
-            ResponseT<Guid> responseT;
             try
             {
-                
-                responseT = storeManager.OpenNewStore(userID, storeName);
-                GetMember(userID).Value.Update(" " + userID + "open new store", userID);
+                ResponseT<Guid>  responseT = storeManager.OpenNewStore(userID, storeName);
                 return responseT;
 
             } 

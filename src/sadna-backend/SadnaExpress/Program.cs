@@ -11,6 +11,8 @@ using SadnaExpress.ServiceLayer;
 using SadnaExpress.Services;
 using SadnaExpress.API.WebClient.SignalR;
 using SadnaExpress.API.WebClient.WebClientServer;
+using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR;
 
 namespace SadnaExpress
 {
@@ -25,16 +27,12 @@ namespace SadnaExpress
             //start the api server
             ServerServiceHost serverServiceHost = new ServerServiceHost();
             serverServiceHost.Start();
-            Console.ReadLine();
-
-            //start the web server
-            // WebClientServiceHost webClientServiceHost = new WebClientServiceHost();
-            // webClientServiceHost.Start();
-
+            
             //start the signalR server
-            // SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
-            // signalRServiceHost.Start();
+            SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
+            signalRServiceHost.Start();
 
+            Console.ReadLine();
         }
 
 
