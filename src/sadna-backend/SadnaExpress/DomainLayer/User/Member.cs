@@ -86,25 +86,21 @@ namespace SadnaExpress.DomainLayer.User
         }
         
 
-        public void showMessage()
+        public void MarkNotificationAsRead(Guid notificationID)
         {
-            // display message
+            foreach (Notification notification in awaitingNotification)
+            {
+                if (notification.NotificationID == notificationID)
+                {
+                    notification.Read = true;
+                }
+            }
         }
 
 
         public void Update(string message, Guid from)
         {
             notificationSystem.update(this,message,from);
-        }
-
-
-        public void showAllMessages()
-        {
-            // removes all notifcations
-            foreach (Notification notification in awaitingNotification)
-                // display message
-                awaitingNotification.Remove(notification);
-
         }
     }
 }

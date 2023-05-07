@@ -480,7 +480,7 @@ export function handleGetStoresOwnersSpecificStore(storeID) {
     })
 }
 
-export function handleGetUserNotification(UserID) {
+export function handleGetUserNotifications(UserID) {
     let url = "http://localhost:8080/api/member/get-notifications";
 
     return fetch(url, {
@@ -495,9 +495,30 @@ export function handleGetUserNotification(UserID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
+        return Promise.resolve(data.value)
+    })
+}
+
+export function handleMarkNotificationAsRead(UserID, notificationID) {
+    let url = "http://localhost:8080/api/member/mark-notification-read";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            UserID: UserID,
+            notificationID: notificationID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
         return Promise.resolve(data)
     })
 }
+
 export function handleGetAllPurchaseConditions(storeID) {
     let url = "http://localhost:8080/api/member/get-conds";
 

@@ -34,6 +34,11 @@ function MemberNav(props) {
                 </NavLink>
               </li>
               <li className="nav-item">
+                <NavLink className="nav-link" to="/MessagesPage">
+                  Messages
+                </NavLink>
+              </li>
+              <li className="nav-item">
                 <NavLink className="nav-link" to="/PurchasedItemsPage">
                   Purchased-Items
                 </NavLink>

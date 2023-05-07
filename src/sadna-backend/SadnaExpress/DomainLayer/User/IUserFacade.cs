@@ -66,5 +66,6 @@ namespace SadnaExpress.DomainLayer.User
         string GetUserEmail(Guid userID);
 
         ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID);
+        void MarkNotificationAsRead(Guid userID, Guid notificationID);
     }
 }

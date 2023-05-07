@@ -427,6 +427,11 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetStorePurchases(userID, storeID);
         }
 
+        public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            return _realBridge.MarkNotificationAsRead(userID, notificationID);
+        }
+
         public Response WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
             return _realBridge.WriteItemReview(userID, itemID, reviewText);

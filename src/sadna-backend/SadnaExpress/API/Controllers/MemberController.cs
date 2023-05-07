@@ -204,9 +204,20 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetNotifications([FromBody] ClientRequest request)
         {
-            return Ok(tradingSystem.GetNotifications(request.userID));
+            var res = tradingSystem.GetNotifications(request.userID);
+            return Ok(res);
         }
-        
+
+        [Route(APIConstants.MemberData.MarkNotificationAsRead)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult MarkNotificationAsRead([FromBody] NotificationRequest request)
+        {
+            var res = tradingSystem.MarkNotificationAsRead(request.userID, request.notificationID);
+            return Ok(res);
+        }
+
+
         [Route(APIConstants.MemberData.getAllConditions)]
         [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
         [HttpPost]

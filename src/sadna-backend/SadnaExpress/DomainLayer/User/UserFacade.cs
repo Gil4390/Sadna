@@ -154,7 +154,6 @@ namespace SadnaExpress.DomainLayer.User
                         }
                     }
                     Logger.Instance.Info($"{member} {member.Email} logged in");
-                    member.showAllMessages();
                     return member.UserId;
                 }
             }
@@ -638,6 +637,11 @@ namespace SadnaExpress.DomainLayer.User
 
         }
 
+        public void MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            members[userID].MarkNotificationAsRead(notificationID);
+        }
+
         public List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores)
         {
             List<Member> storeOwners = new List<Member>();
@@ -863,8 +867,10 @@ namespace SadnaExpress.DomainLayer.User
             AppointStoreManager(storeOwnerid2, storeid2, "zibi@gmail.com");
             storeOwner1.LoggedIn = false;
             storeOwner2.LoggedIn = false;
+
+
+
+            members[memberId].AwaitingNotification.Add(new Notification(DateTime.Now, Guid.Empty, "helooooo", memberId));
         }
-
-
     }
 }
