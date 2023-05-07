@@ -30,6 +30,7 @@ namespace SadnaExpressTests.Integration_Tests
             storeID1 = trading.OpenNewStore(userID, "hello").Value;
             storeID2 = trading.OpenNewStore(userID, "hello2").Value;
             // add items to stores
+            
             itemID1 = trading.AddItemToStore(userID, storeID1, "ipad 32", "electronic", 4000, 3).Value;
             itemID2 = trading.AddItemToStore(userID, storeID2, "ipad 32", "electronic", 3000, 1).Value;
             // create guest

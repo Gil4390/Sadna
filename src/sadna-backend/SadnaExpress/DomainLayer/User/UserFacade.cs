@@ -250,6 +250,8 @@ namespace SadnaExpress.DomainLayer.User
             if (founder != null)
                 members[userID] = founder;
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
+
+
         }
 
     
@@ -315,7 +317,13 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             Guid storeOwnerID = IsMember(email).UserId;
             
-            List<Member> membersList = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
+          
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +storeOwnerID +" removed as store owner");
+            
+            Tuple<List<Member>, List<Member>> result = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
+            List<Member> membersList = result.Item1;
+            List<Member> StoreOwnersDeleted = result.Item2;
+
             
             foreach (Member mem in membersList)
             {
@@ -325,6 +333,9 @@ namespace SadnaExpress.DomainLayer.User
                     members[mem.UserId] = mem;
                 }
             }
+            notificationSystem.updateMany(StoreOwnersDeleted,"remove store owner",userID);
+            notificationSystem.RemoveObservers(storeID,StoreOwnersDeleted);
+
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveStoreOwner)+" appoints " +storeOwnerID +" removed as store owner");
         }
         public void AppointStoreManager(Guid userID, Guid storeID, string email)
@@ -545,6 +556,7 @@ namespace SadnaExpress.DomainLayer.User
         public ShoppingCart ShowShoppingCart(Guid userID)
         {
             IsTsInitialized();
+            isLoggedIn(userID);
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(ShowShoppingCart)+" requested to display his shopping cart");
             if (current_Users.ContainsKey(userID))
                 return current_Users[userID].ShoppingCart;
@@ -735,6 +747,8 @@ namespace SadnaExpress.DomainLayer.User
                 return current_Users[userID].ShoppingCart;
             if (isLoggedIn(userID))
                 return members[userID].ShoppingCart;
+            
+            
             throw new Exception("User with id " + userID + " does not exist");
         }
 

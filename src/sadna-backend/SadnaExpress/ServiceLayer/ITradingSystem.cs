@@ -99,6 +99,8 @@ namespace SadnaExpress.ServiceLayer
             string typeRes = default, double valueRes = default);
         void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
             string typeRes = default, double valueRes = default);
+        // this functions needs to notify to offline members their notifications.
+        public void getNotificationsForOfflineMembers();
 
         ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
 
