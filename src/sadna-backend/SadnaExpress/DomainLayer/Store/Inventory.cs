@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
 namespace SadnaExpress.DomainLayer.Store
@@ -13,6 +14,12 @@ namespace SadnaExpress.DomainLayer.Store
         {
             items_quantity = new ConcurrentDictionary<Item, int>();
         }
+
+        public bool Equals(ConcurrentDictionary<Item, int> newItems_quantity)
+        {
+            return items_quantity.Count == newItems_quantity.Count && !items_quantity.Except(newItems_quantity).Any();
+        }
+        
         
         // name is unique
         public Item GetItemByName(string itemName, int minPrice, int maxPrice, string category, int ratingItem)
@@ -51,9 +58,9 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 if (item.Name.ToLower().Contains(keyWords.ToLower()) && item.Price >= minPrice && item.Price <= maxPrice)
                 {
-                    if (ratingItem != -1 && item.Rating != ratingItem)
+                    if (ratingItem != -1 && item.Rating < ratingItem)
                         continue;
-                    if (category != null && item.Category != category)
+                    if (category != null && item.Category.ToLower().Contains(category.ToLower()) ==false)
                         continue;
                     items.Add(item);
                 }
@@ -78,50 +85,64 @@ namespace SadnaExpress.DomainLayer.Store
         public void RemoveItem(Guid itemID)
         {
             int outItem;
-            items_quantity.TryRemove(GetItemById(itemID), out outItem);
+            if (!items_quantity.TryRemove(GetItemById(itemID), out outItem))
+                throw new Exception("The item not exist");
         }
         
         public void EditItemQuantity(Guid itemID, int quantity)
         {
             Item item = GetItemById(itemID);
-            lock (item)
+            if (item.Quantity != quantity)
             {
-                if (items_quantity[item] + quantity < 0)
-                    throw new Exception("Edit item quantity failed, item quantity cant be negative");
-                items_quantity[item] += quantity;
+                lock (item)
+                {
+                    if (items_quantity[item] + quantity < 0)
+                        throw new Exception("Edit item quantity failed, item quantity cant be negative");
+                    items_quantity[item] += quantity;
+                }
             }
         }
         public void EditItemName(Guid itemID, string name)
         {
             Item item = GetItemById(itemID);
-            lock (item)
+            if (item.Name != name)
             {
-                if (name.Equals(""))
-                    throw new Exception("Edit item failed, item name cant be empty");
-                if (itemExistsByName(name))
-                    throw new Exception(
-                        "Edit item failed, item name cant be edited to a name that belongs to another item in the store");
-                item.Name = name;
+                lock (item)
+                {
+                    if (name.Equals(""))
+                        throw new Exception("Edit item failed, item name cant be empty");
+                    if (itemExistsByName(name))
+                        throw new Exception(
+                            "Edit item failed, item name cant be edited to a name that belongs to another item in the store");
+                    item.Name = name;
+                }
             }
         }
+
         public void EditItemCategory(Guid itemID, string category)
         {
             Item item = GetItemById(itemID);
-            lock (item)
+            if (item.Category != category)
             {
-                if (category.Equals(""))
-                    throw new Exception("Edit item failed, item category cant be empty");
-                item.Category = category;
+                lock (item)
+                {
+                    if (category.Equals(""))
+                        throw new Exception("Edit item failed, item category cant be empty");
+                    item.Category = category;
+                }
             }
         }
         public void EditItemPrice(Guid itemId, double price)
         {
             Item item = GetItemById(itemId);
-            lock(item)
+            if (item.Price != price)
             {
-                if (price < 0)
-                    throw new Exception("Edit item failed, item price cant be negative");
-                item.Price = price;
+                lock (item)
+                {
+                    if (price < 0)
+                        throw new Exception("Edit item failed, item price cant be negative");
+                    item.Price = price;
+                }
             }
         }
         private bool itemExistsByName(string itemName)
@@ -133,6 +154,7 @@ namespace SadnaExpress.DomainLayer.Store
             }
             return false;
         }
+
         public Item GetItemById(Guid itemId)
         {
             foreach (Item item in items_quantity.Keys)
@@ -149,7 +171,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("You can't add to the cart, the quantity in the inventory not enough");
         }
 
-        public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, Guid storeID)
+        public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, Guid storeID , string storeName, string email)
         {
             Dictionary<Item, int> itemsUpdated = new Dictionary<Item, int>(); //items that the quantity already updated (need to be save in case of error)  
             try
@@ -163,7 +185,13 @@ namespace SadnaExpress.DomainLayer.Store
                         if (items_quantity[item] - items[itemID] < 0)
                             throw new Exception($"The item {item.Name} finished");
                         items_quantity[item] -= items[itemID];
-                        itemForOrders.Add(new ItemForOrder(item, storeID));
+                        for (int i = 0; i < items[itemID]; i++)
+                        {
+                            ItemForOrder ifo = new ItemForOrder(item, storeID);
+                            ifo.UserEmail = email;
+                            ifo.StoreName = storeName;
+                            itemForOrders.Add(ifo);
+                        }
                     }
                     sum += item.Price;
                     itemsUpdated.Add(item, items[itemID]);

@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
@@ -80,7 +81,7 @@ namespace SadnaExpress.ServiceLayer
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(Login)+": "+ex.Message);
+                Logger.Instance.Error($"{userID} {email} {nameof(UserManager) }"+nameof(Login)+": "+ex.Message);
                 return new ResponseT<Guid>(ex.Message);
             }
         }
@@ -168,20 +169,42 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
+        public ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             try
             {
                 List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(userID, storeID);
-                return new ResponseT<List<PromotedMember>>(employees);
+                List<SMemberForStore> sMembers = new List<SMemberForStore>();
+
+                foreach (PromotedMember member in employees)
+                {
+                    SMemberForStore sMember = new SMemberForStore(member, storeID);
+                    sMembers.Add(sMember);
+                }
+                return new ResponseT<List<SMemberForStore>>(sMembers);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(GetEmployeeInfoInStore)+": "+ex.Message);
-                return new ResponseT<List<PromotedMember>>(ex.Message);
+                return new ResponseT<List<SMemberForStore>>(ex.Message);
             }
         }
-        
+
+        public Response RemoveUserMembership(Guid userID, string email)
+        {
+            try
+            {
+                userFacade.RemoveUserMembership(userID, email);
+                Logger.Instance.Info($"User id: {userID} requested to removing user {email} membership");
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(RemoveUserMembership)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+
         public void CleanUp()
         {
             userFacade.CleanUp();
@@ -215,16 +238,24 @@ namespace SadnaExpress.ServiceLayer
                 return new ConcurrentDictionary<Guid, User>();
             }
         }
-        public ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID)
+        public ResponseT<List<SMember>> GetMembers(Guid userID)
         {
             try
             {
-                return new ResponseT<ConcurrentDictionary<Guid, Member>>(userFacade.GetMembers(userID));
+                ConcurrentDictionary<Guid, Member> members = userFacade.GetMembers(userID);
+                List<SMember> sMembers = new List<SMember>();
+
+                foreach (Member member in members.Values)
+                {
+                    SMember sMember = new SMember(member);
+                    sMembers.Add(sMember);
+                }
+                return new ResponseT<List<SMember>>(sMembers);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message + " in " + nameof(GetMembers));
-                return new ResponseT<ConcurrentDictionary<Guid, Member>>(ex.Message);
+                return new ResponseT<List<SMember>>(ex.Message);
             }
         }
         public ResponseT<ShoppingCart> ShowShoppingCart(Guid userID)
@@ -269,13 +300,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<ShoppingCart>(ex.Message);
             }
         }
-
-        public bool isLoggedIn(Guid userID)
-        {
-            return userFacade.isLoggedIn(userID);
-        }
-
-
+        
         public ResponseT<Guid> UpdateFirst(Guid userID, string newFirst)
         {
             try
@@ -360,6 +385,7 @@ namespace SadnaExpress.ServiceLayer
             try
             {
                 User user = userFacade.GetUser(userID);
+                Logger.Instance.Info(userID , nameof(UserManager)+": "+nameof(GetUser));
                 return new ResponseT<User>(user);
             }
             catch (Exception ex)
@@ -374,6 +400,7 @@ namespace SadnaExpress.ServiceLayer
             try
             {
                 Member member = userFacade.GetMember(userID);
+                Logger.Instance.Info(userID , nameof(UserManager)+": "+nameof(GetMember));
                 return new ResponseT<Member>(member);
             }
             catch (Exception ex)
@@ -446,6 +473,42 @@ namespace SadnaExpress.ServiceLayer
         public bool IsSystemInitialize()
         {
             return userFacade.IsSystemInitialize();
+        }
+
+        public ResponseT<bool> isAdmin(Guid userID)
+        {
+            try
+            {
+                var response = userFacade.IsUserAdmin(userID);
+                return new ResponseT<bool>(response);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"{userID}" + nameof(isAdmin) + ": " + ex.Message);
+                return new ResponseT<bool>(ex.Message);
+            }
+        }
+
+        public ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID)
+        {
+            try
+            {
+                ConcurrentDictionary<Guid, List<String>> permissions = userFacade.GetMemberPermissions(userID);
+                Dictionary<Guid, SPermission> Spermissions = new Dictionary<Guid, SPermission>();
+
+                foreach (Guid storeID in permissions.Keys)
+                {
+                    Spermissions.Add(storeID, new SPermission(permissions[storeID]));
+                }
+                return new ResponseT<Dictionary<Guid, SPermission>>(Spermissions);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"{userID}" + nameof(GetMemberPermissions) + ": " + ex.Message);
+                return new ResponseT<Dictionary<Guid, SPermission>>(ex.Message);
+            }
         }
     }
 }

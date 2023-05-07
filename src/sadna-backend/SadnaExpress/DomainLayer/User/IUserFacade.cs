@@ -38,6 +38,7 @@ namespace SadnaExpress.DomainLayer.User
         ConcurrentDictionary<Guid, Member> GetMembers(Guid userID);
         bool hasPermissions(Guid userId, Guid storeID, List<string> per);
         ShoppingCart ShowShoppingCart(Guid userID);
+        void RemoveUserMembership(Guid userID, string email);
         void SetSecurityQA(Guid userID,string q, string a);
         void SetPaymentService(IPaymentService paymentService);
         bool PlacePayment(double amount, string transactionDetails);
@@ -58,5 +59,11 @@ namespace SadnaExpress.DomainLayer.User
         List<Member> GetStoreOwnerOfStores(List<Guid> stores);
 
         bool IsSystemInitialize();
+        void LoadData(Guid storeid1,Guid storeid2);
+        int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
+        public bool IsUserAdmin(Guid userID);
+        string GetUserEmail(Guid userID);
+
+        ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID);
     }
 }

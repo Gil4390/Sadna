@@ -3,6 +3,7 @@ using SadnaExpress.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -17,7 +18,7 @@ namespace SadnaExpress.DomainLayer.Store
         Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
         void WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText);
         List<Review> GetItemReviews(Guid storeID, Guid itemID);
-        double PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemsForOrder);
+        double PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemsForOrder, string email);
         void RemoveItemFromStore(Guid storeID, Guid itemID);
         void EditItemName(Guid storeID, Guid itemID, string category);
         void EditItemCategory(Guid storeID, Guid itemID, string category);
@@ -35,5 +36,22 @@ namespace SadnaExpress.DomainLayer.Store
         Store GetStore(Guid storeID);
         Item GetItemByID(Guid storeID, Guid itemID); //for tests
         void SetTSOrders(IOrders orders);
+        Condition GetCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
+        Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default,  M entityRes=default, string typeRes=default, double valueRes=default);
+        void RemoveCondition(Guid store ,Condition cond);
+        PurchaseCondition[]  GetAllConditions(Guid store);
+        Condition AddDiscountCondition<T>(Guid store, T entity, string type, double value);
+        DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
+        DiscountPolicy.DiscountPolicy CreateComplexPolicy(Guid store, string op, object[] policys);
+        DiscountPolicyTree AddPolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy); 
+        void RemovePolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy);
+
+        void LoadData(Store store1, Store store2);
+        Guid GetItemStoreId(Guid Itemid);
+        int GetItemByQuantity(Guid storeid, Guid itemid);
+        void EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
+        List<Item> GetItemsInStore(Guid storeId);
+        Store GetStoreInfo(Guid storeId);
+
     }
 }

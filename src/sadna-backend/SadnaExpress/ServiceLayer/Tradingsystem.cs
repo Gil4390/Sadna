@@ -3,8 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ExternalServices;
+using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 
@@ -36,6 +40,12 @@ namespace SadnaExpress.ServiceLayer
 
         public TradingSystem(IPaymentService paymentService = null, ISupplierService supplierService=null)
         {
+            //if services are null initialized with default services
+            if (paymentService == null)
+                paymentService = new PaymentService();
+            if (supplierService == null)
+                supplierService = new SupplierService();
+
             IUserFacade userFacade = new UserFacade(paymentService, supplierService);
             IStoreFacade storeFacade = new StoreFacade();
             storeManager = new StoreManager(userFacade, storeFacade);
@@ -152,10 +162,28 @@ namespace SadnaExpress.ServiceLayer
         }
 
         public ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0,
-            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+         int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
             return storeManager.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category,
                 ratingStore);
+        }
+
+        public ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
+            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+        {
+            ResponseT<List<Item>> res= storeManager.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category,
+                ratingStore);
+
+            List<SItem> items = new List<SItem>();
+            foreach (Item item in res.Value)
+            {
+                Guid itemStoreid= storeManager.GetItemStoreId(item.ItemID);
+                bool inStock = storeManager.GetStore(itemStoreid).Value.GetItemByQuantity(item.ItemID) > 0;
+                int countInCart = storeManager.GetItemQuantityInCart(userID,itemStoreid, item.ItemID).Value;
+                items.Add(new SItem(item,itemStoreid, inStock, countInCart));
+            }
+
+            return new ResponseT<List<SItem>>(items);
         }
 
         public Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
@@ -177,6 +205,12 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetDetailsOnCart(userID);
         }
+
+        public ResponseT<List<SItem>> GetCartItems(Guid userID)
+        {
+            return storeManager.GetCartItems(userID);
+        }
+
         public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
         {
             ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
@@ -226,9 +260,23 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public Response GetPurchasesInfoUser(Guid userID)
+        public ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID)
         {
-            throw new NotImplementedException();
+            Dictionary<Guid, List<Order>> orders = Orders.Instance.GetUserOrders();
+            
+            return new ResponseT<Dictionary<Guid, List<Order>>>(orders);
+        }
+        public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
+        {
+            List<ItemForOrder> list = new List<ItemForOrder>();
+            if (Orders.Instance.GetUserOrders().ContainsKey(userID))
+            {
+                foreach (Order order in Orders.Instance.GetUserOrders()[userID])
+                {
+                    list.AddRange(order.ListItems);
+                }
+            }
+            return new ResponseT<List<ItemForOrder>>(list);
         }
 
         public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID,  string itemName, string itemCategory, double itemPrice, int quantity)
@@ -258,10 +306,17 @@ namespace SadnaExpress.ServiceLayer
             // if you want remove put -i and to add +i
             return storeManager.EditItemQuantity(userID, storeID, itemID, quantity);
         }
+
+        public Response EditItem(Guid userID, Guid storeID,  Guid itemID,  string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            return storeManager.EditItem(userID, storeID,itemID, itemName, itemCategory, itemPrice, quantity);
+        }
+
         public Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
             return userManager.AppointStoreOwner(userID, storeID, userEmail);
         }
+        
 
         public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {
@@ -303,9 +358,14 @@ namespace SadnaExpress.ServiceLayer
             //return storeManager.ReopenStore(userID,storeID);
         }
 
-        public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
+        public ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
         {
             return userManager.GetEmployeeInfoInStore(userID, storeID);
+        }
+
+        public Response RemoveUserMembership(Guid userID, string email)
+        {
+            return userManager.RemoveUserMembership(userID, email);
         }
 
         public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
@@ -357,13 +417,13 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetCurrent_Users();
         }
-        public ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID)
+        public ResponseT<List<SMember>> GetMembers(Guid userID)
         {
             return userManager.GetMembers(userID);
         }
-        public ConcurrentDictionary<Guid , Store> GetStores()
+        public ResponseT<ConcurrentDictionary<Guid , Store>> GetStores()
         {
-            return storeManager.GetStores();
+            return new ResponseT<ConcurrentDictionary<Guid, Store>>(storeManager.GetStores());
         }
 
         public ResponseT<List<Member>> GetStoreOwners()
@@ -375,6 +435,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores)
         {
             return userManager.GetStoreOwnerOfStores(stores);
+        }
+
+        public ResponseT<List<Item>> GetItemsInStore(Guid userID, Guid storeId)
+        {
+            return storeManager.GetItemsInStore(userID,storeId);
         }
 
         public void SetPaymentService(IPaymentService paymentService)
@@ -430,6 +495,74 @@ namespace SadnaExpress.ServiceLayer
         public bool IsSystemInitialize()
         {
             return userManager.IsSystemInitialize();
+        }
+
+        public ResponseT<PurchaseCondition[] > GetAllConditions(Guid store)
+        {
+            return storeManager.GetAllConditions(store);
+        }
+
+        public ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes = default, string typeRes = default,
+            double valueRes = default)
+        {
+            return storeManager.GetCondition(store ,entity,type,value, dt,entityRes , typeRes , valueRes);
+        }
+
+        public ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes = default, string typeRes = default,
+            double valueRes = default)
+        {
+            return storeManager.AddCondition(store , entity,type,value,dt,entityRes , typeRes , valueRes);
+        }
+
+        public void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default, string typeRes = default,
+            double valueRes = default)
+        {
+            storeManager.RemoveCondition(store ,entity,type,value,dt ,entityRes , typeRes , valueRes);
+        }
+
+        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
+        {
+            return storeManager.AddDiscountCondition(store, entity, type, value);
+        }
+
+        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
+        {
+            return storeManager.CreateSimplePolicy(store, level, percent, startDate , endDate);
+        }
+
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys)
+        {
+            return storeManager.CreateComplexPolicy(store, op, policys);
+        }
+
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy)
+        {
+            return storeManager.AddPolicy(store, discountPolicy);
+        }
+
+        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
+        {
+            storeManager.RemovePolicy(store, discountPolicy);
+        }
+
+        public void LoadData()
+        {
+            storeManager.LoadData();
+        }
+
+        public ResponseT<bool> IsAdmin(Guid userID)
+        {
+            return userManager.isAdmin(userID);
+        }
+
+        public ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID)
+        {
+            return userManager.GetMemberPermissions(userID);
+        }
+
+        public ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId)
+        {
+            return storeManager.GetStoreInfo(userID, storeId);
         }
     }
 }

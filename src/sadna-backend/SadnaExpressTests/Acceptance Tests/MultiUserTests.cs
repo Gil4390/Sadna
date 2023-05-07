@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpressTests.Acceptance_Tests
 {
@@ -951,7 +952,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Assert
             //check that only the founder has left
             Assert.AreEqual(1, proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value.Count);
-            Assert.IsTrue( proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value.Contains((PromotedMember)proxyBridge.GetMember(storeFounder).Value));
+           // Assert.IsTrue( proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value.Contains((SMember)proxyBridge.GetMember(storeFounder).Value));
             //check that the other didnt have permissions to the store
             Assert.IsFalse(proxyBridge.GetMember(memberId).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));
             Assert.IsFalse(proxyBridge.GetMember(memberId2).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));

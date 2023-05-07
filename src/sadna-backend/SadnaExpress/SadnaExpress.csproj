@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\ClientRequests\ClientRequest.cs" />
     <Compile Include="API\Controllers\AdminController.cs" />
     <Compile Include="API\Controllers\APIConstants.cs" />
     <Compile Include="API\Controllers\GuestController.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="DomainLayer\IObserver.cs" />
     <Compile Include="DomainLayer\Store\DiscountPolicy\Condition.cs" />
     <Compile Include="DomainLayer\Store\DiscountPolicy\DiscountPolicy.cs" />
+    <Compile Include="DomainLayer\Store\DiscountPolicy\Operator.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\IOrders.cs" />
     <Compile Include="DomainLayer\Store\IStoreFacade.cs" />
@@ -86,14 +88,19 @@
     <Compile Include="DomainLayer\User\PasswordHash.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserFacade.cs" />
+    <Compile Include="ExternalServices\PaymentService.cs" />
+    <Compile Include="ExternalServices\SupplierService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />
     <Compile Include="ServiceLayer\IUserManager.cs" />
+    <Compile Include="ServiceLayer\SModels\SItem.cs" />
     <Compile Include="ServiceLayer\Response.cs" />
     <Compile Include="ServiceLayer\ResponseT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceLayer\Server.cs" />
+    <Compile Include="ServiceLayer\SModels\SMember.cs" />
+    <Compile Include="ServiceLayer\SModels\SPermission.cs" />
     <Compile Include="ServiceLayer\StoreManager.cs" />
     <Compile Include="ServiceLayer\TradingSystem.cs" />
     <Compile Include="ServiceLayer\ITradingSystem.cs" />

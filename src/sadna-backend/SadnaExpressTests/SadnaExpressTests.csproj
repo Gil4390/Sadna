@@ -65,6 +65,7 @@
     <Compile Include="Unit Tests\DiscountPolicyUT.cs" />
     <Compile Include="Unit Tests\NotificationUT.cs" />
     <Compile Include="Unit Tests\OrderUT.cs" />
+    <Compile Include="Unit Tests\PurchasePolicyUT.cs" />
     <Compile Include="Unit Tests\StoreFacadeUT.cs" />
     <Compile Include="Mocks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

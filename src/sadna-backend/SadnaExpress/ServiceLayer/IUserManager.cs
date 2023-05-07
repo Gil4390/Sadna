@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
@@ -25,14 +26,15 @@ namespace SadnaExpress.ServiceLayer
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
         Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
-        ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID); //4.11
-
+        ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID); //4.11
+        Response RemoveUserMembership(Guid userID, string email);
         //system manager actions 
+        
         ResponseT<bool> InitializeTradingSystem(Guid userID); //1.1
         void CleanUp();
        
         ConcurrentDictionary<Guid, User> GetCurrent_Users();
-        ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID);
+        ResponseT<List<SMember>> GetMembers(Guid userID);
         ResponseT<ShoppingCart> ShowShoppingCart(Guid userID);
         ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a);
 
@@ -51,5 +53,8 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
 
         bool IsSystemInitialize();
+        ResponseT<bool> isAdmin(Guid userID);
+
+        ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID);
     }
 }

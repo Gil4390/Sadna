@@ -9,6 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.ServiceLayer.Obj;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -36,7 +39,9 @@ namespace SadnaExpress.ServiceLayer
         Response RateItem(Guid userID, int itemID, int score); //3.4 (not in this version)
         Response WriteMessageToStore(Guid userID, Guid storeID, string message); //3.5  (not in this version)
         Response ComplainToAdmin(Guid userID, string message); //3.6 (not in this version)
-        Response GetPurchasesInfoUser(Guid userID); //3.7 (not in this version)
+        ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID); //3.7 (not in this version)
+        ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID); //3.7 (not in this version)
+
         //3.8 and 3.9 (not in this version)
         //4.1
         ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
@@ -44,7 +49,10 @@ namespace SadnaExpress.ServiceLayer
         Response EditItemCategory(Guid userID, Guid storeID,  Guid itemID, string category);
         Response EditItemPrice(Guid userID, Guid storeID,  Guid itemID, int price); 
         Response EditItemName(Guid userID, Guid storeID,  Guid itemID, string name); 
-        Response EditItemQuantity(Guid userID, Guid storeID,  Guid itemID, int quantity); 
+        Response EditItemQuantity(Guid userID, Guid storeID,  Guid itemID, int quantity);
+
+        public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice,
+            int quantity);
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
         Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
@@ -54,10 +62,11 @@ namespace SadnaExpress.ServiceLayer
         Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
-        ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
+        ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
         ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
+        Response RemoveUserMembership(Guid userID, string email); //6.2
         ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID);//6.4
-        ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID);
+        ResponseT<List<SMember>> GetMembers(Guid userID); //6.6
         void CleanUp();
         ResponseT<bool> InitializeTradingSystem(Guid userID);
         Response DeleteStore(Guid userID, Guid storeID);
@@ -81,8 +90,40 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Notification>> GetNotifications(Guid userID);
         bool IsSystemInitialize();
 
+        ResponseT<PurchaseCondition[] > GetAllConditions(Guid store);
+
+        ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value, DateTime dt=default, M entityRes = default,
+            string typeRes = default, double valueRes = default);
+        ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
+            string typeRes = default, double valueRes = default);
+        void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
+            string typeRes = default, double valueRes = default);
         // this functions needs to notify to offline members their notifications.
         public void getNotificationsForOfflineMembers();
 
+        ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
+
+        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
+            DateTime endDate);
+
+        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys);
+        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
+        void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
+
+        ResponseT<List<SItem>> GetCartItems(Guid userID);
+        ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
+            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
+
+        ResponseT<ConcurrentDictionary<Guid, Store>> GetStores();
+
+        ResponseT<List<Member>> GetStoreOwners();
+
+        ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
+        ResponseT<List<Item>> GetItemsInStore(Guid userID,Guid storeId);
+        ResponseT<bool> IsAdmin(Guid userID);
+
+        ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID);
+
+        ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId);
     }
 }

@@ -10,6 +10,7 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<Guid, PromotedMember> directSupervisor;
         private ConcurrentDictionary<Guid, List<PromotedMember>> appoint;
         private readonly ConcurrentDictionary<Guid, List<string>> permissions;
+        public ConcurrentDictionary<Guid, List<string>> Permission{get=>permissions;}
         private readonly Permissions permissionsHolder;
 
         /* permissions:
@@ -24,13 +25,18 @@ namespace SadnaExpress.DomainLayer.User
          * get employees info
          * product management permissions
          */
-        public PromotedMember(Guid id, string email, string firstName, string lastName, string password) : base(id,
+        public PromotedMember(Guid id, string email, string firstName, string lastName, string password, ShoppingCart shoppingCart=null, bool login=false) : base(id,
             email, firstName, lastName, password)
         {
             directSupervisor = new ConcurrentDictionary<Guid, PromotedMember>();
             appoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
             permissions = new ConcurrentDictionary<Guid, List<string>>();
             permissionsHolder = Permissions.Instance;
+            LoggedIn = login;
+            if (shoppingCart == null)
+                ShoppingCart = new ShoppingCart();
+            else
+                ShoppingCart = shoppingCart;
         }
 
         public void createOwner(Guid storeID, PromotedMember directSupervisor)
@@ -112,6 +118,11 @@ namespace SadnaExpress.DomainLayer.User
         public void removePermission(Guid storeID, string per)
         {
             permissions[storeID].Remove(per);
+            if (permissions[storeID].Count == 0)
+            {
+                List<string> output = new List<string>();
+                permissions.TryRemove(storeID, out output);
+            }
         }
         public override PromotedMember AppointStoreOwner(Guid storeID, Member newOwner)
         {
@@ -120,10 +131,10 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("The member doesn’t have permissions to add new owner");
         }
 
-        public override void RemoveStoreOwner(Guid storeID, Member storeOwner)
+        public override List<Member> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "remove owner"}))
-                permissionsHolder.RemoveStoreOwner(storeID, this, storeOwner);
+                return permissionsHolder.RemoveStoreOwner(storeID, this, storeOwner);
             else
                 throw new Exception($"The member doesn’t have permissions to remove {storeOwner.Email}");
         }
@@ -142,12 +153,12 @@ namespace SadnaExpress.DomainLayer.User
             permissionsHolder.AddStoreManagerPermissions(this, storeID, manager, permission);
         }
 
-        public override void RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
+        public override Member RemoveStoreManagerPermissions(Guid storeID, Member manager, string permission)
         {
             if (!hasPermissions(storeID,
                     new List<string> { "owner permissions", "founder permissions", "edit manager permissions" }))
                 throw new Exception("The member doesn’t have permissions to edit manager's permissions");
-            permissionsHolder.RemoveStoreManagerPermissions(storeID, manager, permission);
+            return permissionsHolder.RemoveStoreManagerPermissions(this, storeID, manager, permission);
         }
         public override List<PromotedMember> GetEmployeeInfoInStore(Guid storeID)
         {

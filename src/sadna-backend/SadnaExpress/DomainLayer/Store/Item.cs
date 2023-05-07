@@ -18,6 +18,9 @@ namespace SadnaExpress.DomainLayer.Store
         private int rating;
         public int Rating {get => rating; set => rating = value;}
         
+        private int quantity;
+        public int Quantity {get => quantity; set => quantity = value;}
+        
         public Item(string name, string category, double price)
         {
             this.name = name;
@@ -26,5 +29,11 @@ namespace SadnaExpress.DomainLayer.Store
             rating = 0;
             itemID = Guid.NewGuid(); 
         }
+        public bool Equals(Item item)
+        {
+            return item.name == name && item.itemID == itemID && item.category == category && item.price == price &&
+                   item.rating == rating;
+        }
+        
     }
 }

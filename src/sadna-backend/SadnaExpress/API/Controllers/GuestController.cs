@@ -1,6 +1,8 @@
-﻿using SadnaExpress.API.Controllers;
+﻿using SadnaExpress.API.ClientRequests;
+using SadnaExpress.API.Controllers;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.ServiceLayer.Obj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,7 @@ using System.Web.Http.Description;
 
 namespace SadnaExpress.API.Controllers
 {
-    [RoutePrefix(APIConstants.GuestData.root)]
+    [RoutePrefix(APIConstants.ApiRoot + APIConstants.GuestData.root)]
     public class GuestController : ApiController
     {
         ITradingSystem tradingSystem;
@@ -30,93 +32,103 @@ namespace SadnaExpress.API.Controllers
         }
 
         [Route(APIConstants.GuestData.exit)]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
-        public IHttpActionResult Exit(Guid id)
+        public IHttpActionResult Exit([FromBody] ClientRequest request)
         {
-            tradingSystem.Exit(id);
+            tradingSystem.Exit(request.userID);
             return Ok();
         }
 
         [Route(APIConstants.GuestData.register)]
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
-        public IHttpActionResult Register(Guid userID, string email, string firstName, string lastName, string password)
+        public IHttpActionResult Register([FromBody] RegisterRequest request)
         {
-            tradingSystem.Register(userID, email, firstName, lastName, password);
-            return Ok();
+            Response res=tradingSystem.Register(request.userID, request.Email, request.FirstName, request.LastName, request.Password);
+            return Ok(res);
+        }
+
+        [Route(APIConstants.GuestData.login)]
+        [ResponseType(typeof(ResponseT<Guid>))]
+        [HttpPost]
+        public IHttpActionResult Login([FromBody] LoginRequest request)
+        {
+            ResponseT<Guid> res = tradingSystem.Login(request.userID, request.Email, request.Password);
+            return Ok(res);
+        }
+
+        [Route(APIConstants.GuestData.isAdmin)]
+        [ResponseType(typeof(ResponseT<Guid>))]
+        [HttpPost]
+        public IHttpActionResult IsAdmin([FromBody] ClientRequest request)
+        {
+            ResponseT<bool> res = tradingSystem.IsAdmin(request.userID);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.storeInfo)]
-        [ResponseType(typeof(List<Store>))]
-        [HttpGet]
-        public IHttpActionResult GetAllStoreInfo(Guid userID)
+        [ResponseType(typeof(ResponseT<Store>))]
+        [HttpPost]
+        public IHttpActionResult GetStoreInfo([FromBody] StoreRequest request)
         {
-            return Ok(tradingSystem.GetAllStoreInfo());
+            return Ok(tradingSystem.GetStore(request.storeId));
         }
 
-        [Route(APIConstants.GuestData.itemByName)]
-        [ResponseType(typeof(List<Item>))]
-        [HttpGet]
-        public IHttpActionResult GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+        [Route(APIConstants.GuestData.searchItems)]
+        [ResponseType(typeof(ResponseT<List<SItem>>))]
+        [HttpPost]
+        public IHttpActionResult GetItemsByKeysWord([FromBody] SearchItemRequest request)
         {
-            return Ok(tradingSystem.GetItemsByName(userID, itemName, minPrice, maxPrice, ratingItem, category, ratingStore));
-        }
-
-        [Route(APIConstants.GuestData.itemByCategory)]
-        [ResponseType(typeof(List<Item>))]
-        [HttpGet]
-        public IHttpActionResult GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1)
-        {
-            return Ok(tradingSystem.GetItemsByCategory(userID, category, minPrice, maxPrice, ratingItem, ratingStore));
-        }
-
-        [Route(APIConstants.GuestData.itemByKeysWord)]
-        [ResponseType(typeof(List<Item>))]
-        [HttpGet]
-        public IHttpActionResult GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
-        {
-            return Ok(tradingSystem.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category, ratingStore));
+            if (request.MaxPrice == -1)
+                request.MaxPrice = Int32.MaxValue;
+            ResponseT<List<SItem>> res = tradingSystem.GetItemsForClient(request.userID, request.KeyWord, request.MinPrice, request.MaxPrice, request.RatingItem, request.Category, request.RatingStore);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.addItemCart)]
-        [ResponseType(typeof(void))]
-        [HttpGet]
-        public IHttpActionResult AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult AddItemToCart([FromBody] ItemCartRequest request)
         {
-            return Ok(tradingSystem.AddItemToCart(userID, storeID, itemID, itemAmount));
+            Response res = tradingSystem.AddItemToCart(request.userID, request.storeId, request.itemID, request.ItemAmount);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.removeItemCart)]
-        [ResponseType(typeof(void))]
-        [HttpGet]
-        public IHttpActionResult RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID)
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult RemoveItemFromCart([FromBody] ItemCartRequest request)
         {
-            return Ok(tradingSystem.RemoveItemFromCart(userID, storeID, itemID));
+            Response res = tradingSystem.RemoveItemFromCart(request.userID, request.storeId, request.itemID);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.editItemCart)]
-        [ResponseType(typeof(void))]
-        [HttpGet]
-        public IHttpActionResult EditItemFromCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult EditItemFromCart([FromBody] ItemCartRequest request)
         {
-            return Ok(tradingSystem.EditItemFromCart(userID, storeID, itemID, itemAmount));
+            Response res = tradingSystem.EditItemFromCart(request.userID, request.storeId, request.itemID, request.ItemAmount);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.shoppingCart)]
-        [ResponseType(typeof(ShoppingCart))]
-        [HttpGet]
-        public IHttpActionResult GetDetailsOnCart(Guid userID)
+        [ResponseType(typeof(ResponseT<List<SItem>>))]
+        [HttpPost]
+        public IHttpActionResult GetDetailsOnCart([FromBody] ClientRequest request)
         {
-            return Ok(tradingSystem.GetDetailsOnCart(userID));
+            ResponseT<List<SItem>> res = tradingSystem.GetCartItems(request.userID);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.purchaseCart)]
-        [ResponseType(typeof(void))]
-        [HttpGet]
-        public IHttpActionResult PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult PurchaseCart([FromBody] PurchaseRequest request)
         {
-            return Ok(tradingSystem.PurchaseCart(userID, paymentDetails, usersDetail));
+            ResponseT<List<ItemForOrder>> res = tradingSystem.PurchaseCart(request.userID, request.PaymentDetails, request.UsersDetails);
+            return Ok(new Response(res.ErrorMessage));
         }
 
 

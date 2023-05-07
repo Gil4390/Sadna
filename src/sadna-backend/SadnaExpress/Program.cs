@@ -19,6 +19,8 @@ namespace SadnaExpress
         public static void Main(string[] args)
         {
             Console.WriteLine("Hello Sadna");
+            TradingSystem.Instance.SetIsSystemInitialize(true);
+            TradingSystem.Instance.LoadData();
 
             //start the api server
             ServerServiceHost serverServiceHost = new ServerServiceHost();

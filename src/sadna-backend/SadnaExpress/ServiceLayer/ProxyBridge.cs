@@ -9,6 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer;
+using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.ServiceLayer.Obj;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.ServiceLayer
 {
@@ -126,10 +129,11 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.ComplainToAdmin(id, message);
         }
 
-        public Response GetPurchasesInfoUser(Guid id)
+        public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
         {
-            return _realBridge.GetPurchasesInfoUser(id);
+            throw new NotImplementedException();
         }
+
 
         public Response EditItemCategory(Guid userID,  Guid storeID, Guid itemID, string category)
         {
@@ -151,6 +155,12 @@ namespace SadnaExpress.ServiceLayer
             // if you want remove put -i and to add +i
             return _realBridge.EditItemQuantity(userID, storeID, itemID, quantity);
         }
+
+        public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            throw new NotImplementedException();
+        }
+
         public Response AppointStoreOwner(Guid id, Guid storeID, string userEmail)
         {
             return _realBridge.AppointStoreOwner(id, storeID, userEmail);
@@ -181,11 +191,6 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.RemoveStoreOwner(id, storeID, userEmail);
         }
 
-        public Response RemovetStoreManager(Guid id, Guid storeID, Guid userID)
-        {
-            return _realBridge.RemoveStoreManager(id, storeID, userID);
-        }
-
         public Response CloseStore(Guid id, Guid storeID)
         {
             return _realBridge.CloseStore(id, storeID);
@@ -196,20 +201,20 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.ReopenStore(id, storeID);
         }
 
-        public ResponseT<List<PromotedMember>> GetEmployeeInfoInStore(Guid id, Guid storeID)
+        public ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid id, Guid storeID)
         {
             return _realBridge.GetEmployeeInfoInStore(id, storeID);
         }
-
+        
+        public Response RemoveUserMembership(Guid userID, string email)
+        {
+            return _realBridge.RemoveUserMembership(userID, email);
+        }
         public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
         {
             return _realBridge.GetStorePurchases(userID, storeID);
         }
-        
-        public ResponseT<ConcurrentDictionary<Guid, Member>> GetMembers(Guid userID)
-        {
-            return _realBridge.GetMembers(userID);
-        }
+       
 
         public Response DeleteStore(Guid id, Guid storeID)
         {
@@ -313,6 +318,110 @@ namespace SadnaExpress.ServiceLayer
         public bool IsSystemInitialize()
         {
             return _realBridge.IsSystemInitialize();
+        }
+
+        public ResponseT<PurchaseCondition[]> GetAllConditions(Guid store)
+        {
+            throw new NotImplementedException();
+        }
+        
+
+        public ResponseT<Condition> GetCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
+            M entityRes = default, string typeRes = default, double valueRes = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<Condition> AddCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
+            M entityRes = default, string typeRes = default, double valueRes = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
+            M entityRes = default, string typeRes = default, double valueRes = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<SItem>> GetCartItems(Guid userID)
+        {
+            return _realBridge.GetCartItems(userID);
+        }
+
+        public ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0, int maxPrice = int.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
+        {
+            return _realBridge.GetItemsForClient(userID, keyWords, minPrice, maxPrice, ratingItem, category, ratingStore);
+        }
+
+        public ResponseT<ConcurrentDictionary<Guid, Store>> GetStores()
+        {
+            return _realBridge.GetStores();
+        }
+
+        public ResponseT<List<Member>> GetStoreOwners()
+        {
+            return _realBridge.GetStoreOwners();
+        }
+
+        public ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores)
+        {
+            return _realBridge.GetStoreOwnerOfStores(stores);
+        }
+
+        public ResponseT<List<Item>> GetItemsInStore(Guid userID, Guid storeId)
+        {
+            return _realBridge.GetItemsInStore(userID,storeId);
+        }
+
+        public ResponseT<bool> IsAdmin(Guid userID)
+        {
+            return _realBridge.IsAdmin(userID);
+        }
+
+        public ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID)
+        {
+            return _realBridge.GetMemberPermissions(userID);
+        }
+
+        public ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId)
+        {
+            return _realBridge.GetStoreInfo(userID, storeId);
+        }
+
+        public ResponseT<List<SMember>> GetMembers(Guid userID)
+        {
+            return _realBridge.GetMembers(userID);
+        }
+
+        public ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID)
+        {
+            return _realBridge.GetPurchasesInfoUser(userID);
         }
 
         public void getNotificationsForOfflineMembers()
