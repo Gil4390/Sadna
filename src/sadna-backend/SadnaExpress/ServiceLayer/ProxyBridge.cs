@@ -210,11 +210,6 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.RemoveUserMembership(userID, email);
         }
-        public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
-        {
-            return _realBridge.GetStorePurchases(userID, storeID);
-        }
-       
 
         public Response DeleteStore(Guid id, Guid storeID)
         {
@@ -422,6 +417,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID)
         {
             return _realBridge.GetPurchasesInfoUser(userID);
+        }
+
+        ResponseT<List<ItemForOrder>> ITradingSystem.GetStorePurchases(Guid userID, Guid storeID)
+        {
+            return _realBridge.GetStorePurchases(userID, storeID);
         }
     }
 }

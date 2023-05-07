@@ -94,7 +94,7 @@ namespace SadnaExpress.DomainLayer.Store
             if (storeOrders.TryGetValue(storeId, out orders)) {
                 return orders;
             }
-            return null;
+            return new List<Order>();
         }
 
         public Dictionary<Guid, List<Order>> GetUserOrders()

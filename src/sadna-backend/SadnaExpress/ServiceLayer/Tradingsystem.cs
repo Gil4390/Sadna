@@ -368,9 +368,17 @@ namespace SadnaExpress.ServiceLayer
             return userManager.RemoveUserMembership(userID, email);
         }
 
-        public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
+        public ResponseT<List<ItemForOrder>> GetStorePurchases(Guid userID, Guid storeID)
         {
-            return storeManager.GetStorePurchases(userID, storeID);
+            List<ItemForOrder> list = new List<ItemForOrder>();
+            if (Orders.Instance.GetStoreOrders().ContainsKey(storeID))
+            {
+                foreach (Order order in Orders.Instance.GetStoreOrders()[storeID])
+                {
+                    list.AddRange(order.ListItems);
+                }
+            }
+            return new ResponseT<List<ItemForOrder>>(list);
         }
 
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
