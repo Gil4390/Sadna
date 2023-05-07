@@ -136,7 +136,7 @@ namespace SadnaExpress.ServiceLayer
                 Orders.Instance.AddOrder(userID, itemForOrders);
 
                 foreach (ShoppingBasket basket in shoppingCart.Baskets)
-                    NotificationSystem.Instance.NotifyObserversInStores(cart.Keys, "New cart purchase at store "+storeFacade.GetStore(basket.StoreID).StoreName+" !", userID);
+                    NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store "+storeFacade.GetStore(basket.StoreID).StoreName+" !", userID);
 
                 userFacade.PurchaseCart(userID);
                 return new ResponseT<List<ItemForOrder>>(itemForOrders);

@@ -248,11 +248,12 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userID);
             PromotedMember founder = members[userID].openNewStore(storeID);
-            if (founder != null)
+            if (founder != null) 
                 members[userID] = founder;
-            NotificationSystem.Instance.RegisterObserver(storeID, founder);
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
 
+            NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
+
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
 
         }
 
