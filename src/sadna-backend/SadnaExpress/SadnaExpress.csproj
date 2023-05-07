@@ -101,6 +101,7 @@
     <Compile Include="ServiceLayer\Server.cs" />
     <Compile Include="ServiceLayer\SModels\SMember.cs" />
     <Compile Include="ServiceLayer\SModels\SPermission.cs" />
+    <Compile Include="ServiceLayer\SModels\SReview.cs" />
     <Compile Include="ServiceLayer\StoreManager.cs" />
     <Compile Include="ServiceLayer\TradingSystem.cs" />
     <Compile Include="ServiceLayer\ITradingSystem.cs" />

@@ -54,11 +54,12 @@ namespace SadnaExpress.API.Controllers
         }
 
         [Route(APIConstants.MemberData.itemReviews)]
-        [ResponseType(typeof(ResponseT<List<Review>>))]
+        [ResponseType(typeof(ResponseT<List<SReview>>))]
         [HttpPost]
         public IHttpActionResult GetItemReviews([FromBody] ItemIdRequest request)
         {
-            return Ok(tradingSystem.GetItemReviews(request.StoreID,request.ItemID ));
+            var res = tradingSystem.GetItemReviews(request.ItemID);
+            return Ok(res);
         }
         
         [Route(APIConstants.MemberData.addItemToStore)]

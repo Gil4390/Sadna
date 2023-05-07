@@ -306,9 +306,9 @@ namespace SadnaExpress.DomainLayer.Store
             reviews.Add(new Review(userID, stores[storeID], store.GetItemById(itemID), reviewText));
             Logger.Instance.Info(userID, nameof(StoreFacade)+": "+nameof(WriteItemReview) + userID +" write review to store "+storeID+" on "+itemID+"- "+ reviewText);
         }
-        public List<Review> GetItemReviews(Guid storeID, Guid itemID)
+        public List<Review> GetItemReviews(Guid itemID)
         {
-            IsStoreExist(storeID);
+            Guid storeID = GetItemStoreId(itemID);
             Store store = stores[storeID];
             List<Review> reviewsOfItem = new List<Review>();
             foreach (Review review in reviews)

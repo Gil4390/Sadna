@@ -56,7 +56,7 @@ export function handleWriteItemReview(userID, itemID, review) {
         return Promise.resolve(data)
     })
 }
-export function handleGetItemReviews(storeID, itemID) {
+export function handleGetItemReviews(itemID) {
     let url = "http://localhost:8080/api/member/item-reviews";
 
     return fetch(url, {
@@ -64,7 +64,6 @@ export function handleGetItemReviews(storeID, itemID) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            storeID: storeID,
             itemID:itemID,
         })
     }).then(async response => {
@@ -72,7 +71,7 @@ export function handleGetItemReviews(storeID, itemID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 export function handleAddItemStore(userID , storeID, itemName , itemCategory , itemPrice , quantity) {
