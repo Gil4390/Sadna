@@ -445,16 +445,14 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        public ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+            string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             try
             {
-                Condition cond = storeFacade.GetCondition(store ,entity,type,value,dt,entityRes , typeRes , valueRes);
-                if (cond != null)
-                    return new ResponseT<Condition>(storeFacade.AddCondition(store, entity, type, value,dt, entityRes,
-                        typeRes, valueRes));
-                else
-                    return null;
+                Condition c = storeFacade.AddCondition(store, entity, entityName, type, value, dt, entityRes,
+                    entityResName, typeRes, valueRes , op ,opCond);
+                return new ResponseT<Condition>(c);
             }
             catch (Exception ex)
             {
@@ -463,12 +461,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public void RemoveCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        public void RemoveCondition(Guid storeID , int condID)
         {
             try
             {
-                Condition cond = storeFacade.GetCondition(store ,entity,type,value,dt,entityRes , typeRes , valueRes);
-                storeFacade.RemoveCondition(store ,cond);
+                storeFacade.RemoveCondition(storeID ,condID);
             }
             catch (Exception ex)
             {

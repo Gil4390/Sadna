@@ -2,11 +2,11 @@
 import { Container, ListGroup } from 'react-bootstrap';
 import React, { useState,useEffect } from 'react';
 import { Button, Modal, Form , Row, Col } from 'react-bootstrap';
-import { Condition } from '../../components/Condition';
 import Exit from "../Exit.tsx";
 import { useLocation } from 'react-router-dom';
-import { handleGetAllPurchaseConditions, handleGetPurchaseCondition } from '../../actions/MemberActions.tsx';
+import { handleAddPurchaseCondition, handleGetAllPurchaseConditions, handleRemovePurchaseCondition } from '../../actions/MemberActions.tsx';
 import { PurcahseCondition , Item , Store} from '../../models/Shop.tsx';
+import { Condition } from '../../components/Condition.tsx';
 
 
 function PurchasePoliciesPage(props) {
@@ -30,6 +30,7 @@ function PurchasePoliciesPage(props) {
   const [condValue, setCondValue] = useState('');
   const [entity2, setEntity2] = useState('');
   const [EntityChoice2, setEntityChoice2] = useState('');
+  const [otherCondition, setOtherCondition] = useState('');
   const [WhichCond2, setWhichCond2] = useState('');
   const [condValue2, setCondValue2] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
@@ -56,6 +57,8 @@ function PurchasePoliciesPage(props) {
 
 
   const GetPurcahsePolicys =()=>{
+    console.log("phase3")
+
     handleGetAllPurchaseConditions(storeId).then(
       value => {
         setPolicyList(value as PurcahseCondition[]);
@@ -64,12 +67,28 @@ function PurchasePoliciesPage(props) {
   }
 
   useEffect(() => {
+    console.log("phase4")
     GetPurcahsePolicys();
  }, [])
 
   const handleSubmit = () => {
-    
+    handleAddPurchaseCondition(storeId ,EntityChoice, entity,WhichCond,condValue,selectedOption,EntityChoice,entity2,WhichCond2,condValue2,otherCondition).then(
+      value => {
+        setPolicyList(value as PurcahseCondition[]);
+        setWhichCond("");
+        setEntity("");
+        setEntityChoice("");
+        setCondValue("");
+        setEntity2("");
+        setEntityChoice2("");
+        setOtherCondition("");
+        setWhichCond2("");
+        setCondValue2("");
+        setShowModal(false);
+      })
+      .catch(error => alert(error));
   };
+
 return (
     <div className="container mt-5">
             <Exit id={props.id}/>
@@ -101,7 +120,7 @@ return (
           {policysList.length===0? (<div>  No Items </div>): (policysList.map((cond) => (
             // <div key={item.name}>{item.name} </div>
             <Col  key={cond.condID} className="mt-3">
-              <Condition { ...cond}></Condition>
+              <Condition { ...cond } handleRemove={GetPurcahsePolicys} storID={storeId} ></Condition>
             </Col>
             )))}
         </Row>
@@ -129,10 +148,10 @@ return (
               </Form.Control>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Entity ID</Form.Label>
+              <Form.Label>Entity Name</Form.Label>
               <Form.Control
                 type="ID"
-                placeholder="Enter entity's ID"
+                placeholder="Enter entity's name"
                 value={entity}
                 onChange={(e) => setEntity(e.target.value)}
               />
@@ -145,11 +164,11 @@ return (
                 onChange={(e) => setWhichCond(e.target.value)}
               >
                 <option>Select type</option>
-                <option>Min Value</option>
-                <option>Max Value</option>
-                <option>Min Quantity</option>
-                <option>Max Quantity</option>
-                <option>Time Condition</option>
+                <option>min value</option>
+                <option>max value</option>
+                <option>min quantity</option>
+                <option>max quantity</option>
+                <option>time condition</option>
               </Form.Control>
             </Form.Group>
             <Form.Group>
@@ -165,12 +184,23 @@ return (
             <Form.Group>
             <Form.Label>Operator</Form.Label>
             <Form.Control as="select" onChange={handleOptionChange}>
-            <option value="option">Select an option</option>
-            <option value="option1">AND</option>
-            <option value="option2">OR</option>
+            <option value="option">Only condition</option>
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
             <option value="option3">Conditional</option>
           </Form.Control>
           </Form.Group>
+          {(selectedOption === 'AND'|| selectedOption === 'OR') && (<div>
+            <Form.Group>
+                      <Form.Label>Other condition</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter the condition to build with"
+                        value={otherCondition}
+                        onChange={(e) => setOtherCondition(e.target.value)}
+                      />
+                    </Form.Group>
+          </div>)}
           {selectedOption === 'option3' && (
             <div>
                     <Form.Group>
@@ -189,7 +219,7 @@ return (
                       <Form.Label>Entity ID</Form.Label>
                       <Form.Control
                         type="ID"
-                        placeholder="Enter entity's ID"
+                        placeholder="Enter entity's name"
                         value={entity2}
                         onChange={(e) => setEntity2(e.target.value)}
                       />
@@ -202,11 +232,11 @@ return (
                         onChange={(e) => setWhichCond2(e.target.value)}
                       >
                         <option>Select type</option>
-                        <option>Min Value</option>
-                        <option>Max Value</option>
-                        <option>Min Quantity</option>
-                        <option>Max Quantity</option>
-                        <option>Time Condition</option>
+                        <option>min value</option>
+                        <option>max value</option>
+                        <option>min quantity</option>
+                        <option>max quantity</option>
+                        <option>time condition</option>
                       </Form.Control>
                     </Form.Group>
                     <Form.Group>

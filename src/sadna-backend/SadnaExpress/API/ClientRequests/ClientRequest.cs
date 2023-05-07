@@ -58,6 +58,7 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class WriteItemReviewRequest : ClientRequest
     {
+        public Guid StoreId { get; set; }
         public Guid ItemId { get; set; }
         public string Review { get; set; }
     }
@@ -110,16 +111,22 @@ namespace SadnaExpress.API.ClientRequests
     {
         public List<Guid> storeID { get; set; }
     }
-    public class ConditionRequest<T,M> : StoreManagerRequest
+    
+    
+    public class ConditionRequest: ClientRequest
     {
         public Guid storeID { get; set; }
-        public T entity { get; set; }
+        public string entity { get; set; }
+        public string entityName { get; set; }
         public string type { get; set; }
-        public double value { get; set; }
-        public DateTime dt { get; set; }
-        public M entityRes { get; set; }
+        public int value { get; set; }
+        public string op { get; set; }
+        public string entityRes { get; set; }
+        public string entityNameRes { get; set; }
         public string typeRes { get; set; }
-        public double valueRes { get; set; }
+        public int valueRes { get; set; }
+        
+        public int opCond{ get; set; }
     }
     
     public class PolicyRequest<T> : ClientRequest
@@ -143,4 +150,10 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class NotificationRequest : ClientRequest
     { public Guid notificationID { get; set;} }
+    
+    public class ConditionIDRequest : ClientRequest
+    {
+        public Guid storeID{ get; set; }
+        public int condID{ get; set; }
+    }
 }
