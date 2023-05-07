@@ -280,6 +280,7 @@ namespace SadnaExpress.DomainLayer.User
 
         public void RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
         {
+            Console.WriteLine($"here!! {permission} n");
             IsTsInitialized();
             isLoggedIn(userID);
             if (permission.Equals("owner permissions"))
@@ -309,6 +310,7 @@ namespace SadnaExpress.DomainLayer.User
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)
         {
+            Console.WriteLine("in RemoveStoreOwner");
             IsTsInitialized();
             isLoggedIn(userID);
             Guid storeOwnerID = IsMember(email).UserId;

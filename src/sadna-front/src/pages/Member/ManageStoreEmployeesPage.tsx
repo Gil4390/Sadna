@@ -14,7 +14,7 @@ const ManageStoreEmployeesPage = (props) => {
   const [employees, setEmployees] = useState<Member[]>([]);
 
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editPermission, setEditPermission] = useState<string>('');
+  const [editPermission, setEditPermission] = useState<string>('owner permissions');
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [appointEmail, setAppointEmail] = useState<string>('');
@@ -44,7 +44,7 @@ useEffect(() => {
   }
 }, [getEmployeesResponse])
 
-  const handleEditModalClose = () => {setShowEditModal(false); setEditPermission('');}
+  const handleEditModalClose = () => {setShowEditModal(false); setEditPermission('owner permissions');}
 
   const handleAddModalClose = () => {setShowAddModal(false); setAppointEmail(''); setAppointType('Appintment owner');}
   const handleAddModalShow = () => setShowAddModal(true);
@@ -208,7 +208,6 @@ useEffect(() => {
           <span className="fs-2">Choose Permission:</span>
           <Form.Control as="select" value={editPermission} onChange={handlePermissionChange}>
             <option value="owner permissions">owner permissions</option>
-            <option value="founder permissions">founder permissions</option>
             <option value="edit manager permissions">edit manager permissions</option>
             <option value="get store history">get store history</option>
             <option value="add new owner">add new owner</option>
