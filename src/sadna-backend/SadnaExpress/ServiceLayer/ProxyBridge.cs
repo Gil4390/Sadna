@@ -104,11 +104,6 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.PurchaseCart(id, paymentDetails, usersDetail);
         }
 
-        public ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID)
-        {
-            return _realBridge.GetItemReviews(storeID, itemID);
-        }
-
         public Response RateItem(Guid id, int itemID, int score)
         {
             return _realBridge.RateItem(id, itemID, score);
@@ -422,7 +417,8 @@ namespace SadnaExpress.ServiceLayer
         public void getNotificationsForOfflineMembers()
         {
             throw new NotImplementedException();
-        ResponseT<List<ItemForOrder>> ITradingSystem.GetStorePurchases(Guid userID, Guid storeID)
+        }
+        public ResponseT<List<ItemForOrder>> GetStorePurchases(Guid userID, Guid storeID)
         {
             return _realBridge.GetStorePurchases(userID, storeID);
         }
@@ -435,6 +431,11 @@ namespace SadnaExpress.ServiceLayer
         public Response WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
             return _realBridge.WriteItemReview(userID, itemID, reviewText);
+        }
+
+        public ResponseT<List<SReview>> GetItemReviews(Guid itemID)
+        {
+            return _realBridge.GetItemReviews(itemID);
         }
     }
 }
