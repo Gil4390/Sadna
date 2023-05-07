@@ -1,27 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Container, Table } from 'react-bootstrap';
 import Exit from "../Exit.tsx";
+import { handleGetAllPurchasesFromStore } from '../../actions/MemberActions.tsx';
+import { ItemForOrder } from '../../models/Purchase.tsx';
 
-const purchases = [
-  {
-    userId: 1,
-    items: [
-      { id: 1, name: 'Item 1', price: 10, quantity: 2 },
-      { id: 2, name: 'Item 2', price: 5, quantity: 1 },
-    ],
-    total: 25,
-  },
-  {
-    userId: 2,
-    items: [
-      { id: 3, name: 'Item 3', price: 15, quantity: 1 },
-      { id: 4, name: 'Item 4', price: 8, quantity: 3 },
-    ],
-    total: 39,
-  },
-];
 
 const PurchasedStoreItemsPage = (props) => {
+  const [purchases, setPurchases] = useState<ItemForOrder[]>([]);
+  const location = useLocation();
+  const { userId, storeId } = location.state;
+
+  const getStorePurchases = ()=>{
+    handleGetAllPurchasesFromStore(userId, storeId).then(
+      value => {
+        console.log(value);
+        
+        setPurchases(value as ItemForOrder[]);
+      })
+      .catch(error => alert(error));
+  }
+
+  useEffect(() => {
+    getStorePurchases();
+  }, []);
+
   return (
     <Container>
             <Exit id={props.id}/>
@@ -29,31 +32,24 @@ const PurchasedStoreItemsPage = (props) => {
       <Table striped bordered hover>
         <thead className="thead-dark">
           <tr>
-            <th>User ID</th>
-            <th>Item ID</th>
+            <th>User Email</th>
             <th>Item Name</th>
+            <th>Item Category</th>
+            <th>Item ID</th>
             <th>Price</th>
-            <th>Quantity</th>
-            <th>Total</th>
           </tr>
         </thead>
         <tbody>
-          {purchases.map((purchase, purchaseIndex) => (
-            purchase.items.map((item, itemIndex) => (
-              <tr key={`${purchaseIndex}-${itemIndex}`}>
-                {itemIndex === 0 && (
-                  <td rowSpan={purchase.items.length}>{purchase.userId}</td>
-                )}
-                <td>{item.id}</td>
+          {purchases.map((item) => (
+              <tr key={`${item.userEmail}-${item.name}`}>
+                <td>{item.userEmail}</td>
                 <td>{item.name}</td>
+                <td>{item.category}</td>
+                <td>{item.itemID}</td>
                 <td>{item.price}</td>
-                <td>{item.quantity}</td>
-                {itemIndex === 0 && (
-                  <td rowSpan={purchase.items.length}>{purchase.total}</td>
-                )}
               </tr>
-            ))
-          ))}
+            )
+          )}
         </tbody>
       </Table>
     </Container>

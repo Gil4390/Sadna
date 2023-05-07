@@ -143,13 +143,6 @@ namespace SadnaExpress.API.Controllers
             return Ok(tradingSystem.GetEmployeeInfoInStore(request.userID, request.storeID));
         }
         
-        [Route(APIConstants.MemberData.getStorePurchases)]
-        [ResponseType(typeof(ResponseT<List<Order>>))]
-        [HttpPost]
-        public IHttpActionResult GetStorePurchases([FromBody] StoreIDRequest request)
-        {
-            return Ok(tradingSystem.GetStorePurchases(request.userID, request.storeID));
-        }
         
         [Route(APIConstants.MemberData.deleteStore)]
         [ResponseType(typeof(Response))]
@@ -343,5 +336,12 @@ namespace SadnaExpress.API.Controllers
             return Ok(res);
         }
 
+/*        [Route(APIConstants.MemberData.getStorePurchases)]
+        [ResponseType(typeof(ResponseT<List<Order>>))]
+        [HttpPost]
+        public IHttpActionResult GetStorePurchases([FromBody] StoreIDRequest request)
+        {
+            return Ok(tradingSystem.GetStorePurchases(request.userID, request.storeID));
+        }*/
     }
 }

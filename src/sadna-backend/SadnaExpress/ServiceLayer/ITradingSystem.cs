@@ -63,7 +63,7 @@ namespace SadnaExpress.ServiceLayer
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
         ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
-        ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
+        ResponseT<List<ItemForOrder>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
         Response RemoveUserMembership(Guid userID, string email); //6.2
         ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID);//6.4
         ResponseT<List<SMember>> GetMembers(Guid userID); //6.6
