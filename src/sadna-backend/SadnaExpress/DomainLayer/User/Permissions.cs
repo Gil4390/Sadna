@@ -99,7 +99,10 @@ namespace SadnaExpress.DomainLayer.User
                 Guid directManagerID = pmember.getDirectManager(storeID).UserId;
                 if (!directManagerID.Equals(appointer.UserId))
                     throw new Exception("The caller is not the appointer of the manager");
-
+                if (permission == "owner permissions")
+                {
+                    pmember.Permission[storeID] = new List<string>();
+                }
                 pmember.addPermission(storeID, permission);
             }
         }

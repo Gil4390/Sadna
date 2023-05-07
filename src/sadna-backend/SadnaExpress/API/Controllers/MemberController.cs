@@ -84,7 +84,13 @@ namespace SadnaExpress.API.Controllers
         {
             return Ok(tradingSystem.EditItem(request.userID, request.storeID, request.itemID,request.itemName, request.itemCategory, request.itemPrice, request.quantity ));
         }
-        
+        [Route(APIConstants.MemberData.removeStorePer)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult RemovePermission([FromBody] StoreManagerPerRequest request)
+        {
+            return Ok(tradingSystem.RemovePermission(request.userID, request.storeID, request.userEmail, request.permission));
+        }
         
         [Route(APIConstants.MemberData.appointStoreManager)]
         [ResponseType(typeof(Response))]
@@ -109,23 +115,7 @@ namespace SadnaExpress.API.Controllers
         {
             return Ok(tradingSystem.AppointStoreOwner(request.userID, request.storeID, request.userEmail));
         }
-        
-        [Route(APIConstants.MemberData.removeStoreManagerPer)]
-        [ResponseType(typeof(Response))]
-        [HttpPost]
-        public IHttpActionResult RemoveStoreManagerPermissions([FromBody] StoreManagerPerRequest request)
-        {
-            return Ok(tradingSystem.RemoveStoreManagerPermissions(request.userID, request.storeID, request.userEmail,request.permission));
-        }
-        
-        [Route(APIConstants.MemberData.removeStoreOwner)]
-        [ResponseType(typeof(Response))]
-        [HttpPost]
-        public IHttpActionResult RemoveStoreOwner([FromBody] StoreManagerRequest request)
-        {
-            return Ok(tradingSystem.RemoveStoreOwner(request.userID, request.storeID, request.userEmail));
-        }
-        
+
         [Route(APIConstants.MemberData.closeStore)]
         [ResponseType(typeof(Response))]
         [HttpPost]
@@ -143,13 +133,6 @@ namespace SadnaExpress.API.Controllers
             return Ok(tradingSystem.GetEmployeeInfoInStore(request.userID, request.storeID));
         }
         
-        [Route(APIConstants.MemberData.getStorePurchases)]
-        [ResponseType(typeof(ResponseT<List<Order>>))]
-        [HttpPost]
-        public IHttpActionResult GetStorePurchases([FromBody] StoreIDRequest request)
-        {
-            return Ok(tradingSystem.GetStorePurchases(request.userID, request.storeID));
-        }
         
         [Route(APIConstants.MemberData.deleteStore)]
         [ResponseType(typeof(Response))]
@@ -342,6 +325,5 @@ namespace SadnaExpress.API.Controllers
             var res = tradingSystem.GetStorePurchases(request.userID, request.storeID);
             return Ok(res);
         }
-
     }
 }

@@ -207,7 +207,7 @@ export function handleAppointStoreOwner(userID, storeID, userEmail ) {
 }
 
 export function handleRemoveStoreManagerPermission(userID, storeID, userEmail, permission ) {
-    let url = "http://localhost:8080/api/member/rm-store-manager-per";
+    let url = "http://localhost:8080/api/member/rm-store-per";
 
     return fetch(url, {
         method: 'POST',

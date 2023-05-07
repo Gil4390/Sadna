@@ -324,7 +324,6 @@ namespace SadnaExpress.ServiceLayer
 
         }
         
-
         public Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
         {
             return userManager.AddStoreManagerPermissions(userID, storeID, userEmail, permission);
@@ -368,11 +367,22 @@ namespace SadnaExpress.ServiceLayer
             return userManager.RemoveUserMembership(userID, email);
         }
 
-        public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
+        public ResponseT<List<ItemForOrder>> GetStorePurchases(Guid userID, Guid storeID)
         {
-            return storeManager.GetStorePurchases(userID, storeID);
+            List<ItemForOrder> list = new List<ItemForOrder>();
+            if (Orders.Instance.GetStoreOrders().ContainsKey(storeID))
+            {
+                foreach (Order order in Orders.Instance.GetStoreOrders()[storeID])
+                {
+                    list.AddRange(order.ListItems);
+                }
+            }
+            return new ResponseT<List<ItemForOrder>>(list);
         }
-
+        public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
+        {
+            return userManager.RemovePermission(userID, storeID, userEmail, permission);
+        }
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             return storeManager.GetAllStorePurchases(userID);

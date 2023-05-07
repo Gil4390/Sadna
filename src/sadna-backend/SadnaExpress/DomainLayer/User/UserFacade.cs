@@ -280,6 +280,18 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception("The user unauthorised to add add item to store");
         }
 
+        public void RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
+        {
+            Console.WriteLine($"here!! {permission} n");
+            IsTsInitialized();
+            isLoggedIn(userID);
+            if (permission.Equals("owner permissions"))
+                RemoveStoreOwner(userID, storeID, userEmail);
+            else
+            {
+                RemoveStoreManagerPermissions(userID, storeID, userEmail, permission);
+            }
+        }
         public void AppointStoreOwner(Guid userID, Guid storeID, string email)
         {
             IsTsInitialized();
@@ -300,6 +312,7 @@ namespace SadnaExpress.DomainLayer.User
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)
         {
+            Console.WriteLine("in RemoveStoreOwner");
             IsTsInitialized();
             isLoggedIn(userID);
             Guid storeOwnerID = IsMember(email).UserId;
@@ -521,7 +534,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (member.Email.ToLower() == email.ToLower())     
                     return member;
                   
-            throw new Exception($"There isn't a member with {email}");
+            throw new Exception($"There isn't a member with the email: {email}");
         }
 
         public ConcurrentDictionary<Guid, User> GetCurrent_Users()

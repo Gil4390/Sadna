@@ -74,9 +74,10 @@ export function StoreInfo(props) {
       {permission.get_employees_info &&<Button variant="dark" onClick={() => handleNavigate("/ManageStoreEmployeesPage",props.id,props.store)} style={{margin: "5px"}} >
         View Employees
       </Button>}
-      {permission.get_store_history && (<Button variant="dark" onClick={() => navigate("/PurchasedStoreItemsPage")} style={{margin: "5px"}} >
-        View Purchase History
-      </Button>)}
+      {permission.get_store_history && (
+        <Button variant="dark" onClick={() => handleNavigate("/PurchasedStoreItemsPage",props.id,props.store)} style={{margin: "5px"}} >
+          View Purchase History
+        </Button>)}
       <Button variant="dark" onClick={() => navigate("/DiscountPoliciesPage")} style={{margin: "5px"}}>
         Discount Policies
       </Button>

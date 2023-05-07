@@ -53,17 +53,18 @@ namespace SadnaExpress.ServiceLayer
 
         public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice,
             int quantity);
+        Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
-        Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 
+        Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 only for tests
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
-        Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
+        Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission); //only for tests
         Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
         ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
-        ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
+        ResponseT<List<ItemForOrder>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
         Response RemoveUserMembership(Guid userID, string email); //6.2
         ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID);//6.4
         ResponseT<List<SMember>> GetMembers(Guid userID); //6.6

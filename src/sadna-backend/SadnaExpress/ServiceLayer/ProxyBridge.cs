@@ -210,11 +210,6 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.RemoveUserMembership(userID, email);
         }
-        public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
-        {
-            return _realBridge.GetStorePurchases(userID, storeID);
-        }
-       
 
         public Response DeleteStore(Guid id, Guid storeID)
         {
@@ -229,6 +224,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<Guid> UpdateFirst(Guid id, string newFirst)
         {
             throw new NotImplementedException();
+        }
+
+        public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
+        {
+            return _realBridge.RemovePermission(userID, storeID, userEmail, permission);
         }
 
         public ResponseT<Guid> UpdateLast(Guid id, string newLast)
@@ -427,6 +427,9 @@ namespace SadnaExpress.ServiceLayer
         public void getNotificationsForOfflineMembers()
         {
             throw new NotImplementedException();
+        ResponseT<List<ItemForOrder>> ITradingSystem.GetStorePurchases(Guid userID, Guid storeID)
+        {
+            return _realBridge.GetStorePurchases(userID, storeID);
         }
     }
 }
