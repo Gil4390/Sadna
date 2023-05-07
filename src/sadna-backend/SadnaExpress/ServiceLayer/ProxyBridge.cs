@@ -461,9 +461,14 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetStorePurchases(userID, storeID);
         }
-
-
-
+        
+        // public ResponseT<List<SReview>> GetItemReviews(Guid itemID)
+        // {
+        //     return _realBridge.GetItemReviews(itemID);
+        // }
 
     }
+
+
+    
 }
