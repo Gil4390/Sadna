@@ -62,6 +62,8 @@ export function CartItem(props) {
         <Col xs={8}>
           <h5>{props.item.name}</h5>
           <p>Price: ${props.item.price}</p>
+          {props.item.priceDiscount > -1 && 
+          <p>DiscountPrice: ${props.item.priceDiscount}</p>}
           <div className="d-flex align-items-center flex-column" style={{gap:".5rem"}}>
                 <div className="d-flex align-items-center justify-content-center" style={{ gap: ".5rem" }}> 
                   <Button variant="warning" onClick={()=> decreaseCartQuantity(props.item.itemId)}>-</Button>

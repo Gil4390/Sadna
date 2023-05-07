@@ -59,6 +59,7 @@
     <Compile Include="Acceptance Tests\GuestMemberStoreOwnerManagerAT.cs" />
     <Compile Include="Acceptance Tests\GuestAT.cs" />
     <Compile Include="Integration Tests\EditStoreInventoryIT.cs" />
+    <Compile Include="Integration Tests\GetCartItemsIT.cs" />
     <Compile Include="Integration Tests\PurchaseIT.cs" />
     <Compile Include="Integration Tests\StoreManagementIT.cs" />
     <Compile Include="Integration Tests\TradingSystemIT.cs" />

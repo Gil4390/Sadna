@@ -17,6 +17,8 @@ namespace SadnaExpress.ServiceLayer.Obj
         public string Category { get => category; set => category = value; }
         private double price;
         public double Price { get => price; set => price = value; }
+        private double priceDiscount;
+        public double PriceDiscount { get => priceDiscount; set => priceDiscount = value; }
         private int rating;
         public int Rating { get => rating; set => rating = value; }
         private string storeId;
@@ -26,11 +28,12 @@ namespace SadnaExpress.ServiceLayer.Obj
         private int count;
         public int Count { get => count; set => count = value; }
 
-        public SItem(Item item, Guid storeID,bool inStock, int count)
+        public SItem(Item item, double priceDiscount , Guid storeID,bool inStock, int count)
         {
             this.itemId = item.ItemID.ToString(); this.name = item.Name;
             this.price=item.Price; this.rating = item.Rating;
             this.category = item.Category;
+            this.priceDiscount = priceDiscount;
             this.storeId = storeID.ToString();
             this.inStock = inStock;
             this.count = count;

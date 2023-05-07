@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
 
@@ -408,6 +409,41 @@ namespace SadnaExpress.DomainLayer.Store
         public bool ItemExist(Guid itemid)
         {
             return itemsInventory.ItemExist(itemid);
+        }
+
+        public double GetItemAfterDiscount(Item item)
+        {
+            Dictionary<Item, int> itemsBeforeDiscount = new Dictionary<Item, int>{{item, 1}};
+            Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
+                new Dictionary<Item, KeyValuePair<double, DateTime>>();
+            if (discountPolicyTree != null)
+                itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
+            if (itemAfterDiscount.Count == 0)
+                return -1;
+            return itemAfterDiscount[item].Key;
+        }
+
+        public Dictionary<Item, double> GetCartItems(Dictionary<Guid, int> items)
+        {
+            Dictionary<Item, double> basketItems = new Dictionary<Item, double>();
+            Dictionary<Item, int> itemsBeforeDiscount = new Dictionary<Item, int>();
+            foreach (Guid itemID in items.Keys)
+            {
+                itemsBeforeDiscount.Add(GetItemById(itemID), items[itemID]);
+            }
+            Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
+                new Dictionary<Item, KeyValuePair<double, DateTime>>();
+            if (discountPolicyTree != null)
+                itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
+            foreach (Item item in itemsBeforeDiscount.Keys)
+            {
+                if (itemAfterDiscount.Keys.Contains(item))
+                    basketItems.Add(item, itemAfterDiscount[item].Key);
+                else
+                    basketItems.Add(item, -1);
+            }
+
+            return basketItems;
         }
     }
 }

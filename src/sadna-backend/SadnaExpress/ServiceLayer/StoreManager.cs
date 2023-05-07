@@ -39,14 +39,18 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
-                ShoppingCart shoppingCart=userFacade.GetDetailsOnCart(userID);
+                ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
+                Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>(); 
+                foreach (ShoppingBasket basket in shoppingCart.Baskets) 
+                    cart.Add(basket.StoreID, basket.ItemsInBasket);
+                Dictionary<Guid, Dictionary<Item, double>> cartItems = storeFacade.GetCartItems(cart);
                 List<SItem> items = new List<SItem>();
-                foreach(ShoppingBasket shoppingBasket in shoppingCart.Baskets)
+                foreach(Guid storeID in cartItems.Keys)
                 {
-                    foreach (Guid itemid in shoppingBasket.ItemsInBasket.Keys)
+                    foreach (Item item in cartItems[storeID].Keys)
                     {
-                        int quantity = storeFacade.GetItemByQuantity(shoppingBasket.StoreID, itemid);
-                        items.Add(new SItem(storeFacade.GetItemByID(shoppingBasket.StoreID, itemid), shoppingBasket.StoreID, quantity>0, shoppingBasket.ItemsInBasket[itemid]));
+                        int quantity = storeFacade.GetItemByQuantity(storeID, item.ItemID);
+                        items.Add(new SItem(item, cartItems[storeID][item], storeID, quantity>0, cart[storeID][item.ItemID]));
                     }
                 }
 
@@ -620,6 +624,11 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStoreInfo) + ": " + ex.Message);
                 return new ResponseT<SStore>(ex.Message);
             }
+        }
+
+        public double GetItemAfterDiscount(Guid itemStoreid, Item item)
+        {
+            return storeFacade.GetItemAfterDiscount(itemStoreid, item);
         }
     }
 }

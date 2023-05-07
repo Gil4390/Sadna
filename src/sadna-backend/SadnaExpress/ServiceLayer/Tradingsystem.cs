@@ -180,7 +180,8 @@ namespace SadnaExpress.ServiceLayer
                 Guid itemStoreid= storeManager.GetItemStoreId(item.ItemID);
                 bool inStock = storeManager.GetStore(itemStoreid).Value.GetItemByQuantity(item.ItemID) > 0;
                 int countInCart = storeManager.GetItemQuantityInCart(userID,itemStoreid, item.ItemID).Value;
-                items.Add(new SItem(item,itemStoreid, inStock, countInCart));
+                double priceDiscount = storeManager.GetItemAfterDiscount(itemStoreid, item);
+                items.Add(new SItem(item, priceDiscount, itemStoreid, inStock, countInCart));
             }
 
             return new ResponseT<List<SItem>>(items);
