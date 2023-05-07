@@ -13,7 +13,9 @@ function StoresManagementPage(props) {
   const [storesIdList, setStoresIdList] = useState<string[]>([]);
   const [storeName, setStoreName] = useState<string>('');
   const [addStoreResponse, setAddStoreResponse]=useState<ResponseT>();
+
   const [refreshStores, setRefreshStores]=useState(0);
+  
   const handleAddModalClose = () => setShowAddModal(false);
   const handleAddModalShow = () => setShowAddModal(true);
 
@@ -36,7 +38,6 @@ function StoresManagementPage(props) {
    }, [permissions,refreshStores])
 
    useEffect(() => {
-    console.log(props.id);
     getPermissions();
   }, [])
 

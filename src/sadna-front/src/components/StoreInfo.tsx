@@ -25,8 +25,6 @@ export function StoreInfo(props) {
 
   useEffect(() => {
     if(response !=undefined){
-      console.log("err? "+response?.errorOccured);
-      console.log("errmsg? "+response?.errorMessage);
       response?.errorOccured ? alert(response?.errorMessage) : setStore(response?.value);
     }
  }, [response])

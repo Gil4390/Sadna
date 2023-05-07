@@ -1,4 +1,5 @@
 ﻿//using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
 using Owin;
@@ -17,25 +18,24 @@ namespace SadnaExpress.API.WebClient.SignalR
     {
         public void Configuration(IAppBuilder app)
         {
-            //app.UseErrorPage();
+            app.Map("/signalr", map =>
+            {
+                var config = new HubConfiguration
+                {
+                    // You can enable JSONP by uncommenting this line
+                    // JSONP requests are insecure but some older browsers (and some
+                    // versions of IE) require JSONP to work cross domain
+                    //EnableJSONP = true
+                    EnableDetailedErrors = true
+                };
 
-            //app.Map("/signalr", map =>
-            //{
-            //    var config = new HubConfiguration
-            //    {
-            //        // You can enable JSONP by uncommenting this line
-            //        // JSONP requests are insecure but some older browsers (and some
-            //        // versions of IE) require JSONP to work cross domain
-            //        //EnableJSONP = true
-            //        EnableDetailedErrors = true
-            //    };
+                // Turns cors support on allowing everything
+                // In real applications, the origins should be locked down
+                map.UseCors(CorsOptions.AllowAll)
+                   .RunSignalR(config);
 
-            //    // Turns cors support on allowing everything
-            //    // In real applications, the origins should be locked down
-            //    map.UseCors(CorsOptions.AllowAll)
-            //       .RunSignalR(config);
+            });
 
-            //});
         }
     }
 }

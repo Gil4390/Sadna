@@ -12,15 +12,56 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { handleIsSystemInit, handleEnter, handleIsAdmin } from './actions/GuestActions.tsx';
 import { handleLogout } from '../actions/MemberActions.tsx';
-import { ResponseT } from "../models/Response";
-
+import { ResponseT } from "../models/Response.tsx";
+import { hubConnection,connection } from 'signalr-no-jquery';
+import Popup from './components/Popup.tsx';
+import ReactDOM from 'react-dom';
 
 const App:React.FC=()=>{
+
   const [response, setResponse] = useState<ResponseT>();
   const [id, setid] = useState<string>();
   const [isInit, setisInit] = useState<boolean>(false);
   const [userType, setUserType] = useState("guest");
   const [login, setLogin] = useState<boolean>(false);
+
+  const [notification, setNotification] = useState<string>('');
+
+  useEffect(() => {
+
+    const connection = hubConnection('http://localhost:8081/signalR');
+    const hubProxy = connection.createHubProxy('NotificationHub');
+    
+    // set up event listeners i.e. for incoming "message" event
+    hubProxy.on('SendNotification', function(idToSend,message) {
+        console.log("id= "+id+" "+"message: "+message);
+
+        if(idToSend===id)
+          setNotification(message);
+    });
+    
+    // connect
+    connection.start({ jsonp: true })
+    .done(function(){ console.log('Now connected, connection ID=' + connection.id); })
+    .fail(function(){ console.log('Could not connect'); });
+
+    return () => {
+      connection.stop();
+    };
+  }, [id]);
+
+  useEffect(() => {
+    // Show the popup when notifications state is updated
+    
+    if(notification!=''){
+      // Render the popup component with the latest notification
+      ReactDOM.render(
+         <Popup message={notification} onClose={() => setNotification('')} />,
+        document.getElementById('popup-root')
+      );
+    }
+    
+  }, [notification]);
 
   const handleLogin = (newId) => {
     setid(newId);
@@ -31,6 +72,7 @@ const App:React.FC=()=>{
     setid(newId);
     setUserType("guest");
     setLogin(false);
+    
   }
 
   useEffect(() => {
@@ -54,11 +96,10 @@ const App:React.FC=()=>{
   }
 }, [login])
   
-  console.log(id);
-  console.log(isInit);
   return (
       <Router>
         <Navigation id={id} userType={userType} onLogout={handleLogout}/>
+        <div id="popup-root"></div>
         <Routes>
         <Route path="/" element={<Home id={id} />} />
         <Route path="/ShoppingPage" element={<ShoppingPage id={id} isInit={isInit} />} />

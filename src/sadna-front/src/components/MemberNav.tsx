@@ -5,8 +5,6 @@ import CartImg from '../images/cart.png'
 
 function MemberNav(props) {
   const handleLogoutPress = () => {
-    console.log("bad2")
-    console.log(props)
     props.handleLogout();
   }
 

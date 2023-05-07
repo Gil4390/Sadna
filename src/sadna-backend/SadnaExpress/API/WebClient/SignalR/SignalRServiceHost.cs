@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.AspNet.SignalR;
 
 namespace SadnaExpress.API.WebClient.SignalR
 {
@@ -18,6 +18,7 @@ namespace SadnaExpress.API.WebClient.SignalR
         // Create the variable for our self-hosted server
 
         private IDisposable _server;
+      
 
         public SignalRServiceHost()
         {
@@ -31,10 +32,7 @@ namespace SadnaExpress.API.WebClient.SignalR
 
             //IApplicationService appService = ServiceLocator.Current.GetInstance<IApplicationService>();
             // appService.SignalRServerUrlPort = appService.GetFreeTcpPort();
-            TcpListener tcpListener = new TcpListener(IPAddress.Loopback, 0);
-            tcpListener.Start();
-            int port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
-            tcpListener.Stop();
+            int port = 8081;
 
             var baseAddress = $"http://localhost:{port}/";
 
@@ -63,7 +61,6 @@ namespace SadnaExpress.API.WebClient.SignalR
 
             Console.WriteLine("SignalR stopped");
         }
-
 
 
     }

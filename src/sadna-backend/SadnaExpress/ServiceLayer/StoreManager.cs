@@ -134,9 +134,11 @@ namespace SadnaExpress.ServiceLayer
                     throw new Exception("Supply operation failed");
                 }
                 Orders.Instance.AddOrder(userID, itemForOrders);
-                
+
+                foreach (ShoppingBasket basket in shoppingCart.Baskets)
+                    NotificationSystem.Instance.NotifyObserversInStores(cart.Keys, "New cart purchase at store "+storeFacade.GetStore(basket.StoreID).StoreName+" !", userID);
+
                 userFacade.PurchaseCart(userID);
-                NotificationSystem.Instance.NotifyObserversInStores(cart.Keys, "purchase cart", userID);
                 return new ResponseT<List<ItemForOrder>>(itemForOrders);
             }
             catch (Exception ex)
@@ -166,7 +168,7 @@ namespace SadnaExpress.ServiceLayer
             {
                 userFacade.CloseStore(userID, storeID);
                 storeFacade.CloseStore(storeID);
-                NotificationSystem.Instance.NotifyObservers(storeID,"Close store",userID);
+                NotificationSystem.Instance.NotifyObservers(storeID,"Store "+ storeFacade.GetStore(storeID).StoreName+" was Closed",userID);
                 return new Response();
             }
             catch (Exception ex)

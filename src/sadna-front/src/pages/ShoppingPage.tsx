@@ -75,7 +75,7 @@ function ShoppingPage(props) {
   // handle search form submission
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    console.log(`keyWord: ${keyWord}, Caetgory: ${category}`,`Min Price: ${minPrice}, Max Price: ${maxPrice}, Min Store Rating: ${minStoreRating}, Min Item Rating: ${minItemRating}`);
+    //console.log(`keyWord: ${keyWord}, Caetgory: ${category}`,`Min Price: ${minPrice}, Max Price: ${maxPrice}, Min Store Rating: ${minStoreRating}, Min Item Rating: ${minItemRating}`);
     // do something with search query and type
     
     if(!isValidItemNameOrCategory(keyWord) || !isValidItemNameOrCategory(category) || !(minPrice >= 0 && minPrice <= maxPrice))

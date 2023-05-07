@@ -103,8 +103,6 @@ function PaymentPage(props) {
 
   useEffect(() => {
     if(response !=undefined){
-      console.log("err? "+response?.errorOccured);
-      console.log("errmsg? "+response?.errorMessage);
       response?.errorOccured ? setMessage(response?.errorMessage) : PurchaseSuccess();
     }
  }, [response])

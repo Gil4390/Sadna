@@ -137,12 +137,9 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
-            ResponseT<Guid> responseT;
             try
             {
-                
-                responseT = storeManager.OpenNewStore(userID, storeName);
-                GetMember(userID).Value.Update(" " + userID + "open new store", userID);
+                ResponseT<Guid>  responseT = storeManager.OpenNewStore(userID, storeName);
                 return responseT;
 
             } 
@@ -383,6 +380,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.RemovePermission(userID, storeID, userEmail, permission);
         }
+
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             return storeManager.GetAllStorePurchases(userID);
