@@ -80,7 +80,12 @@ namespace SadnaExpress.DomainLayer
             }
           
         }
+        public void RemoveObservers(Guid storeID, List<Member> observers)
+        {
+            foreach (Member member in observers)
+                RemoveObserver(storeID, member);
 
+        }
         public void NotifyObserversInStores(ICollection<Guid> stores, string message, Guid userID)
         {
             foreach (Guid storeID in stores)

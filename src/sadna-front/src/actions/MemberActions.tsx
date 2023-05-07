@@ -36,7 +36,7 @@ export function handleOpenNewStore(userID , storeName) {
         return Promise.resolve(data)
     })
 }
-export function handleWriteItemReview(userID, storeID, itemID, review) {
+export function handleWriteItemReview(userID, itemID, review) {
     let url = "http://localhost:8080/api/member/write-item-review";
 
     return fetch(url, {
@@ -45,7 +45,6 @@ export function handleWriteItemReview(userID, storeID, itemID, review) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userID: userID,
-            storeID: storeID,
             itemID:itemID,
             review:review
         })
@@ -207,7 +206,7 @@ export function handleAppointStoreOwner(userID, storeID, userEmail ) {
 }
 
 export function handleRemoveStoreManagerPermission(userID, storeID, userEmail, permission ) {
-    let url = "http://localhost:8080/api/member/rm-store-manager-per";
+    let url = "http://localhost:8080/api/member/rm-store-per";
 
     return fetch(url, {
         method: 'POST',

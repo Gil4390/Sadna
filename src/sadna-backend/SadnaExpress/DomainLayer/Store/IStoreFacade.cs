@@ -16,7 +16,7 @@ namespace SadnaExpress.DomainLayer.Store
         List<Order> GetStorePurchases(Guid storeID);
         Dictionary<Guid, List<Order>> GetAllStorePurchases();
         Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
-        void WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText);
+        void WriteItemReview(Guid userID, Guid itemID, string reviewText);
         List<Review> GetItemReviews(Guid storeID, Guid itemID);
         double PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemsForOrder, string email);
         void RemoveItemFromStore(Guid storeID, Guid itemID);

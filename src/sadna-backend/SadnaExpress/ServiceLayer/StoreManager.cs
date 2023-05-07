@@ -227,12 +227,12 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
+        public Response WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
             try
             {
                 userFacade.isLoggedIn(userID);
-                storeFacade.WriteItemReview(userID, storeID, itemID, reviewText);
+                storeFacade.WriteItemReview(userID, itemID, reviewText);
                 return new Response();
             }
             catch (Exception ex)

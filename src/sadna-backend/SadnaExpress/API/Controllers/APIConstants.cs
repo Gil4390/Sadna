@@ -69,10 +69,8 @@ namespace SadnaExpress.API.Controllers
             
             public const string addStoreManagerPer = "add-store-manager-per";
             
-            public const string removeStoreManagerPer =  "rm-store-manager-per";
+            public const string removeStorePer =  "rm-store-per";
             
-            public const string removeStoreOwner = "rm-store-owner";
-
             public const string closeStore = "close-store";
 
             public const string getEmployee = "get-employees";

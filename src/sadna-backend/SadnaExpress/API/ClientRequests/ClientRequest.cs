@@ -58,7 +58,6 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class WriteItemReviewRequest : ClientRequest
     {
-        public Guid StoreId { get; set; }
         public Guid ItemId { get; set; }
         public string Review { get; set; }
     }

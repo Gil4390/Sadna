@@ -20,12 +20,13 @@ namespace SadnaExpress.ServiceLayer
         Response Register(Guid userID, string email, string firstName, string lastName, string password); //1.3
         ResponseT<Guid> Login(Guid userID, string email, string password); //1.4
         ResponseT<Guid> Logout(Guid userID); //3.1
+        Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission); //4.5 + remove of 4.7
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
-        Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 
+        Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 only for tests
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
-        Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
+        Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission); //only for tests
         ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID); //4.11
         Response RemoveUserMembership(Guid userID, string email);
         //system manager actions 

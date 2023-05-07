@@ -217,12 +217,12 @@ namespace SadnaExpress.ServiceLayer
             return response;
         }
         
-        public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string review)
+        public Response WriteItemReview(Guid userID, Guid itemID, string review)
         {
             try
             {
                 Logger.Instance.Info("User id: " + userID + " WriteReview to itemID: " + itemID);
-                return storeManager.WriteItemReview(userID, storeID, itemID, review);
+                return storeManager.WriteItemReview(userID, itemID, review);
             }
             catch (Exception ex)
             {
@@ -324,7 +324,6 @@ namespace SadnaExpress.ServiceLayer
 
         }
         
-
         public Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
         {
             return userManager.AddStoreManagerPermissions(userID, storeID, userEmail, permission);
@@ -380,7 +379,10 @@ namespace SadnaExpress.ServiceLayer
             }
             return new ResponseT<List<ItemForOrder>>(list);
         }
-
+        public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
+        {
+            return userManager.RemovePermission(userID, storeID, userEmail, permission);
+        }
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             return storeManager.GetAllStorePurchases(userID);
@@ -495,6 +497,11 @@ namespace SadnaExpress.ServiceLayer
             return userManager.GetNotifications(userID);
         }
 
+        // this functions needs to notify to offline members their notifications.
+        public void getNotificationsForOfflineMembers()
+        {
+            throw new NotImplementedException();
+        }
         public bool IsSystemInitialize()
         {
             return userManager.IsSystemInitialize();

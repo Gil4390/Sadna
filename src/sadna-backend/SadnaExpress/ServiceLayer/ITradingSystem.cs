@@ -34,7 +34,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail); //2.5
         ResponseT<Guid> Logout(Guid userID); //3.1
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
-        Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText); //3.3
+        Response WriteItemReview(Guid userID, Guid itemID, string reviewText); //3.3
         ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID);
         Response RateItem(Guid userID, int itemID, int score); //3.4 (not in this version)
         Response WriteMessageToStore(Guid userID, Guid storeID, string message); //3.5  (not in this version)
@@ -53,12 +53,13 @@ namespace SadnaExpress.ServiceLayer
 
         public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice,
             int quantity);
+        Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
-        Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 
+        Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 only for tests
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
-        Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
+        Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission); //only for tests
         Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
@@ -98,6 +99,8 @@ namespace SadnaExpress.ServiceLayer
             string typeRes = default, double valueRes = default);
         void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
             string typeRes = default, double valueRes = default);
+        // this functions needs to notify to offline members their notifications.
+        public void getNotificationsForOfflineMembers();
 
         ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
 

@@ -42,8 +42,8 @@ namespace SadnaExpress.DomainLayer.User
             return owner;
         }
 
-        public List<Member> RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
-        {            
+        public Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
+        {
             if (!member.hasPermissions(storeID, new List<string> {"owner permissions"}))
                 throw new Exception($"The member {member.Email} isn't owner");
             PromotedMember storeOwner = ((PromotedMember)member);
@@ -52,6 +52,7 @@ namespace SadnaExpress.DomainLayer.User
             // remove the appoints
             Stack<PromotedMember> stack = new Stack<PromotedMember>();
             List<Member> regMembers = new List<Member>();
+            List<Member> NotOwners = new List<Member>();
             stack.Push(storeOwner);
 
             while (stack.Count > 0)
@@ -63,13 +64,16 @@ namespace SadnaExpress.DomainLayer.User
                     foreach (PromotedMember child in current.getAppoint(storeID))
                         stack.Push(child);
                 }
+
+                NotOwners.Add(current);
                 current.removeAllDictOfStore(storeID);
                 if (current.Permission.Count == 0)
                     regMembers.Add(new Member(current));
             }
             //remove the owner from appoint
             directOwner.removeAppoint(storeID, storeOwner);
-            return regMembers;
+            Tuple<List<Member>, List<Member>> result = new Tuple<List<Member>, List<Member>>(regMembers, NotOwners);
+            return result;
         }
         
         public PromotedMember AppointStoreManager(Guid storeID, PromotedMember directSupervisor, Member newManager)
@@ -95,7 +99,10 @@ namespace SadnaExpress.DomainLayer.User
                 Guid directManagerID = pmember.getDirectManager(storeID).UserId;
                 if (!directManagerID.Equals(appointer.UserId))
                     throw new Exception("The caller is not the appointer of the manager");
-
+                if (permission == "owner permissions")
+                {
+                    pmember.Permission[storeID] = new List<string>();
+                }
                 pmember.addPermission(storeID, permission);
             }
         }
