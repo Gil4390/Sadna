@@ -289,10 +289,10 @@ namespace SadnaExpress.DomainLayer.Store
         }
             
 
-        public void WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
+        public void WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
             IsTsInitialized();
-            IsStoreExist(storeID);
+            Guid storeID = GetItemStoreId(itemID);
             Store store = stores[storeID];
             if (reviewText == "")
                 throw new Exception("review text cannot be empty");

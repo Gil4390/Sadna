@@ -49,7 +49,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult WriteItemReview([FromBody] WriteItemReviewRequest request)
         {
-            return Ok(tradingSystem.WriteItemReview(request.userID ,request.StoreId,request.ItemId,request.Review ));
+            var res = tradingSystem.WriteItemReview(request.userID, request.ItemId, request.Review );
+            return Ok(res);
         }
 
         [Route(APIConstants.MemberData.itemReviews)]

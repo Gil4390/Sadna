@@ -21,7 +21,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<ShoppingCart> GetDetailsOnCart(Guid userID);
         ResponseT <List<ItemForOrder>> PurchaseCart(Guid id, string paymentDetails, string usersDetail); //2.5
         ResponseT<Guid> OpenNewStore(Guid id, string storeName); //3.2
-        Response WriteItemReview(Guid id, Guid storeID, Guid itemID, string review); //3.3
+        Response WriteItemReview(Guid id, Guid itemID, string review); //3.3
         ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID);
         //4.1
         ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID,  string itemName, string itemCategory, double itemPrice,
