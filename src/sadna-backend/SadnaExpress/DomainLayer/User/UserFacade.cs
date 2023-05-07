@@ -98,7 +98,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 foreach (Member m in members.Values)
                 {
-                    if (m.Email.ToLower() == email.ToLower())
+                    if (m.Email.ToLower().Equals(email.ToLower()))
                         throw new Exception("Member with this email already exists");
 
                 }
