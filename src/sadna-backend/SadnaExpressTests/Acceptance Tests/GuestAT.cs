@@ -646,6 +646,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
             });
             task.Wait();
+            Console.WriteLine(task.Result.ErrorMessage);
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
             Assert.AreEqual(0,proxyBridge.GetDetailsOnCart(id).Value.Baskets.Count); // the shopping basket get empty
             Assert.AreEqual(39, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid1)); //the quantity updated
@@ -720,11 +721,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                                & !task3.Result.ErrorOccured);
             Assert.IsTrue(situation1 || situation2);
             Assert.AreEqual(0, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid22));
-            /*if (situation1)
+            if (situation1)
                 Assert.AreEqual(2, proxyBridge.GetStorePurchases(storeOwnerid, storeid1).Value.Count);
             else
-                Assert.AreEqual(1, proxyBridge.GetStorePurchases(storeOwnerid, storeid1).Value.Count);
-               NOGA!!!!!!!!!!!!!!!!! */
+                Assert.AreEqual(2, proxyBridge.GetStorePurchases(storeOwnerid, storeid1).Value.Count);
         }
         [TestMethod]
         [TestCategory("Concurrency")]

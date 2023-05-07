@@ -33,15 +33,28 @@ namespace SadnaExpress.DomainLayer.Store
             set => storeName = value;
         }
 
-        public ItemForOrder(Item item, Guid storeID)
+        public ItemForOrder(Item item, Guid storeID,  string userEmail, string storeName)
         {
             itemID = item.ItemID;
             name = item.Name;
             category = item.Category;
             price = item.Price;
             rating = item.Rating;
+            this.userEmail = userEmail;
+            this.storeName = storeName;
             this.storeID = storeID;
-
+        }
+        
+        public ItemForOrder(Item item, double discountPrice, Guid storeID, string userEmail, string storeName)
+        {
+            itemID = item.ItemID;
+            name = item.Name;
+            category = item.Category;
+            price = discountPrice;
+            rating = item.Rating;
+            this.userEmail = userEmail;
+            this.storeName = storeName;
+            this.storeID = storeID;
         }
     }
 }

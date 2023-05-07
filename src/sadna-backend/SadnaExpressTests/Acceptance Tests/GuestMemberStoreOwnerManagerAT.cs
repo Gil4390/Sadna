@@ -950,10 +950,10 @@ namespace SadnaExpressTests.Acceptance_Tests
 
         #region request store purchase history 4.13
 
-        /*[TestMethod] NOGA!!!!!!!!!!!!!!!!!!!!
+        [TestMethod]
         public void RequestStorePurchaseInfo_Good()
         {
-            Task<ResponseT<List<Order>>> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 return proxyBridge.GetStorePurchases(store5Owner, storeID5);
             });
 
@@ -962,15 +962,16 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
 
         [TestMethod]
-        public void RequestStorePurchseInfoNoPermission_Good()
+        public void RequestStorePurchaseInfoNoPermission_Good()
         {
-            Task<ResponseT<List<Order>>> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 return proxyBridge.GetStorePurchases(loggedInUserID1, storeID5);
             });
 
             task.Wait();
-            Assert.IsTrue(task.Result.ErrorOccured); //error occured
-        }*/
+            Assert.IsFalse(task.Result.ErrorOccured); //no error occured
+            Assert.AreEqual(0, task.Result.Value.Count);
+        }
         #endregion
 
 

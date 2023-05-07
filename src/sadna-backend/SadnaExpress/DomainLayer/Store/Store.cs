@@ -131,7 +131,17 @@ namespace SadnaExpress.DomainLayer.Store
 
         public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, string email)
         {
-            return itemsInventory.PurchaseCart(items, ref itemForOrders, storeID , storeName,email);
+            Dictionary<Item, int> itemsBeforeDiscount = new Dictionary<Item, int>();
+            foreach (Guid itemID in items.Keys)
+            {
+                itemsBeforeDiscount[GetItemById(itemID)] = items[itemID];
+            }
+
+            Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
+                new Dictionary<Item, KeyValuePair<double, DateTime>>();
+            if (discountPolicyTree != null)
+                itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
+            return itemsInventory.PurchaseCart(items, itemAfterDiscount, ref itemForOrders, storeID , storeName,email);
         }
         public bool CheckPurchasePolicy(Dictionary<Guid, int> items)
         {

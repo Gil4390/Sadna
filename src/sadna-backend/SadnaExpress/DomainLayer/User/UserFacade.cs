@@ -282,7 +282,6 @@ namespace SadnaExpress.DomainLayer.User
 
         public void RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
         {
-            Console.WriteLine($"here!! {permission} n");
             IsTsInitialized();
             isLoggedIn(userID);
             if (permission.Equals("owner permissions"))
@@ -312,7 +311,6 @@ namespace SadnaExpress.DomainLayer.User
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)
         {
-            Console.WriteLine("in RemoveStoreOwner");
             IsTsInitialized();
             isLoggedIn(userID);
             Guid storeOwnerID = IsMember(email).UserId;
@@ -553,16 +551,6 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("Don't have permissions");
         }
 
-        public ShoppingCart ShowShoppingCart(Guid userID)
-        {
-            IsTsInitialized();
-            isLoggedIn(userID);
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(ShowShoppingCart)+" requested to display his shopping cart");
-            if (current_Users.ContainsKey(userID))
-                return current_Users[userID].ShoppingCart;
-            return members[userID].ShoppingCart;
-        }
-
         public void SetSecurityQA(Guid userID, string q, string a)
         {
             IsTsInitialized();
@@ -621,7 +609,6 @@ namespace SadnaExpress.DomainLayer.User
         public List<Notification> GetNotifications(Guid userId)
         {
             return members[userId].AwaitingNotification;
-
         }
 
         public List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores)

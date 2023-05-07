@@ -111,7 +111,6 @@ namespace SadnaExpress.ServiceLayer
             {
                 // send list of objects as ref 
                 List<ItemForOrder> itemForOrders = new List<ItemForOrder>();
-                List<Guid> stores = new List<Guid>();
                 //get the user cart
                 ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
                 if (shoppingCart.Baskets.Count == 0)
@@ -134,6 +133,7 @@ namespace SadnaExpress.ServiceLayer
                 }
                 Orders.Instance.AddOrder(userID, itemForOrders);
                 
+                // delete the exist shopping cart
                 userFacade.PurchaseCart(userID);
                 NotificationSystem.Instance.NotifyObserversInStores(cart.Keys, "purchase cart", userID);
                 return new ResponseT<List<ItemForOrder>>(itemForOrders);
