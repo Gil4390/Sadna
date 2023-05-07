@@ -100,6 +100,19 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
+        {
+            try
+            {
+                userFacade.RemovePermission(userID, storeID, userEmail, permission);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(AppointStoreOwner)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
         public Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
             try

@@ -226,6 +226,11 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
+        public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
+        {
+            return _realBridge.RemovePermission(userID, storeID, userEmail, permission);
+        }
+
         public ResponseT<Guid> UpdateLast(Guid id, string newLast)
         {
             throw new NotImplementedException();
