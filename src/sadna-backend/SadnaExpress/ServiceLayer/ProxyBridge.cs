@@ -423,5 +423,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetStorePurchases(userID, storeID);
         }
+
+        public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            return _realBridge.MarkNotificationAsRead(userID, notificationID);
+        }
     }
 }

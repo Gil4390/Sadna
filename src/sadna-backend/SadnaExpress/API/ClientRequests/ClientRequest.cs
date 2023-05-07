@@ -142,4 +142,6 @@ namespace SadnaExpress.API.ClientRequests
         public Guid storeID{ get; set; }
         public DiscountPolicy discountPolicy{ get; set; }
     }
+    public class NotificationRequest : ClientRequest
+    { public Guid notificationID { get; set;} }
 }

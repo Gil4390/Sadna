@@ -123,5 +123,6 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID);
 
         ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId);
+        Response MarkNotificationAsRead(Guid userID, Guid notificationID);
     }
 }

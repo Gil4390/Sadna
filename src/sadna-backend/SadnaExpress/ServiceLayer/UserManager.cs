@@ -510,5 +510,21 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Dictionary<Guid, SPermission>>(ex.Message);
             }
         }
+
+        public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            try
+            {
+                userFacade.MarkNotificationAsRead(userID, notificationID);
+                return new Response();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"{userID}" + nameof(MarkNotificationAsRead) + ": " + ex.Message);
+                return new Response(ex.Message);
+            }
+            
+        }
     }
 }

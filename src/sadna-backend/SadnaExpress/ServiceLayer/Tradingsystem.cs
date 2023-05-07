@@ -567,5 +567,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetStoreInfo(userID, storeId);
         }
+
+        public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            return userManager.MarkNotificationAsRead(userID, notificationID);
+        }
     }
 }

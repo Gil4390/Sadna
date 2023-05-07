@@ -116,7 +116,9 @@ namespace SadnaExpress.API.Controllers
             public const string removePolicy = "rm-policy";
             
             public const string getNotifications = "get-notifications";
-            
+
+            public const string MarkNotificationAsRead = "mark-notification-read";
+
             public const string getItems = "get-items";
 
             public const string getMemberPermissions = "get-member-permissions";

@@ -39,10 +39,7 @@ namespace SadnaExpress.DomainLayer
                 foreach (Member member in storeOwners[storeID])
                 {
                     Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
-                    if (member.LoggedIn)
-                        member.showMessage();
-                    else
-                        member.addToAwaitingNotification(notification);
+                    member.addToAwaitingNotification(notification);
                 }
             }
         }
@@ -50,20 +47,14 @@ namespace SadnaExpress.DomainLayer
         public void update(Member member, string message, Guid userId)
         { 
             Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
-            if (member.LoggedIn)
-                member.showMessage();
-            else
-                member.addToAwaitingNotification(notification);
+            member.addToAwaitingNotification(notification);
         }
         public void updateMany(List<Member> members, string message, Guid userId)
         {
             foreach (Member member in members)
             {
                 Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
-                if (member.LoggedIn)
-                    member.showMessage();
-                else
-                    member.addToAwaitingNotification(notification);
+                member.addToAwaitingNotification(notification);
             }
         }
         public void RegisterObserver(Guid storeID , Member observer)

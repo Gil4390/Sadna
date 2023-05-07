@@ -9,7 +9,7 @@ interface OrderTableRow {
   itemName: string;
   storeName: string;
   itemPrice: number;
-  category: number;
+  category: string;
 
 }
 

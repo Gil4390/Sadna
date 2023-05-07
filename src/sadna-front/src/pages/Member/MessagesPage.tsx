@@ -1,24 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
+import { handleGetUserNotifications, handleMarkNotificationAsRead } from '../../actions/MemberActions.tsx';
+import { Notification } from '../../models/Notification.tsx';
 
-const exampleMessages = [
-  { time: '2023-05-06 10:00:00', message: 'Hello, how are you?', read: false },
-  { time: '2023-05-05 15:30:00', message: 'Can you please confirm your order?', read: false },
-  { time: '2023-05-03 11:45:00', message: 'Your package has been shipped!', read: false },
-];
+function MessagesPage(props) {
+  const [messages, setMessages] = useState<Notification[]>([]);
 
-function MessagesPage() {
-  const [messages, setMessages] = useState(exampleMessages);
+  
+  const getUserNotifications = ()=>{
+    handleGetUserNotifications(props.id).then(
+      value => {
+        console.log(value);
+        
+        setMessages(value as Notification[]);
+      })
+      .catch(error => alert(error));
+    }
 
-  function handleMarkAsRead(index) {
-    const newMessages = [...messages];
-    newMessages[index].read = true;
-    setMessages(newMessages);
-  }
+    const MarkNotificationAsRead = (message)=>{
+      handleMarkNotificationAsRead(props.id, message.notificationID).then(
+        value => {
+          getUserNotifications();
+        })
+        .catch(error => alert(error));
+      }
+    
+    
+
+
+  useEffect(() => {
+    getUserNotifications();
+  }, []);
 
   return (
     <div className="container">
-      <h1>My Messages</h1>
+      <h1>My Notifications</h1>
       <ListGroup>
         {messages.map((message, index) => (
           <ListGroup.Item key={index} variant={message.read ? "light" : "warning"}>
@@ -27,7 +43,7 @@ function MessagesPage() {
               <div>{message.time}</div>
             </div>
             {!message.read && (
-              <Button variant="primary" size="sm" onClick={() => handleMarkAsRead(index)}>
+              <Button variant="primary" size="sm" onClick={() => MarkNotificationAsRead(message)}>
                 Mark as Read
               </Button>
             )}
