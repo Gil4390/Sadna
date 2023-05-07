@@ -8,6 +8,7 @@ export { default as RegisterPage } from "./Guest/RegisterPage.tsx";
 export { default as StoresManagementPage } from "./Member/StoresManagementPage.tsx";
 export { default as PurchasedStoreItemsPage } from "./Member/PurchasedStoreItemsPage.tsx";
 export { default as PurchasedItemsPage } from "./Member/PurchasedItemsPage.tsx";
+export { default as MessagesPage } from "./Member/MessagesPage.tsx";
 
 export { default as AdminViewAllUsersPage } from "./Admin/AdminViewAllUsersPage.tsx";
 export { default as AdminManageAllStoresPage } from "./Admin/AdminManageAllStoresPage.tsx";

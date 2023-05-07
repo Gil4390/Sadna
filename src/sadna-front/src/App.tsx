@@ -6,7 +6,7 @@ import { Navigation, Footer} from "./components";
 import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPage, StoresManagementPage,
          AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage,
          AdminInitializeSystemPage, ManageItemsPage, ManageStoreEmployeesPage, PurchasePoliciesPage,
-        DiscountPoliciesPage, PurchasedItemsPage, PurchasedStoreItemsPage } from "./pages";
+        DiscountPoliciesPage, PurchasedItemsPage, PurchasedStoreItemsPage, MessagesPage } from "./pages";
 
 import { useEffect, useState } from 'react';
 import React from 'react';
@@ -68,6 +68,7 @@ const App:React.FC=()=>{
         <Route path="/LoginPage" element={<LoginPage id={id} onIdChange={handleLogin} isInit={isInit}/>} />
         <Route path="/RegisterPage" element={<RegisterPage id={id} isInit={isInit}/>} />
 
+        <Route path="/MessagesPage" element={<MessagesPage id={id}/>} />
         <Route path="/StoresManagementPage" element={<StoresManagementPage id={id}/>} />
         <Route path="/PurchasedItemsPage" element={<PurchasedItemsPage id={id} />} />
         <Route path="/DiscountPoliciesPage" element={<DiscountPoliciesPage id={id}/>} />
