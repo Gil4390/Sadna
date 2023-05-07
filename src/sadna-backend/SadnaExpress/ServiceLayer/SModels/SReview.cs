@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SadnaExpress.ServiceLayer.SModels
 {
-    internal class SReview
+    public class SReview
     {
         private Guid itemID;
         private Guid reviewerID;
@@ -16,10 +16,15 @@ namespace SadnaExpress.ServiceLayer.SModels
 
         public SReview(Review review)
         {
-            this.itemID = review.Item.ItemID;
-            this.reviewerID = review.ReviewerID;
-            this.storeID = review.Store.StoreID;
-            this.reviewText = review.ReviewText;
+            this.ItemID = review.Item.ItemID;
+            this.ReviewerID = review.ReviewerID;
+            this.StoreID = review.Store.StoreID;
+            this.ReviewText = review.ReviewText;
         }
+
+        public Guid ItemID { get => itemID; set => itemID = value; }
+        public Guid ReviewerID { get => reviewerID; set => reviewerID = value; }
+        public Guid StoreID { get => storeID; set => storeID = value; }
+        public string ReviewText { get => reviewText; set => reviewText = value; }
     }
 }

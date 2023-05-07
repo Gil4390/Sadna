@@ -7,27 +7,20 @@ import { handleGetItemReviews } from '../actions/MemberActions.tsx';
 import { Review } from '../models/Review.js';
 
 
-const ReviewsModal = ({ show, handleClose, item}) => {
-  const [reviews, setReviews] = useState<Review[]>([]);
-
-  useEffect(() => {
-    handleGetItemReviews(item.itemID).then(
-      value => {
-        console.log(value);
-        setReviews(value);
-      }
-    )
-  }, [])
-
+const ReviewsModal = ({ show, handleClose, item, reviews}) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>{item.name} : reviews</Modal.Title>
+        <Modal.Title>Reviews of: {item.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {reviews.map((review) =>
-        <div>{review.reviewText}</div>
-        )}
+        {reviews.length == 0 ? 
+        (<div>this item has no reviews</div>) : 
+        
+        reviews?.map((review) =>
+          <div>{review.reviewText}</div>
+          )
+        }
       </Modal.Body>
     </Modal>
   );
@@ -36,6 +29,7 @@ const ReviewsModal = ({ show, handleClose, item}) => {
 
 export function StoreItem(props) {
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
     
   const [amountInCart, setAmountInCart] = useState(props.item.count);
   const [responseAddItemCart, setResponseAddItemCart] = useState<Response>();
@@ -77,6 +71,16 @@ export function StoreItem(props) {
       .catch(error => alert(error));
   }
 
+  const handleClickReviews = (item) => {
+    setShowReviewModal(true);
+    handleGetItemReviews(item.itemId).then(
+      value => {
+        console.log(value);
+        setReviews(value);
+      }
+    )
+  }
+
   useEffect(() => {
     if(responseRemoveItemFromCart!=undefined)
     responseRemoveItemFromCart?.errorOccured ? alert(responseRemoveItemFromCart.errorMessage) : setAmountInCart(0);
@@ -114,15 +118,16 @@ export function StoreItem(props) {
                 </div>)):(<div></div>)}
 
           </div>
-          <Button onClick={() => setShowReviewModal(true)}>
+          <Button onClick={() => handleClickReviews(props.item)} style={{margin: "0.5rem"}}>
             Reviews
           </Button>
 
         </Card.Body>
         <ReviewsModal 
           show={showReviewModal}
-          handleClose={setShowReviewModal(false)}
+          handleClose={() => setShowReviewModal(false)}
           item={props.item}
+          reviews={reviews}
         />
       </Card>
     </div>
