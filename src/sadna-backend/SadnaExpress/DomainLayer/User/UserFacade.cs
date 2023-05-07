@@ -304,12 +304,13 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             Guid storeOwnerID = IsMember(email).UserId;
             
-            members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
-            notificationSystem.update(GetMember(storeOwnerID),"remove store owner",userID);
-            notificationSystem.RemoveObserver(storeID,GetMember(storeOwnerID));
-            
+          
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +storeOwnerID +" removed as store owner");
-            List<Member> membersList = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
+            
+            Tuple<List<Member>, List<Member>> result = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
+            List<Member> membersList = result.Item1;
+            List<Member> StoreOwnersDeleted = result.Item2;
+
             
             foreach (Member mem in membersList)
             {
@@ -319,6 +320,9 @@ namespace SadnaExpress.DomainLayer.User
                     members[mem.UserId] = mem;
                 }
             }
+            notificationSystem.updateMany(StoreOwnersDeleted,"remove store owner",userID);
+            notificationSystem.RemoveObservers(storeID,StoreOwnersDeleted);
+
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveStoreOwner)+" appoints " +storeOwnerID +" removed as store owner");
         }
         public void AppointStoreManager(Guid userID, Guid storeID, string email)

@@ -48,6 +48,9 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
             
+            proxyBridge.AppointStoreOwner(store5Founder, storeid1, "storeOwnerMail2@gmail.com");
+
+            
             store5Manager = proxyBridge.Enter().Value;
             proxyBridge.Register(store5Manager, "storeManagerMail2@gmail.com", "bar", "lerrer", "A#!a12345678");
             store5Manager = proxyBridge.Login(store5Manager, "storeManagerMail2@gmail.com", "A#!a12345678").Value;
@@ -75,13 +78,14 @@ namespace SadnaExpressTests.Acceptance_Tests
 
         [TestMethod]
         public void CloseStoreNotification()
-        {   
+        {
+            int pre = proxyBridge.GetNotifications(store5Owner).Value.Count;
             //Arrange
             proxyBridge.Logout(store5Owner);
             //Act
             proxyBridge.CloseStore(store5Founder, storeID5);
             //Assert
-            Assert.AreEqual(1,proxyBridge.GetNotifications(store5Owner).Value.Count);
+            Assert.AreEqual(proxyBridge.GetNotifications(store5Owner).Value.Count,pre + 1);
         }
 
         // not in this version
@@ -97,14 +101,15 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
         [TestMethod]
         public void removeStoreOwnerNotification()
-        {   
+        {
+            int pre = proxyBridge.GetMember(store5Owner).Value.AwaitingNotification.Count;
             //Arrange
             proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
             proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
-
+            //Act
             proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
             //Assert
-            Assert.AreEqual(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification.Count,1);
+            Assert.AreEqual(pre + 1,proxyBridge.GetMember(store5Owner).Value.AwaitingNotification.Count);
         }
     
         #endregion

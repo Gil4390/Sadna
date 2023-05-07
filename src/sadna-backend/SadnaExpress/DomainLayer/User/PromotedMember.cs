@@ -131,13 +131,15 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("The member doesn’t have permissions to add new owner");
         }
 
-        public override List<Member> RemoveStoreOwner(Guid storeID, Member storeOwner)
+        public override Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "remove owner"}))
                 return permissionsHolder.RemoveStoreOwner(storeID, this, storeOwner);
             else
                 throw new Exception($"The member doesn’t have permissions to remove {storeOwner.Email}");
         }
+        
+        
         public override PromotedMember AppointStoreManager(Guid storeID, Member newManager)
         {
             if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "add new manager"}))

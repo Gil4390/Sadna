@@ -47,9 +47,11 @@ namespace SadnaExpressTests.Acceptance_Tests
             Store store2 = new Store("Fox");
             storeid2 = store2.StoreID;
             itemid2 = store2.AddItem("Pants", "clothes", 150, 200);
+            
             store2.AddItem("Towel", "Home", 40, 450);
             store2.AddItem("Teddy bear toy", "children toys", 65, 120);
             itemNoStock = store2.AddItem("mouse", "animals", 65, 0);
+            
             stores.TryAdd(store1.StoreID, store1);
             stores.TryAdd(store2.StoreID, store2);
 
