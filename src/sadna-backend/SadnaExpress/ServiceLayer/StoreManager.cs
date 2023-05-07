@@ -7,6 +7,7 @@ using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
@@ -241,10 +242,14 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID)
+        public ResponseT<List<SReview>> GetItemReviews(Guid itemID)
         {
-            List<Review> reviews = storeFacade.GetItemReviews(storeID, itemID);
-            return new ResponseT<List<Review>>(reviews);
+            List<Review> reviews = storeFacade.GetItemReviews(itemID);
+            List<SReview> sReviews = new List<SReview>();
+            foreach (Review review in reviews) { 
+                sReviews.Add(new SReview(review));
+            }
+            return new ResponseT<List<SReview>>(sReviews);
         }
         public Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price)
         {

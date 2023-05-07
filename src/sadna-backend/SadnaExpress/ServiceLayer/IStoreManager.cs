@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.ServiceLayer.Obj;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.ServiceLayer.ServiceObjects
 {
@@ -22,7 +23,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT <List<ItemForOrder>> PurchaseCart(Guid id, string paymentDetails, string usersDetail); //2.5
         ResponseT<Guid> OpenNewStore(Guid id, string storeName); //3.2
         Response WriteItemReview(Guid id, Guid itemID, string review); //3.3
-        ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID);
+        ResponseT<List<SReview>> GetItemReviews(Guid itemID);
         //4.1
         ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID,  string itemName, string itemCategory, double itemPrice,
             int quantity);

@@ -15,7 +15,7 @@ const ManageItemsPage = (props) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedItem, setEditedItem] = useState<Item>();
   const [editedItemCopy, setEditedItemCopy] = useState<Item>();
-
+  const [editItemMessage, setEditItemMessage] = useState<string>('');
   const [itemsList, setItemsList] = useState<Item[]>([]);
 
   const [itemName, setItemName] = useState<string>('');
@@ -44,6 +44,7 @@ const ManageItemsPage = (props) => {
   };
 
   const handleEditModalShow = (item) => {
+    setEditItemMessage("");
     setEditedItem(item);
     setEditedItemCopy(item);
     setShowEditModal(true);
@@ -62,14 +63,31 @@ const ManageItemsPage = (props) => {
     getStoreItems();
  }, [])
 
+  const isValidItemNameOrCategory = (name) => {
+    const namePattern = /^[a-zA-Z0-9\s_-]{3,50}$/;
+    return namePattern.test(name);
+  }
+
+  const isValidPrice = (price) =>{
+    return price >= 0 && price <= 100000;
+  }
+
+  const isValidQuantity = (quantity) =>{
+    return quantity >= 0 && quantity <= 10000;
+  }
+
   const handleAddItem = (event) => {
     event.preventDefault();
-    handleAddItemStore(userId,storeId, itemName, itemCategory, itemPrice, itemQuantity).then(
-      value => {
-        setAddItemResponse(value as ResponseT);
-      })
-      .catch(error => alert(error));
-  }
+
+    if(isValidItemNameOrCategory(itemName) && isValidItemNameOrCategory(itemCategory) && isValidPrice(itemPrice) && isValidQuantity(itemQuantity))
+    {
+      handleAddItemStore(userId,storeId, itemName, itemCategory, itemPrice, itemQuantity).then(
+        value => {
+          setAddItemResponse(value as ResponseT);
+        })
+        .catch(error => alert(error));
+    }
+}
 
   useEffect(() => {
     if(addItemResponse!=undefined)
@@ -121,11 +139,32 @@ const ManageItemsPage = (props) => {
 
   const handleEditItem = (event) => {
     event.preventDefault();
-    handleEditItemStore(userId,storeId, editedItem?.itemID, editedItem?.name, editedItem?.category, editedItem?.price, editedItem?.quantity).then(
-      value => {
-        setEditItemResponse(value as Response);
-      })
-      .catch(error => {alert(error); setEditedItem(editedItemCopy);});
+    const messagePrefix = "Saving Changes Failed\n";
+    if(!isValidItemNameOrCategory(editedItem?.name))
+    {
+      setEditItemMessage(messagePrefix + "Item name should contain min 3 letters/numbers");
+    }
+    else if(!isValidItemNameOrCategory(editedItem?.category))
+    {
+      setEditItemMessage(messagePrefix + "Item Category should contain min 3 letters/numbers");
+    }
+    else if(!isValidPrice(editedItem?.price))
+    {
+      setEditItemMessage(messagePrefix + "Item price should be in range 0-100000");
+    }
+    else if(!isValidQuantity(editedItem?.quantity))
+    {
+      setEditItemMessage(messagePrefix + "Item price should be in range 0-10000");
+    }
+    else
+    {
+      setEditItemMessage("");
+      handleEditItemStore(userId,storeId, editedItem?.itemID, editedItem?.name, editedItem?.category, editedItem?.price, editedItem?.quantity).then(
+        value => {
+          setEditItemResponse(value as Response);
+        })
+        .catch(error => {alert(error); setEditedItem(editedItemCopy);});
+    }
   };
 
   useEffect(() => {
@@ -215,19 +254,30 @@ const ManageItemsPage = (props) => {
           <Form onSubmit={handleAddItem}>
             <Form.Group controlId="name">
               <Form.Label>Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter name" value={itemName} onChange={handleNameChange}  />
+              <Form.Control type="text" placeholder="Enter name" value={itemName} onChange={handleNameChange}     
+            style={{borderColor: isValidItemNameOrCategory(itemName) || itemName.length === 0 ? '#28a745' : '#dc3534'}} />
+            {!isValidItemNameOrCategory(itemName) && itemName.length > 0 && <Form.Text className='text-danger'>Item name should contain min 3 letters/numbers</Form.Text>}
+
             </Form.Group>
             <Form.Group controlId="category">
               <Form.Label>Category</Form.Label>
-              <Form.Control type="text" placeholder="Enter category" value={itemCategory} onChange={handleCategoryChange} />
+              <Form.Control type="text" placeholder="Enter category" value={itemCategory} onChange={handleCategoryChange}    
+            style={{borderColor: isValidItemNameOrCategory(itemCategory) || itemCategory.length === 0 ? '#28a745' : '#dc3534'}} />
+            {!isValidItemNameOrCategory(itemCategory) && itemCategory.length > 0 && <Form.Text className='text-danger'>Item Category should contain min 3 letter/numbers</Form.Text>}
+
             </Form.Group>
             <Form.Group controlId="price">
               <Form.Label>Price</Form.Label>
-              <Form.Control type="number" placeholder="Enter price" value={itemPrice} onChange={handlePriceChange}/>
+              <Form.Control type="number" placeholder="Enter price" value={itemPrice} onChange={handlePriceChange}    
+            style={{borderColor: isValidPrice(itemPrice) || itemPrice === 0 ? '#28a745' : '#dc3534'}} />
+            {!isValidPrice(itemPrice) && <Form.Text className='text-danger'>not Valid Item Price should be in range 0-100,000</Form.Text>}
+
             </Form.Group>   
             <Form.Group controlId="quantity">
               <Form.Label>Quantity</Form.Label>
-              <Form.Control type="number" placeholder="Enter quantity" value={itemQuantity} onChange={handleQuantityChange}/>
+              <Form.Control type="number" placeholder="Enter quantity" value={itemQuantity} onChange={handleQuantityChange}    
+            style={{borderColor: isValidQuantity(itemQuantity) ? '#28a745' : '#dc3534'}} />
+            {!isValidQuantity(itemQuantity)  && <Form.Text className='text-danger'>Not Valid Item Quantity should be in range 0-10000</Form.Text>}
             </Form.Group>
             <Button variant="primary" type="submit" style={{margin: "0.5rem"}}>
               Add
@@ -248,7 +298,7 @@ const ManageItemsPage = (props) => {
                 placeholder="Enter name"
                 defaultValue={editedItem ? editedItem.name : ''}
                 onChange={handleEditedItemNameChange}
-              />
+                />
             </Form.Group>
 
             <Form.Group controlId="category">
@@ -284,6 +334,9 @@ const ManageItemsPage = (props) => {
             <Button variant="primary" type="submit" style={{margin: "0.5rem"}}>
               Save Changes
             </Button>
+            <div className="text-center" style={ { color:'red'} } >
+            {editItemMessage}
+          </div>
           </Form>
         </Modal.Body>
       </Modal>

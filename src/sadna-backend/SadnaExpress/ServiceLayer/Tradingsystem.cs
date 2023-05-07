@@ -231,17 +231,17 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID)
+        public ResponseT<List<SReview>> GetItemReviews(Guid itemID)
         {
             try
             {
                 Logger.Instance.Info("getItemReviews on itemID: " + itemID);
-                return storeManager.GetItemReviews(storeID, itemID);
+                return storeManager.GetItemReviews(itemID);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error("error fetching reviews of item");
-                return new ResponseT<List<Review>>(ex.Message);
+                return new ResponseT<List<SReview>>(ex.Message);
             }
         }
 

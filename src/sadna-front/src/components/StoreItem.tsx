@@ -1,11 +1,35 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button, Card } from "react-bootstrap"
+import { Button, Card, Modal } from "react-bootstrap"
 import { handleAddItemCart , handleEditItemCart, handleRemoveItemCart} from '../actions/GuestActions.tsx';
 import {Response} from '../../models/Response.tsx';
+import { handleGetItemReviews } from '../actions/MemberActions.tsx';
+import { Review } from '../models/Review.js';
+
+
+const ReviewsModal = ({ show, handleClose, item, reviews}) => {
+  return (
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Reviews of: {item.name}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {reviews.length == 0 ? 
+        (<div>this item has no reviews</div>) : 
+        
+        reviews?.map((review) =>
+          <div>{review.reviewText}</div>
+          )
+        }
+      </Modal.Body>
+    </Modal>
+  );
+};
 
 
 export function StoreItem(props) {
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
     
   const [amountInCart, setAmountInCart] = useState(props.item.count);
   const [responseAddItemCart, setResponseAddItemCart] = useState<Response>();
@@ -47,6 +71,16 @@ export function StoreItem(props) {
       .catch(error => alert(error));
   }
 
+  const handleClickReviews = (item) => {
+    setShowReviewModal(true);
+    handleGetItemReviews(item.itemId).then(
+      value => {
+        console.log(value);
+        setReviews(value);
+      }
+    )
+  }
+
   useEffect(() => {
     if(responseRemoveItemFromCart!=undefined)
     responseRemoveItemFromCart?.errorOccured ? alert(responseRemoveItemFromCart.errorMessage) : setAmountInCart(0);
@@ -55,35 +89,47 @@ export function StoreItem(props) {
 
 
   return (
-    <Card className="h-100">
-      <Card.Body className="d-flex flex-column">
-        <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
-          <span className="fs-2">{props.item.name}</span>
-          <span className="ms-2 text-muted">{props.item.price} $</span>
-          {/* <span className="ms-2 text-muted">{props.item.rating} ₪</span> */}
-        </Card.Title>
-        {props.item.inStock==0? (<Card.Text>
-          <span className="ms-2 text-muted">Out Of Stock</span>
-        </Card.Text>) : (<Card.Text></Card.Text>) }
-        
-        <div className="mt-auto">
-          {props.item.inStock>0 ?
-          (amountInCart === 0 ? (
-            <Button className="w-20" onClick={()=> increaseCartQuantity(props.item.itemId)}> Add To Cart</Button>
-          ) : (<div className="d-flex align-items-center flex-column" style={{gap:".5rem"}}>
-                <div className="d-flex align-items-center justify-content-center" style={{ gap: ".5rem" }}> 
-                  <Button variant="warning" onClick={()=> decreaseCartQuantity(props.item.itemId)}>-</Button>
-                  <div>
-                    <span>{amountInCart} in cart</span> 
+    <div>
+
+      <Card className="h-100">
+        <Card.Body className="d-flex flex-column">
+          <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
+            <span className="fs-2">{props.item.name}</span>
+            <span className="ms-2 text-muted">{props.item.price} $</span>
+            {/* <span className="ms-2 text-muted">{props.item.rating} ₪</span> */}
+          </Card.Title>
+          {props.item.inStock==0? (<Card.Text>
+            <span className="ms-2 text-muted">Out Of Stock</span>
+          </Card.Text>) : (<Card.Text></Card.Text>) }
+          
+          <div className="mt-auto">
+            {props.item.inStock>0 ?
+            (amountInCart === 0 ? (
+              <Button className="w-20" onClick={()=> increaseCartQuantity(props.item.itemId)}> Add To Cart</Button>
+            ) : (<div className="d-flex align-items-center flex-column" style={{gap:".5rem"}}>
+                  <div className="d-flex align-items-center justify-content-center" style={{ gap: ".5rem" }}> 
+                    <Button variant="warning" onClick={()=> decreaseCartQuantity(props.item.itemId)}>-</Button>
+                    <div>
+                      <span>{amountInCart} in cart</span> 
+                    </div>
+                    <Button variant="warning" onClick={()=> increaseCartQuantity(props.item.itemId)}>+</Button>
                   </div>
-                  <Button variant="warning" onClick={()=> increaseCartQuantity(props.item.itemId)}>+</Button>
-                </div>
-                <Button variant="danger" size="sm" onClick={()=> removeFromCart(props.item.itemId)}>Remove From Cart</Button>
-              </div>)):(<div></div>)}
+                  <Button variant="danger" size="sm" onClick={()=> removeFromCart(props.item.itemId)}>Remove From Cart</Button>
+                </div>)):(<div></div>)}
 
-        </div>
+          </div>
+          <Button onClick={() => handleClickReviews(props.item)} style={{margin: "0.5rem"}}>
+            Reviews
+          </Button>
 
-      </Card.Body>
-    </Card>
+        </Card.Body>
+        <ReviewsModal 
+          show={showReviewModal}
+          handleClose={() => setShowReviewModal(false)}
+          item={props.item}
+          reviews={reviews}
+        />
+      </Card>
+    </div>
   )
 }
