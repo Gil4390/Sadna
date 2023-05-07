@@ -37,8 +37,10 @@ namespace SadnaExpress.DomainLayer.Store
         Item GetItemByID(Guid storeID, Guid itemID); //for tests
         void SetTSOrders(IOrders orders);
         Condition GetCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
-        Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default,  M entityRes=default, string typeRes=default, double valueRes=default);
-        void RemoveCondition(Guid store ,Condition cond);
+
+        Condition AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+            string typeRes = default, double valueRes = default , string op= default, int opCond= default);
+        void RemoveCondition(Guid storeID ,int condID);
         PurchaseCondition[]  GetAllConditions(Guid store);
         Condition AddDiscountCondition<T>(Guid store, T entity, string type, double value);
         DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);

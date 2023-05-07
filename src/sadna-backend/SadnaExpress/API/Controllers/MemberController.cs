@@ -227,40 +227,35 @@ namespace SadnaExpress.API.Controllers
             return Ok(a);
         }
         
-        [Route(APIConstants.MemberData.getCondition)]
-        [ResponseType(typeof(ResponseT<Condition>))]
-        [HttpPost]
-        public IHttpActionResult GetCondition<T , M>([FromBody] ConditionRequest<T , M> request)
-        {
-            return Ok(tradingSystem.GetCondition(request.storeID, request.entity, request.type,
-                request.value, request.dt, request.entityRes, request.typeRes, request.valueRes));
-        }
+        // [Route(APIConstants.MemberData.getCondition)]
+        // [ResponseType(typeof(ResponseT<Condition>))]
+        // [HttpPost]
+        // public IHttpActionResult GetCondition<T , M>([FromBody] ConditionRequest request)
+        // {
+        //     // return Ok(tradingSystem.GetCondition(request.storeID, request.entity, request.type,
+        //     //     request.value, request.dt, request.entityRes, request.typeRes, request.valueRes));
+        // }
         
         [Route(APIConstants.MemberData.addCondition)]
-        [ResponseType(typeof(ResponseT<Condition>))]
+        [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
         [HttpPost]
-        public IHttpActionResult AddCondition<T , M>([FromBody] ConditionRequest<T , M> request)
+        public IHttpActionResult AddCondition([FromBody] ConditionRequest request)
         {
-            return Ok(tradingSystem.AddCondition(request.storeID, request.entity, request.type,
-                request.value, request.dt, request.entityRes, request.typeRes, request.valueRes));
+            tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
+                request.type, request.value, new DateTime(), request.entityRes, request.entityNameRes, request.typeRes,
+                request.valueRes , request.op,request.opCond);
+            ResponseT<PurchaseCondition[]> a = tradingSystem.GetAllConditions(request.storeID);
+            return Ok(a);
         }
         [Route(APIConstants.MemberData.removeCondition)]
-        [ResponseType(typeof(Response))]
+        [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
         [HttpPost]
-        public IHttpActionResult RemoveCondition<T , M>([FromBody] ConditionRequest<T , M> request)
+        public IHttpActionResult RemoveCondition([FromBody] ConditionIDRequest request)
         {
-            tradingSystem.RemoveCondition(request.storeID, request.entity, request.type,
-                request.value, request.dt, request.entityRes, request.typeRes, request.valueRes);
-            return Ok(new Response());
+            tradingSystem.RemoveCondition(request.storeID,request.condID);
+            return Ok(tradingSystem.GetAllConditions(request.storeID));
         }
         
-        [Route(APIConstants.MemberData.addDiscountCondition)]
-        [ResponseType(typeof(ResponseT<Condition>))]
-        [HttpPost]
-        public IHttpActionResult AddDiscountCondition<T , M>([FromBody] ConditionRequest<T , M> request)
-        {
-            return Ok(tradingSystem.AddDiscountCondition(request.storeID, request.entity, request.type, request.value));
-        }
         
         [Route(APIConstants.MemberData.createSimplePolicy)]
         [ResponseType(typeof( ResponseT<DiscountPolicy>))]

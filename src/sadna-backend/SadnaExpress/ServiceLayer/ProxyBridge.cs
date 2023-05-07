@@ -70,6 +70,11 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.OpenNewStore(id, storeName);
         }
 
+        public Response WriteItemReview(Guid userID, Guid itemID, string reviewText)
+        {
+            throw new NotImplementedException();
+        }
+
         public ResponseT<List<Store>> GetAllStoreInfo()
         {
             return _realBridge.GetAllStoreInfo();
@@ -200,7 +205,12 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetEmployeeInfoInStore(id, storeID);
         }
-        
+
+        public ResponseT<List<ItemForOrder>> GetStorePurchases(Guid userID, Guid storeID)
+        {
+            throw new NotImplementedException();
+        }
+
         public Response RemoveUserMembership(Guid userID, string email)
         {
             return _realBridge.RemoveUserMembership(userID, email);
@@ -319,7 +329,25 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
-        
+
+        public ResponseT<Condition> AddCondition(Guid store, string entity, string entityName, string type, double value, DateTime dt = default,
+            string entityRes = default, string entityResName = default, string typeRes = default, double valueRes = default,
+            string op = default, int opCond = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<Condition> AddCondition(Guid store, string entity, string entityName, string type, double value, DateTime dt = default,
+            string entityRes = default, string entityResName = default, string typeRes = default, double valueRes = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveCondition(Guid storeID, int condID)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public ResponseT<Condition> GetCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
             M entityRes = default, string typeRes = default, double valueRes = default)
@@ -409,6 +437,11 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetStoreInfo(userID, storeId);
         }
 
+        public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            throw new NotImplementedException();
+        }
+
         public ResponseT<List<SMember>> GetMembers(Guid userID)
         {
             return _realBridge.GetMembers(userID);
@@ -422,19 +455,15 @@ namespace SadnaExpress.ServiceLayer
         public void getNotificationsForOfflineMembers()
         {
             throw new NotImplementedException();
+        }
+
         ResponseT<List<ItemForOrder>> ITradingSystem.GetStorePurchases(Guid userID, Guid storeID)
         {
             return _realBridge.GetStorePurchases(userID, storeID);
         }
 
-        public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
-        {
-            return _realBridge.MarkNotificationAsRead(userID, notificationID);
-        }
 
-        public Response WriteItemReview(Guid userID, Guid itemID, string reviewText)
-        {
-            return _realBridge.WriteItemReview(userID, itemID, reviewText);
-        }
+
+
     }
 }

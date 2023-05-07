@@ -354,14 +354,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Condition GetCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
         {
-            IsStoreExist(store);
-            Condition conditionToGet = GetStore(store).AddCondition(entity, type, value, dt);
-            if (entityRes != null)
-            {
-                conditionToGet =
-                    GetStore(store).AddConditioning(conditionToGet, entity as Item, typeRes, value);
-            }
-            return GetStore(store).GetCondition(conditionToGet);
+            return null;
         }
         
 
@@ -419,23 +412,76 @@ namespace SadnaExpress.DomainLayer.Store
             return items;
         }
 
-        public Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        public Condition AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+            string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             IsStoreExist(store);
-            Condition newCond = GetStore(store).AddCondition(entity, type, value, dt);
-            if (entityRes != null)
+            if (entity == "Item")
             {
-                ConditioningCondition newCondCond =
-                    GetStore(store).AddConditioning(newCond, entity as Item, typeRes, value);
-                return newCondCond;
+                foreach (Item i in GetItemsInStore(store))
+                {
+                    if (i.Name == entityName)
+                    {
+                        Condition newCond = GetStore(store).AddCondition<Item>(i, type, value, dt , op , opCond);
+                        if (entityResName != "")
+                        {
+                            foreach (Item j in GetItemsInStore(store))
+                            {
+                                if (j.Name == entityResName)
+                                {
+                                    ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
+                                    return newCondCond;
+                                }
+                            }
+                        }
+                        
+                        return newCond;
+                    }
+                }
             }
-            return newCond;
+            else if (entity == "Category")
+            {
+                Condition newCond = GetStore(store).AddCondition<string>(entityName, type, value, dt);
+                if (entityResName != "")
+                {
+                    foreach (Item j in GetItemsInStore(store))
+                    {
+                        if (j.Name == entityResName)
+                        {
+                            ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
+                            return newCondCond;
+                        }
+                    }
+                }
+                return newCond; 
+            }
+            else if (entity == "Store")
+            {
+                Condition newCond = GetStore(store).AddCondition<Store>(GetStore(store), type, value, dt);
+                if (entityResName != "")
+                {
+                    foreach (Item j in GetItemsInStore(store))
+                    {
+                        if (j.Name == entityResName)
+                        {
+                            ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
+                            return newCondCond;
+                        }
+                    }
+                }
+                return newCond; 
+            }
+            return null;
         }
 
-        public void RemoveCondition(Guid store ,Condition cond)
+        public void RemoveCondition(Guid storeID ,int condID)
         {
-            IsStoreExist(store);
-            GetStore(store).RemoveCondition(cond);
+            IsStoreExist(storeID);
+            foreach (Condition cond in GetStore(storeID).PurchasePolicyList)
+            {
+                if(cond.ID == condID)
+                    GetStore(storeID).RemoveCondition(cond);
+            }
         }
 
         public PurchaseCondition[]  GetAllConditions(Guid store)

@@ -92,6 +92,10 @@ namespace SadnaExpress.ServiceLayer
         bool IsSystemInitialize();
 
         ResponseT<PurchaseCondition[] > GetAllConditions(Guid store);
+        
+        ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+            string typeRes = default, double valueRes = default , string op= default, int opCond= default);
+        void RemoveCondition(Guid storeID ,int condID);
 
         ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value, DateTime dt=default, M entityRes = default,
             string typeRes = default, double valueRes = default);
