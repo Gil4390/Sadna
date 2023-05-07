@@ -50,6 +50,19 @@ namespace SadnaExpress.DomainLayer
             }
         }
 
+        public void NotifyObservers(List<Member> toNodify,Guid storeID, string message, Guid userId)
+        {
+           
+            foreach (Member member in toNodify)
+            {
+                Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
+                if (member.LoggedIn)
+                    NotificationNotifier.GetInstance().SendNotification(member.UserId, message);
+                member.Update(notification);        
+            }
+            
+        }
+
         public void RegisterObserver(Guid storeID , Member observer)
         {
             List<Member> members;
@@ -77,8 +90,8 @@ namespace SadnaExpress.DomainLayer
         {
             foreach (Member member in observers)
                 RemoveObserver(storeID, member);
-
         }
+
         public void NotifyObserversInStores(ICollection<Guid> stores, string message, Guid userID)
         {
             foreach (Guid storeID in stores)

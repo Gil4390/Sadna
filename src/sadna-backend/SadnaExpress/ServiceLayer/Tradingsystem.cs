@@ -380,6 +380,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.RemovePermission(userID, storeID, userEmail, permission);
         }
+
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             return storeManager.GetAllStorePurchases(userID);
