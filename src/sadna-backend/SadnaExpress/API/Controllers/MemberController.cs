@@ -10,7 +10,7 @@ using System.Web.Http.Description;
 using SadnaExpress.API.ClientRequests;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.ServiceLayer.Obj;

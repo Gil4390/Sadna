@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNet.SignalR;
 using SadnaExpress.API.ClientRequests;
 using SadnaExpress.API.Controllers;
-using SadnaExpress.API.WebClient.SignalR;
+using SadnaExpress.API.SignalR;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.Obj;

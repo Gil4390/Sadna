@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer.Store
@@ -167,7 +167,7 @@ namespace SadnaExpress.DomainLayer.Store
             return itemsInventory.GetItemByQuantity(itemID);
         }
 
-        public DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
+        public DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
         {
             SimpleDiscount<T> simpleDiscount = new SimpleDiscount<T>(level, percent, startDate, endDate);
             return simpleDiscount;
@@ -275,34 +275,34 @@ namespace SadnaExpress.DomainLayer.Store
             }
             
         }
-        public DiscountPolicy.DiscountPolicy CreateComplexPolicy(string op, params object[] policys)
+        public DiscountPolicy CreateComplexPolicy(string op, params object[] policys)
         {
             switch (op)
             {
                 case "xor":
-                    XorDiscount xor = new XorDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
+                    XorDiscount xor = new XorDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy)policys[2]);
                     return xor;
                 case "and":
-                    AndDiscount and = new AndDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
+                    AndDiscount and = new AndDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy)policys[2]);
                     return and;
                 case "or":
-                    OrDiscount or = new OrDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
+                    OrDiscount or = new OrDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy)policys[2]);
                     return or;
                 case "if":
-                    ConditionalDiscount ifCond = new ConditionalDiscount((Condition)policys[0],(DiscountPolicy.DiscountPolicy)policys[1]);
+                    ConditionalDiscount ifCond = new ConditionalDiscount((Condition)policys[0],(DiscountPolicy)policys[1]);
                     return ifCond;
                 case "max":
-                    MaxDiscount max = new MaxDiscount((DiscountPolicy.DiscountPolicy)policys[0], (DiscountPolicy.DiscountPolicy)policys[1]);
+                    MaxDiscount max = new MaxDiscount((DiscountPolicy)policys[0], (DiscountPolicy)policys[1]);
                     return max;
                 case "add":
-                    AddDiscount add = new AddDiscount((DiscountPolicy.DiscountPolicy)policys[0], (DiscountPolicy.DiscountPolicy)policys[1]);
+                    AddDiscount add = new AddDiscount((DiscountPolicy)policys[0], (DiscountPolicy)policys[1]);
                     return add;
                 default:
                     throw new Exception("the op not exist");
             }
         }
 
-        public DiscountPolicyTree AddPolicy(DiscountPolicy.DiscountPolicy discountPolicy)
+        public DiscountPolicyTree AddPolicy(DiscountPolicy discountPolicy)
         {
             if (discountPolicyTree == null)
                 discountPolicyTree = new DiscountPolicyTree(discountPolicy);
@@ -311,7 +311,7 @@ namespace SadnaExpress.DomainLayer.Store
             return discountPolicyTree;
         }
 
-        public void RemovePolicy(DiscountPolicy.DiscountPolicy discountPolicy)
+        public void RemovePolicy(DiscountPolicy discountPolicy)
         {
             discountPolicyTree.RemovePolicy(discountPolicy);
         }

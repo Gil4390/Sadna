@@ -3,16 +3,16 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
 using Owin;
-using SadnaExpress.API.WebClient.SignalR;
+using SadnaExpress.API.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-[assembly: OwinStartup(typeof(SadnaExpress.API.WebClient.SignalR.SignalRServerConfig))]
+[assembly: OwinStartup(typeof(SadnaExpress.API.SignalR.SignalRServerConfig))]
 
-namespace SadnaExpress.API.WebClient.SignalR
+namespace SadnaExpress.API.SignalR
 {
     public class SignalRServerConfig
     {

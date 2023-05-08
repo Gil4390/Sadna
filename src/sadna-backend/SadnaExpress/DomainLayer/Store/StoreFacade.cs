@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.ServiceLayer;
 
 namespace SadnaExpress.DomainLayer.Store
@@ -391,24 +391,24 @@ namespace SadnaExpress.DomainLayer.Store
             Condition newCond = GetStore(store).AddCondition(entity, type, value);
             return newCond;
         }
-        public DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(Guid store ,T level, int percent, DateTime startDate, DateTime endDate)
+        public DiscountPolicy CreateSimplePolicy<T>(Guid store ,T level, int percent, DateTime startDate, DateTime endDate)
         {
             IsStoreExist(store);
             return GetStore(store).CreateSimplePolicy(level, percent, startDate, endDate);
         }
 
-        public DiscountPolicy.DiscountPolicy CreateComplexPolicy(Guid store, string op, params object[] policys)
+        public DiscountPolicy CreateComplexPolicy(Guid store, string op, params object[] policys)
         {
             IsStoreExist(store);
             return GetStore(store).CreateComplexPolicy(op, policys);
         }
         
-        public DiscountPolicyTree AddPolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy)
+        public DiscountPolicyTree AddPolicy(Guid store, DiscountPolicy discountPolicy)
         {
             IsStoreExist(store);
             return GetStore(store).AddPolicy(discountPolicy);
         }
-        public void RemovePolicy(Guid store,DiscountPolicy.DiscountPolicy discountPolicy)
+        public void RemovePolicy(Guid store,DiscountPolicy discountPolicy)
         {
             IsStoreExist(store);
             GetStore(store).RemovePolicy(discountPolicy);

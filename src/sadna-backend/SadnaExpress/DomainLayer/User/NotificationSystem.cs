@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SadnaExpress.API.WebClient.SignalR;
+using SadnaExpress.API.SignalR;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer

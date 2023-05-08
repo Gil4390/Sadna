@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
+namespace SadnaExpress.DomainLayer.Store.Policy
 {
     public abstract class DiscountPolicy
     {
@@ -81,8 +81,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             return new Dictionary<Item, KeyValuePair<double, DateTime>>();
         }
     }
-
-    
+  
     public abstract class LogicalPolicy : DiscountPolicy
     {
         public Condition cond1;

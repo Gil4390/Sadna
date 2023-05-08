@@ -3,7 +3,7 @@ using SadnaExpress.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -43,10 +43,10 @@ namespace SadnaExpress.DomainLayer.Store
         void RemoveCondition(Guid storeID ,int condID);
         PurchaseCondition[]  GetAllConditions(Guid store);
         Condition AddDiscountCondition<T>(Guid store, T entity, string type, double value);
-        DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
-        DiscountPolicy.DiscountPolicy CreateComplexPolicy(Guid store, string op, object[] policys);
-        DiscountPolicyTree AddPolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy); 
-        void RemovePolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy);
+        DiscountPolicy CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
+        DiscountPolicy CreateComplexPolicy(Guid store, string op, object[] policys);
+        DiscountPolicyTree AddPolicy(Guid store, DiscountPolicy discountPolicy); 
+        void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
 
         void LoadData(Store store1, Store store2);
         Guid GetItemStoreId(Guid Itemid);
