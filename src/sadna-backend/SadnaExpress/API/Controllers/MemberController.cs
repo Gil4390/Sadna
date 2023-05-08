@@ -333,5 +333,15 @@ namespace SadnaExpress.API.Controllers
             var res = tradingSystem.GetStorePurchases(request.userID, request.storeID);
             return Ok(res);
         }
+        
+        [Route(APIConstants.MemberData.checkPurchaseCondition)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult CheckPurchaseConditions([FromBody] ClientRequest request)
+        {
+            return Ok(tradingSystem.CheckPurchaseConditions(request.userID));
+        }
+        
+        //checkPurchaseCondition
     }
 }

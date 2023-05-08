@@ -180,6 +180,8 @@ namespace SadnaExpress.DomainLayer.Store
                 if (cond.Equals(c))
                     return null;
             }
+
+            AddSimplePurchaseCondition(c);
             PurchasePolicyList.Add(c);
             return c;
         }
@@ -262,6 +264,7 @@ namespace SadnaExpress.DomainLayer.Store
                     PurchasePolicyList.Remove(cond);
                     cc.ID = purchasePolicyCounter++;;
                     PurchasePolicyList.Add(cc);
+                    AddSimplePurchaseCondition(cc);
                     return new ConditioningCondition(cond,crs);
                 case "quantity"or "min quantity" or "max quantity":
                     ConditioningResultQuantity crq = new ConditioningResultQuantity(item, (int)val);
@@ -269,6 +272,7 @@ namespace SadnaExpress.DomainLayer.Store
                     PurchasePolicyList.Remove(cond);
                     cc.ID = purchasePolicyCounter++;;
                     PurchasePolicyList.Add(cc);
+                    AddSimplePurchaseCondition(cc);
                     return new ConditioningCondition(cond,crq);
                 default:
                     throw new Exception("the condition not fine");
@@ -324,8 +328,16 @@ namespace SadnaExpress.DomainLayer.Store
                 purchasePolicy = new ComplexCondition(purchasePolicy.cond1, newPurchasePolicy1, _op);
             else if (purchasePolicy.cond2 == null)
                 purchasePolicy = new ComplexCondition(purchasePolicy.cond1, newPurchasePolicy1, new AndOperator());
-            else 
-                purchasePolicy = new ComplexCondition(newPurchasePolicy1, newPurchasePolicy2, _op);
+            else if (purchasePolicy.cond1 != null && purchasePolicy.cond2 != null)
+            {
+                ComplexCondition cr = new ComplexCondition(purchasePolicy.cond1, purchasePolicy.cond2,purchasePolicy._op );
+                purchasePolicy = new ComplexCondition(cr, newPurchasePolicy1, new AndOperator());
+            }
+            else if (newPurchasePolicy1 != null && newPurchasePolicy2 != null)
+            {
+                ComplexCondition cr = new ComplexCondition(newPurchasePolicy1, newPurchasePolicy2, _op );
+                purchasePolicy = new ComplexCondition(cr, purchasePolicy, new AndOperator());
+            }
         }
 
         public Condition BuildCondition(Condition newPurchasePolicy1, Condition newPurchasePolicy2 = null,

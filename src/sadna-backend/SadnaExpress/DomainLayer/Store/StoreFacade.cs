@@ -112,6 +112,10 @@ namespace SadnaExpress.DomainLayer.Store
                         sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders,email);
                         storeUpdated.Add(storeID, items[storeID]);
                     }
+                    else
+                    {
+                        throw new Exception($"The shopping cart does not meet the conditions of the store's regulations");
+                    }
                 }
                 return sum;
             }
@@ -139,6 +143,21 @@ namespace SadnaExpress.DomainLayer.Store
             IsStoreExist(storeId);
             return stores[storeId];
         }
+
+        public void CheckPurchaseConditions(Dictionary<Guid, Dictionary<Guid, int>> items)
+        {
+            foreach (Guid storeID in items.Keys)
+            {
+                IsStoreExist(storeID);
+                if (!stores[storeID].Active)
+                    throw new Exception($"The store: {storeID} not active");
+                if (!stores[storeID].CheckPurchasePolicy(items[storeID]))
+                {
+                    throw new Exception($"The shopping cart does not meet the conditions of the store's regulations");
+                }
+            }
+        }
+
 
         public Dictionary<Guid, Dictionary<Item, double>> GetCartItems(Dictionary<Guid, Dictionary<Guid, int>> cart)
         {

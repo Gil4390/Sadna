@@ -6,6 +6,7 @@ import { ItemCart } from '../models/Shop.tsx';
 import SystemNotInit from './SystemNotInit.tsx';
 import { handleGetDetailsOnCart } from '../actions/GuestActions.tsx';
 import Exit from './Exit.tsx';
+import { handleCheckPurchaseConditions } from '../actions/MemberActions.tsx';
 
 function CartPage(props) {
 
@@ -44,7 +45,13 @@ function CartPage(props) {
   };
 
   const handleCheckout=(id)=>{
-    navigate('/PaymentPage', {state: {id}})
+    handleCheckPurchaseConditions(id).then(
+      value => {
+        value.errorOccured ?
+        alert(value.errorMessage) :  navigate('/PaymentPage', {state: {id}})
+    
+      })
+      .catch(error => alert(error));
   }
 
   

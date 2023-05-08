@@ -57,7 +57,6 @@ function PurchasePoliciesPage(props) {
 
 
   const GetPurcahsePolicys =()=>{
-    console.log("phase3")
 
     handleGetAllPurchaseConditions(storeId).then(
       value => {
@@ -67,7 +66,6 @@ function PurchasePoliciesPage(props) {
   }
 
   useEffect(() => {
-    console.log("phase4")
     GetPurcahsePolicys();
  }, [])
 
@@ -142,7 +140,6 @@ return (
                 onChange={(e) => setEntityChoice(e.target.value)}
               >
                 <option>Store</option>
-                <option>Shooping cart</option>
                 <option>Category</option>
                 <option>Item</option>
               </Form.Control>
@@ -168,7 +165,6 @@ return (
                 <option>max value</option>
                 <option>min quantity</option>
                 <option>max quantity</option>
-                <option>time condition</option>
               </Form.Control>
             </Form.Group>
             <Form.Group>
@@ -210,7 +206,6 @@ return (
                         value={EntityChoice2}
                         onChange={(e) => setEntityChoice2(e.target.value)} >
                         <option>Store</option>
-                        <option>Shooping cart</option>
                         <option>Category</option>
                         <option>Item</option>
                       </Form.Control>
@@ -236,7 +231,6 @@ return (
                         <option>max value</option>
                         <option>min quantity</option>
                         <option>max quantity</option>
-                        <option>time condition</option>
                       </Form.Control>
                     </Form.Group>
                     <Form.Group>
