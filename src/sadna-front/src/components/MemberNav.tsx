@@ -7,12 +7,13 @@ function MemberNav(props) {
   const handleLogoutPress = () => {
     props.handleLogout();
   }
+  console.log("aaaaa: " + props.username);
 
   return (
     <div className="navigation">
       <nav className="navbar navbar-expand navbar-dark" style={{backgroundColor: "black"}}>
         <div className="container">
-
+        <div style={{color: "white", width: "100px"}}>Hello {props.username}</div>
           <div>
             <ul className="navbar-nav">
               <li className="nav-item">

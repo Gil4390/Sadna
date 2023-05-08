@@ -130,5 +130,6 @@ namespace SadnaExpress.ServiceLayer
 
         ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId);
         Response MarkNotificationAsRead(Guid userID, Guid notificationID);
+        ResponseT<string> GetMemberName(Guid userID);
     }
 }

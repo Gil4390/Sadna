@@ -616,5 +616,13 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.MarkNotificationAsRead(userID, notificationID);
         }
+
+        public ResponseT<string> GetMemberName(Guid userID)
+        {
+            String name = userManager.GetMember(userID).Value.FirstName;
+            var res = new ResponseT<String>();
+            res.Value = name;
+            return res;
+        }
     }
 }

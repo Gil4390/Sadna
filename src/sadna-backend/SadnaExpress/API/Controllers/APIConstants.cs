@@ -123,6 +123,9 @@ namespace SadnaExpress.API.Controllers
 
             public const string getStoreInfo = "get-store-info";
 
+            public const string getMemberName = "get-member-name";
+
+
         }
 
         public static class AdminData

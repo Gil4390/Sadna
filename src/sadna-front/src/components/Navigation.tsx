@@ -50,7 +50,7 @@ function Navigation(props) {
                   </div>
                   ) : (
                     <div>
-                      <MemberNav handleLogout={handleLogoutPressing}/>
+                      <MemberNav handleLogout={handleLogoutPressing} username={props.username}/>
                     </div>
                   )}
               </div>
