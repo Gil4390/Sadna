@@ -1,12 +1,13 @@
 import React, { useState,useEffect } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
+import { useNavigate, useLocation } from "react-router-dom";
 import {ResponseT} from '../../models/Response.tsx';
 import { handleIsAdmin, handleLogin } from '../../actions/GuestActions.tsx';
 import Exit from "../Exit.tsx";
 
 
 function LoginPage(props) {
-
+  const navigate = useNavigate();
   const [localId, setLocalId] = useState(props.id);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,6 +58,7 @@ function LoginPage(props) {
       handleLogin(props.id,email,password).then(
         value => {
           setResponse(value as ResponseT);
+          //navigate("/");
         })
         .catch(error => alert(error));
     }
