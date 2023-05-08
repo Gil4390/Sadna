@@ -69,11 +69,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.OpenNewStore(id, storeName);
         }
-
-        public Response WriteItemReview(Guid userID, Guid itemID, string reviewText)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public ResponseT<List<Store>> GetAllStoreInfo()
         {
