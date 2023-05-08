@@ -52,13 +52,12 @@ useEffect(() => {
 
   const handleAddPermission = (event) => {
     event.preventDefault();
-    handleAddStoreManagerPermission(userId, storeId,selectedEmployee?.email, editPermission ).then(
-      value => {
-        
-        setEditPermissionResponse(value as Response);
-      })
-      .catch(error => alert(error));
-    
+      handleAddStoreManagerPermission(userId, storeId,selectedEmployee?.email, editPermission ).then(
+        value => {
+          
+          setEditPermissionResponse(value as Response);
+        })
+        .catch(error => alert(error));
   };
 
   const handleRemovePermission = (event) => {
@@ -87,22 +86,33 @@ useEffect(() => {
     handleEditModalClose();
   }
 
+  const isValidEmail = (email) => 
+  {
+    // regex for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // test email againt regex pattern
+    return emailRegex.test(email);
+  }
+
   const handleAddEmployee = (event) => {
     event.preventDefault();
-    if(appointType==="Appintment owner"){
-      handleAppointStoreOwner(userId, storeId,appointEmail).then(
-        value => {
-          
-          setAddEmployeeResponse(value as Response);
-        })
-        .catch(error => alert(error));
-    }
-    else if(appointType==="Appintment store manager"){
-      handleAppointStoreManager(userId, storeId,appointEmail).then(
-        value => {
-          setAddEmployeeResponse(value as Response);
-        })
-        .catch(error => alert(error));
+    if(isValidEmail(appointEmail))
+    {
+      if(appointType==="Appintment owner"){
+        handleAppointStoreOwner(userId, storeId,appointEmail).then(
+          value => {
+            
+            setAddEmployeeResponse(value as Response);
+          })
+          .catch(error => alert(error));
+      }
+      else if(appointType==="Appintment store manager"){
+        handleAppointStoreManager(userId, storeId,appointEmail).then(
+          value => {
+            setAddEmployeeResponse(value as Response);
+          })
+          .catch(error => alert(error));
+        }
     }
   };
 
@@ -152,7 +162,8 @@ useEffect(() => {
               placeholder="Enter employee email"
               value={appointEmail}
               onChange={handleAppointEmailChange}
-            />
+              style={{borderColor: isValidEmail(appointEmail) || appointEmail.length === 0 ? '#28a745' : '#dc3534'}} />
+              {!isValidEmail(appointEmail) && appointEmail.length > 0 && <Form.Text className='text-danger'>Not Valid Email! Try Again!</Form.Text>}
           </Form.Group>
           <span className="fs-2">Choose appintment type:</span>
           <Form.Control as="select" value={appointType} onChange={handleAppointTypeChange}>

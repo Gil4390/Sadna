@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;

@@ -36,7 +36,7 @@ export function handleOpenNewStore(userID , storeName) {
         return Promise.resolve(data)
     })
 }
-export function handleWriteItemReview(userID, storeID, itemID, review) {
+export function handleWriteItemReview(userID, itemID, review) {
     let url = "http://localhost:8080/api/member/write-item-review";
 
     return fetch(url, {
@@ -45,7 +45,6 @@ export function handleWriteItemReview(userID, storeID, itemID, review) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userID: userID,
-            storeID: storeID,
             itemID:itemID,
             review:review
         })
@@ -57,7 +56,7 @@ export function handleWriteItemReview(userID, storeID, itemID, review) {
         return Promise.resolve(data)
     })
 }
-export function handleGetItemReviews(storeID, itemID) {
+export function handleGetItemReviews(itemID) {
     let url = "http://localhost:8080/api/member/item-reviews";
 
     return fetch(url, {
@@ -65,7 +64,6 @@ export function handleGetItemReviews(storeID, itemID) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            storeID: storeID,
             itemID:itemID,
         })
     }).then(async response => {
@@ -73,7 +71,7 @@ export function handleGetItemReviews(storeID, itemID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 export function handleAddItemStore(userID , storeID, itemName , itemCategory , itemPrice , quantity) {
@@ -481,7 +479,7 @@ export function handleGetStoresOwnersSpecificStore(storeID) {
     })
 }
 
-export function handleGetUserNotification(UserID) {
+export function handleGetUserNotifications(UserID) {
     let url = "http://localhost:8080/api/member/get-notifications";
 
     return fetch(url, {
@@ -496,9 +494,30 @@ export function handleGetUserNotification(UserID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
+        return Promise.resolve(data.value)
+    })
+}
+
+export function handleMarkNotificationAsRead(UserID, notificationID) {
+    let url = "http://localhost:8080/api/member/mark-notification-read";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            UserID: UserID,
+            notificationID: notificationID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
         return Promise.resolve(data)
     })
 }
+
 export function handleGetAllPurchaseConditions(storeID) {
     let url = "http://localhost:8080/api/member/get-conds";
 
@@ -517,32 +536,7 @@ export function handleGetAllPurchaseConditions(storeID) {
         return Promise.resolve(data.value)
     })
 }
-export function handleGetPurchaseCondition(storeID , entity , type, value , dt=null , entiryRes=null , typeRes=null , valueRes=null) {
-    let url = "http://localhost:8080/api/member/get-cond";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            storeID:storeID,
-            entity:entity,
-            type:type,
-            value:value,
-            dt:dt,
-            entiryRes: entiryRes,
-            typeRes:typeRes,
-            valueRes:valueRes,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-export function handleAddPurchaseConditions(storeID , entity , type, value , dt=null , entiryRes=null , typeRes=null , valueRes=null) {
+export function handleAddPurchaseCondition(storeID , entity,entityName,type,value,op,entityRes,entityNameRes,typeRes,valueRes,opCond) {
     let url = "http://localhost:8080/api/member/add-cond";
 
     return fetch(url, {
@@ -552,22 +546,25 @@ export function handleAddPurchaseConditions(storeID , entity , type, value , dt=
         body: JSON.stringify({
             storeID:storeID,
             entity:entity,
+            entityName:entityName,
             type:type,
             value:value,
-            dt:dt,
-            entiryRes: entiryRes,
+            op:op,
+            entityRes: entityRes,
+            entityNameRes:entityNameRes,
             typeRes:typeRes,
             valueRes:valueRes,
+            opCond:opCond,
         })
     }).then(async response => {
         const data = await response.json();
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
-export function handleRemovePurchaseCondition(storeID , entity , type, value , dt=null , entiryRes=null , typeRes=null , valueRes=null) {
+export function handleRemovePurchaseCondition(storeID , condID) {
     let url = "http://localhost:8080/api/member/rm-cond";
 
     return fetch(url, {
@@ -576,20 +573,15 @@ export function handleRemovePurchaseCondition(storeID , entity , type, value , d
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             storeID:storeID,
-            entity:entity,
-            type:type,
-            value:value,
-            dt:dt,
-            entiryRes: entiryRes,
-            typeRes:typeRes,
-            valueRes:valueRes,
+            condID:condID,
+
         })
     }).then(async response => {
         const data = await response.json();
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data)
+        return Promise.resolve(data.value)
     })
 }
 export function handleAddDiscountCondition(storeID , entity , type, value ) {

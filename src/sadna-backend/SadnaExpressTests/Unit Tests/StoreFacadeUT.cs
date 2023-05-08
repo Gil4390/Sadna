@@ -117,20 +117,20 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void WriteItemReviewSuccess()
         {
-            storeFacade.WriteItemReview(userID1, storeID1, itemID1, "very bad bamba");
-            Assert.AreEqual(1, storeFacade.GetItemReviews(storeID1, itemID1).Count);
+            storeFacade.WriteItemReview(userID1, itemID1, "very bad bamba");
+            Assert.AreEqual(1, storeFacade.GetItemReviews(itemID1).Count);
         }
 
         [TestMethod]
         public void WriteItemReviewUserDidNotBuyItem()
         {
-            Assert.ThrowsException<NullReferenceException>(() => storeFacade.WriteItemReview(userID2, storeID1, itemID1, "very bad bamba"));
+            Assert.ThrowsException<NullReferenceException>(() => storeFacade.WriteItemReview(userID2, itemID1, "very bad bamba"));
         }
 
         [TestMethod]
         public void WriteItemReviewUserDidNotBuyItem2()
         {
-            Assert.ThrowsException<Exception>(() => storeFacade.WriteItemReview(userID1, storeID1, itemID2, "very bad bamba"));
+            Assert.ThrowsException<Exception>(() => storeFacade.WriteItemReview(userID1, itemID2, "very bad bamba"));
         }
 
         [TestMethod]

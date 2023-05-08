@@ -315,10 +315,10 @@ namespace SadnaExpress.DomainLayer.Store
         }
             
 
-        public void WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
+        public void WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
             IsTsInitialized();
-            IsStoreExist(storeID);
+            Guid storeID = GetItemStoreId(itemID);
             Store store = stores[storeID];
             if (reviewText == "")
                 throw new Exception("review text cannot be empty");
@@ -330,11 +330,12 @@ namespace SadnaExpress.DomainLayer.Store
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
             reviews.Add(new Review(userID, stores[storeID], store.GetItemById(itemID), reviewText));
+            NotificationSystem.Instance.NotifyObservers(storeID, "User just added a review on item "+ store.GetItemById(itemID).Name+" at store "+ store.StoreName, userID);
             Logger.Instance.Info(userID, nameof(StoreFacade)+": "+nameof(WriteItemReview) + userID +" write review to store "+storeID+" on "+itemID+"- "+ reviewText);
         }
-        public List<Review> GetItemReviews(Guid storeID, Guid itemID)
+        public List<Review> GetItemReviews(Guid itemID)
         {
-            IsStoreExist(storeID);
+            Guid storeID = GetItemStoreId(itemID);
             Store store = stores[storeID];
             List<Review> reviewsOfItem = new List<Review>();
             foreach (Review review in reviews)
@@ -380,14 +381,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Condition GetCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
         {
-            IsStoreExist(store);
-            Condition conditionToGet = GetStore(store).AddCondition(entity, type, value, dt);
-            if (entityRes != null)
-            {
-                conditionToGet =
-                    GetStore(store).AddConditioning(conditionToGet, entity as Item, typeRes, value);
-            }
-            return GetStore(store).GetCondition(conditionToGet);
+            return null;
         }
         
 
@@ -445,23 +439,86 @@ namespace SadnaExpress.DomainLayer.Store
             return items;
         }
 
-        public Condition AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        public Condition AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+            string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             IsStoreExist(store);
-            Condition newCond = GetStore(store).AddCondition(entity, type, value, dt);
-            if (entityRes != null)
+            if (entity == "Item")
             {
-                ConditioningCondition newCondCond =
-                    GetStore(store).AddConditioning(newCond, entity as Item, typeRes, value);
-                return newCondCond;
+                foreach (Item i in GetItemsInStore(store))
+                {
+                    if (i.Name == entityName)
+                    {
+                        Condition newCond = GetStore(store).AddCondition<Item>(i, type, value, dt , op , opCond);
+                        if (entityResName != "")
+                        {
+                            foreach (Item j in GetItemsInStore(store))
+                            {
+                                if (j.Name == entityResName)
+                                {
+                                    ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
+                                    return newCondCond;
+                                }
+                            }
+                        }
+                        
+                        return newCond;
+                    }
+                }
             }
-            return newCond;
+            else if (entity == "Category")
+            {
+                Condition newCond = GetStore(store).AddCondition<string>(entityName, type, value, dt);
+                if (entityResName != "")
+                {
+                    foreach (Item j in GetItemsInStore(store))
+                    {
+                        if (j.Name == entityResName)
+                        {
+                            ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
+                            return newCondCond;
+                        }
+                    }
+                }
+                return newCond; 
+            }
+            else if (entity == "Store")
+            {
+                Condition newCond = GetStore(store).AddCondition<Store>(GetStore(store), type, value, dt);
+                if (entityResName != "")
+                {
+                    foreach (Item j in GetItemsInStore(store))
+                    {
+                        if (j.Name == entityResName)
+                        {
+                            ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
+                            return newCondCond;
+                        }
+                    }
+                }
+                return newCond; 
+            }
+            return null;
         }
 
-        public void RemoveCondition(Guid store ,Condition cond)
+        public void RemoveCondition(Guid storeID ,int condID)
         {
-            IsStoreExist(store);
-            GetStore(store).RemoveCondition(cond);
+            IsStoreExist(storeID);
+            foreach (Condition cond in GetStore(storeID).PurchasePolicyList)
+            {
+                if (cond.ID == condID)
+                {
+                    GetStore(storeID).RemoveConditionFromList(cond);
+                    try
+                    {
+                        GetStore(storeID).RemoveCondition(cond);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+            }
         }
 
         public PurchaseCondition[]  GetAllConditions(Guid store)

@@ -5,8 +5,6 @@ import CartImg from '../images/cart.png'
 
 function MemberNav(props) {
   const handleLogoutPress = () => {
-    console.log("bad2")
-    console.log(props)
     props.handleLogout();
   }
 
@@ -31,6 +29,11 @@ function MemberNav(props) {
               <li className="nav-item">
                 <NavLink className="nav-link" to="/"  onClick={() => handleLogoutPress()}>
                   Logout
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/MessagesPage">
+                  Messages
                 </NavLink>
               </li>
               <li className="nav-item">

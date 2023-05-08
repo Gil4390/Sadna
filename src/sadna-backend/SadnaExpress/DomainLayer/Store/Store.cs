@@ -172,51 +172,80 @@ namespace SadnaExpress.DomainLayer.Store
             SimpleDiscount<T> simpleDiscount = new SimpleDiscount<T>(level, percent, startDate, endDate);
             return simpleDiscount;
         }
-        public Condition AddCondition<T>(T entity, string type, double val, DateTime dt=default)
+
+        private Condition checkNotInList(Condition c)
+        {
+            foreach (Condition cond in PurchasePolicyList)
+            {
+                if (cond.Equals(c))
+                    return null;
+            }
+            PurchasePolicyList.Add(c);
+            return c;
+        }
+        
+        public Condition AddCondition<T>(T entity, string type, double val, DateTime dt=default , string op=default , int opCond=default)
         {
             if (val < 0)
                 throw new Exception("value must be positive");
             if (entity == null)
                 throw new Exception("entity must be not null");
-            switch (entity)
-            {
-                case Item item:
-                    if (GetItemById(item.ItemID) == null)
-                        throw new Exception("entity must be not null");
-                    break;
-            }
             switch (type)
             {
                 case "min value":
                     ValueCondition<T> minValue = new ValueCondition<T>(entity, val, "min");
                     minValue.ID = purchasePolicyCounter++;
-                    PurchasePolicyList.Add(minValue);
-                    return minValue;
+                    if (op == "AND" | op =="OR")
+                    {
+                        minValue.op = op;
+                        minValue.opCond = opCond;
+                    }
+                    return checkNotInList(minValue);
                 case "max value":
                     ValueCondition<T> maxValue = new ValueCondition<T>(entity, val, "max");
                     maxValue.ID = purchasePolicyCounter++;
-                    PurchasePolicyList.Add(maxValue);
-                    return maxValue;
+                    if (op == "AND" | op =="OR")
+                    {
+                        maxValue.op = op;
+                        maxValue.opCond = opCond;
+                    }
+                    return checkNotInList(maxValue);
                 case "min quantity":
                     QuantityCondition<T> minQuantity = new QuantityCondition<T>(entity, (int)val, "min");
                     minQuantity.ID = purchasePolicyCounter++;
-                    PurchasePolicyList.Add(minQuantity);
-                    return minQuantity;
+                    if (op == "AND" | op =="OR")
+                    {
+                        minQuantity.op = op;
+                        minQuantity.opCond = opCond;
+                    }
+                    return checkNotInList(minQuantity);
                 case "max quantity":
                     QuantityCondition<T> maxQuantity = new QuantityCondition<T>(entity, (int)val, "max");
                     maxQuantity.ID = purchasePolicyCounter++;
-                    PurchasePolicyList.Add(maxQuantity);
-                    return maxQuantity;
+                    if (op == "AND" | op =="OR")
+                    {
+                        maxQuantity.op = op;
+                        maxQuantity.opCond = opCond;
+                    }
+                    return checkNotInList(maxQuantity);
                 case "before time":
                     TimeCondition<T> timeBefore = new TimeCondition<T>(entity, dt, "before");
                     timeBefore.ID = purchasePolicyCounter++;
-                    PurchasePolicyList.Add(timeBefore);
-                    return timeBefore;
+                    if (op == "AND" | op =="OR")
+                    {
+                        timeBefore.op = op;
+                        timeBefore.opCond = opCond;
+                    }
+                    return checkNotInList(timeBefore);
                 case "after time":
                     TimeCondition<T> timeAfter = new TimeCondition<T>(entity, dt, "after");
                     timeAfter.ID = purchasePolicyCounter++;
-                    PurchasePolicyList.Add(timeAfter);
-                    return timeAfter;
+                    if (op == "AND" | op =="OR")
+                    {
+                        timeAfter.op = op;
+                        timeAfter.opCond = opCond;
+                    }
+                    return checkNotInList(timeAfter);
                 default:
                     throw new Exception("the condition not fine");
             }
@@ -227,14 +256,14 @@ namespace SadnaExpress.DomainLayer.Store
             ConditioningCondition cc;
             switch (type)
             {
-                case "sum":
+                case "sum" or "min value" or "max value":
                     ConditioningResultSum crs = new ConditioningResultSum(item,(int)val);
                      cc = new ConditioningCondition(cond,crs);
                     PurchasePolicyList.Remove(cond);
                     cc.ID = purchasePolicyCounter++;;
                     PurchasePolicyList.Add(cc);
                     return new ConditioningCondition(cond,crs);
-                case "quantity":
+                case "quantity"or "min quantity" or "max quantity":
                     ConditioningResultQuantity crq = new ConditioningResultQuantity(item, (int)val);
                     cc = new ConditioningCondition(cond,crq);
                     PurchasePolicyList.Remove(cond);
@@ -329,7 +358,8 @@ namespace SadnaExpress.DomainLayer.Store
                 return cond;
             return null;
         }
-        public void RemoveCondition(Condition cond , ComplexCondition tree=null)
+
+        public void RemoveCondition(Condition cond, ComplexCondition tree = null)
         {
             if (cond == null || PurchasePolicy == null)
             {
@@ -351,7 +381,7 @@ namespace SadnaExpress.DomainLayer.Store
                     tree.cond2 = null;
                     PurchasePolicyList.Remove(searchCond2);
                 }
-
+            
             }
             else if (tree == null)
             {
@@ -373,6 +403,19 @@ namespace SadnaExpress.DomainLayer.Store
             }
         }
 
+        public void RemoveConditionFromList(Condition cond , ComplexCondition tree=null)
+        {
+            Condition condToRemove = null;
+            foreach (Condition condInList in PurchasePolicyList)
+            {
+                if (condInList.Equals(cond))
+                    condToRemove = condInList;
+            }
+
+            if (condToRemove != null)
+                PurchasePolicyList.Remove(condToRemove);
+        }
+
         public bool EvaluatePurchasePolicy(Store store, Dictionary<Item, int> basket)
         {
             if (purchasePolicy != null)
@@ -380,26 +423,138 @@ namespace SadnaExpress.DomainLayer.Store
             return true;
         }
 
+        private void ifQuantityCond(Condition cond , List<PurchaseCondition> conds )
+        {
+            if(typeof(QuantityCondition<Item>) == cond.GetType())
+            {
+                PurchaseCondition newPurCond = new PurchaseCondition(((QuantityCondition<Item>)cond).ID,
+                    ((QuantityCondition<Item>)cond).entity.ToString().Split('.')[3],
+                    ((QuantityCondition<Item>)cond).entity.ItemID.ToString(),
+                    ((QuantityCondition<Item>)cond).entity.Name,
+                    ((QuantityCondition<Item>)cond).minmax + " quantity", ((QuantityCondition<Item>)cond).Quantity
+                );
+                if (((QuantityCondition<Item>)cond).op != "")
+                {
+                    newPurCond.Op = ((QuantityCondition<Item>)cond).op;
+                    newPurCond.OpCond = ((QuantityCondition<Item>)cond).opCond;
+                }
+                conds.Add(newPurCond);
+            }
+            if(typeof(QuantityCondition<string>) == cond.GetType())
+            {
+                PurchaseCondition newPurCond = new PurchaseCondition(((QuantityCondition<string>)cond).ID,
+                    ((QuantityCondition<string>)cond).entity,
+                    "",
+                    ((QuantityCondition<string>)cond).entity,
+                    ((QuantityCondition<string>)cond).minmax + " quantity", ((QuantityCondition<string>)cond).Quantity
+                );
+                if (((QuantityCondition<string>)cond).op != "")
+                {
+                    newPurCond.Op = ((QuantityCondition<string>)cond).op;
+                    newPurCond.OpCond = ((QuantityCondition<string>)cond).opCond;
+                }
+                
+                if (newPurCond.Entity != "Item" && newPurCond.Entity != "Store")
+                    newPurCond.Entity = "Category";
+                conds.Add(newPurCond);
+            }
+        }
+        private void ifValueCond(Condition cond , List<PurchaseCondition> conds )
+        {
+            if(typeof(ValueCondition<Item>) == cond.GetType())
+            {
+                PurchaseCondition newPurCond = new PurchaseCondition(((ValueCondition<Item>)cond).ID,
+                    ((ValueCondition<Item>)cond).entity.ToString().Split('.')[3],
+                    ((ValueCondition<Item>)cond).entity.ItemID.ToString(), ((ValueCondition<Item>)cond).entity.Name,
+                    ((ValueCondition<Item>)cond).minmax + " sum", (int)((ValueCondition<Item>)cond).minPrice
+                );
+                if (((ValueCondition<Item>)cond).op != "")
+                {
+                    newPurCond.Op = ((ValueCondition<Item>)cond).op;
+                    newPurCond.OpCond = ((ValueCondition<Item>)cond).opCond;
+                }
+                conds.Add(newPurCond);
+            }
+            if(typeof(ValueCondition<string>) == cond.GetType())
+            {
+                PurchaseCondition newPurCond = new PurchaseCondition(((ValueCondition<string>)cond).ID,
+                    ((ValueCondition<string>)cond).entity,
+                    "", ((ValueCondition<string>)cond).entity,
+                    ((ValueCondition<string>)cond).minmax + " sum", (int)((ValueCondition<string>)cond).minPrice
+                );
+                if (((ValueCondition<string>)cond).op != "")
+                {
+                    newPurCond.Op = ((ValueCondition<string>)cond).op;
+                    newPurCond.OpCond = ((ValueCondition<string>)cond).opCond;
+                }
+
+                if (newPurCond.Entity != "Item" && newPurCond.Entity != "Store")
+                    newPurCond.Entity = "Category";
+                conds.Add(newPurCond);
+            }
+        }
+        
+
         public PurchaseCondition[] GetAllConditions()
         {
             List<PurchaseCondition> conds = new List<PurchaseCondition>();
             foreach (Condition cond in PurchasePolicyList)
             {
-                if(typeof(QuantityCondition<Item>) == cond.GetType())
+                ifQuantityCond(cond,conds);
+                ifValueCond(cond,conds);
+                if(typeof(ConditioningCondition) == cond.GetType())
                 {
-                    conds.Add(new PurchaseCondition(((QuantityCondition<Item>)cond).ID,
-                        "item",
-                        ((QuantityCondition<Item>)cond).entity.ItemID.ToString(),((QuantityCondition<Item>)cond).entity.Name,
-                        ((QuantityCondition<Item>)cond).minmax + " quantity",((QuantityCondition<Item>)cond).Quantity
-                    ));
-                }
-                if(typeof(ValueCondition<Item>) == cond.GetType())
-                {
-                    conds.Add(new PurchaseCondition(((ValueCondition<Item>)cond).ID,
-                        "item",
-                        ((ValueCondition<Item>)cond).entity.ItemID.ToString(),((ValueCondition<Item>)cond).entity.Name,
-                        ((ValueCondition<Item>)cond).minmax + " sum",(int)((ValueCondition<Item>)cond).minPrice
-                    ));
+                    if (((ConditioningCondition)cond).res.GetType() == typeof(ConditioningResultSum))
+                    {
+                        if (((ConditioningCondition)cond).cond.GetType() == typeof(ValueCondition<Item>))
+                        {
+                            conds.Add(new PurchaseCondition(((ValueCondition<Item>)((ConditioningCondition)cond).cond).ID,
+                                ((ValueCondition<Item>)((ConditioningCondition)cond).cond).entity.ToString().Split('.')[3],
+                                ((ValueCondition<Item>)((ConditioningCondition)cond).cond).entity.ItemID.ToString(),((ValueCondition<Item>)((ConditioningCondition)cond).cond).entity.Name,
+                                ((ValueCondition<Item>)((ConditioningCondition)cond).cond).minmax + " sum",(int)((ValueCondition<Item>)((ConditioningCondition)cond).cond).minPrice,"Conditioning","Item",
+                                ((ConditioningCondition)cond).res.item.ItemID.ToString(),((ConditioningCondition)cond).res.item.Name,"sum",(int)((ConditioningResultSum)((ConditioningCondition)cond).res).sum,-1)
+                            );
+                        }
+                        if (((ConditioningCondition)cond).GetType() == typeof(QuantityCondition<Item>))
+                        {
+                            conds.Add(new PurchaseCondition(((QuantityCondition<Item>)((ConditioningCondition)cond).cond).ID,
+                                ((QuantityCondition<Item>)((ConditioningCondition)cond).cond).entity.ToString().Split('.')[3],
+                                ((QuantityCondition<Item>)((ConditioningCondition)cond).cond).entity.ItemID.ToString(),((QuantityCondition<Item>)((ConditioningCondition)cond).cond).entity.Name,
+                                ((QuantityCondition<Item>)((ConditioningCondition)cond).cond).minmax + " sum",((QuantityCondition<Item>)((ConditioningCondition)cond).cond).Quantity,"Conditioning","Item",
+                                ((ConditioningCondition)cond).res.item.ItemID.ToString(),((ConditioningCondition)cond).res.item.Name,"sum",(int)((ConditioningResultSum)((ConditioningCondition)cond).res).sum,-1)
+                            );
+                        }
+                    }
+
+                    if (((ConditioningCondition)cond).res.GetType() == typeof(ConditioningResultQuantity))
+                    {
+                        if (((ConditioningCondition)cond).cond.GetType() == typeof(ValueCondition<Item>))
+                        {
+                            conds.Add(new PurchaseCondition(((ValueCondition<Item>)((ConditioningCondition)cond).cond).ID,
+                                ((ValueCondition<Item>)((ConditioningCondition)cond).cond).entity.ToString().Split('.')[3],
+                                ((ValueCondition<Item>)((ConditioningCondition)cond).cond).entity.ItemID.ToString(),
+                                ((ValueCondition<Item>)((ConditioningCondition)cond).cond).entity.Name,
+                                ((ValueCondition<Item>)((ConditioningCondition)cond).cond).minmax + " sum",
+                                (int)((ValueCondition<Item>)((ConditioningCondition)cond).cond).minPrice, "Conditioning", "Item",
+                                ((ConditioningCondition)cond).res.item.ItemID.ToString(),
+                                ((ConditioningCondition)cond).res.item.Name, "quantity",
+                                (int)((ConditioningResultQuantity)((ConditioningCondition)cond).res).quantity, -1)
+                            );
+                        }
+                        if (((ConditioningCondition)cond).cond.GetType() == typeof(QuantityCondition<Item>))
+                        {
+                            conds.Add(new PurchaseCondition(((QuantityCondition<Item>)((ConditioningCondition)cond).cond).ID,
+                                ((QuantityCondition<Item>)((ConditioningCondition)cond).cond).entity.ToString().Split('.')[3],
+                                ((QuantityCondition<Item>)((ConditioningCondition)cond).cond).entity.ItemID.ToString(),
+                                ((QuantityCondition<Item>)((ConditioningCondition)cond).cond).entity.Name,
+                                ((QuantityCondition<Item>)((ConditioningCondition)cond).cond).minmax + " sum",
+                                ((QuantityCondition<Item>)((ConditioningCondition)cond).cond).Quantity, "Conditioning", "Item",
+                                ((ConditioningCondition)cond).res.item.ItemID.ToString(),
+                                ((ConditioningCondition)cond).res.item.Name, "quantity",
+                                (int)((ConditioningResultQuantity)((ConditioningCondition)cond).res).quantity, -1)
+                            );
+                        }
+                    }
                 }
             }
 

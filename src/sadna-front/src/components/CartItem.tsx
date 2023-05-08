@@ -21,6 +21,8 @@ export function CartItem(props) {
       .catch(error => alert(error));
   }
 
+  
+
   useEffect(() => {
     if(responseAddItemCart!=undefined)
       responseAddItemCart?.errorOccured ? alert(responseAddItemCart.errorMessage) : setAmountInCart(amountInCart+1);

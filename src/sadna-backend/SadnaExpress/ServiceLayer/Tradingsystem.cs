@@ -137,12 +137,9 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
-            ResponseT<Guid> responseT;
             try
             {
-                
-                responseT = storeManager.OpenNewStore(userID, storeName);
-                GetMember(userID).Value.Update(" " + userID + "open new store", userID);
+                ResponseT<Guid>  responseT = storeManager.OpenNewStore(userID, storeName);
                 return responseT;
 
             } 
@@ -218,12 +215,12 @@ namespace SadnaExpress.ServiceLayer
             return response;
         }
         
-        public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string review)
+        public Response WriteItemReview(Guid userID, Guid itemID, string review)
         {
             try
             {
                 Logger.Instance.Info("User id: " + userID + " WriteReview to itemID: " + itemID);
-                return storeManager.WriteItemReview(userID, storeID, itemID, review);
+                return storeManager.WriteItemReview(userID, itemID, review);
             }
             catch (Exception ex)
             {
@@ -232,17 +229,17 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID)
+        public ResponseT<List<SReview>> GetItemReviews(Guid itemID)
         {
             try
             {
                 Logger.Instance.Info("getItemReviews on itemID: " + itemID);
-                return storeManager.GetItemReviews(storeID, itemID);
+                return storeManager.GetItemReviews(itemID);
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error("error fetching reviews of item");
-                return new ResponseT<List<Review>>(ex.Message);
+                return new ResponseT<List<SReview>>(ex.Message);
             }
         }
 
@@ -384,6 +381,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.RemovePermission(userID, storeID, userEmail, permission);
         }
+
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             return storeManager.GetAllStorePurchases(userID);
@@ -494,6 +492,12 @@ namespace SadnaExpress.ServiceLayer
         }
 
         // this functions needs to notify to offline members their notifications.
+        public void RemoveCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
+            M entityRes = default, string typeRes = default, double valueRes = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public void getNotificationsForOfflineMembers()
         {
             throw new NotImplementedException();
@@ -514,16 +518,21 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetCondition(store ,entity,type,value, dt,entityRes , typeRes , valueRes);
         }
 
-        public ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes = default, string typeRes = default,
-            double valueRes = default)
+        public ResponseT<Condition> AddCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
+            M entityRes = default, string typeRes = default, double valueRes = default)
         {
-            return storeManager.AddCondition(store , entity,type,value,dt,entityRes , typeRes , valueRes);
+            throw new NotImplementedException();
         }
 
-        public void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default, string typeRes = default,
-            double valueRes = default)
+        public ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+            string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
-            storeManager.RemoveCondition(store ,entity,type,value,dt ,entityRes , typeRes , valueRes);
+            return storeManager.AddCondition(store , entity,entityName,type,value,dt,entityRes , entityResName, typeRes , valueRes  ,op , opCond);
+        }
+
+        public void RemoveCondition(Guid storeID ,int condID)
+        {
+            storeManager.RemoveCondition(storeID,condID);
         }
 
         public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
@@ -569,6 +578,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId)
         {
             return storeManager.GetStoreInfo(userID, storeId);
+        }
+
+        public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            return userManager.MarkNotificationAsRead(userID, notificationID);
         }
     }
 }

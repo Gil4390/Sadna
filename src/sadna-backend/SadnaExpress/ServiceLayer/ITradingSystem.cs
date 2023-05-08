@@ -34,8 +34,8 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail); //2.5
         ResponseT<Guid> Logout(Guid userID); //3.1
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
-        Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText); //3.3
-        ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID);
+        Response WriteItemReview(Guid userID, Guid itemID, string reviewText); //3.3
+        ResponseT<List<SReview>> GetItemReviews(Guid itemID);
         Response RateItem(Guid userID, int itemID, int score); //3.4 (not in this version)
         Response WriteMessageToStore(Guid userID, Guid storeID, string message); //3.5  (not in this version)
         Response ComplainToAdmin(Guid userID, string message); //3.6 (not in this version)
@@ -91,6 +91,10 @@ namespace SadnaExpress.ServiceLayer
         bool IsSystemInitialize();
 
         ResponseT<PurchaseCondition[] > GetAllConditions(Guid store);
+        
+        ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+            string typeRes = default, double valueRes = default , string op= default, int opCond= default);
+        void RemoveCondition(Guid storeID ,int condID);
 
         ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value, DateTime dt=default, M entityRes = default,
             string typeRes = default, double valueRes = default);
@@ -125,5 +129,6 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID);
 
         ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId);
+        Response MarkNotificationAsRead(Guid userID, Guid notificationID);
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.ServiceLayer.Obj;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.ServiceLayer.ServiceObjects
 {
@@ -21,8 +22,8 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<ShoppingCart> GetDetailsOnCart(Guid userID);
         ResponseT <List<ItemForOrder>> PurchaseCart(Guid id, string paymentDetails, string usersDetail); //2.5
         ResponseT<Guid> OpenNewStore(Guid id, string storeName); //3.2
-        Response WriteItemReview(Guid id, Guid storeID, Guid itemID, string review); //3.3
-        ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID);
+        Response WriteItemReview(Guid id, Guid itemID, string review); //3.3
+        ResponseT<List<SReview>> GetItemReviews(Guid itemID);
         //4.1
         ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID,  string itemName, string itemCategory, double itemPrice,
             int quantity);
@@ -43,8 +44,10 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         void SetTSOrders(IOrders orders);
         ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
         ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
-        ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
-        void RemoveCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default);
+
+        ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+            string typeRes = default, double valueRes = default , string op= default, int opCond= default);  
+        void RemoveCondition(Guid storeID ,int condID);
         ResponseT<PurchaseCondition[] > GetAllConditions(Guid store);
         ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
         ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);

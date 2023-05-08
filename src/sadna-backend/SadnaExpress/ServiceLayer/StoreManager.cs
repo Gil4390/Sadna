@@ -7,6 +7,7 @@ using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.ServiceObjects;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 namespace SadnaExpress.ServiceLayer
@@ -136,10 +137,13 @@ namespace SadnaExpress.ServiceLayer
                     throw new Exception("Supply operation failed");
                 }
                 Orders.Instance.AddOrder(userID, itemForOrders);
-                
+
+                // Notify to store owners
+                foreach (ShoppingBasket basket in shoppingCart.Baskets)
+                    NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store "+storeFacade.GetStore(basket.StoreID).StoreName+" !", userID);
+             
                 // delete the exist shopping cart
                 userFacade.PurchaseCart(userID);
-                NotificationSystem.Instance.NotifyObserversInStores(cart.Keys, "purchase cart", userID);
                 return new ResponseT<List<ItemForOrder>>(itemForOrders);
             }
             catch (Exception ex)
@@ -169,7 +173,7 @@ namespace SadnaExpress.ServiceLayer
             {
                 userFacade.CloseStore(userID, storeID);
                 storeFacade.CloseStore(storeID);
-                NotificationSystem.Instance.NotifyObservers(storeID,"Close store",userID);
+                NotificationSystem.Instance.NotifyObservers(storeID,"Store "+ storeFacade.GetStore(storeID).StoreName+" was Closed",userID);
                 return new Response();
             }
             catch (Exception ex)
@@ -231,12 +235,12 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public Response WriteItemReview(Guid userID, Guid storeID, Guid itemID, string reviewText)
+        public Response WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
             try
             {
                 userFacade.isLoggedIn(userID);
-                storeFacade.WriteItemReview(userID, storeID, itemID, reviewText);
+                storeFacade.WriteItemReview(userID, itemID, reviewText);
                 return new Response();
             }
             catch (Exception ex)
@@ -245,10 +249,14 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public ResponseT<List<Review>> GetItemReviews(Guid storeID, Guid itemID)
+        public ResponseT<List<SReview>> GetItemReviews(Guid itemID)
         {
-            List<Review> reviews = storeFacade.GetItemReviews(storeID, itemID);
-            return new ResponseT<List<Review>>(reviews);
+            List<Review> reviews = storeFacade.GetItemReviews(itemID);
+            List<SReview> sReviews = new List<SReview>();
+            foreach (Review review in reviews) { 
+                sReviews.Add(new SReview(review));
+            }
+            return new ResponseT<List<SReview>>(sReviews);
         }
         public Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price)
         {
@@ -444,16 +452,14 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        public ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+            string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             try
             {
-                Condition cond = storeFacade.GetCondition(store ,entity,type,value,dt,entityRes , typeRes , valueRes);
-                if (cond != null)
-                    return new ResponseT<Condition>(storeFacade.AddCondition(store, entity, type, value,dt, entityRes,
-                        typeRes, valueRes));
-                else
-                    return null;
+                Condition c = storeFacade.AddCondition(store, entity, entityName, type, value, dt, entityRes,
+                    entityResName, typeRes, valueRes , op ,opCond);
+                return new ResponseT<Condition>(c);
             }
             catch (Exception ex)
             {
@@ -462,12 +468,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public void RemoveCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
+        public void RemoveCondition(Guid storeID , int condID)
         {
             try
             {
-                Condition cond = storeFacade.GetCondition(store ,entity,type,value,dt,entityRes , typeRes , valueRes);
-                storeFacade.RemoveCondition(store ,cond);
+                storeFacade.RemoveCondition(storeID ,condID);
             }
             catch (Exception ex)
             {

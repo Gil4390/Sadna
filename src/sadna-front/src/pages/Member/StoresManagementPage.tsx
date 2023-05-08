@@ -13,7 +13,9 @@ function StoresManagementPage(props) {
   const [storesIdList, setStoresIdList] = useState<string[]>([]);
   const [storeName, setStoreName] = useState<string>('');
   const [addStoreResponse, setAddStoreResponse]=useState<ResponseT>();
+
   const [refreshStores, setRefreshStores]=useState(0);
+  
   const handleAddModalClose = () => setShowAddModal(false);
   const handleAddModalShow = () => setShowAddModal(true);
 
@@ -36,7 +38,6 @@ function StoresManagementPage(props) {
    }, [permissions,refreshStores])
 
    useEffect(() => {
-    console.log(props.id);
     getPermissions();
   }, [])
 
@@ -58,13 +59,22 @@ function StoresManagementPage(props) {
     }
   }, [storesIdList])
 
+  const isValidStoreName = (name) => {
+    const storeNamePattern = /^[a-zA-Z0-9\s]{3,50}$/;
+    return storeNamePattern.test(name);
+  }
+
   const handleAddStore = (event) => {
     event.preventDefault();
+
+    if(isValidStoreName(storeName))
+    {
     handleOpenNewStore(props.id,storeName).then(
       value => {
         setAddStoreResponse(value as ResponseT);
       })
       .catch(error => alert(error));
+    }
   };
 
   const handleNameChange = (event) => {
@@ -88,7 +98,10 @@ function StoresManagementPage(props) {
               <Form onSubmit={handleAddStore}>
                 <Form.Group controlId="Store name">
                   <Form.Label>Name</Form.Label>
-                  <Form.Control type="text" placeholder="Enter name" value={storeName} onChange={handleNameChange}/>
+                  <Form.Control type="text" placeholder="Enter name" value={storeName} onChange={handleNameChange}   
+            style={{borderColor: isValidStoreName(storeName) || storeName.length === 0 ? '#28a745' : '#dc3534'}} />
+            {!isValidStoreName(storeName) && storeName.length > 0 && <Form.Text className='text-danger'>No Valid Store Name! Store name should contain min 3 letter/numbers</Form.Text>}
+
                 </Form.Group>
                 <Button variant="primary" type="submit" style={{margin: "0.5rem"}}>
                   Add

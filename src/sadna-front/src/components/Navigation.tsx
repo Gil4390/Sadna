@@ -20,8 +20,6 @@ function Navigation(props) {
   }
   useEffect(() => {
     if(response !=undefined){
-      console.log("err? "+response?.errorOccured);
-      console.log("errmsg? "+response?.errorMessage);
       response?.errorOccured ? alert(response?.errorMessage) : LogoutSuccess();
     }
  }, [response])

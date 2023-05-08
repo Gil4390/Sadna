@@ -155,6 +155,8 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         public T entity;
         public double minPrice;
         public string minmax;
+        public string op;
+        public int opCond;
 
         // T can be store or category(string)
         public ValueCondition(T entity, double minPrice, string minmax)
@@ -162,6 +164,8 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             this.entity = entity;
             this.minPrice = minPrice;
             this.minmax = minmax;
+            op = "";
+            opCond = -1;
         }
 
         public override bool Evaluate(Store store, Dictionary<Item, int> basket)
@@ -252,6 +256,8 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         public T entity;
         public int Quantity;
         public string minmax;
+        public string op;
+        public int opCond;
 
         // T can be store or item or category(string)
         public QuantityCondition(T entity, int Quantity , string minmax)
@@ -259,6 +265,8 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             this.entity = entity;
             this.Quantity = Quantity;
             this.minmax = minmax;
+            op = "";
+            opCond = -1;
         }
 
         public override bool Evaluate(Store store, Dictionary<Item, int> basket)
@@ -347,6 +355,8 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         public T entity;
         public DateTime timing;
         public string beforeAfter;
+        public string op;
+        public int opCond;
 
         // T can be store or item or category(string)
         public TimeCondition(T entity, DateTime timing , string beforeAfter)
@@ -354,6 +364,8 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             this.entity = entity;
             this.timing = timing;
             this.beforeAfter = beforeAfter;
+            op = "";
+            opCond = -1;
         }
 
         public override bool Evaluate(Store store, Dictionary<Item, int> basket)

@@ -32,22 +32,34 @@ function LoginPage(props) {
 
   useEffect(() => {
     if(response !=undefined){
-      console.log("err? "+response?.errorOccured);
-      console.log("errmsg? "+response?.errorMessage);
       response?.errorOccured ? setMessage(response?.errorMessage) : LoginSuccess();
     }
  }, [response])
 
+
+ const isValidEmail = (email) => {
+  // regex for email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // test email againt regex pattern
+  return emailRegex.test(email);
+}
+
   const handleLoginSubmit = (event) => {
     event.preventDefault();
     console.log(`Email: ${email}, Password: ${password}`);
-
-    handleLogin(props.id,email,password).then(
-      value => {
-        setResponse(value as ResponseT);
-      })
-      .catch(error => alert(error));
     
+    if(!isValidEmail(email))
+    {
+      setMessage("Not Valid Email! Try Again!");
+    }
+    else
+    {
+      handleLogin(props.id,email,password).then(
+        value => {
+          setResponse(value as ResponseT);
+        })
+        .catch(error => alert(error));
+    }
     // do something with login credentials
   };
 
@@ -58,7 +70,9 @@ function LoginPage(props) {
         <Card.Title className="text-center">Welcome Back!</Card.Title>
         <Form onSubmit={handleLoginSubmit}>
           <Form.Group controlId="formBasicEmail" style={{margin: "15px"}}>
-            <Form.Control type="email" placeholder="Enter email" value={email} onChange={handleEmailChange} />
+            <Form.Control type="email" placeholder="Enter email" value={email} onChange={handleEmailChange}   
+            style={{borderColor: isValidEmail(email) || email.length === 0 ? '#28a745' : '#dc3534'}} />
+            {!isValidEmail(email) && email.length > 0 && <Form.Text className='text-danger'>No Valid Email! Try Again!</Form.Text>}
           </Form.Group>
 
           <Form.Group controlId="formBasicPassword" style={{margin: "15px"}}>

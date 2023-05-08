@@ -9,6 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 using SadnaExpress.ServiceLayer;
 using System.Threading.Tasks;
 using NodaTime;
+using Microsoft.AspNet.SignalR.Hosting;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -27,7 +28,8 @@ namespace SadnaExpress.DomainLayer.User
         public IPaymentService PaymentService { get => paymentService; set => paymentService = value; }
         private ISupplierService supplierService;
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
-        protected NotificationSystem notificationSystem = NotificationSystem.Instance;
+
+
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
@@ -154,7 +156,6 @@ namespace SadnaExpress.DomainLayer.User
                         }
                     }
                     Logger.Instance.Info($"{member} {member.Email} logged in");
-                    member.showAllMessages();
                     return member.UserId;
                 }
             }
@@ -247,10 +248,12 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userID);
             PromotedMember founder = members[userID].openNewStore(storeID);
-            if (founder != null)
+            if (founder != null) 
                 members[userID] = founder;
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
 
+            NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
+
+            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
 
         }
 
@@ -291,6 +294,7 @@ namespace SadnaExpress.DomainLayer.User
                 RemoveStoreManagerPermissions(userID, storeID, userEmail, permission);
             }
         }
+
         public void AppointStoreOwner(Guid userID, Guid storeID, string email)
         {
             IsTsInitialized();
@@ -304,9 +308,10 @@ namespace SadnaExpress.DomainLayer.User
                 IsMember(email);
                 PromotedMember owner = members[userID].AppointStoreOwner(storeID, members[newOwnerID]);
                 members[newOwnerID] = owner;
+                NotificationSystem.Instance.RegisterObserver(storeID, owner);
             }
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
-            notificationSystem.RegisterObserver(storeID,GetMember(newOwnerID));
+            
         }
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)
@@ -315,7 +320,6 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             Guid storeOwnerID = IsMember(email).UserId;
             
-          
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +storeOwnerID +" removed as store owner");
             
             Tuple<List<Member>, List<Member>> result = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
@@ -331,8 +335,15 @@ namespace SadnaExpress.DomainLayer.User
                     members[mem.UserId] = mem;
                 }
             }
-            notificationSystem.updateMany(StoreOwnersDeleted,"remove store owner",userID);
-            notificationSystem.RemoveObservers(storeID,StoreOwnersDeleted);
+
+            foreach (Member mem in StoreOwnersDeleted)
+            {
+                NotificationSystem.Instance.NotifyObservers(StoreOwnersDeleted, storeID, "Yow where removed as store owner", userID);
+            }
+
+              
+            NotificationSystem.Instance.RemoveObservers(storeID, StoreOwnersDeleted);
+            
 
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveStoreOwner)+" appoints " +storeOwnerID +" removed as store owner");
         }
@@ -611,6 +622,11 @@ namespace SadnaExpress.DomainLayer.User
             return members[userId].AwaitingNotification;
         }
 
+        public void MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            members[userID].MarkNotificationAsRead(notificationID);
+        }
+
         public List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores)
         {
             List<Member> storeOwners = new List<Member>();
@@ -825,8 +841,10 @@ namespace SadnaExpress.DomainLayer.User
             AppointStoreManager(storeOwnerid2, storeid2, "zibi@gmail.com");
             storeOwner1.LoggedIn = false;
             storeOwner2.LoggedIn = false;
+
+
+
+            members[memberId].AwaitingNotification.Add(new Notification(DateTime.Now, Guid.Empty, "helooooo", memberId));
         }
-
-
     }
 }

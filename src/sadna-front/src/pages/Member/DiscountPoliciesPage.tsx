@@ -3,9 +3,8 @@ import { Container, ListGroup } from 'react-bootstrap';
 import React, { useState } from 'react';
 import { Button, Modal, Form , Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
-import { Condition } from '../../components/Condition';
+import { Condition } from '../../components/Condition.tsx';
 import Exit from "../Exit.tsx";
-import { handleGetAllPurchaseConditions } from '../../actions/MemberActions';
 
 function DiscountPoliciesPage(props) {
   const styles = {
