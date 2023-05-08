@@ -196,11 +196,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetEmployeeInfoInStore(id, storeID);
         }
-
-        public ResponseT<List<ItemForOrder>> GetStorePurchases(Guid userID, Guid storeID)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public Response RemoveUserMembership(Guid userID, string email)
         {
