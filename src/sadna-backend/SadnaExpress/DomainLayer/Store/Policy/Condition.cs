@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -248,6 +248,8 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 default:
                     throw new Exception("Need to be one of this operators");
             }
+
+            return false;
         }
     }
     

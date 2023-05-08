@@ -8,7 +8,7 @@ namespace SadnaExpress.ServiceLayer
 {
     public class ResponseT<T> : Response
     {
-        public readonly T Value;
+        public T Value;
 
         internal ResponseT() : base()
         {
