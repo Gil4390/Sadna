@@ -25,7 +25,7 @@ const PurchasedStoreItemsPage = (props) => {
 
   return (
     <Container>
-            <Exit id={props.id}/>
+      <Exit id={props.id}/>
       <h1>Purchases</h1>
       <Table striped bordered hover>
         <thead className="thead-dark">

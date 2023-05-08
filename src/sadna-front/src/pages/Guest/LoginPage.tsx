@@ -27,7 +27,6 @@ function LoginPage(props) {
     setEmail("");
     setPassword("");
     setMessage("Login completed successfully!");
-    setLocalId(response?.value);
     props.onIdChange(response?.value);
   }
 
@@ -58,6 +57,7 @@ function LoginPage(props) {
       handleLogin(props.id,email,password).then(
         value => {
           setResponse(value as ResponseT);
+          setLocalId(value.value);
           //navigate("/");
         })
         .catch(error => alert(error));
@@ -67,7 +67,7 @@ function LoginPage(props) {
 
   return (
     <Card style={{ maxWidth: '500px', margin: 'auto' }}>
-      <Exit id={props.id}/>
+      <Exit id={localId}/>
       <Card.Body>
         <Card.Title className="text-center">Welcome Back!</Card.Title>
         <Form onSubmit={handleLoginSubmit}>
