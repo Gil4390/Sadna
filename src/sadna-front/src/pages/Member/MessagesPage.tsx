@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
 import { handleGetUserNotifications, handleMarkNotificationAsRead } from '../../actions/MemberActions.tsx';
 import { Notification } from '../../models/Notification.tsx';
-import Exit from '../Exit.js';
+import Exit from '../Exit.tsx';
 
 function MessagesPage(props) {
   const [messages, setMessages] = useState<Notification[]>([]);
