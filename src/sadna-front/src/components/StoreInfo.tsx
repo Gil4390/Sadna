@@ -66,9 +66,9 @@ export function StoreInfo(props) {
   return (
     <div>
       <h2>{store?.name}</h2>
-      <Button variant="dark" onClick={() =>handleNavigate("/ManageItemsPage",props.id,props.store)} style={{margin: "5px"}}>
+      {permission.product_management && <Button variant="dark" onClick={() =>handleNavigate("/ManageItemsPage",props.id,props.store)} style={{margin: "5px"}}>
         View Items
-      </Button>
+      </Button>}
       {permission.get_employees_info &&<Button variant="dark" onClick={() => handleNavigate("/ManageStoreEmployeesPage",props.id,props.store)} style={{margin: "5px"}} >
         View Employees
       </Button>}
@@ -76,19 +76,20 @@ export function StoreInfo(props) {
         <Button variant="dark" onClick={() => handleNavigate("/PurchasedStoreItemsPage",props.id,props.store)} style={{margin: "5px"}} >
           View Purchase History
         </Button>)}
-      <Button variant="dark" onClick={() => navigate("/DiscountPoliciesPage")} style={{margin: "5px"}}>
+      {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => navigate("/DiscountPoliciesPage")} style={{margin: "5px"}}>
         Discount Policies
-      </Button>
-      <Button variant="dark" onClick={() => handleViewPurchasePolicyPage(props.id , props.store)} style={{margin: "5px"}}>
+      </Button>}
+      {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => handleViewPurchasePolicyPage(props.id , props.store)} style={{margin: "5px"}}>
         Purchase Policies
-      </Button>
+      </Button>}
       {(store?.isOpen && permission.founder ? (
         <div> 
           <Button variant="danger" onClick={handleCloseStorePress} style={{margin: "5px"}}>
             close store
           </Button>
         </div>) : 
-        <div></div>)}
+        <div></div>)
+        }
         {(store?.isOpen==false? (
         <div> Store is currently close
         </div>) : 
