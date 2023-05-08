@@ -32,7 +32,7 @@ namespace SadnaExpressTests.Unit_Tests
             item1 = store.AddItem("Bisli", "Food", 10.0, 2);
             item2 = store.AddItem("Bamba", "Food", 8.0, 2);
             item3 = store.AddItem("Ipad", "electronic", 4000, 2);
-            policy1 = store.CreateSimplePolicy(store, 20, new DateTime(2022, 4, 30), new DateTime(2024, 4, 30));
+            policy1 = store.CreateSimplePolicy(store.StoreName, 20, new DateTime(2022, 4, 30), new DateTime(2024, 4, 30));
             policy2 = store.CreateSimplePolicy(store.GetItemById(item1), 50, new DateTime(2022, 4, 30),
                 new DateTime(2024, 4, 30));
             policy3 = store.CreateSimplePolicy("Food", 50, new DateTime(2022, 4, 30),

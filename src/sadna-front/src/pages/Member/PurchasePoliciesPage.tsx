@@ -12,13 +12,6 @@ import { Condition } from '../../components/Condition.tsx';
 function PurchasePoliciesPage(props) {
   const location = useLocation();
   const { userId, storeId } = location.state;
-  const items = [
-    { id: 1 ,  entity:'Item' , entityID:11 , type:'min quantity' , value:0,},
-    { id: 2 ,  entity:'Item' , entityID:12 , type:'max quantity' , value:1 ,
-     op:'Conditioning' , entityRes:'Item' , entityIDRes:14 , typeRes:'max quantity' , valueRes:0 , opCond:-1},
-     { id: 3 ,  entity:'Item' , entityID:14 , type:'max quantity' , value:10,op:'AND' , opCond:1},
-  ];
-  const [allItems, setAllItems] = useState(items);
 
   const [policysList, setPolicyList] = useState<PurcahseCondition[]>([]);
 
@@ -60,6 +53,7 @@ function PurchasePoliciesPage(props) {
 
     handleGetAllPurchaseConditions(storeId).then(
       value => {
+        console.log(value)
         setPolicyList(value as PurcahseCondition[]);
       })
       .catch(error => alert(error));
@@ -139,6 +133,7 @@ return (
                 value={EntityChoice}
                 onChange={(e) => setEntityChoice(e.target.value)}
               >
+                <option>Type</option>
                 <option>Store</option>
                 <option>Category</option>
                 <option>Item</option>

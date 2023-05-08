@@ -50,7 +50,6 @@ function CartPage(props) {
       value => {
         value.errorOccured ?
         alert(value.errorMessage) :  navigate('/PaymentPage', {state: {id}})
-    
       })
       .catch(error => alert(error));
   }

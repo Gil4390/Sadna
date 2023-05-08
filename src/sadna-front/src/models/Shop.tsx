@@ -42,4 +42,11 @@ export interface PurcahseCondition {
     opCond: number,  
 };
 
+export interface Policy {
+    policyID:  string,
+    policyRule:string,
+    active:boolean,
+};
+
+
 

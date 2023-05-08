@@ -129,10 +129,10 @@ namespace SadnaExpress.API.ClientRequests
         public int opCond{ get; set; }
     }
     
-    public class PolicyRequest<T> : ClientRequest
+    public class PolicyRequest : ClientRequest
     {
         public Guid storeID{ get; set; }
-        public T level{ get; set; }
+        public string level{ get; set; }
         public int percent { get; set; }
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }

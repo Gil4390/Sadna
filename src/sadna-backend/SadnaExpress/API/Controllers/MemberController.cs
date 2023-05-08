@@ -243,11 +243,22 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult AddCondition([FromBody] ConditionRequest request)
         {
             tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
-                request.type, request.value, new DateTime(), request.entityRes, request.entityNameRes, request.typeRes,
+                request.type, request.value, DateTime.MaxValue, request.entityRes, request.entityNameRes, request.typeRes,
                 request.valueRes , request.op,request.opCond);
             ResponseT<PurchaseCondition[]> a = tradingSystem.GetAllConditions(request.storeID);
             return Ok(a);
         }
+        // [Route(APIConstants.MemberData.addDiscountCondition)]
+        // [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
+        // [HttpPost]
+        // public IHttpActionResult AddConditionForDiscount([FromBody] ConditionRequest request)
+        // {
+        //     tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
+        //         request.type, request.value, new DateTime(), request.entityRes, request.entityNameRes, request.typeRes,
+        //         request.valueRes , request.op,request.opCond);
+        //     ResponseT<PurchaseCondition[]> a = tradingSystem.GetAllConditions(request.storeID);
+        //     return Ok(a);
+        // }
         [Route(APIConstants.MemberData.removeCondition)]
         [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
         [HttpPost]
@@ -259,11 +270,12 @@ namespace SadnaExpress.API.Controllers
         
         
         [Route(APIConstants.MemberData.createSimplePolicy)]
-        [ResponseType(typeof( ResponseT<DiscountPolicy>))]
+        [ResponseType(typeof(SPolicy[]))]
         [HttpPost]
-        public IHttpActionResult createSimplePolicy<T>([FromBody] PolicyRequest<T> request)
+        public IHttpActionResult CreateSimplePolicy([FromBody] PolicyRequest request)
         {
-            return Ok(tradingSystem.CreateSimplePolicy(request.storeID,request.level,request.percent,request.startDate,request.endDate));
+            tradingSystem.CreateSimplePolicy(request.storeID,request.level,request.percent,request.startDate,request.endDate);
+            return Ok(tradingSystem.GetAllPolicy(request.userID , request.storeID));
         }
         
         [Route(APIConstants.MemberData.createComplexPolicy)]
@@ -351,6 +363,14 @@ namespace SadnaExpress.API.Controllers
         {
             var res = tradingSystem.GetMemberName(request.userID);
             return Ok(res);
+        }
+        [Route(APIConstants.MemberData.getAllPolicy)]
+        [ResponseType(typeof(SPolicy[]))]
+        [HttpPost]
+        public IHttpActionResult GetAllPolicy([FromBody] StoreIDRequest request)
+        {
+            List<SPolicy> a = tradingSystem.GetAllPolicy(request.userID, request.storeID).Value;
+            return Ok(a.ToArray());
         }
     }
 }

@@ -145,14 +145,34 @@ namespace SadnaExpress.DomainLayer.Store
 
         public DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
         {
-            SimpleDiscount<T> simpleDiscount = new SimpleDiscount<T>(level, percent, startDate, endDate);
-            simpleDiscount.ID = discountPolicyCounter;
-            discountPolicyCounter++;
-            allDiscountPolicies.Add(simpleDiscount, false);
-            return simpleDiscount;
+            switch (level)
+            {
+                case Item item:
+                    SimpleDiscount<Item> simpleDiscountI = new SimpleDiscount<Item>(item, percent, startDate, endDate);
+                    simpleDiscountI.ID = discountPolicyCounter;
+                    discountPolicyCounter++;
+                    allDiscountPolicies.Add(simpleDiscountI, false);
+                    return simpleDiscountI;
+                    break;
+                case Store store:
+                    SimpleDiscount<Store> simpleDiscountS = new SimpleDiscount<Store>(store, percent, startDate, endDate);
+                    simpleDiscountS.ID = discountPolicyCounter;
+                    discountPolicyCounter++;
+                    allDiscountPolicies.Add(simpleDiscountS, false);
+                    return simpleDiscountS;
+                    break;
+                case string category:
+                    SimpleDiscount<string> simpleDiscountStr = new SimpleDiscount<string>(category, percent, startDate, endDate);
+                    simpleDiscountStr.ID = discountPolicyCounter;
+                    discountPolicyCounter++;
+                    allDiscountPolicies.Add(simpleDiscountStr, false);
+                    return simpleDiscountStr;
+                    break;
+            }
+            return null;
         }
 
-        private Condition checkNotInList(Condition c)
+        private Condition checkNotInList(Condition c , DateTime dt=default)
         {
             foreach (Condition cond in PurchasePolicyList)
             {
@@ -161,11 +181,12 @@ namespace SadnaExpress.DomainLayer.Store
             }
 
             AddSimplePurchaseCondition(c);
-            PurchasePolicyList.Add(c);
+            if (dt != default)
+                PurchasePolicyList.Add(c);
             return c;
         }
         
-        public Condition AddCondition<T>(T entity, string type, double val, DateTime dt=default , string op=default , int opCond=default)
+        public Condition AddCondition<T>(T entity, string type, double val, DateTime dt=default , string op=default , int opCond=default , bool p=default)
         {
             if (val < 0)
                 throw new Exception("value must be positive");
@@ -182,7 +203,7 @@ namespace SadnaExpress.DomainLayer.Store
                         minValue.op = op;
                         minValue.opCond = opCond;
                     }
-                    cond = checkNotInList(minValue);
+                    cond = checkNotInList(minValue,dt);
                     break;
                 case "max value":
                     ValueCondition<T> maxValue = new ValueCondition<T>(entity, val, "max");
@@ -192,7 +213,7 @@ namespace SadnaExpress.DomainLayer.Store
                         maxValue.op = op;
                         maxValue.opCond = opCond;
                     }
-                    cond = checkNotInList(maxValue);
+                    cond = checkNotInList(maxValue,dt);
                     break;
                 case "min quantity":
                     QuantityCondition<T> minQuantity = new QuantityCondition<T>(entity, (int)val, "min");
@@ -202,7 +223,7 @@ namespace SadnaExpress.DomainLayer.Store
                         minQuantity.op = op;
                         minQuantity.opCond = opCond;
                     }
-                    cond = checkNotInList(minQuantity);
+                    cond = checkNotInList(minQuantity,dt);
                     break;
                 case "max quantity":
                     QuantityCondition<T> maxQuantity = new QuantityCondition<T>(entity, (int)val, "max");
@@ -212,7 +233,7 @@ namespace SadnaExpress.DomainLayer.Store
                         maxQuantity.op = op;
                         maxQuantity.opCond = opCond;
                     }
-                    cond = checkNotInList(maxQuantity);
+                    cond = checkNotInList(maxQuantity,dt);
                     break;
                 case "before time":
                     TimeCondition<T> timeBefore = new TimeCondition<T>(entity, dt, "before");
@@ -222,7 +243,7 @@ namespace SadnaExpress.DomainLayer.Store
                         timeBefore.op = op;
                         timeBefore.opCond = opCond;
                     }
-                    cond = checkNotInList(timeBefore);
+                    cond = checkNotInList(timeBefore,dt);
                     break;
                 case "after time":
                     TimeCondition<T> timeAfter = new TimeCondition<T>(entity, dt, "after");
@@ -232,12 +253,13 @@ namespace SadnaExpress.DomainLayer.Store
                         timeAfter.op = op;
                         timeAfter.opCond = opCond;
                     }
-                    cond = checkNotInList(timeAfter);
+                    cond = checkNotInList(timeAfter,dt);
                     break;
                 default:
                     throw new Exception("the condition not fine");
             }
-            condDiscountPolicies.Add(cond, false);
+            if (dt == default)
+                condDiscountPolicies.Add(cond, false);
             return cond;
         }
 

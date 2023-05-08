@@ -547,7 +547,7 @@ namespace SadnaExpress.ServiceLayer
                 }
                 foreach (Condition cond in policies.Item2.Keys)
                 {
-                    spolicies.Add(new SPolicy(cond.ID, cond.ToString(), policies.Item2[cond]));
+                    spolicies.Add(new SPolicy(cond.ID, cond.ToString(), policies.Item2[cond] ));
                 }
                 return new ResponseT<List<SPolicy>>(spolicies);
             }

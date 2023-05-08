@@ -56,12 +56,6 @@ export function StoreInfo(props) {
     }, });
   }
 
-  function handleViewPurchasePolicyPage(uId, sId) {
-    navigate("/PurchasePoliciesPage", { state: { 
-      userId: uId,
-      storeId: sId ,
-    }, });
-  }
 
   return (
     <div>
@@ -76,10 +70,10 @@ export function StoreInfo(props) {
         <Button variant="dark" onClick={() => handleNavigate("/PurchasedStoreItemsPage",props.id,props.store)} style={{margin: "5px"}} >
           View Purchase History
         </Button>)}
-      {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => navigate("/DiscountPoliciesPage")} style={{margin: "5px"}}>
+      {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => handleNavigate ("/DiscountPoliciesPage",props.id , props.store)} style={{margin: "5px"}}>
         Discount Policies
       </Button>}
-      {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => handleViewPurchasePolicyPage(props.id , props.store)} style={{margin: "5px"}}>
+      {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => handleNavigate ("/PurchasePoliciesPage",props.id , props.store)} style={{margin: "5px"}}>
         Purchase Policies
       </Button>}
       {(store?.isOpen && permission.founder ? (

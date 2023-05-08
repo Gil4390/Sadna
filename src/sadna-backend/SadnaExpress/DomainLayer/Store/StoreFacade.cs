@@ -568,8 +568,8 @@ namespace SadnaExpress.DomainLayer.Store
             stores.TryAdd(store1.StoreID, store1);
             stores.TryAdd(store2.StoreID, store2);
             
-            Condition cond1 = store1.AddCondition(store1.GetItemById(i1), "min quantity", 0);
-            Condition cond2 = store1.AddCondition(store1.GetItemById(i2), "min value", 0);
+            Condition cond1 = store1.AddCondition(store1.GetItemById(i1), "min quantity", 0,DateTime.MaxValue);
+            Condition cond2 = store1.AddCondition(store1.GetItemById(i2), "min value", 0 ,DateTime.MaxValue);
             store1.AddSimplePurchaseCondition(cond1);
             store1.AddSimplePurchaseCondition(cond2);
             DiscountPolicy policy1 = store1.CreateSimplePolicy(store1, 50, DateTime.Now, new DateTime(2024, 5, 20));

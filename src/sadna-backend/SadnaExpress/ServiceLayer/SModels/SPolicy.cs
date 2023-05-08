@@ -10,6 +10,7 @@ namespace SadnaExpress.ServiceLayer.SModels
         public string PolicyRule { get => policyRule; }
         private bool active;
         public bool Active { get => active; }
+        
 
         public SPolicy(DiscountPolicy discountPolicy, bool active)
         {

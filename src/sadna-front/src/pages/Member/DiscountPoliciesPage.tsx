@@ -1,12 +1,22 @@
 
 import { Container, ListGroup } from 'react-bootstrap';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Button, Modal, Form , Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
-import { Condition } from '../../components/Condition.tsx';
 import Exit from "../Exit.tsx";
+import { handleAddPolicy, handleGetAllPolicy ,handleCreateSimplePolicy,handleCreateComplexPolicy} from '../../actions/MemberActions.tsx';
+import { useLocation } from 'react-router-dom';
+import { Policy} from '../../models/Shop.tsx';
+import { DiscountCondition } from  '../../components/DiscountCondition.tsx';
+
+
 
 function DiscountPoliciesPage(props) {
+
+  const location = useLocation();
+  const { userId, storeId } = location.state;
+
+  
   const styles = {
     container: {
       background: 'white',
@@ -69,11 +79,6 @@ function DiscountPoliciesPage(props) {
   const [entity, setEntity] = useState('');
   const [EntityChoice, setEntityChoice] = useState('');
   const [condValue, setCondValue] = useState('');
-  const navigate = useNavigate();
-  const items = [
-    { id: 1 ,  entity:'Item' , entityID:11 , type:'min quantity' , value:0},
-  ];
-  const [allItems, setAllItems] = useState(items);
   const [showTable, setShowTable] = useState(false);
 
   const handleButtonClick = () => {
@@ -82,9 +87,77 @@ function DiscountPoliciesPage(props) {
   const [showTable2, setShowTable2] = useState(false);
 
   const handleButtonClick2 = () => {
+    // console.log(optionElements)
     setShowTable2(!showTable2);
   };
+  const [policysList, setPolicyList] = useState<Policy[]>([]);
+  
 
+//   useEffect(() => {
+//     const idList = policysList.map((item) => item.policyID);
+//  }, [])
+//  const filteredList = policysList.filter((item) => item.typeOf === "Condition");
+//  const optionElements = policysList.map((item) => (
+//    <option key={item.policyID} value={item.policyID}>
+//      {item.policyID}
+//    </option>
+ //));
+
+
+  const GetDiscountPolicy =()=>{
+    handleGetAllPolicy(userId ,storeId).then(
+      value => {
+        setPolicyList(value as Policy[]);
+      })
+      .catch(error => alert(error));
+  }
+  useEffect(() => {
+    GetDiscountPolicy();
+ }, [])
+
+ const [startDate, setSelectedDate] = useState('');
+ const [endDate, setSelectedDate2] = useState('');
+
+ function handleDateChange(event) {
+    setSelectedDate(event.target.value);
+  }
+  function handleDateChange2(event) {
+    setSelectedDate2(event.target.value);
+  }
+ 
+
+ const handleSubmit = () => {
+    handleAddPolicy(storeId ,EntityChoice).then(
+      value => {
+        setPolicyList(value as Policy[]);
+      })
+      .catch(error => alert(error));
+  };
+  const Create_new_Simple_Discount_Policy = () => {
+    handleCreateSimplePolicy(storeId ,entity,condValue,startDate,endDate).then(
+        value => {
+          setPolicyList(value as Policy[]);
+        })
+        .catch(error => alert(error));
+  };
+  const Create_new_Condition_Policy = () => {
+    handleCreateComplexPolicy(storeId ,"","").then(
+        value => {
+          setPolicyList(value as Policy[]);
+        })
+        .catch(error => alert(error));
+  };
+  const Compound_Store_Policies_1 = () => {
+    handleAddPolicy(storeId ,-1).then(
+        value => {
+          setPolicyList(value as Policy[]);
+        })
+        .catch(error => alert(error));
+  }; 
+  const Compound_Store_Policies_2 = () => {
+}; 
+  const Compound_Store_Policies_3 = () => {
+  };
 
 return (
     <div className="container mt-5">
@@ -113,14 +186,14 @@ return (
               >
                 <option>Type</option>
                 <option>Store</option>
+                <option>Category</option>
                 <option>Item</option>
-                <option>Basket</option>
               </Form.Control>
             </Form.Group>
             <Form.Group>
               <Form.Control
                 type="ID"
-                placeholder="Enter ID"
+                placeholder="Enter Name"
                 value={entity}
                 onChange={(e) => setEntity(e.target.value)}
               />
@@ -133,46 +206,10 @@ return (
                 onChange={(e) => setCondValue(e.target.value)}
               />
             </Form.Group>
-        <input type="date" style={styles.input} />
-        <input type="date" style={styles.input} />
+        <input type="date" value={startDate} style={styles.input} onChange={handleDateChange}/>
+        <input type="date" value={endDate} style={styles.input} onChange={handleDateChange2}/>
         <div style={styles.buttonContainer}>
-          <button style={styles.button}>Create</button>
-        </div>
-      </div>
-      <div style={styles.form}>
-      <h2>Create new Condition Policy</h2>
-      <Form.Group>
-              <Form.Control
-                as="select"
-                value={EntityChoice2}
-                onChange={(e) => setEntityChoice2(e.target.value)}
-              >
-                <option>Type</option>
-                <option>Store</option>
-                <option>Item</option>
-                <option>Basket</option>
-              </Form.Control>
-            </Form.Group>
-            <Form.Group>
-              <Form.Control
-                type="ID"
-                placeholder="Enter ID"
-                value={entity2}
-                onChange={(e) => setEntity2(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Control
-                type="value"
-                placeholder="Amount"
-                value={condValue2}
-                onChange={(e) => setCondValue2(e.target.value)}
-              />
-            </Form.Group>
-        <input type="date" style={styles.input} />
-        <input type="date" style={styles.input} />
-        <div style={styles.buttonContainer}>
-          <button style={styles.button}>Create</button>
+          <button style={styles.button} onClick={Create_new_Simple_Discount_Policy}>Create</button>
         </div>
       </div>
     </div>}
@@ -186,6 +223,7 @@ return (
                 onChange={(e) => setCond1_1(e.target.value)}
               >
                 <option>Choose condition</option>
+                {/* {optionElements} */}
               </Form.Control>
             </Form.Group>
             <Form.Group>
@@ -215,7 +253,7 @@ return (
               </Form.Control>
             </Form.Group>
         <div style={styles.buttonContainer}>
-          <button style={styles.button}>Create</button>
+          <button style={styles.button} onClick={Compound_Store_Policies_1}>Create</button>
         </div>
       </div>
       <div style={styles.form}>
@@ -238,7 +276,7 @@ return (
               </Form.Control>
             </Form.Group>
         <div style={styles.buttonContainer}>
-          <button style={styles.button}>Create</button>
+          <button style={styles.button} onClick={Compound_Store_Policies_2}>Create</button>
         </div>
       </div>
       <div style={styles.form}>
@@ -261,16 +299,17 @@ return (
               </Form.Control>
             </Form.Group>
         <div style={styles.buttonContainer}>
-          <button style={styles.button}>Create</button>
+          <button style={styles.button} onClick={Compound_Store_Policies_3}>Create</button>
         </div>
       </div>
     </div>}
-      <Row className="mt-3">
-          {allItems.map((item) => (
-            <Col sm={8} md={5} lg={4} xl={3} key={item.id} className="mt-3">
-              
+         <Row className="mt-3">
+          {policysList.length===0? (<div>  No Items </div>): (policysList.map((cond) => (
+            // <div key={item.name}>{item.name} </div>
+            <Col  key={cond.policyID} className="mt-3">
+              <DiscountCondition { ...cond } handleRemove={GetDiscountPolicy}></DiscountCondition>
             </Col>
-            ))}
+            )))}
         </Row>
     </div>
   );
