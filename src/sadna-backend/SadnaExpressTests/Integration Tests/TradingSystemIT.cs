@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.API.SignalR;
 
 namespace SadnaExpressTests.Integration_Tests
 {
@@ -19,6 +20,7 @@ namespace SadnaExpressTests.Integration_Tests
 
         public virtual void Setup()
         {
+            NotificationNotifier.GetInstance().TestMood = true;
             trading = new TradingSystem();
             trading.SetIsSystemInitialize(true);
             trading.TestMode = true;
