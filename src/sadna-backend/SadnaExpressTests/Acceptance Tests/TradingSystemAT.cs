@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 using SadnaExpress.API.SignalR;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.Store.Policy;
 
 namespace SadnaExpressTests.Acceptance_Tests
 {
@@ -110,6 +111,15 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetPaymentService(new Mock_PaymentService());
             proxyBridge.SetSupplierService(new Mock_SupplierService());
             proxyBridge.SetIsSystemInitialize(true);
+            
+            DiscountPolicy policy1 = store1.CreateSimplePolicy(store1, 50, DateTime.Now, new DateTime(2024, 5, 20));
+            Condition cond3 = store1.AddCondition(store1.GetItemById(itemid1), "min quantity", 2);
+            DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
+
+            DiscountPolicy policy3 = store1.CreateSimplePolicy(store1, 10, DateTime.Now, new DateTime(2024, 5, 20));
+
+            store1.AddPolicy(policy2.ID);
+            store1.AddPolicy(policy3.ID);
         }
 
 

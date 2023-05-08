@@ -251,6 +251,23 @@ namespace SadnaExpress.DomainLayer.Store.Policy
 
             return false;
         }
+        public override string ToString()
+        {
+            string mn = "maximum";
+            if (minmax.Equals("min"))
+                mn = "minimum";
+            switch (entity)
+            {
+                case Store storeType:
+                    return $"({mn} purchase for {storeType.StoreName} is {minPrice}$)";
+                case Item itemType:
+                    return $"({mn} purchase for  {itemType.Name} is {minPrice}$)";
+                case string categoryType:
+                    return $"({mn} purchase for {categoryType} is {minPrice}$)";
+                default:
+                    return "";
+            }
+        }
     }
     
     public class QuantityCondition<T> : Condition
@@ -348,6 +365,24 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                     return this.Quantity >= q;
                 default:
                     throw new Exception("Need to be one of this operators");
+            }
+        }
+
+        public override string ToString()
+        {
+            string mn = "maximum";
+            if (minmax.Equals("min"))
+                mn = "minimum";
+            switch (entity)
+            {
+                case Store storeType:
+                    return $"({mn} quantity of {storeType.StoreName} is {Quantity})";
+                case Item itemType:
+                    return $"({mn} quantity of {itemType.Name} is {Quantity})";
+                case string categoryType:
+                    return $"({mn} quantity of {categoryType} is {Quantity})";
+                default:
+                    return "";
             }
         }
     }
