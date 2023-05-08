@@ -428,7 +428,39 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<List<SMember>> GetMembers(Guid userID)
         {
-            return userManager.GetMembers(userID);
+            try
+            {
+                ConcurrentDictionary<Guid, Member> members = userManager.GetMembers(userID);
+                List<SMember> sMembers = new List<SMember>();
+
+                foreach (Member member in members.Values)
+                {
+                    SMember sMember = new SMember(member);
+
+                    if (member is PromotedMember)
+                    {
+                        PromotedMember pmember = (PromotedMember)member;
+
+                        foreach (Guid storeID in pmember.Permission.Keys)
+                        {
+                            if (!storeID.Equals(Guid.Empty))
+                            {
+                                string storeName = storeManager.GetStore(storeID).Value.StoreName;
+                                sMember.Permissions.Add(storeName + ": ");
+                            }
+                            sMember.Permissions.AddRange(pmember.Permission[storeID]);
+                        }
+
+                    }
+                    sMembers.Add(sMember);
+                }
+                return new ResponseT<List<SMember>>(sMembers);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message + " in " + nameof(GetMembers));
+                return new ResponseT<List<SMember>>(ex.Message);
+            }
         }
         public ResponseT<ConcurrentDictionary<Guid , Store>> GetStores()
         {

@@ -25,23 +25,7 @@ namespace SadnaExpress.ServiceLayer.SModels
             this.lastName = member.LastName;
             this.loggedIn = member.LoggedIn;
 
-
             this.permissions = new List<string>();
-
-            if (member is PromotedMember)
-            {
-                PromotedMember pmember = (PromotedMember)member;
-
-                foreach (Guid storeID in pmember.Permission.Keys)
-                {
-                    if (!storeID.Equals(Guid.Empty))
-                    {
-                        this.permissions.Add(storeID.ToString() + ": ");
-                    }
-                    this.permissions.AddRange(pmember.Permission[storeID]);
-                }
-
-            }
         }
 
         public Guid Id { get => id; set => id = value; }
