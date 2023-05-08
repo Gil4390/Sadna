@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 
-namespace SadnaExpress.API.WebClient.SignalR
+namespace SadnaExpress.API.SignalR
 {
     public class SignalRServiceHost
     {

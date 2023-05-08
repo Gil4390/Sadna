@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
+namespace SadnaExpress.DomainLayer.Store.Policy
 {
     public abstract class Condition
     {
@@ -48,6 +48,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         }
         
     }
+
     public class ConditioningCondition : Condition
     {
         public Condition cond;
@@ -75,7 +76,6 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         }
     }
     
-
     public abstract class ConditioningResult
     {
         public Item item;
@@ -120,6 +120,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             }
         }
     }
+
     public class ConditioningResultSum : ConditioningResult
     {
         public double sum;
@@ -249,7 +250,6 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             }
         }
     }
-
     
     public class QuantityCondition<T> : Condition
     {

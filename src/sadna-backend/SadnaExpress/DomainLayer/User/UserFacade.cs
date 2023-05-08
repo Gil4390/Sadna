@@ -9,7 +9,6 @@ using System.Security.Cryptography.X509Certificates;
 using SadnaExpress.ServiceLayer;
 using System.Threading.Tasks;
 using NodaTime;
-using Microsoft.AspNet.SignalR.Hosting;
 
 namespace SadnaExpress.DomainLayer.User
 {
