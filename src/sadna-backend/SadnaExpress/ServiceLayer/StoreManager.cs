@@ -545,11 +545,10 @@ namespace SadnaExpress.ServiceLayer
                 {
                     spolicies.Add(new SPolicy(discount, policies.Item1[discount]));
                 }
-                foreach (DiscountPolicy cond in policies.Item1.Keys)
+                foreach (Condition cond in policies.Item2.Keys)
                 {
-                    spolicies.Add(new SPolicy(cond, policies.Item1[cond]));
+                    spolicies.Add(new SPolicy(cond.ID, cond.ToString().Split('.')[3], policies.Item1[cond]));
                 }
-
                 return new ResponseT<List<SPolicy>>(spolicies);
             }
             catch (Exception ex)
