@@ -94,8 +94,9 @@ export function StoreItem(props) {
       <Card className="h-100">
         <Card.Body className="d-flex flex-column">
           <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
-            <span className="fs-2">{props.item.name}</span>
-            <span className="ms-2 text-muted">{props.item.price} $</span>
+            <div><div style={{display:"flex", justifyContent:"space-between"}}><div className="fs-2">{props.item.name} </div>
+            <div className="ms-2 text-muted" style={{marginLeft:"0.5rem"}}>{props.item.price} $ </div></div>
+            {(props.item.priceDiscount > -1) && <div><span style={{fontSize:"12px", color:"blue"}}> Note! you have discount</span> <span style={{fontSize:"12px", color:"blue"}}>{ props.item.priceDiscount} $</span></div>}</div>
             {/* <span className="ms-2 text-muted">{props.item.rating} ₪</span> */}
           </Card.Title>
           {props.item.inStock==0? (<Card.Text>
