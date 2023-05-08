@@ -6,6 +6,8 @@ using SadnaExpressTests;
 using static SadnaExpressTests.Mocks;
 using SadnaExpress.DomainLayer.User;
 using System.Collections.Concurrent;
+using SadnaExpress.API.SignalR;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpressTests.Acceptance_Tests
@@ -37,7 +39,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             proxyBridge = new ProxyBridge();
             passwordHash = new PasswordHash();
-
+            NotificationNotifier.GetInstance().TestMood = true;
             stores = new ConcurrentDictionary<Guid, Store>();
             Store store1 = new Store("Zara");
             storeid1 = store1.StoreID;
