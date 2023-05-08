@@ -251,25 +251,9 @@ namespace SadnaExpress.ServiceLayer
                 return new ConcurrentDictionary<Guid, User>();
             }
         }
-        public ResponseT<List<SMember>> GetMembers(Guid userID)
+        public ConcurrentDictionary<Guid, Member> GetMembers(Guid userID)
         {
-            try
-            {
-                ConcurrentDictionary<Guid, Member> members = userFacade.GetMembers(userID);
-                List<SMember> sMembers = new List<SMember>();
-
-                foreach (Member member in members.Values)
-                {
-                    SMember sMember = new SMember(member);
-                    sMembers.Add(sMember);
-                }
-                return new ResponseT<List<SMember>>(sMembers);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message + " in " + nameof(GetMembers));
-                return new ResponseT<List<SMember>>(ex.Message);
-            }
+            return userFacade.GetMembers(userID);
         }
 
         public ResponseT<Guid> SetSecurityQA(Guid userID, string q, string a)

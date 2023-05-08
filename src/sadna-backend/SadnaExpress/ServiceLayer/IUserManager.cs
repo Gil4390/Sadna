@@ -35,7 +35,7 @@ namespace SadnaExpress.ServiceLayer
         void CleanUp();
        
         ConcurrentDictionary<Guid, User> GetCurrent_Users();
-        ResponseT<List<SMember>> GetMembers(Guid userID);
+        ConcurrentDictionary<Guid, Member> GetMembers(Guid userID);
         ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a);
 
         ResponseT<Guid> UpdateFirst(Guid userID, string newFirst);
