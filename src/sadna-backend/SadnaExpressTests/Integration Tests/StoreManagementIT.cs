@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpressTests.Integration_Tests
 {
@@ -133,11 +134,11 @@ namespace SadnaExpressTests.Integration_Tests
             trading.SetTSOrders(mock_Orders);
 
             //Act
-            Response res = trading.WriteItemReview(userID, storeID1, itemID1,"very nice product!! I like :)");
+            Response res = trading.WriteItemReview(userID, itemID1,"very nice product!! I like :)");
 
             //Assert
             Assert.IsFalse(res.ErrorOccured);
-            Assert.AreEqual(1, trading.GetItemReviews(storeID1, itemID1).Value.Count);//store exists and item
+            Assert.AreEqual(1, trading.GetItemReviews( itemID1).Value.Count);//store exists and item
         }
 
         /// <summary>
@@ -151,11 +152,11 @@ namespace SadnaExpressTests.Integration_Tests
            
 
             //Act
-            Response res = trading.WriteItemReview(userID, storeID1, itemID1, "very nice product!! I like :)");
+            Response res = trading.WriteItemReview(userID, itemID1, "very nice product!! I like :)");
 
             //Assert
             Assert.IsTrue(res.ErrorOccured);
-            foreach (Review review in trading.GetItemReviews(storeID1, itemID1).Value)
+            foreach (SReview review in trading.GetItemReviews(itemID1).Value)
             {
                 Assert.AreNotEqual(review.ReviewerID, userID);
             }
@@ -174,13 +175,13 @@ namespace SadnaExpressTests.Integration_Tests
             trading.SetTSOrders(mock_Orders);
 
             //Act
-            Response res = trading.WriteItemReview(userID, storeID1, itemID1, "very nice product!! I like :)");
-            Response res1 = trading.WriteItemReview(userID, storeID1, itemID1, "nice product !! ");
+            Response res = trading.WriteItemReview(userID,  itemID1, "very nice product!! I like :)");
+            Response res1 = trading.WriteItemReview(userID,  itemID1, "nice product !! ");
 
             //Assert
             Assert.IsFalse(res.ErrorOccured);
             Assert.IsFalse(res1.ErrorOccured);
-            Assert.AreEqual(2, trading.GetItemReviews(storeID1, itemID1).Value.Count);//store exists
+            Assert.AreEqual(2, trading.GetItemReviews( itemID1).Value.Count);//store exists
         }
 
         [TestCleanup]

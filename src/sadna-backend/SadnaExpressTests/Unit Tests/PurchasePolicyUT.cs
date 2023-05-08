@@ -400,7 +400,8 @@ namespace SadnaExpressTests.Unit_Tests
             store.AddSimplePurchaseCondition(cond2);
             Assert.IsNotNull(store.GetCondition(cond1));
             Assert.IsNotNull(store.GetCondition(cond2));
-            store.RemoveCondition(cond4);
+
+            Assert.ThrowsException<Exception>(() => {store.RemoveCondition(cond4); });
             Assert.IsNotNull(store.GetCondition(cond1));
             Assert.IsNotNull(store.GetCondition(cond2));
         }

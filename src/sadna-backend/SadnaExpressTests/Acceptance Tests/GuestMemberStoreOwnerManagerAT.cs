@@ -953,7 +953,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void RequestStorePurchaseInfo_Good()
         {
-            Task<ResponseT<List<Order>>> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 return proxyBridge.GetStorePurchases(store5Owner, storeID5);
             });
 
@@ -964,7 +964,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void RequestStorePurchseInfoNoPermission_Good()
         {
-            Task<ResponseT<List<Order>>> task = Task.Run(() => {
+            Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 return proxyBridge.GetStorePurchases(loggedInUserID1, storeID5);
             });
 

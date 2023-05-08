@@ -480,8 +480,18 @@ namespace SadnaExpress.DomainLayer.Store
             IsStoreExist(storeID);
             foreach (Condition cond in GetStore(storeID).PurchasePolicyList)
             {
-                if(cond.ID == condID)
-                    GetStore(storeID).RemoveCondition(cond);
+                if (cond.ID == condID)
+                {
+                    GetStore(storeID).RemoveConditionFromList(cond);
+                    try
+                    {
+                        GetStore(storeID).RemoveCondition(cond);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
             }
         }
 

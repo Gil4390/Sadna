@@ -347,48 +347,53 @@ namespace SadnaExpress.DomainLayer.Store
                 return cond;
             return null;
         }
-        public void RemoveCondition(Condition cond , ComplexCondition tree=null)
+
+        public void RemoveCondition(Condition cond, ComplexCondition tree = null)
         {
-            // if (cond == null || PurchasePolicy == null)
-            // {
-            //     throw new Exception("Condition now exists");
-            // }
-            // if (cond.GetType() == typeof(ComplexCondition))
-            // {
-            //     if (tree == null)
-            //         tree = PurchasePolicy;
-            //     Condition searchCond1 = GetCondition(cond ,(ComplexCondition)tree.cond1);
-            //     if (searchCond1 != null)
-            //     {
-            //         tree.cond1 = null;
-            //         PurchasePolicyList.Remove(searchCond1);
-            //     }
-            //     Condition searchCond2 = GetCondition(cond ,(ComplexCondition)tree.cond2);
-            //     if (searchCond2 != null)
-            //     {
-            //         tree.cond2 = null;
-            //         PurchasePolicyList.Remove(searchCond2);
-            //     }
-            //
-            // }
-            // else if (tree == null)
-            // {
-            //     if (cond.Equals(PurchasePolicy.cond1))
-            //     {
-            //         PurchasePolicyList.Remove(PurchasePolicy.cond1);
-            //         PurchasePolicy = null;
-            //     }
-            //     else if (cond.Equals(PurchasePolicy.cond2))
-            //     {
-            //         PurchasePolicyList.Remove(PurchasePolicy.cond2);
-            //         PurchasePolicy.cond2 = null;
-            //     }
-            // }
-            // else if (cond.Equals(tree))
-            // {
-            //     PurchasePolicyList = new List<Condition>();
-            //     PurchasePolicy = null;
-            // }
+            if (cond == null || PurchasePolicy == null)
+            {
+                throw new Exception("Condition now exists");
+            }
+            if (cond.GetType() == typeof(ComplexCondition))
+            {
+                if (tree == null)
+                    tree = PurchasePolicy;
+                Condition searchCond1 = GetCondition(cond ,(ComplexCondition)tree.cond1);
+                if (searchCond1 != null)
+                {
+                    tree.cond1 = null;
+                    PurchasePolicyList.Remove(searchCond1);
+                }
+                Condition searchCond2 = GetCondition(cond ,(ComplexCondition)tree.cond2);
+                if (searchCond2 != null)
+                {
+                    tree.cond2 = null;
+                    PurchasePolicyList.Remove(searchCond2);
+                }
+            
+            }
+            else if (tree == null)
+            {
+                if (cond.Equals(PurchasePolicy.cond1))
+                {
+                    PurchasePolicyList.Remove(PurchasePolicy.cond1);
+                    PurchasePolicy = null;
+                }
+                else if (cond.Equals(PurchasePolicy.cond2))
+                {
+                    PurchasePolicyList.Remove(PurchasePolicy.cond2);
+                    PurchasePolicy.cond2 = null;
+                }
+            }
+            else if (cond.Equals(tree))
+            {
+                PurchasePolicyList = new List<Condition>();
+                PurchasePolicy = null;
+            }
+        }
+
+        public void RemoveConditionFromList(Condition cond , ComplexCondition tree=null)
+        {
             Condition condToRemove = null;
             foreach (Condition condInList in PurchasePolicyList)
             {
