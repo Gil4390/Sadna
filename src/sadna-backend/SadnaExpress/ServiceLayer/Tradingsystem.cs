@@ -580,7 +580,6 @@ namespace SadnaExpress.ServiceLayer
         {
             storeManager.RemovePolicy(store, discountPolicy);
         }
-
         public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
         {
             return storeManager.GetAllPolicy(userID, storeID);
@@ -614,6 +613,14 @@ namespace SadnaExpress.ServiceLayer
         public Response CheckPurchaseConditions(Guid userID)
         {
             return storeManager.CheckPurchaseConditions(userID);
+        }
+
+        public ResponseT<string> GetMemberName(Guid userID)
+        {
+            String name = userManager.GetMember(userID).Value.FirstName;
+            var res = new ResponseT<String>();
+            res.Value = name;
+            return res;
         }
     }
 }

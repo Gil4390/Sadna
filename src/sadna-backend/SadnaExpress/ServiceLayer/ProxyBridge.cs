@@ -465,6 +465,11 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetItemReviews(itemID);
         }
+
+        public ResponseT<string> GetMemberName(Guid userID)
+        {
+            return _realBridge.GetMemberName(userID);
+        }
     }
 
 

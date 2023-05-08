@@ -343,5 +343,14 @@ namespace SadnaExpress.API.Controllers
         }
         
         //checkPurchaseCondition
+
+        [Route(APIConstants.MemberData.getMemberName)]
+        [ResponseType(typeof(ResponseT<string>))]
+        [HttpPost]
+        public IHttpActionResult GetMemberName([FromBody] ClientRequest request)
+        {
+            var res = tradingSystem.GetMemberName(request.userID);
+            return Ok(res);
+        }
     }
 }

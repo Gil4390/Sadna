@@ -16,11 +16,13 @@ import { ResponseT } from "../models/Response.tsx";
 import { hubConnection,connection } from 'signalr-no-jquery';
 import Popup from './components/Popup.tsx';
 import ReactDOM from 'react-dom';
+import { handleGetMemberName } from './actions/MemberActions.tsx';
 
 const App:React.FC=()=>{
 
   const [response, setResponse] = useState<ResponseT>();
   const [id, setid] = useState<string>();
+  const [username, setUsername] = useState<string>();
   const [isInit, setisInit] = useState<boolean>(false);
   const [userType, setUserType] = useState("guest");
   const [login, setLogin] = useState<boolean>(false);
@@ -93,12 +95,19 @@ const App:React.FC=()=>{
         }
       }
     ).catch(error=>alert(error));
+
+
+    handleGetMemberName(id).then(
+      value => {
+        setUsername(value);
+      }
+    ).catch(error=>alert(error));
   }
 }, [login])
   
   return (
       <Router>
-        <Navigation id={id} userType={userType} onLogout={handleLogout}/>
+        <Navigation id={id} userType={userType} onLogout={handleLogout} username={username}/>
         <div id="popup-root"></div>
         <Routes>
         <Route path="/" element={<Home id={id} />} />
