@@ -17,5 +17,12 @@ namespace SadnaExpress.ServiceLayer.SModels
             this.active = active;
             policyRule = discountPolicy.ToString();
         }
+        
+        public SPolicy(int condId, string cond, bool active)
+        {
+            policyID = condId;
+            this.active = active;
+            policyRule = cond;
+        }
     }
 }

@@ -2,6 +2,7 @@
 using SadnaExpress.DomainLayer;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.API.SignalR;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 
@@ -21,6 +22,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            NotificationNotifier.GetInstance().TestMood = true;
             storeID = Guid.NewGuid();
             userID1 = Guid.NewGuid();
             userID2 = Guid.NewGuid();

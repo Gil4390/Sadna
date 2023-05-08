@@ -68,11 +68,11 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             switch (level)
             {
                 case Store storeType:
-                    return $"(Store {storeType.StoreName} have {percent} from {startDate} until {endDate})";
+                    return $"(Store {storeType.StoreName} have {percent}% from {startDate} until {endDate})";
                 case Item itemType:
-                    return $"(Item {itemType.Name} have {percent}  from {startDate} until {endDate})";
+                    return $"(Item {itemType.Name} have {percent}% from {startDate} until {endDate})";
                 case string categoryType:
-                    return $"(Item {categoryType} have {percent}  from {startDate} until {endDate})";
+                    return $"(Item {categoryType} have {percent}%  from {startDate} until {endDate})";
                 default:
                     return "";
             }
