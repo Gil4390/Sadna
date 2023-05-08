@@ -21,9 +21,9 @@ namespace SadnaExpress.DomainLayer.Store
         private DiscountPolicyTree discountPolicyTree;
         public DiscountPolicyTree DiscountPolicyTree { get => discountPolicyTree; set => discountPolicyTree = value; }
         private Dictionary<DiscountPolicy, bool> allDiscountPolicies;
-        public Dictionary<DiscountPolicy, bool> AllDiscountPolicies {get => allDiscountPolicies;}
+        public Dictionary<DiscountPolicy, bool> AllDiscountPolicies {get => allDiscountPolicies;set => allDiscountPolicies = value;}
         private Dictionary<Condition, bool> condDiscountPolicies;
-        public Dictionary<Condition, bool> CondDiscountPolicies {get => condDiscountPolicies;}
+        public Dictionary<Condition, bool> CondDiscountPolicies {get => condDiscountPolicies;set => condDiscountPolicies = value;}
         private ComplexCondition purchasePolicy;
         public ComplexCondition PurchasePolicy { get => purchasePolicy; set => purchasePolicy = value; }
         public int purchasePolicyCounter;

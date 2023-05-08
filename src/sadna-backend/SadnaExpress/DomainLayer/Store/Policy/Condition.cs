@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -242,29 +242,9 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             switch (minmax)
             {
                 case "min":
-                    if (sum >= minPrice)
-                        return true;
-                    switch (entity)
-                    {
-                        case string category:
-                            throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum} of {category}");
-                        case Item item:
-                            throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum} of {item.Name}");
-                    }
-                    break;
+                    return sum >= minPrice;
                 case "max":
-                    if ( sum <= minPrice)
-                        return true;
-                    switch (entity)
-                    {
-                        case string category:
-                            throw new Exception($"The quantity {minPrice} is bigger then the allowed {sum} of {category}");
-                        case Item item:
-                            throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum} of {item.Name}");
-                    }
-
-                    break;
-
+                    return sum <= minPrice;
                 default:
                     throw new Exception("Need to be one of this operators");
             }
@@ -363,13 +343,9 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             switch (minmax)
             {
                 case "min":
-                    if (this.Quantity <= q)
-                        return true;
-                    throw new Exception($"The quantity {Quantity} is bigger then the allowed {q}");
+                    return this.Quantity <= q;
                 case "max":
-                    if (this.Quantity >= q)
-                        return true;
-                    throw new Exception($"The quantity {Quantity} is smaller then the allowed {q}");
+                    return this.Quantity >= q;
                 default:
                     throw new Exception("Need to be one of this operators");
             }
@@ -411,7 +387,6 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 default:
                     throw new Exception("Category or item are the one we can evaluate");
             }
-
             return true;
         }
 

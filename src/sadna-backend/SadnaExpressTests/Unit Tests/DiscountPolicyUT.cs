@@ -362,6 +362,8 @@ namespace SadnaExpressTests.Unit_Tests
         [TestCleanup]
         public void CleanUp()
         {
+            store.CondDiscountPolicies = null;
+            store.AllDiscountPolicies = null;
             store.DiscountPolicyTree = null;
         }
         #endregion
