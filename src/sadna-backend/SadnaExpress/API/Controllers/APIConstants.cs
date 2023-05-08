@@ -27,10 +27,6 @@ namespace SadnaExpress.API.Controllers
 
             public const string storeInfo = "store-info";
 
-            public const string itemByName = "item-by-name";
-
-            public const string itemByCategory = "item-by-category";
-
             public const string searchItems = "search-items";
 
             public const string addItemCart = "add-item-cart";
@@ -96,8 +92,7 @@ namespace SadnaExpress.API.Controllers
             public const string getStoresOwnerList = "get-store-owner";
 
             public const string getAllConditions = "get-conds";
-
-            public const string getCondition = "get-cond";
+            
 
             public const string addCondition = "add-cond";
                 
@@ -122,6 +117,8 @@ namespace SadnaExpress.API.Controllers
             public const string getMemberPermissions = "get-member-permissions";
 
             public const string getStoreInfo = "get-store-info";
+            
+            public const string checkPurchaseCondition = "check-purchase-conds";
 
         }
 

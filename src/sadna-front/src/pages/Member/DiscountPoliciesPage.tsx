@@ -268,7 +268,7 @@ return (
       <Row className="mt-3">
           {allItems.map((item) => (
             <Col sm={8} md={5} lg={4} xl={3} key={item.id} className="mt-3">
-              <Condition {...item}></Condition>
+              
             </Col>
             ))}
         </Row>

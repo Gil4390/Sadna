@@ -490,13 +490,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetNotifications(userID);
         }
-
-        // this functions needs to notify to offline members their notifications.
-        public void RemoveCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
-            M entityRes = default, string typeRes = default, double valueRes = default)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public void getNotificationsForOfflineMembers()
         {
@@ -517,12 +511,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetCondition(store ,entity,type,value, dt,entityRes , typeRes , valueRes);
         }
-
-        public ResponseT<Condition> AddCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
-            M entityRes = default, string typeRes = default, double valueRes = default)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
@@ -583,6 +572,11 @@ namespace SadnaExpress.ServiceLayer
         public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
         {
             return userManager.MarkNotificationAsRead(userID, notificationID);
+        }
+
+        public Response CheckPurchaseConditions(Guid userID)
+        {
+            return storeManager.CheckPurchaseConditions(userID);
         }
     }
 }

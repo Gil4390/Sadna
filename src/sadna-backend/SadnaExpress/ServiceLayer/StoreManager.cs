@@ -635,5 +635,25 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeFacade.GetItemAfterDiscount(itemStoreid, item);
         }
+
+        public Response CheckPurchaseConditions(Guid userId)
+        {
+            try
+            {
+                Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
+                ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userId);
+                if (shoppingCart.Baskets.Count == 0)
+                    throw new Exception("Cart can't be empty");
+                foreach (ShoppingBasket basket in shoppingCart.Baskets) 
+                    cart.Add(basket.StoreID, basket.ItemsInBasket);
+                storeFacade.CheckPurchaseConditions(cart);
+                return new Response("OK");
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CheckPurchaseConditions) + ": " + ex.Message);
+                return new Response(ex.Message);
+            }
+        }
     }
 }

@@ -424,6 +424,11 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
+        public Response CheckPurchaseConditions(Guid userID)
+        {
+            throw new NotImplementedException();
+        }
+
         public ResponseT<List<SMember>> GetMembers(Guid userID)
         {
             return _realBridge.GetMembers(userID);

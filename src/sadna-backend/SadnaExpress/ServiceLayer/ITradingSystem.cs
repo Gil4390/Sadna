@@ -95,13 +95,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);
         void RemoveCondition(Guid storeID ,int condID);
-
-        ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value, DateTime dt=default, M entityRes = default,
-            string typeRes = default, double valueRes = default);
-        ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
-            string typeRes = default, double valueRes = default);
-        void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
-            string typeRes = default, double valueRes = default);
+        
         // this functions needs to notify to offline members their notifications.
         public void getNotificationsForOfflineMembers();
 
@@ -130,5 +124,6 @@ namespace SadnaExpress.ServiceLayer
 
         ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId);
         Response MarkNotificationAsRead(Guid userID, Guid notificationID);
+        Response CheckPurchaseConditions(Guid userID);
     }
 }

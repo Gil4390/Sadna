@@ -241,9 +241,13 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             switch (minmax)
             {
                 case "min":
-                    return sum >= minPrice;
+                    if (sum >= minPrice)
+                        return true;
+                    throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum}");
                 case "max":
-                    return sum <= minPrice;
+                    if ( sum <= minPrice)
+                        return true;
+                    throw new Exception($"The quantity {minPrice} is bigger then the allowed {sum}");
                 default:
                     throw new Exception("Need to be one of this operators");
             }
@@ -341,9 +345,13 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             switch (minmax)
             {
                 case "min":
-                    return this.Quantity <= q;
+                    if (this.Quantity <= q)
+                        return true;
+                    throw new Exception($"The quantity {Quantity} is bigger then the allowed {q}");
                 case "max":
-                    return this.Quantity >= q;
+                    if (this.Quantity >= q)
+                        return true;
+                    throw new Exception($"The quantity {Quantity} is smaller then the allowed {q}");
                 default:
                     throw new Exception("Need to be one of this operators");
             }

@@ -57,5 +57,6 @@ namespace SadnaExpress.DomainLayer.Store
         Dictionary<Guid, Dictionary<Item, double>> GetCartItems(Dictionary<Guid, Dictionary<Guid, int>> cart);
         Store GetStoreInfo(Guid storeId);
 
+        void CheckPurchaseConditions(Dictionary<Guid, Dictionary<Guid, int>> value);
     }
 }
