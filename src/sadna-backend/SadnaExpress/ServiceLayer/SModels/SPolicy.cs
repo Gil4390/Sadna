@@ -10,20 +10,24 @@ namespace SadnaExpress.ServiceLayer.SModels
         public string PolicyRule { get => policyRule; }
         private bool active;
         public bool Active { get => active; }
-        
+        private string type;
+        public string Type { get => type; }
 
-        public SPolicy(DiscountPolicy discountPolicy, bool active)
+
+        public SPolicy(DiscountPolicy discountPolicy, bool active , string t)
         {
             policyID = discountPolicy.ID;
             this.active = active;
             policyRule = discountPolicy.ToString();
+            type = t;
         }
         
-        public SPolicy(int condId, string cond, bool active)
+        public SPolicy(int condId, string cond, bool active, string t)
         {
             policyID = condId;
             this.active = active;
             policyRule = cond;
+            type = t;
         }
     }
 }

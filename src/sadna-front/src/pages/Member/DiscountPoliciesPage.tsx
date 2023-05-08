@@ -67,6 +67,8 @@ function DiscountPoliciesPage(props) {
   const [EntityChoice2, setEntityChoice2] = useState('');
   const [cond1_1, setCond1_1] = useState('');
   const [op_1, setOp_1] = useState('');
+  const [op_2, setOp_2] = useState('');
+
   const [cond2_1, setCond2_1] = useState('');
   const [policy_1, setPolicy_1] = useState('');
   const [cond2_2, setCond2_2] = useState('');
@@ -87,31 +89,39 @@ function DiscountPoliciesPage(props) {
   const [showTable2, setShowTable2] = useState(false);
 
   const handleButtonClick2 = () => {
-    // console.log(optionElements)
     setShowTable2(!showTable2);
   };
   const [policysList, setPolicyList] = useState<Policy[]>([]);
   
 
-//   useEffect(() => {
-//     const idList = policysList.map((item) => item.policyID);
-//  }, [])
-//  const filteredList = policysList.filter((item) => item.typeOf === "Condition");
-//  const optionElements = policysList.map((item) => (
-//    <option key={item.policyID} value={item.policyID}>
-//      {item.policyID}
-//    </option>
- //));
+ const filteredList = policysList.filter((item) => item.type === "Condition");
+ const condFilter = filteredList.map((item2) => (
+   <option key={item2.policyID} value={item2.policyID}>
+     {item2.policyID}
+   </option>
+ ));
+ const filteredList2 = policysList.filter((item) => item.type === "Policy");
+ const policyFilter = filteredList2.map((item2) => (
+   <option key={item2.policyID} value={item2.policyID}>
+     {item2.policyID}
+   </option>
+ ));
+
+
 
 
   const GetDiscountPolicy =()=>{
     handleGetAllPolicy(userId ,storeId).then(
       value => {
+        console.log(value)
         setPolicyList(value as Policy[]);
       })
       .catch(error => alert(error));
   }
   useEffect(() => {
+    GetDiscountPolicy();
+ }, [])
+ useEffect(() => {
     GetDiscountPolicy();
  }, [])
 
@@ -126,13 +136,6 @@ function DiscountPoliciesPage(props) {
   }
  
 
- const handleSubmit = () => {
-    handleAddPolicy(storeId ,EntityChoice).then(
-      value => {
-        setPolicyList(value as Policy[]);
-      })
-      .catch(error => alert(error));
-  };
   const Create_new_Simple_Discount_Policy = () => {
     handleCreateSimplePolicy(storeId ,entity,condValue,startDate,endDate).then(
         value => {
@@ -140,23 +143,26 @@ function DiscountPoliciesPage(props) {
         })
         .catch(error => alert(error));
   };
-  const Create_new_Condition_Policy = () => {
-    handleCreateComplexPolicy(storeId ,"","").then(
+  const Create_new_Condition_Policy_1 = () => {
+    handleCreateComplexPolicy(storeId ,op_1,[cond1_1,cond2_1,policy_1]).then(
         value => {
           setPolicyList(value as Policy[]);
         })
         .catch(error => alert(error));
   };
-  const Compound_Store_Policies_1 = () => {
-    handleAddPolicy(storeId ,-1).then(
+  const Create_new_Condition_Policy_2 = () => {
+    handleCreateComplexPolicy(storeId ,op_2,[cond2_2,policy_2]).then(
         value => {
           setPolicyList(value as Policy[]);
         })
         .catch(error => alert(error));
-  }; 
-  const Compound_Store_Policies_2 = () => {
-}; 
-  const Compound_Store_Policies_3 = () => {
+  };
+  const Create_new_Condition_Policy_3 = () => {
+    handleCreateComplexPolicy(storeId ,op_3,[policy1_3,policy2_3]).then(
+        value => {
+          setPolicyList(value as Policy[]);
+        })
+        .catch(error => alert(error));
   };
 
 return (
@@ -223,16 +229,20 @@ return (
                 onChange={(e) => setCond1_1(e.target.value)}
               >
                 <option>Choose condition</option>
-                {/* {optionElements} */}
+                {condFilter}
               </Form.Control>
             </Form.Group>
             <Form.Group>
               <Form.Control
-                type="text"
-                placeholder="Operator"
+                as="select"
                 value={op_1}
                 onChange={(e) => setOp_1(e.target.value)}
-              />
+              >
+                <option>Operator</option>
+                <option>AND</option>
+                <option>OR</option>
+                <option>XOR</option>
+              </Form.Control>
             </Form.Group>
             <Form.Group>
             <Form.Control
@@ -241,19 +251,21 @@ return (
                 onChange={(e) => setCond2_1(e.target.value)}
               >
                 <option>Choose condition</option>
+                {condFilter}
               </Form.Control>
             </Form.Group>
             <Form.Group>
             <Form.Control
                 as="select"
-                value={policy1_3}
+                value={policy_1}
                 onChange={(e) => setPolicy_1(e.target.value)}
               >
                 <option>Choose policy</option>
+                {policyFilter}
               </Form.Control>
             </Form.Group>
         <div style={styles.buttonContainer}>
-          <button style={styles.button} onClick={Compound_Store_Policies_1}>Create</button>
+          <button style={styles.button} onClick={Create_new_Condition_Policy_1}>Create</button>
         </div>
       </div>
       <div style={styles.form}>
@@ -264,6 +276,18 @@ return (
                 onChange={(e) => setCond2_2(e.target.value)}
               >
                 <option>Choose condition</option>
+                {condFilter}
+              </Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Control
+                as="select"
+                value={op_2}
+                onChange={(e) => setOp_2(e.target.value)}
+              >
+                <option>Operator</option>
+                <option>ADD</option>
+                <option>MAX</option>
               </Form.Control>
             </Form.Group>
             <Form.Group>
@@ -273,10 +297,11 @@ return (
                 onChange={(e) => setPolicy_2(e.target.value)}
               >
                 <option>Choose policy</option>
+                {policyFilter}
               </Form.Control>
             </Form.Group>
         <div style={styles.buttonContainer}>
-          <button style={styles.button} onClick={Compound_Store_Policies_2}>Create</button>
+          <button style={styles.button} onClick={Create_new_Condition_Policy_2}>Create</button>
         </div>
       </div>
       <div style={styles.form}>
@@ -286,7 +311,20 @@ return (
                 value={policy1_3}
                 onChange={(e) => setPolicy1_3(e.target.value)}
               >
-                <option>Choose condition</option>
+                <option>Choose policy</option>
+                {policyFilter}
+              </Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Control
+                as="select"
+                value={op_3}
+                onChange={(e) => setOp_3(e.target.value)}
+              >
+                <option>Operator</option>
+                <option>AND</option>
+                <option>OR</option>
+                <option>XOR</option>
               </Form.Control>
             </Form.Group>
             <Form.Group>
@@ -296,10 +334,11 @@ return (
                 onChange={(e) => setPolicy2_3(e.target.value)}
               >
                 <option>Choose policy</option>
+                {policyFilter}
               </Form.Control>
             </Form.Group>
         <div style={styles.buttonContainer}>
-          <button style={styles.button} onClick={Compound_Store_Policies_3}>Create</button>
+          <button style={styles.button} onClick={Create_new_Condition_Policy_3}>Create</button>
         </div>
       </div>
     </div>}

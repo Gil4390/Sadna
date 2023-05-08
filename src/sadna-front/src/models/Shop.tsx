@@ -46,6 +46,7 @@ export interface Policy {
     policyID:  string,
     policyRule:string,
     active:boolean,
+    type:string,
 };
 
 

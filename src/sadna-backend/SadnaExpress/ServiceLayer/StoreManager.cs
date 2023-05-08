@@ -543,11 +543,11 @@ namespace SadnaExpress.ServiceLayer
                 List<SPolicy> spolicies = new List<SPolicy>();
                 foreach (DiscountPolicy discount in policies.Item1.Keys)
                 {
-                    spolicies.Add(new SPolicy(discount, policies.Item1[discount]));
+                    spolicies.Add(new SPolicy(discount, policies.Item1[discount] , "Policy"));
                 }
                 foreach (Condition cond in policies.Item2.Keys)
                 {
-                    spolicies.Add(new SPolicy(cond.ID, cond.ToString(), policies.Item2[cond] ));
+                    spolicies.Add(new SPolicy(cond.ID, cond.ToString(), policies.Item2[cond] , "Condition"));
                 }
                 return new ResponseT<List<SPolicy>>(spolicies);
             }
