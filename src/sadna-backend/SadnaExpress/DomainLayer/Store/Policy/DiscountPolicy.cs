@@ -6,8 +6,11 @@ namespace SadnaExpress.DomainLayer.Store.Policy
 {
     public abstract class DiscountPolicy
     {
+        public int ID;
         public abstract Dictionary<Item, KeyValuePair<double, DateTime>> calculate(Store store,
             Dictionary<Item, int> basket);
+
+        public abstract override string ToString();
     }
 
     public class SimpleDiscount<T> : DiscountPolicy
@@ -60,6 +63,20 @@ namespace SadnaExpress.DomainLayer.Store.Policy
 
             return output;
         }
+        public override string ToString()
+        {
+            switch (level)
+            {
+                case Store storeType:
+                    return $"(Store {storeType.StoreName} have {percent} from {startDate} until {endDate})";
+                case Item itemType:
+                    return $"(Item {itemType.Name} have {percent}  from {startDate} until {endDate})";
+                case string categoryType:
+                    return $"(Item {categoryType} have {percent}  from {startDate} until {endDate})";
+                default:
+                    return "";
+            }
+        }
     }
 
     public class ConditionalDiscount : DiscountPolicy
@@ -80,8 +97,14 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 return discountPolicy.calculate(store, basket);
             return new Dictionary<Item, KeyValuePair<double, DateTime>>();
         }
+
+        public override string ToString()
+        {
+            throw new NotImplementedException();
+        }
     }
-  
+
+    
     public abstract class LogicalPolicy : DiscountPolicy
     {
         public Condition cond1;
@@ -115,6 +138,11 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 return discountPolicy.calculate(store, basket);
             return new Dictionary<Item, KeyValuePair<double, DateTime>>();
         }
+
+        public override string ToString()
+        {
+            return $"(If {cond1}\nXor {cond2}\n=>{discountPolicy})";
+        }
     }
 
     public class AndDiscount : LogicalPolicy
@@ -137,6 +165,10 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 return discountPolicy.calculate(store, basket);
             return new Dictionary<Item, KeyValuePair<double, DateTime>>();
         }
+        public override string ToString()
+        {
+            return $"(If {cond1}\nAnd {cond2}\n=>{discountPolicy})";
+        }
     }
 
     public class OrDiscount : LogicalPolicy
@@ -158,6 +190,10 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             if (cond1.Evaluate(store, basket) || (cond2.Evaluate(store, basket)))
                 return discountPolicy.calculate(store, basket);
             return new Dictionary<Item, KeyValuePair<double, DateTime>>();
+        }
+        public override string ToString()
+        {
+            return $"(If {cond1}\nOr {cond2}\n=>{discountPolicy})";
         }
     }
     
@@ -195,6 +231,10 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             if (sum1 > sum2)
                 return discountDict2;
             return discountDict1;
+        }
+        public override string ToString()
+        {
+            return $"(Max between\n{discountPolicy1}\nto {discountPolicy2})";
         }
     }
 
@@ -236,6 +276,10 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 if (!output.ContainsKey(item))
                     output.Add(item, discountDict2[item]);
             return output;
+        }
+        public override string ToString()
+        {
+            return $"(Add\n{discountPolicy1}\n{discountPolicy2})";
         }
     }
 
@@ -280,6 +324,17 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             if (!roots.Remove(discountPolicy))
                 throw new Exception("policy not found");
         }
-
+        
+        public override string ToString()
+        {
+            string output = "";
+            int i = 1;
+            foreach (DiscountPolicy policy in roots)
+            {
+                output += $"{i}. {policy}";
+                i++;
+            }
+            return output;
+        }
     }
 }

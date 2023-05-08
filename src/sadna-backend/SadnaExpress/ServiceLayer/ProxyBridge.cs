@@ -152,6 +152,11 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
+        public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
+        {
+            return _realBridge.GetAllPolicy(userID, storeID);
+        }
+
         public Response AppointStoreOwner(Guid id, Guid storeID, string userEmail)
         {
             return _realBridge.AppointStoreOwner(id, storeID, userEmail);
@@ -351,27 +356,27 @@ namespace SadnaExpress.ServiceLayer
 
         public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
         {
-            throw new NotImplementedException();
+            return _realBridge.AddDiscountCondition(store, entity, type, value);
         }
 
         public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            return _realBridge.CreateSimplePolicy(store, level, percent, startDate, endDate);
         }
 
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys)
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys)
         {
-            throw new NotImplementedException();
+            return _realBridge.CreateComplexPolicy(store, op, policys);
         }
 
-        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy)
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy)
         {
-            throw new NotImplementedException();
+            return _realBridge.AddPolicy(store, discountPolicy);
         }
 
-        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
+        public void RemovePolicy(Guid store, int discountPolicy)
         {
-            throw new NotImplementedException();
+            _realBridge.RemovePolicy(store, discountPolicy);
         }
 
         public ResponseT<List<SItem>> GetCartItems(Guid userID)

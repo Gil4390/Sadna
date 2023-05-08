@@ -50,9 +50,15 @@ namespace SadnaExpress.ServiceLayer
         Response EditItemPrice(Guid userID, Guid storeID,  Guid itemID, int price); 
         Response EditItemName(Guid userID, Guid storeID,  Guid itemID, string name); 
         Response EditItemQuantity(Guid userID, Guid storeID,  Guid itemID, int quantity);
-
         public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice,
             int quantity);
+        //4.2 Discount policy
+        ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID);
+        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
+            DateTime endDate);
+        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys);
+        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy);
+        void RemovePolicy(Guid store, int discountPolicy);
         Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
         Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 only for tests
@@ -100,13 +106,6 @@ namespace SadnaExpress.ServiceLayer
         public void getNotificationsForOfflineMembers();
 
         ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
-
-        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
-            DateTime endDate);
-
-        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys);
-        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
-        void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
 
         ResponseT<List<SItem>> GetCartItems(Guid userID);
         ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
