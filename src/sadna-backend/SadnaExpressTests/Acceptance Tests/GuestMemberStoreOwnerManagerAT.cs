@@ -359,6 +359,17 @@ namespace SadnaExpressTests.Acceptance_Tests
 
         #endregion
 
+        #region Policys 4.2
+
+        [TestMethod]
+        public void GetAllPoliciesFromLoadData()
+        {
+            //Act
+            List<SPolicy> sPolicies = proxyBridge.GetAllPolicy(storeOwnerid, storeid1).Value;
+            //Assert
+            Assert.AreEqual(3, sPolicies.Count);
+        }
+        #endregion
 
         #region Appointing a new store owner 4.4
 
