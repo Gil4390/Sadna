@@ -1,21 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SadnaExpress.DomainLayer.User;
-using System;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
-using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
+using System;
 
-namespace SadnaExpressTests.Acceptance_Tests
+namespace SadnaExpressTests.Integration_Tests
 {
     [TestClass]
-    public class ValidCartContentAT : TradingSystemAT
+    public class ValidCartContentIT : TradingSystemIT
     {
         [TestInitialize]
-        public override void SetUp()
+        public override void Setup()
         {
-            base.SetUp();
+            base.Setup();
         }
         #region cart contect is Valid after multiple different actions
         /// <summary>
@@ -39,27 +35,27 @@ namespace SadnaExpressTests.Acceptance_Tests
 
 
 
-            expectedUserId1 = proxyBridge.Enter().Value;
-            proxyBridge.Register(expectedUserId1, "ExpectedStoreOwner1@gmail.com", "Store", "Owner", "asASD876!@");
-            expectedUserId1 = proxyBridge.Login(expectedUserId1, "ExpectedStoreOwner1@gmail.com", "asASD876!@").Value;
+            expectedUserId1 = trading.Enter().Value;
+            trading.Register(expectedUserId1, "ExpectedStoreOwner1@gmail.com", "Store", "Owner", "asASD876!@");
+            expectedUserId1 = trading.Login(expectedUserId1, "ExpectedStoreOwner1@gmail.com", "asASD876!@").Value;
             //// open stores
-            ExpectedStoreId1 = proxyBridge.OpenNewStore(expectedUserId1, "Store1").Value;
+            ExpectedStoreId1 = trading.OpenNewStore(expectedUserId1, "Store1").Value;
             //// add items to stores
 
-            ExpectedItemId1 = proxyBridge.AddItemToStore(expectedUserId1, ExpectedStoreId1, "ipad 1", "electronic", 4000, 3).Value;
+            ExpectedItemId1 = trading.AddItemToStore(expectedUserId1, ExpectedStoreId1, "ipad 1", "electronic", 4000, 3).Value;
             //// create guest
-            expectedBuyerId1 = proxyBridge.Enter().Value;
+            expectedBuyerId1 = trading.Enter().Value;
             //// add items to cart
-            proxyBridge.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 2);
+            trading.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 2);
 
             ExpectedItem itemInCart = new ExpectedItem { ItemId = ExpectedItemId1, StoreId = ExpectedStoreId1, ItemName = "ipad 1", ItemCategory = "electronic", ItemPrice = 4000, StoreQuantity = 3, QuantityInCart = 2 };
 
             // now buyer register to the system and then log in
-            proxyBridge.Register(expectedBuyerId1, "ExpectedBuyer1@gmail.com", "expected", "Buyer", "asASD876!@");
-            expectedBuyerId1 = proxyBridge.Login(expectedBuyerId1, "ExpectedBuyer1@gmail.com", "asASD876!@").Value;
+            trading.Register(expectedBuyerId1, "ExpectedBuyer1@gmail.com", "expected", "Buyer", "asASD876!@");
+            expectedBuyerId1 = trading.Login(expectedBuyerId1, "ExpectedBuyer1@gmail.com", "asASD876!@").Value;
 
-            int quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
-            Item storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
+            int quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
+            Item storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
 
             // check if items in cart match to before registering and logging in
 
@@ -90,38 +86,38 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid ExpectedItemId1 = Guid.Empty;
 
 
-            expectedUserId1 = proxyBridge.Enter().Value;
-            proxyBridge.Register(expectedUserId1, "ExpectedStoreOwner2@gmail.com", "Store", "Owner", "asASD876!@");
-            expectedUserId1 = proxyBridge.Login(expectedUserId1, "ExpectedStoreOwner2@gmail.com", "asASD876!@").Value;
+            expectedUserId1 = trading.Enter().Value;
+            trading.Register(expectedUserId1, "ExpectedStoreOwner2@gmail.com", "Store", "Owner", "asASD876!@");
+            expectedUserId1 = trading.Login(expectedUserId1, "ExpectedStoreOwner2@gmail.com", "asASD876!@").Value;
             //// open stores
-            ExpectedStoreId1 = proxyBridge.OpenNewStore(expectedUserId1, "Store1").Value;
+            ExpectedStoreId1 = trading.OpenNewStore(expectedUserId1, "Store1").Value;
             //// add items to stores
 
-            ExpectedItemId1 = proxyBridge.AddItemToStore(expectedUserId1, ExpectedStoreId1, "iphone 11", "electronic", 3000, 4).Value;
+            ExpectedItemId1 = trading.AddItemToStore(expectedUserId1, ExpectedStoreId1, "iphone 11", "electronic", 3000, 4).Value;
             //// create guest
-            expectedBuyerId1 = proxyBridge.Enter().Value;
+            expectedBuyerId1 = trading.Enter().Value;
 
             // register and log in
-            proxyBridge.Register(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "expected", "Buyer", "asASD876!@");
-            expectedBuyerId1 = proxyBridge.Login(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "asASD876!@").Value;
+            trading.Register(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "expected", "Buyer", "asASD876!@");
+            expectedBuyerId1 = trading.Login(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "asASD876!@").Value;
 
 
             //// add items to cart
-            proxyBridge.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 1);
+            trading.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 1);
 
             ExpectedItem itemInCart = new ExpectedItem { ItemId = ExpectedItemId1, StoreId = ExpectedStoreId1, ItemName = "iphone 11", ItemCategory = "electronic", ItemPrice = 3000, StoreQuantity = 4, QuantityInCart = 1 };
 
             // log out
-            expectedBuyerId1 = proxyBridge.Logout(expectedBuyerId1).Value;
-            expectedBuyerId1 = proxyBridge.Enter().Value;
+            expectedBuyerId1 = trading.Logout(expectedBuyerId1).Value;
+            expectedBuyerId1 = trading.Enter().Value;
 
             // login
-            expectedBuyerId1 = proxyBridge.Login(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "asASD876!@").Value;
+            expectedBuyerId1 = trading.Login(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "asASD876!@").Value;
 
             // get cart values
 
-            int quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
-            Item storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
+            int quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
+            Item storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
 
             // check if items in cart match to before logout and logging in
 
@@ -155,43 +151,43 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid ExpectedItemId1 = Guid.Empty;
 
 
-            expectedUserId1 = proxyBridge.Enter().Value;
-            proxyBridge.Register(expectedUserId1, "ExpectedStoreOwner3@gmail.com", "Store", "Owner", "asASD876!@");
-            expectedUserId1 = proxyBridge.Login(expectedUserId1, "ExpectedStoreOwner3@gmail.com", "asASD876!@").Value;
+            expectedUserId1 = trading.Enter().Value;
+            trading.Register(expectedUserId1, "ExpectedStoreOwner3@gmail.com", "Store", "Owner", "asASD876!@");
+            expectedUserId1 = trading.Login(expectedUserId1, "ExpectedStoreOwner3@gmail.com", "asASD876!@").Value;
             //// open stores
-            ExpectedStoreId1 = proxyBridge.OpenNewStore(expectedUserId1, "Store1").Value;
-            ExpectedStoreId2 = proxyBridge.OpenNewStore(expectedUserId1, "Store2").Value;
+            ExpectedStoreId1 = trading.OpenNewStore(expectedUserId1, "Store1").Value;
+            ExpectedStoreId2 = trading.OpenNewStore(expectedUserId1, "Store2").Value;
             //// add items to stores
 
-            ExpectedItemId1 = proxyBridge.AddItemToStore(expectedUserId1, ExpectedStoreId1, "iphone 11", "electronic", 3000, 4).Value;
-            ExpectedItemId2 = proxyBridge.AddItemToStore(expectedUserId1, ExpectedStoreId2, "ipad 2", "electronic", 1500, 1).Value;
+            ExpectedItemId1 = trading.AddItemToStore(expectedUserId1, ExpectedStoreId1, "iphone 11", "electronic", 3000, 4).Value;
+            ExpectedItemId2 = trading.AddItemToStore(expectedUserId1, ExpectedStoreId2, "ipad 2", "electronic", 1500, 1).Value;
             //// create guest
-            expectedBuyerId1 = proxyBridge.Enter().Value;
+            expectedBuyerId1 = trading.Enter().Value;
 
             // register and log in
-            proxyBridge.Register(expectedBuyerId1, "ExpectedBuyer3@gmail.com", "expected", "Buyer", "asASD876!@");
-            expectedBuyerId1 = proxyBridge.Login(expectedBuyerId1, "ExpectedBuyer3@gmail.com", "asASD876!@").Value;
+            trading.Register(expectedBuyerId1, "ExpectedBuyer3@gmail.com", "expected", "Buyer", "asASD876!@");
+            expectedBuyerId1 = trading.Login(expectedBuyerId1, "ExpectedBuyer3@gmail.com", "asASD876!@").Value;
 
 
             //// add items to cart
-            proxyBridge.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 2);
+            trading.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 2);
 
             ExpectedItem itemInCart = new ExpectedItem { ItemId = ExpectedItemId1, StoreId = ExpectedStoreId1, ItemName = "iphone 11", ItemCategory = "electronic", ItemPrice = 3000, StoreQuantity = 4, QuantityInCart = 2 };
 
-            proxyBridge.AddItemToCart(expectedBuyerId1, ExpectedStoreId2, ExpectedItemId2, 1);
+            trading.AddItemToCart(expectedBuyerId1, ExpectedStoreId2, ExpectedItemId2, 1);
 
             ExpectedItem itemInCart2 = new ExpectedItem { ItemId = ExpectedItemId2, StoreId = ExpectedStoreId2, ItemName = "ipad 2", ItemCategory = "electronic", ItemPrice = 1500, StoreQuantity = 1, QuantityInCart = 1 };
 
 
             // log out
-            expectedBuyerId1 = proxyBridge.Logout(expectedBuyerId1).Value;
-            expectedBuyerId1 = proxyBridge.Enter().Value;
+            expectedBuyerId1 = trading.Logout(expectedBuyerId1).Value;
+            expectedBuyerId1 = trading.Enter().Value;
 
 
             // get cart values
 
-            int quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
-            Item storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
+            int quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
+            Item storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
 
             // check if items in cart match to before logout and logging in
 
@@ -199,27 +195,27 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(result);
 
 
-            quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId2, ExpectedItemId2);
-            storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId2).Value[0];
+            quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId2, ExpectedItemId2);
+            storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId2).Value[0];
 
             result = itemInCart2.CompareInCart(storeItem.ItemID, storeItem.Name, storeItem.Category, storeItem.Price, storeItem.Quantity, ExpectedStoreId2, quantity);
             Assert.IsFalse(result);
 
             // login
-            expectedBuyerId1 = proxyBridge.Login(expectedBuyerId1, "ExpectedBuyer3@gmail.com", "asASD876!@").Value;
+            expectedBuyerId1 = trading.Login(expectedBuyerId1, "ExpectedBuyer3@gmail.com", "asASD876!@").Value;
 
             // get cart values
 
-            quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
-            storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
+            quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
+            storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
 
             // check if items in cart match to before logout and logging in
 
             result = itemInCart.CompareInCart(storeItem.ItemID, storeItem.Name, storeItem.Category, storeItem.Price, storeItem.Quantity, ExpectedStoreId1, quantity);
             Assert.IsTrue(result);
 
-            quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId2, ExpectedItemId2);
-            storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId2).Value[0];
+            quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId2, ExpectedItemId2);
+            storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId2).Value[0];
 
             result = itemInCart2.CompareInCart(storeItem.ItemID, storeItem.Name, storeItem.Category, storeItem.Price, storeItem.Quantity, ExpectedStoreId2, quantity);
             Assert.IsTrue(result);
@@ -251,42 +247,42 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid ExpectedItemId1 = Guid.Empty;
 
 
-            expectedUserId1 = proxyBridge.Enter().Value;
-            proxyBridge.Register(expectedUserId1, "ExpectedStoreOwner1@gmail.com", "Store", "Owner", "asASD876!@");
-            expectedUserId1 = proxyBridge.Login(expectedUserId1, "ExpectedStoreOwner1@gmail.com", "asASD876!@").Value;
+            expectedUserId1 = trading.Enter().Value;
+            trading.Register(expectedUserId1, "ExpectedStoreOwner1@gmail.com", "Store", "Owner", "asASD876!@");
+            expectedUserId1 = trading.Login(expectedUserId1, "ExpectedStoreOwner1@gmail.com", "asASD876!@").Value;
             //// open stores
-            ExpectedStoreId1 = proxyBridge.OpenNewStore(expectedUserId1, "Store1").Value;
-            ExpectedStoreId2 = proxyBridge.OpenNewStore(expectedUserId1, "Store2").Value;
+            ExpectedStoreId1 = trading.OpenNewStore(expectedUserId1, "Store1").Value;
+            ExpectedStoreId2 = trading.OpenNewStore(expectedUserId1, "Store2").Value;
             //// add items to stores
 
-            ExpectedItemId1 = proxyBridge.AddItemToStore(expectedUserId1, ExpectedStoreId1, "iphone 11", "electronic", 3000, 4).Value;
-            ExpectedItemId2 = proxyBridge.AddItemToStore(expectedUserId1, ExpectedStoreId2, "ipad 2", "electronic", 1500, 1).Value;
+            ExpectedItemId1 = trading.AddItemToStore(expectedUserId1, ExpectedStoreId1, "iphone 11", "electronic", 3000, 4).Value;
+            ExpectedItemId2 = trading.AddItemToStore(expectedUserId1, ExpectedStoreId2, "ipad 2", "electronic", 1500, 1).Value;
             //// create guest
-            expectedBuyerId1 = proxyBridge.Enter().Value;
+            expectedBuyerId1 = trading.Enter().Value;
 
             // register and log in
-            proxyBridge.Register(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "expected", "Buyer", "asASD876!@");
-            expectedBuyerId1 = proxyBridge.Login(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "asASD876!@").Value;
+            trading.Register(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "expected", "Buyer", "asASD876!@");
+            expectedBuyerId1 = trading.Login(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "asASD876!@").Value;
 
 
             //// add items to cart
-            proxyBridge.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 3);
+            trading.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 3);
 
             ExpectedItem itemInCart1 = new ExpectedItem { ItemId = ExpectedItemId1, StoreId = ExpectedStoreId1, ItemName = "iphone 11", ItemCategory = "electronic", ItemPrice = 3000, StoreQuantity = 4, QuantityInCart = 3 };
 
             // log out
-            expectedBuyerId1 = proxyBridge.Logout(expectedBuyerId1).Value;
-            expectedBuyerId1 = proxyBridge.Enter().Value;
+            expectedBuyerId1 = trading.Logout(expectedBuyerId1).Value;
+            expectedBuyerId1 = trading.Enter().Value;
 
             // add new diffrent item to cart
-            proxyBridge.AddItemToCart(expectedBuyerId1, ExpectedStoreId2, ExpectedItemId2, 1);
+            trading.AddItemToCart(expectedBuyerId1, ExpectedStoreId2, ExpectedItemId2, 1);
 
             ExpectedItem itemInCart2 = new ExpectedItem { ItemId = ExpectedItemId2, StoreId = ExpectedStoreId2, ItemName = "ipad 2", ItemCategory = "electronic", ItemPrice = 1500, StoreQuantity = 1, QuantityInCart = 1 };
 
             // get cart values
 
-            int quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
-            Item storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
+            int quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
+            Item storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
 
             // check if items in cart match to before logout and logging in
 
@@ -295,12 +291,12 @@ namespace SadnaExpressTests.Acceptance_Tests
 
 
             // login
-            expectedBuyerId1 = proxyBridge.Login(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "asASD876!@").Value;
+            expectedBuyerId1 = trading.Login(expectedBuyerId1, "ExpectedBuyer2@gmail.com", "asASD876!@").Value;
 
             // get cart values
 
-            quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
-            storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
+            quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
+            storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
 
             // check if items in cart match to before logout and logging in
 
@@ -308,8 +304,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(result);
 
 
-            quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId2, ExpectedItemId2);
-            storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId2).Value[0];
+            quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId2, ExpectedItemId2);
+            storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId2).Value[0];
 
             // check if items in cart match to before logout and logging in
 
@@ -344,48 +340,48 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid ExpectedItemId1 = Guid.Empty;
 
 
-            expectedUserId1 = proxyBridge.Enter().Value;
-            proxyBridge.Register(expectedUserId1, "ExpectedStoreOwner5@gmail.com", "Store", "Owner", "asASD876!@");
-            expectedUserId1 = proxyBridge.Login(expectedUserId1, "ExpectedStoreOwner5@gmail.com", "asASD876!@").Value;
+            expectedUserId1 = trading.Enter().Value;
+            trading.Register(expectedUserId1, "ExpectedStoreOwner5@gmail.com", "Store", "Owner", "asASD876!@");
+            expectedUserId1 = trading.Login(expectedUserId1, "ExpectedStoreOwner5@gmail.com", "asASD876!@").Value;
             //// open stores
-            ExpectedStoreId1 = proxyBridge.OpenNewStore(expectedUserId1, "Store1").Value;
-            ExpectedStoreId2 = proxyBridge.OpenNewStore(expectedUserId1, "Store2").Value;
+            ExpectedStoreId1 = trading.OpenNewStore(expectedUserId1, "Store1").Value;
+            ExpectedStoreId2 = trading.OpenNewStore(expectedUserId1, "Store2").Value;
             //// add items to stores
 
-            ExpectedItemId1 = proxyBridge.AddItemToStore(expectedUserId1, ExpectedStoreId1, "iphone 11", "electronic", 3000, 4).Value;
-            ExpectedItemId2 = proxyBridge.AddItemToStore(expectedUserId1, ExpectedStoreId2, "ipad 2", "electronic", 1500, 1).Value;
+            ExpectedItemId1 = trading.AddItemToStore(expectedUserId1, ExpectedStoreId1, "iphone 11", "electronic", 3000, 4).Value;
+            ExpectedItemId2 = trading.AddItemToStore(expectedUserId1, ExpectedStoreId2, "ipad 2", "electronic", 1500, 1).Value;
             //// create guest
-            expectedBuyerId1 = proxyBridge.Enter().Value;
+            expectedBuyerId1 = trading.Enter().Value;
 
             // register and log in
-            proxyBridge.Register(expectedBuyerId1, "ExpectedBuyer5@gmail.com", "expected", "Buyer", "asASD876!@");
-            expectedBuyerId1 = proxyBridge.Login(expectedBuyerId1, "ExpectedBuyer5@gmail.com", "asASD876!@").Value;
+            trading.Register(expectedBuyerId1, "ExpectedBuyer5@gmail.com", "expected", "Buyer", "asASD876!@");
+            expectedBuyerId1 = trading.Login(expectedBuyerId1, "ExpectedBuyer5@gmail.com", "asASD876!@").Value;
 
 
             //// add items to cart
-            proxyBridge.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 3);
+            trading.AddItemToCart(expectedBuyerId1, ExpectedStoreId1, ExpectedItemId1, 3);
 
             ExpectedItem itemInCart1 = new ExpectedItem { ItemId = ExpectedItemId1, StoreId = ExpectedStoreId1, ItemName = "iphone 11", ItemCategory = "electronic", ItemPrice = 3000, StoreQuantity = 4, QuantityInCart = 3 };
 
-            proxyBridge.AddItemToCart(expectedBuyerId1, ExpectedStoreId2, ExpectedItemId2, 1);
+            trading.AddItemToCart(expectedBuyerId1, ExpectedStoreId2, ExpectedItemId2, 1);
 
             ExpectedItem itemInCart2 = new ExpectedItem { ItemId = ExpectedItemId2, StoreId = ExpectedStoreId2, ItemName = "ipad 2", ItemCategory = "electronic", ItemPrice = 1500, StoreQuantity = 1, QuantityInCart = 1 };
 
 
-            proxyBridge.Logout(expectedUserId1);
+            trading.Logout(expectedUserId1);
             // log out
-            expectedBuyerId1 = proxyBridge.Logout(expectedBuyerId1).Value;
-            expectedBuyerId1 = proxyBridge.Enter().Value;
+            expectedBuyerId1 = trading.Logout(expectedBuyerId1).Value;
+            expectedBuyerId1 = trading.Enter().Value;
 
             // add new diffrent item to cart
-            proxyBridge.AddItemToCart(expectedBuyerId1, ExpectedStoreId2, ExpectedItemId2, 1);
+            trading.AddItemToCart(expectedBuyerId1, ExpectedStoreId2, ExpectedItemId2, 1);
 
             ExpectedItem itemInCart3 = new ExpectedItem { ItemId = ExpectedItemId2, StoreId = ExpectedStoreId2, ItemName = "ipad 2", ItemCategory = "electronic", ItemPrice = 1500, StoreQuantity = 1, QuantityInCart = 1 };
 
             // get cart values
 
-            int quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
-            Item storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
+            int quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
+            Item storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
 
             // check if items in cart match to before logout and logging in
 
@@ -394,19 +390,19 @@ namespace SadnaExpressTests.Acceptance_Tests
 
 
             // purchase cart as guest
-            var res = proxyBridge.PurchaseCart(expectedBuyerId1, "5411556648", "Rabbi Akiva 5");
+            var res = trading.PurchaseCart(expectedBuyerId1, "5411556648", "Rabbi Akiva 5");
             Assert.IsFalse(res.ErrorOccured);//no error occurred purhcase succeed
 
             // cart now empy as guest
 
             // login
-            expectedBuyerId1 = proxyBridge.Login(expectedBuyerId1, "ExpectedBuyer5@gmail.com", "asASD876!@").Value;
+            expectedBuyerId1 = trading.Login(expectedBuyerId1, "ExpectedBuyer5@gmail.com", "asASD876!@").Value;
 
 
             // get cart values
 
-            quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
-            storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
+            quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId1, ExpectedItemId1);
+            storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId1).Value[0];
 
             // check if items in cart match to before logout and logging in
 
@@ -414,8 +410,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(result);
 
 
-            quantity = proxyBridge.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId2, ExpectedItemId2);
-            storeItem = proxyBridge.GetItemsInStore(expectedUserId1, ExpectedStoreId2).Value[0];
+            quantity = trading.GetDetailsOnCart(expectedBuyerId1).Value.GetItemQuantityInCart(ExpectedStoreId2, ExpectedItemId2);
+            storeItem = trading.GetItemsInStore(expectedUserId1, ExpectedStoreId2).Value[0];
 
             // check if items in cart match to before logout and logging in
 
