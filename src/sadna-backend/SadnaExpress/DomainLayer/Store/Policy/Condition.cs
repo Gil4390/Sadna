@@ -244,14 +244,32 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 case "min":
                     if (sum >= minPrice)
                         return true;
-                    throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum}");
+                    switch (entity)
+                    {
+                        case string category:
+                            throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum} of {category}");
+                        case Item item:
+                            throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum} of {item.Name}");
+                    }
+                    break;
                 case "max":
                     if ( sum <= minPrice)
                         return true;
-                    throw new Exception($"The quantity {minPrice} is bigger then the allowed {sum}");
+                    switch (entity)
+                    {
+                        case string category:
+                            throw new Exception($"The quantity {minPrice} is bigger then the allowed {sum} of {category}");
+                        case Item item:
+                            throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum} of {item.Name}");
+                    }
+
+                    break;
+
                 default:
                     throw new Exception("Need to be one of this operators");
             }
+
+            return false;
         }
     }
     
