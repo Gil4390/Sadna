@@ -80,7 +80,6 @@ namespace SadnaExpress
                         logger.Close();
                     }
                 }
-
                 if (pathName.Equals(normalPathName))
                     pathName = testsPathName;
                 else
