@@ -28,16 +28,19 @@ const App:React.FC=()=>{
   const [notification, setNotification] = useState<string>('');
 
   useEffect(() => {
-
+    console.log("!!!!!!!!  MY ID IS: "+id);
     const connection = hubConnection('http://localhost:8081/signalR');
     const hubProxy = connection.createHubProxy('NotificationHub');
     
     // set up event listeners i.e. for incoming "message" event
     hubProxy.on('SendNotification', function(idToSend,message) {
-        console.log("id= "+id+" "+"message: "+message);
+        console.log("id= "+idToSend+" "+"message: "+message);
 
-        if(idToSend===id)
+        if(idToSend===id){
+          console.log("my id is: "+id);
+          console.log("found!! ")
           setNotification(message);
+        }
     });
     
     // connect

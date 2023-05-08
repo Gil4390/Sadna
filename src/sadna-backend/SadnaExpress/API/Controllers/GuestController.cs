@@ -31,7 +31,8 @@ namespace SadnaExpress.API.Controllers
         [HttpGet]
         public IHttpActionResult Enter()
         {
-            return Ok(tradingSystem.Enter().Value);
+            ResponseT<Guid> res = tradingSystem.Enter();
+            return Ok(res.Value);
         }
 
         [Route(APIConstants.GuestData.exit)]
