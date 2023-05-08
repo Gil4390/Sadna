@@ -30,9 +30,9 @@ function StoresManagementPage(props) {
 
   useEffect(() => {
     for (const key in permissions) {
-      console.log(`Permissions for key ${key}:`);
-      const permissionList = permissions[key];
-      console.log(permissionList);
+      //console.log(`Permissions for key ${key}:`);
+      //const permissionList = permissions[key];
+      //console.log(permissionList);
     }
     setStoresIdList(Object.keys(permissions));
    }, [permissions,refreshStores])
@@ -52,12 +52,6 @@ function StoresManagementPage(props) {
       }
       setAddStoreResponse(undefined);
   }, [addStoreResponse])
-
-  useEffect(() => {
-    for (const key in storesIdList) {
-      console.log(` key ${key}:`);
-    }
-  }, [storesIdList])
 
   const isValidStoreName = (name) => {
     const storeNamePattern = /^[a-zA-Z0-9\s]{3,50}$/;

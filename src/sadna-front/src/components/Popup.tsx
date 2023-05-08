@@ -6,11 +6,7 @@ interface PopupProps {
   }
   
   const Popup: React.FC<PopupProps> = ({ message, onClose }) => {
-    const [showPopup, setShowPopup] = useState(false);
-
-    useEffect(() => {
-      setShowPopup(true);
-    }, [message]);
+    const [showPopup, setShowPopup] = useState(true);
   
     const handleClosePopup = () => {
       setShowPopup(false);

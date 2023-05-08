@@ -32,6 +32,7 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult Enter()
         {
             ResponseT<Guid> res = tradingSystem.Enter();
+            
             return Ok(res.Value);
         }
 

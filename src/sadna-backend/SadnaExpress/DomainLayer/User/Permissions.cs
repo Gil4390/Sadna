@@ -102,6 +102,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (permission == "owner permissions")
                 {
                     pmember.Permission[storeID] = new List<string>();
+                    NotificationSystem.Instance.RegisterObserver(storeID, manager);
                 }
                 pmember.addPermission(storeID, permission);
             }

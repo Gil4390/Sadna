@@ -47,7 +47,6 @@ function LoginPage(props) {
 
   const handleLoginSubmit = (event) => {
     event.preventDefault();
-    console.log(`Email: ${email}, Password: ${password}`);
     
     if(!isValidEmail(email))
     {
