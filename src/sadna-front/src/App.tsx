@@ -46,9 +46,17 @@ const App:React.FC=()=>{
     });
     
     // connect
-    connection.start({ jsonp: true })
+    connection.start()
     .done(function(){ console.log('Now connected, connection ID=' + connection.id); })
     .fail(function(){ console.log('Could not connect'); });
+
+    connection.reconnecting(() =>{
+      console.log('reconnecting, connection ID=' + connection.id);
+    } );
+
+    connection.disconnected(() => {
+      console.log('disconnected');
+    })
 
     return () => {
       connection.stop();

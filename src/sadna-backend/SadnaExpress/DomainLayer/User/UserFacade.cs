@@ -800,26 +800,26 @@ namespace SadnaExpress.DomainLayer.User
 
             newMac = _ph.Mac();
             macs.TryAdd(systemManagerid, newMac);
-            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", _ph.Hash("AS87654askj" + newMac));
+            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "Rotem", "Sela", _ph.Hash("AS87654askj" + newMac));
             systemManager.createSystemManager();
 
             newMac = _ph.Mac();
             macs.TryAdd(storeOwnerid1, newMac);
-            PromotedMember storeOwner1 = new PromotedMember(storeOwnerid1, "AsiAzar@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
+            PromotedMember storeOwner1 = new PromotedMember(storeOwnerid1, "AsiAzar@gmail.com", "Asi", "Azar", _ph.Hash("A#!a12345678" + newMac));
             storeOwner1.createFounder(storeid1);
 
             newMac = _ph.Mac();
             macs.TryAdd(storeOwnerid2, newMac);
-            PromotedMember storeOwner2 = new PromotedMember(storeOwnerid2, "dani@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
+            PromotedMember storeOwner2 = new PromotedMember(storeOwnerid2, "dani@gmail.com", "dani", "dani", _ph.Hash("A#!a12345678" + newMac));
             storeOwner2.createFounder(storeid2);
 
             newMac = _ph.Mac();
             macs.TryAdd(storeManagerid1, newMac);
-            Member storeManager1 = new Member(storeManagerid1, "kobi@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
+            Member storeManager1 = new Member(storeManagerid1, "kobi@gmail.com", "kobi", "kobi", _ph.Hash("A#!a12345678" + newMac));
 
             newMac = _ph.Mac();
             macs.TryAdd(storeManagerid2, newMac);
-            Member storeManager2 = new Member(storeManagerid2, "zibi@gmail.com", "shay", "kres", _ph.Hash("A#!a12345678" + newMac));
+            Member storeManager2 = new Member(storeManagerid2, "Yael@gmail.com", "Yael", "Yael", _ph.Hash("A#!a12345678" + newMac));
 
 
             members.TryAdd(systemManagerid, systemManager);
@@ -837,13 +837,19 @@ namespace SadnaExpress.DomainLayer.User
             storeOwner1.LoggedIn = true;
             storeOwner2.LoggedIn = true;
             AppointStoreManager(storeOwnerid1, storeid1, "kobi@gmail.com");
-            AppointStoreManager(storeOwnerid2, storeid2, "zibi@gmail.com");
+            AppointStoreManager(storeOwnerid2, storeid2, "Yael@gmail.com");
             storeOwner1.LoggedIn = false;
             storeOwner2.LoggedIn = false;
 
 
 
             members[memberId].AwaitingNotification.Add(new Notification(DateTime.Now, Guid.Empty, "helooooo", memberId));
+
+            NotificationSystem.Instance.RegisterObserver(storeid1, storeOwner1);
+            NotificationSystem.Instance.RegisterObserver(storeid1, storeManager1);
+
+            NotificationSystem.Instance.RegisterObserver(storeid2, storeManager2);
+            NotificationSystem.Instance.RegisterObserver(storeid2, storeOwner2);
         }
     }
 }

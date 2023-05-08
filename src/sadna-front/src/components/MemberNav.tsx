@@ -7,7 +7,6 @@ function MemberNav(props) {
   const handleLogoutPress = () => {
     props.handleLogout();
   }
-  console.log("aaaaa: " + props.username);
 
   return (
     <div className="navigation">

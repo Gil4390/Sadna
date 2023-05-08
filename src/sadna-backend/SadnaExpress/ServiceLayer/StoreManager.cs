@@ -673,7 +673,7 @@ namespace SadnaExpress.ServiceLayer
                 foreach (ShoppingBasket basket in shoppingCart.Baskets) 
                     cart.Add(basket.StoreID, basket.ItemsInBasket);
                 storeFacade.CheckPurchaseConditions(cart);
-                return new Response("OK");
+                return new Response();
             }
             catch (Exception ex)
             {
