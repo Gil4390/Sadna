@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer.Store
@@ -11,52 +11,25 @@ namespace SadnaExpress.DomainLayer.Store
     public class Store
     {
         private string storeName;
-
-        public string StoreName
-        {
-            get => storeName;
-            set => storeName = value;
-        }
-
+        public string StoreName { get => storeName; set => storeName = value; }
         public Inventory itemsInventory;
         private Guid storeID;
-
-        public Guid StoreID
-        {
-            get => storeID;
-        }
-
+        public Guid StoreID { get => storeID; }
         private bool active;
-
-        public bool Active
-        {
-            get => active;
-            set => active = value;
-        }
-
+        public bool Active { get => active; set => active = value; }
         private int storeRating;
         private DiscountPolicyTree discountPolicyTree;
-
-        public DiscountPolicyTree DiscountPolicyTree
-        {
-            get => discountPolicyTree;
-            set => discountPolicyTree = value;
-        }
-
+        public DiscountPolicyTree DiscountPolicyTree { get => discountPolicyTree; set => discountPolicyTree = value; }
+        private Dictionary<DiscountPolicy, bool> allDiscountPolicies;
+        public Dictionary<DiscountPolicy, bool> AllDiscountPolicies {get => allDiscountPolicies;}
+        private Dictionary<Condition, bool> condDiscountPolicies;
+        public Dictionary<Condition, bool> CondDiscountPolicies {get => condDiscountPolicies;}
         private ComplexCondition purchasePolicy;
-
-        public ComplexCondition PurchasePolicy
-        {
-            get => purchasePolicy;
-            set => purchasePolicy = value;
-        }
-
+        public ComplexCondition PurchasePolicy { get => purchasePolicy; set => purchasePolicy = value; }
         public int purchasePolicyCounter;
-        public int PurchasePolicyCounter
-        {
-            get => purchasePolicyCounter;
-            set => purchasePolicyCounter = value;
-        }
+        public int PurchasePolicyCounter { get => purchasePolicyCounter; set => purchasePolicyCounter = value; }
+        public int discountPolicyCounter;
+        public int DiscountPolicyCounter { get => discountPolicyCounter; set => discountPolicyCounter = value; }
 
         public List<Condition> PurchasePolicyList { get; set; }
 
@@ -76,7 +49,10 @@ namespace SadnaExpress.DomainLayer.Store
             discountPolicyTree = null;
             purchasePolicy = null;
             PurchasePolicyList = new List<Condition>();
+            allDiscountPolicies = new Dictionary<DiscountPolicy, bool>();
+            condDiscountPolicies = new Dictionary<Condition, bool>();
             purchasePolicyCounter = 0;
+            discountPolicyCounter = 0;
 
         }
         public bool Equals(Store store)
@@ -167,9 +143,12 @@ namespace SadnaExpress.DomainLayer.Store
             return itemsInventory.GetItemByQuantity(itemID);
         }
 
-        public DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
+        public DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
         {
             SimpleDiscount<T> simpleDiscount = new SimpleDiscount<T>(level, percent, startDate, endDate);
+            simpleDiscount.ID = discountPolicyCounter;
+            discountPolicyCounter++;
+            allDiscountPolicies.Add(simpleDiscount, false);
             return simpleDiscount;
         }
 
@@ -180,6 +159,8 @@ namespace SadnaExpress.DomainLayer.Store
                 if (cond.Equals(c))
                     return null;
             }
+
+            AddSimplePurchaseCondition(c);
             PurchasePolicyList.Add(c);
             return c;
         }
@@ -190,6 +171,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("value must be positive");
             if (entity == null)
                 throw new Exception("entity must be not null");
+            Condition cond;
             switch (type)
             {
                 case "min value":
@@ -200,7 +182,8 @@ namespace SadnaExpress.DomainLayer.Store
                         minValue.op = op;
                         minValue.opCond = opCond;
                     }
-                    return checkNotInList(minValue);
+                    cond = checkNotInList(minValue);
+                    break;
                 case "max value":
                     ValueCondition<T> maxValue = new ValueCondition<T>(entity, val, "max");
                     maxValue.ID = purchasePolicyCounter++;
@@ -209,7 +192,8 @@ namespace SadnaExpress.DomainLayer.Store
                         maxValue.op = op;
                         maxValue.opCond = opCond;
                     }
-                    return checkNotInList(maxValue);
+                    cond = checkNotInList(maxValue);
+                    break;
                 case "min quantity":
                     QuantityCondition<T> minQuantity = new QuantityCondition<T>(entity, (int)val, "min");
                     minQuantity.ID = purchasePolicyCounter++;
@@ -218,7 +202,8 @@ namespace SadnaExpress.DomainLayer.Store
                         minQuantity.op = op;
                         minQuantity.opCond = opCond;
                     }
-                    return checkNotInList(minQuantity);
+                    cond = checkNotInList(minQuantity);
+                    break;
                 case "max quantity":
                     QuantityCondition<T> maxQuantity = new QuantityCondition<T>(entity, (int)val, "max");
                     maxQuantity.ID = purchasePolicyCounter++;
@@ -227,7 +212,8 @@ namespace SadnaExpress.DomainLayer.Store
                         maxQuantity.op = op;
                         maxQuantity.opCond = opCond;
                     }
-                    return checkNotInList(maxQuantity);
+                    cond = checkNotInList(maxQuantity);
+                    break;
                 case "before time":
                     TimeCondition<T> timeBefore = new TimeCondition<T>(entity, dt, "before");
                     timeBefore.ID = purchasePolicyCounter++;
@@ -236,7 +222,8 @@ namespace SadnaExpress.DomainLayer.Store
                         timeBefore.op = op;
                         timeBefore.opCond = opCond;
                     }
-                    return checkNotInList(timeBefore);
+                    cond = checkNotInList(timeBefore);
+                    break;
                 case "after time":
                     TimeCondition<T> timeAfter = new TimeCondition<T>(entity, dt, "after");
                     timeAfter.ID = purchasePolicyCounter++;
@@ -245,10 +232,13 @@ namespace SadnaExpress.DomainLayer.Store
                         timeAfter.op = op;
                         timeAfter.opCond = opCond;
                     }
-                    return checkNotInList(timeAfter);
+                    cond = checkNotInList(timeAfter);
+                    break;
                 default:
                     throw new Exception("the condition not fine");
             }
+            condDiscountPolicies.Add(cond, false);
+            return cond;
         }
 
         public ConditioningCondition AddConditioning(Condition cond ,Item item ,string type ,  double val)
@@ -262,6 +252,7 @@ namespace SadnaExpress.DomainLayer.Store
                     PurchasePolicyList.Remove(cond);
                     cc.ID = purchasePolicyCounter++;;
                     PurchasePolicyList.Add(cc);
+                    AddSimplePurchaseCondition(cc);
                     return new ConditioningCondition(cond,crs);
                 case "quantity"or "min quantity" or "max quantity":
                     ConditioningResultQuantity crq = new ConditioningResultQuantity(item, (int)val);
@@ -269,53 +260,97 @@ namespace SadnaExpress.DomainLayer.Store
                     PurchasePolicyList.Remove(cond);
                     cc.ID = purchasePolicyCounter++;;
                     PurchasePolicyList.Add(cc);
+                    AddSimplePurchaseCondition(cc);
                     return new ConditioningCondition(cond,crq);
                 default:
                     throw new Exception("the condition not fine");
             }
             
         }
-        public DiscountPolicy.DiscountPolicy CreateComplexPolicy(string op, params object[] policys)
+        public DiscountPolicy CreateComplexPolicy(string op, params int[] policys)
         {
             switch (op)
             {
                 case "xor":
-                    XorDiscount xor = new XorDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
+                    XorDiscount xor = new XorDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    allDiscountPolicies.Add(xor, false);
+                    xor.ID = discountPolicyCounter;
+                    discountPolicyCounter++;
                     return xor;
                 case "and":
-                    AndDiscount and = new AndDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
+                    AndDiscount and = new AndDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    allDiscountPolicies.Add(and, false);
+                    and.ID = discountPolicyCounter;
+                    discountPolicyCounter++;
                     return and;
                 case "or":
-                    OrDiscount or = new OrDiscount((Condition)policys[0], (Condition)policys[1], (DiscountPolicy.DiscountPolicy)policys[2]);
+                    OrDiscount or = new OrDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    allDiscountPolicies.Add(or, false);
+                    or.ID = discountPolicyCounter;
+                    discountPolicyCounter++;
                     return or;
                 case "if":
-                    ConditionalDiscount ifCond = new ConditionalDiscount((Condition)policys[0],(DiscountPolicy.DiscountPolicy)policys[1]);
+                    ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]),GetPolicyByID(policys[1]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    allDiscountPolicies.Add(ifCond, false);
+                    ifCond.ID = discountPolicyCounter;
+                    discountPolicyCounter++;
                     return ifCond;
                 case "max":
-                    MaxDiscount max = new MaxDiscount((DiscountPolicy.DiscountPolicy)policys[0], (DiscountPolicy.DiscountPolicy)policys[1]);
+                    MaxDiscount max = new MaxDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    allDiscountPolicies.Add(max, false);
+                    max.ID = discountPolicyCounter;
+                    discountPolicyCounter++;
                     return max;
                 case "add":
-                    AddDiscount add = new AddDiscount((DiscountPolicy.DiscountPolicy)policys[0], (DiscountPolicy.DiscountPolicy)policys[1]);
+                    AddDiscount add = new AddDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    allDiscountPolicies.Add(add, false);
+                    add.ID = discountPolicyCounter;
+                    discountPolicyCounter++;
                     return add;
                 default:
                     throw new Exception("the op not exist");
             }
         }
 
-        public DiscountPolicyTree AddPolicy(DiscountPolicy.DiscountPolicy discountPolicy)
+        public DiscountPolicyTree AddPolicy(int ID)
         {
             if (discountPolicyTree == null)
-                discountPolicyTree = new DiscountPolicyTree(discountPolicy);
+                discountPolicyTree = new DiscountPolicyTree(GetPolicyByID(ID));
             else
-                discountPolicyTree.AddPolicy(discountPolicy);
+                discountPolicyTree.AddPolicy(GetPolicyByID(ID));
+            allDiscountPolicies[GetPolicyByID(ID)] = true;
             return discountPolicyTree;
         }
 
-        public void RemovePolicy(DiscountPolicy.DiscountPolicy discountPolicy)
+        public void RemovePolicy(int ID)
         {
-            discountPolicyTree.RemovePolicy(discountPolicy);
+            discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
         }
 
+        private DiscountPolicy GetPolicyByID(int ID)
+        {
+            foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
+                if (discountPolicy.ID == ID)
+                    return discountPolicy;
+            throw new Exception($"The policy with {ID} not exist");
+        }
+        
+        private Condition GetCondByID(int ID)
+        {
+            foreach (Condition condPolicy in condDiscountPolicies.Keys)
+                if (condPolicy.ID == ID)
+                    return condPolicy;
+            throw new Exception($"The condition with {ID} not exist");
+        }
+        
         public void AddSimplePurchaseCondition(Condition newPurchasePolicy1,Condition newPurchasePolicy2=null , Operator _op = null)
         {
             if (purchasePolicy == null)
@@ -324,8 +359,16 @@ namespace SadnaExpress.DomainLayer.Store
                 purchasePolicy = new ComplexCondition(purchasePolicy.cond1, newPurchasePolicy1, _op);
             else if (purchasePolicy.cond2 == null)
                 purchasePolicy = new ComplexCondition(purchasePolicy.cond1, newPurchasePolicy1, new AndOperator());
-            else 
-                purchasePolicy = new ComplexCondition(newPurchasePolicy1, newPurchasePolicy2, _op);
+            else if (purchasePolicy.cond1 != null && purchasePolicy.cond2 != null)
+            {
+                ComplexCondition cr = new ComplexCondition(purchasePolicy.cond1, purchasePolicy.cond2,purchasePolicy._op );
+                purchasePolicy = new ComplexCondition(cr, newPurchasePolicy1, new AndOperator());
+            }
+            else if (newPurchasePolicy1 != null && newPurchasePolicy2 != null)
+            {
+                ComplexCondition cr = new ComplexCondition(newPurchasePolicy1, newPurchasePolicy2, _op );
+                purchasePolicy = new ComplexCondition(cr, purchasePolicy, new AndOperator());
+            }
         }
 
         public Condition BuildCondition(Condition newPurchasePolicy1, Condition newPurchasePolicy2 = null,

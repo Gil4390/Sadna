@@ -10,7 +10,7 @@ using System.Web.Http.Description;
 using SadnaExpress.API.ClientRequests;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.ServiceLayer.Obj;
@@ -333,6 +333,16 @@ namespace SadnaExpress.API.Controllers
             var res = tradingSystem.GetStorePurchases(request.userID, request.storeID);
             return Ok(res);
         }
+        
+        [Route(APIConstants.MemberData.checkPurchaseCondition)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult CheckPurchaseConditions([FromBody] ClientRequest request)
+        {
+            return Ok(tradingSystem.CheckPurchaseConditions(request.userID));
+        }
+        
+        //checkPurchaseCondition
 
         [Route(APIConstants.MemberData.getMemberName)]
         [ResponseType(typeof(ResponseT<string>))]

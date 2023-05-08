@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.SModels;
 
@@ -150,6 +150,11 @@ namespace SadnaExpress.ServiceLayer
         public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
             throw new NotImplementedException();
+        }
+
+        public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
+        {
+            return _realBridge.GetAllPolicy(userID, storeID);
         }
 
         public Response AppointStoreOwner(Guid id, Guid storeID, string userEmail)
@@ -351,27 +356,27 @@ namespace SadnaExpress.ServiceLayer
 
         public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
         {
-            throw new NotImplementedException();
+            return _realBridge.AddDiscountCondition(store, entity, type, value);
         }
 
         public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            return _realBridge.CreateSimplePolicy(store, level, percent, startDate, endDate);
         }
 
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys)
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys)
         {
-            throw new NotImplementedException();
+            return _realBridge.CreateComplexPolicy(store, op, policys);
         }
 
-        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy)
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy)
         {
-            throw new NotImplementedException();
+            return _realBridge.AddPolicy(store, discountPolicy);
         }
 
-        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
+        public void RemovePolicy(Guid store, int discountPolicy)
         {
-            throw new NotImplementedException();
+            _realBridge.RemovePolicy(store, discountPolicy);
         }
 
         public ResponseT<List<SItem>> GetCartItems(Guid userID)
@@ -420,6 +425,11 @@ namespace SadnaExpress.ServiceLayer
         }
 
         public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response CheckPurchaseConditions(Guid userID)
         {
             throw new NotImplementedException();
         }

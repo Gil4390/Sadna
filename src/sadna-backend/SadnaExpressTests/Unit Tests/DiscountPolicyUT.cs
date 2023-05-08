@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 
 namespace SadnaExpressTests.Unit_Tests
 {
@@ -54,7 +54,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculatePolicyOnItemSuccess()
         {
             //Arrange
-            store.AddPolicy(policy2);
+            store.AddPolicy(policy2.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -67,7 +67,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculatePolicyOnStoreSuccess()
         {
             //Arrange
-            store.AddPolicy(policy1);
+            store.AddPolicy(policy1.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -79,7 +79,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculatePolicyOnCategorySuccess()
         {
             //Arrange
-            store.AddPolicy(policy3);
+            store.AddPolicy(policy3.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -93,7 +93,7 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             DiscountPolicy policyPass = store.CreateSimplePolicy(store, 20, new DateTime(2022, 4, 30), new DateTime(2022, 5, 30));
-            store.AddPolicy(policyPass);
+            store.AddPolicy(policyPass.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -107,8 +107,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateConditionalPolicySuccess()
         {
             //Arrange
-            DiscountPolicy complex = store.CreateComplexPolicy("if", cond1, policy1); //if I buy more than 50 I get 20% on the items
-            store.AddPolicy(complex);
+            DiscountPolicy complex = store.CreateComplexPolicy("if", cond1.ID, policy1.ID); //if I buy more than 50 I get 20% on the items
+            store.AddPolicy(complex.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -120,8 +120,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateConditionalPolicyFail()
         {
             //Arrange
-            DiscountPolicy complex = store.CreateComplexPolicy("if", cond2, policy1); //if I buy more than 2 from Ipad I get 20% on the items
-            store.AddPolicy(complex);
+            DiscountPolicy complex = store.CreateComplexPolicy("if", cond2.ID, policy1.ID); //if I buy more than 2 from Ipad I get 20% on the items
+            store.AddPolicy(complex.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -134,8 +134,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateAndPolicyTwoOkSuccess()
         {
             //Arrange
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond3, policy1); //if I buy more than 50 nis and more than one bisli I get 20% on the items
-            store.AddPolicy(and);
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond3.ID, policy1.ID); //if I buy more than 50 nis and more than one bisli I get 20% on the items
+            store.AddPolicy(and.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -147,8 +147,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateAndPolicyOneFail()
         {
             //Arrange
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond2, policy1); //if I buy more than 50 nis and more than two Ipad I get 20% on the items
-            store.AddPolicy(and);
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond2.ID, policy1.ID); //if I buy more than 50 nis and more than two Ipad I get 20% on the items
+            store.AddPolicy(and.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -158,8 +158,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateAndPolicyTwoFail()
         {
             //Arrange
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond2, cond4, policy1);  //if I buy more than 100 nis and more than two Ipad I get 20% on the items
-            store.AddPolicy(and);
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond2.ID, cond4.ID, policy1.ID);  //if I buy more than 100 nis and more than two Ipad I get 20% on the items
+            store.AddPolicy(and.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -172,8 +172,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateOrPolicyOneOkCondSuccess()
         {
             //Arrange
-            DiscountPolicy or = store.CreateComplexPolicy("or", cond4, cond3, policy1); //if I buy more than 100 nis food or more than one bisli I get 20% on the items
-            store.AddPolicy(or);
+            DiscountPolicy or = store.CreateComplexPolicy("or", cond4.ID, cond3.ID, policy1.ID); //if I buy more than 100 nis food or more than one bisli I get 20% on the items
+            store.AddPolicy(or.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -185,8 +185,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateOrPolicyTwoOkCondSuccess()
         {
             //Arrange
-            DiscountPolicy or = store.CreateComplexPolicy("or", cond1, cond3, policy1); //if I buy more than 50 nis or more than one bisli I get 20% on the items
-            store.AddPolicy(or);
+            DiscountPolicy or = store.CreateComplexPolicy("or", cond1.ID, cond3.ID, policy1.ID); //if I buy more than 50 nis or more than one bisli I get 20% on the items
+            store.AddPolicy(or.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -198,8 +198,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateOrPolicyBothFail()
         {
             //Arrange
-            DiscountPolicy or = store.CreateComplexPolicy("or", cond2, cond4, policy1); //if I buy more than 100 nis Food and more than one Ipad I get 20% on the items
-            store.AddPolicy(or);
+            DiscountPolicy or = store.CreateComplexPolicy("or", cond2.ID, cond4.ID, policy1.ID); //if I buy more than 100 nis Food and more than one Ipad I get 20% on the items
+            store.AddPolicy(or.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -212,8 +212,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateXorPolicyTwoOkFail()
         {
             //Arrange
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1, cond3, policy1); //if I buy more than 50 nis xor more than one bisli I get 20% on the items
-            store.AddPolicy(xor);
+            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1.ID, cond3.ID, policy1.ID); //if I buy more than 50 nis xor more than one bisli I get 20% on the items
+            store.AddPolicy(xor.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -223,8 +223,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateXorPolicyOneSuccess()
         {
             //Arrange
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1, cond2, policy1); //if I buy more than 50 nis xor more than two Ipad I get 20% on the items
-            store.AddPolicy(xor);
+            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID, policy1.ID); //if I buy more than 50 nis xor more than two Ipad I get 20% on the items
+            store.AddPolicy(xor.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -236,8 +236,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateXorPolicyTwoFail()
         {
             //Arrange
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond2, cond4, policy1);  //if I buy more than 100 nis xor more than two Ipad I get 20% on the items
-            store.AddPolicy(xor);
+            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond2.ID, cond4.ID, policy1.ID);  //if I buy more than 100 nis xor more than two Ipad I get 20% on the items
+            store.AddPolicy(xor.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -250,8 +250,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateMaxPolicy1BetterSuccess()
         {
             //Arrange
-            DiscountPolicy max = store.CreateComplexPolicy("max",policy1, policy2); 
-            store.AddPolicy(max);
+            DiscountPolicy max = store.CreateComplexPolicy("max",policy1.ID, policy2.ID); 
+            store.AddPolicy(max.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -264,8 +264,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateMaxPolicy3BetterSuccess()
         {
             //Arrange
-            DiscountPolicy max = store.CreateComplexPolicy("max", policy1, policy4); 
-            store.AddPolicy(max);
+            DiscountPolicy max = store.CreateComplexPolicy("max", policy1.ID, policy4.ID); 
+            store.AddPolicy(max.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -281,8 +281,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateAddPolicySuccess()
         {
             //Arrange
-            DiscountPolicy add = store.CreateComplexPolicy("add", policy1, policy3); //20% on store and 50% on food 
-            store.AddPolicy(add);
+            DiscountPolicy add = store.CreateComplexPolicy("add", policy1.ID, policy3.ID); //20% on store and 50% on food 
+            store.AddPolicy(add.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -297,10 +297,10 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateLongXorAndPolicy()
         {
             //Arrange
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1, cond2, policy1); //if I buy more than 50 nis xor more than two ipad I get 20% on the items
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond3, policy2); //if I buy more than 50 nis and more than one bisli I get 50% on the bisli
-            store.AddPolicy(xor);
-            store.AddPolicy(and);
+            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID, policy1.ID); //if I buy more than 50 nis xor more than two ipad I get 20% on the items
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond3.ID, policy2.ID); //if I buy more than 50 nis and more than one bisli I get 50% on the bisli
+            store.AddPolicy(xor.ID);
+            store.AddPolicy(and.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -312,11 +312,11 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateLongAddAndPolicy()
         {
             //Arrange
-            DiscountPolicy add = store.CreateComplexPolicy("add", policy1, policy2); //I have 70% on bisli and the rest 20%
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1, cond2, policy3); //if I buy more than 50 nis xor more than two ipad I get 50% on the "Food"
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond3, xor);  //if I buy more than 50 nis and more than one bisli
-            store.AddPolicy(add);
-            store.AddPolicy(and);
+            DiscountPolicy add = store.CreateComplexPolicy("add", policy1.ID, policy2.ID); //I have 70% on bisli and the rest 20%
+            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID, policy3.ID); //if I buy more than 50 nis xor more than two ipad I get 50% on the "Food"
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond3.ID, xor.ID);  //if I buy more than 50 nis and more than one bisli
+            store.AddPolicy(add.ID);
+            store.AddPolicy(and.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -329,10 +329,10 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateTwoNotCommonPolicys()
         {
             //Arrange
-            DiscountPolicy add = store.CreateComplexPolicy("add", policy1, policy2); //I have 70% on bisli and the rest 20%
+            DiscountPolicy add = store.CreateComplexPolicy("add", policy1.ID, policy2.ID); //I have 70% on bisli and the rest 20%
 
-            store.AddPolicy(policy4);
-            store.AddPolicy(add);
+            store.AddPolicy(policy4.ID);
+            store.AddPolicy(add.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -345,9 +345,9 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateOneCondNotPolicys()
         {
             //Arrange
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1, cond2, policy2); //I have 70% on bisli and the rest 20%
-            store.AddPolicy(policy4);
-            store.AddPolicy(and);
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond2.ID, policy2.ID); //I have 70% on bisli and the rest 20%
+            store.AddPolicy(policy4.ID);
+            store.AddPolicy(and.ID);
             
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);

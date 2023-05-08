@@ -15,7 +15,6 @@ export function Condition (props)
 {
   const [policysList, setPolicyList] = useState<PurcahseCondition[]>([]);
   const handleRemovePress = () => {
-    console.log("phase1")
     handleRemovePurchaseCondition(props.storID ,props.condID).then(
       value => {
         setPolicyList(value as PurcahseCondition[]);
@@ -24,7 +23,6 @@ export function Condition (props)
   };
 
   useEffect(() => {
-    console.log("phase2")
     props.handleRemove()
   }, [policysList]);
     return (

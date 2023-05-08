@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
+namespace SadnaExpress.DomainLayer.Store.Policy
 {
 
     public abstract class Operator

@@ -9,8 +9,7 @@ using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.Services;
-using SadnaExpress.API.WebClient.SignalR;
-using SadnaExpress.API.WebClient.WebClientServer;
+using SadnaExpress.API.SignalR;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 

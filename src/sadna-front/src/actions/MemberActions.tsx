@@ -788,6 +788,24 @@ export function handleGetStoreInfo(userID, storeID) {
         return Promise.resolve(data)
     })
 }
+export function handleCheckPurchaseConditions(userID) {
+    let url = "http://localhost:8080/api/member/check-purchase-conds";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID:userID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
 
 export function handleGetMemberName(userID) {
     let url = "http://localhost:8080/api/member/get-member-name";

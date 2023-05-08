@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.SModels;
 
@@ -50,9 +50,15 @@ namespace SadnaExpress.ServiceLayer
         Response EditItemPrice(Guid userID, Guid storeID,  Guid itemID, int price); 
         Response EditItemName(Guid userID, Guid storeID,  Guid itemID, string name); 
         Response EditItemQuantity(Guid userID, Guid storeID,  Guid itemID, int quantity);
-
         public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice,
             int quantity);
+        //4.2 Discount policy
+        ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID);
+        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
+            DateTime endDate);
+        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys);
+        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy);
+        void RemovePolicy(Guid store, int discountPolicy);
         Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
         Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 only for tests
@@ -95,24 +101,11 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);
         void RemoveCondition(Guid storeID ,int condID);
-
-        ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value, DateTime dt=default, M entityRes = default,
-            string typeRes = default, double valueRes = default);
-        ResponseT<Condition> AddCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
-            string typeRes = default, double valueRes = default);
-        void RemoveCondition<T, M>(Guid store ,T entity, string type, double value, DateTime dt=default, M entityRes = default,
-            string typeRes = default, double valueRes = default);
+        
         // this functions needs to notify to offline members their notifications.
         public void getNotificationsForOfflineMembers();
 
         ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
-
-        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
-            DateTime endDate);
-
-        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys);
-        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
-        void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
 
         ResponseT<List<SItem>> GetCartItems(Guid userID);
         ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
@@ -130,6 +123,7 @@ namespace SadnaExpress.ServiceLayer
 
         ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId);
         Response MarkNotificationAsRead(Guid userID, Guid notificationID);
+        Response CheckPurchaseConditions(Guid userID);
         ResponseT<string> GetMemberName(Guid userID);
     }
 }

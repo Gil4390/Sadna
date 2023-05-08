@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.SModels;
 
@@ -51,10 +51,10 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<PurchaseCondition[] > GetAllConditions(Guid store);
         ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
         ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
-        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, object[] policys);
-        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy);
-        void RemovePolicy(Guid store, DiscountPolicy discountPolicy);
-
+        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, int[] policys);
+        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy);
+        void RemovePolicy(Guid store, int discountPolicy);
+        ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID);
         void LoadData();
         Guid GetItemStoreId(Guid Itemid);
         ResponseT<List<SItem>> GetCartItems(Guid userID);
@@ -63,5 +63,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<List<Item>> GetItemsInStore(Guid userID, Guid storeId);
         ResponseT<SStore> GetStoreInfo(Guid userID,Guid storeId);
         double GetItemAfterDiscount(Guid itemStoreid, Item item);
+        Response CheckPurchaseConditions(Guid userId);
     }
 }

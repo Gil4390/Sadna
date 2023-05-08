@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.ServiceObjects;
@@ -519,7 +519,7 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, object[] policys)
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, int[] policys)
         {
             try
             {
@@ -532,7 +532,34 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy)
+        public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, storeID,
+                    new List<string> { "founder permissions", "owner permissions" });
+                (Dictionary<DiscountPolicy, bool>, Dictionary<Condition, bool>) policies =
+                    storeFacade.GetAllPolicy(storeID);
+                List<SPolicy> spolicies = new List<SPolicy>();
+                foreach (DiscountPolicy discount in policies.Item1.Keys)
+                {
+                    spolicies.Add(new SPolicy(discount, policies.Item1[discount]));
+                }
+                foreach (DiscountPolicy cond in policies.Item1.Keys)
+                {
+                    spolicies.Add(new SPolicy(cond, policies.Item1[cond]));
+                }
+
+                return new ResponseT<List<SPolicy>>(spolicies);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetAllPolicy) + ": " + ex.Message);
+                return new ResponseT<List<SPolicy>>(ex.Message);
+            }
+        }
+
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy)
         {
             try
             {
@@ -545,7 +572,7 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
+        public void RemovePolicy(Guid store, int discountPolicy)
         {
             try
             {
@@ -634,6 +661,26 @@ namespace SadnaExpress.ServiceLayer
         public double GetItemAfterDiscount(Guid itemStoreid, Item item)
         {
             return storeFacade.GetItemAfterDiscount(itemStoreid, item);
+        }
+
+        public Response CheckPurchaseConditions(Guid userId)
+        {
+            try
+            {
+                Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
+                ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userId);
+                if (shoppingCart.Baskets.Count == 0)
+                    throw new Exception("Cart can't be empty");
+                foreach (ShoppingBasket basket in shoppingCart.Baskets) 
+                    cart.Add(basket.StoreID, basket.ItemsInBasket);
+                storeFacade.CheckPurchaseConditions(cart);
+                return new Response("OK");
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CheckPurchaseConditions) + ": " + ex.Message);
+                return new Response(ex.Message);
+            }
         }
     }
 }

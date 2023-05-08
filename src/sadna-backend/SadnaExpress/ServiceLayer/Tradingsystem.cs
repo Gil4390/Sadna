@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ExternalServices;
 using SadnaExpress.ServiceLayer.Obj;
@@ -522,13 +522,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetNotifications(userID);
         }
-
-        // this functions needs to notify to offline members their notifications.
-        public void RemoveCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
-            M entityRes = default, string typeRes = default, double valueRes = default)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public void getNotificationsForOfflineMembers()
         {
@@ -549,12 +543,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetCondition(store ,entity,type,value, dt,entityRes , typeRes , valueRes);
         }
-
-        public ResponseT<Condition> AddCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
-            M entityRes = default, string typeRes = default, double valueRes = default)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
@@ -577,21 +566,25 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.CreateSimplePolicy(store, level, percent, startDate , endDate);
         }
 
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys)
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys)
         {
             return storeManager.CreateComplexPolicy(store, op, policys);
         }
 
-        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy)
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy)
         {
             return storeManager.AddPolicy(store, discountPolicy);
         }
 
-        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
+        public void RemovePolicy(Guid store, int discountPolicy)
         {
             storeManager.RemovePolicy(store, discountPolicy);
         }
-
+        public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
+        {
+            return storeManager.GetAllPolicy(userID, storeID);
+        }
+        
         public void LoadData()
         {
             storeManager.LoadData();
@@ -615,6 +608,11 @@ namespace SadnaExpress.ServiceLayer
         public Response MarkNotificationAsRead(Guid userID, Guid notificationID)
         {
             return userManager.MarkNotificationAsRead(userID, notificationID);
+        }
+
+        public Response CheckPurchaseConditions(Guid userID)
+        {
+            return storeManager.CheckPurchaseConditions(userID);
         }
 
         public ResponseT<string> GetMemberName(Guid userID)

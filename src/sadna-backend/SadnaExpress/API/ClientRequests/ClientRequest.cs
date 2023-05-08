@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
+using SadnaExpress.DomainLayer.Store.Policy;
 
 namespace SadnaExpress.API.ClientRequests
 {
@@ -141,12 +141,12 @@ namespace SadnaExpress.API.ClientRequests
     {
         public Guid storeID{ get; set; }
         public string op{ get; set; }
-        public Object[] policys{ get; set; }
+        public int[] policys{ get; set; }
     }
     public class DiscountPolicyRequest : ClientRequest
     {
         public Guid storeID{ get; set; }
-        public DiscountPolicy discountPolicy{ get; set; }
+        public int discountPolicy{ get; set; }
     }
     public class NotificationRequest : ClientRequest
     { public Guid notificationID { get; set;} }

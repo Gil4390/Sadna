@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SadnaExpress.DomainLayer.Store.DiscountPolicy;
 
 namespace SadnaExpress.API.Controllers
 {
@@ -26,10 +25,6 @@ namespace SadnaExpress.API.Controllers
             public const string enter = "enter";
 
             public const string storeInfo = "store-info";
-
-            public const string itemByName = "item-by-name";
-
-            public const string itemByCategory = "item-by-category";
 
             public const string searchItems = "search-items";
 
@@ -96,8 +91,7 @@ namespace SadnaExpress.API.Controllers
             public const string getStoresOwnerList = "get-store-owner";
 
             public const string getAllConditions = "get-conds";
-
-            public const string getCondition = "get-cond";
+            
 
             public const string addCondition = "add-cond";
                 
@@ -122,6 +116,8 @@ namespace SadnaExpress.API.Controllers
             public const string getMemberPermissions = "get-member-permissions";
 
             public const string getStoreInfo = "get-store-info";
+            
+            public const string checkPurchaseCondition = "check-purchase-conds";
 
             public const string getMemberName = "get-member-name";
 

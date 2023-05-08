@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
+namespace SadnaExpress.DomainLayer.Store.Policy
 {
     public abstract class Condition
     {
@@ -48,6 +48,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         }
         
     }
+
     public class ConditioningCondition : Condition
     {
         public Condition cond;
@@ -75,7 +76,6 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
         }
     }
     
-
     public abstract class ConditioningResult
     {
         public Item item;
@@ -120,6 +120,7 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             }
         }
     }
+
     public class ConditioningResultSum : ConditioningResult
     {
         public double sum;
@@ -241,15 +242,36 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             switch (minmax)
             {
                 case "min":
-                    return sum >= minPrice;
+                    if (sum >= minPrice)
+                        return true;
+                    switch (entity)
+                    {
+                        case string category:
+                            throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum} of {category}");
+                        case Item item:
+                            throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum} of {item.Name}");
+                    }
+                    break;
                 case "max":
-                    return sum <= minPrice;
+                    if ( sum <= minPrice)
+                        return true;
+                    switch (entity)
+                    {
+                        case string category:
+                            throw new Exception($"The quantity {minPrice} is bigger then the allowed {sum} of {category}");
+                        case Item item:
+                            throw new Exception($"The quantity {minPrice} is smaller then the allowed {sum} of {item.Name}");
+                    }
+
+                    break;
+
                 default:
                     throw new Exception("Need to be one of this operators");
             }
+
+            return false;
         }
     }
-
     
     public class QuantityCondition<T> : Condition
     {
@@ -341,9 +363,13 @@ namespace SadnaExpress.DomainLayer.Store.DiscountPolicy
             switch (minmax)
             {
                 case "min":
-                    return this.Quantity <= q;
+                    if (this.Quantity <= q)
+                        return true;
+                    throw new Exception($"The quantity {Quantity} is bigger then the allowed {q}");
                 case "max":
-                    return this.Quantity >= q;
+                    if (this.Quantity >= q)
+                        return true;
+                    throw new Exception($"The quantity {Quantity} is smaller then the allowed {q}");
                 default:
                     throw new Exception("Need to be one of this operators");
             }

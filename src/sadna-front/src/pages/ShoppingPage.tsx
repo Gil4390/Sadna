@@ -7,6 +7,8 @@ import {Item} from '../models/Shop.tsx';
 import { ResponseT } from '../models/Response.tsx';
 import Exit from "./Exit.tsx";
 
+
+
 function ShoppingPage(props) {
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [response, setResponse] = useState<ResponseT>();
@@ -49,8 +51,12 @@ function ShoppingPage(props) {
   };
 
   const handleMaxPriceChange = (event) => {   
-    if (event.target.value >= 0) {
+    if (event.target.value > 0) {
       setMaxPrice(event.target.value);
+    }
+    else
+    {
+      setMaxPrice(-1);
     }
   };
 
@@ -77,14 +83,16 @@ function ShoppingPage(props) {
     event.preventDefault();
     //console.log(`keyWord: ${keyWord}, Caetgory: ${category}`,`Min Price: ${minPrice}, Max Price: ${maxPrice}, Min Store Rating: ${minStoreRating}, Min Item Rating: ${minItemRating}`);
     // do something with search query and type
-    
-    if(!isValidItemNameOrCategory(keyWord) || !isValidItemNameOrCategory(category) || !(minPrice >= 0 && minPrice <= maxPrice))
+
+    const validPrices = ((Number(minPrice) >= 0 && Number(minPrice) <= maxPrice) || maxPrice == -1);
+    if(!isValidItemNameOrCategory(keyWord) || !isValidItemNameOrCategory(category) || !validPrices)
     {
         setMessage("Make Sure All Search Field Are Valid And Then Try Again!");
     }
-    else 
+    else
     {
       setMessage("Search Results");
+
       handleSearchItems(props.id,keyWord,minPrice ,maxPrice,minItemRating, category,minStoreRating).then(
         value => {
         setAllItems(value as Item[]);
@@ -124,12 +132,13 @@ function ShoppingPage(props) {
                 <Col sm={2}>
                   <span className="fs-2">Min Price:</span>
                   <Form.Control type="number" placeholder="0" value={minPrice} onChange={handleMinPriceChange}  
-                  style={{borderColor: minPrice >= 0 && minPrice <= maxPrice ? '#28a745' : '#dc3534'}} />
-                  { !(minPrice >= 0 && minPrice <= maxPrice) && <Form.Text className='text-danger'>Min price should be non negative and less than max price.</Form.Text>}
+                  style={{borderColor: ((Number(minPrice) >= 0 && Number(minPrice) <= maxPrice) || maxPrice == -1) ? '#28a745' : '#dc3534'}} />
+                  { !(( (Number(minPrice) >= 0) && (Number(minPrice) <= maxPrice )) || maxPrice == -1) && <Form.Text className='text-danger'>Min price should be non negative and less than max price.</Form.Text>}
                 </Col>
                 <Col sm={2}>
                   <span className="fs-2">Max Price:</span>
-                  <Form.Control type="number" value={maxPrice} onChange={handleMaxPriceChange} />
+                  <Form.Control type="number" placeholder="-1" value={maxPrice} onChange={handleMaxPriceChange}  style={{borderColor: ((Number(minPrice) >= 0 && Number(minPrice) <= maxPrice) || maxPrice == -1) ? '#28a745' : '#dc3534'}} />
+                  { !((Number(minPrice) >= 0 && Number(minPrice) <= maxPrice) || maxPrice == -1) && <Form.Text className='text-danger'>Min price should be non negative and less than max price.</Form.Text>}
                 </Col>
                 <Col sm={3}>
                   <span className="fs-2">Min Store Rating:</span>
