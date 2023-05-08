@@ -562,16 +562,6 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("Don't have permissions");
         }
 
-        public ShoppingCart ShowShoppingCart(Guid userID)
-        {
-            IsTsInitialized();
-            isLoggedIn(userID);
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(ShowShoppingCart)+" requested to display his shopping cart");
-            if (current_Users.ContainsKey(userID))
-                return current_Users[userID].ShoppingCart;
-            return members[userID].ShoppingCart;
-        }
-
         public void SetSecurityQA(Guid userID, string q, string a)
         {
             IsTsInitialized();
@@ -580,20 +570,6 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception("member with id dosen't exist");
             members[userID].SetSecurityQA(q,_ph.Hash(a+macs[userID]));
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Security Q&A set");
-        }
-
-        public ShoppingCart GetShoppingCartById(Guid userID)
-        {
-            IsTsInitialized();
-            if (current_Users.ContainsKey(userID))
-            {
-                return current_Users[userID].ShoppingCart;
-            }
-            if (members.ContainsKey(userID))
-            {
-                return members[userID].ShoppingCart;
-            }
-            throw new Exception("no cart for this user id");
         }
 
         public void SetPaymentService(IPaymentService paymentService)
@@ -644,7 +620,6 @@ namespace SadnaExpress.DomainLayer.User
         public List<Notification> GetNotifications(Guid userId)
         {
             return members[userId].AwaitingNotification;
-
         }
 
         public void MarkNotificationAsRead(Guid userID, Guid notificationID)
@@ -754,17 +729,6 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("Member with id " + userID + " does not exist");
         }
 
-        public ShoppingCart GetUserShoppingCart(Guid userID)
-        {
-            
-            if (current_Users.ContainsKey(userID))
-                return current_Users[userID].ShoppingCart;
-            if (isLoggedIn(userID))
-                return members[userID].ShoppingCart;
-            
-            
-            throw new Exception("User with id " + userID + " does not exist");
-        }
 
         public bool IsSystemInitialize()
         {

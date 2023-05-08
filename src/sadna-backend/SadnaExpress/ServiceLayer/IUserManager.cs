@@ -36,10 +36,8 @@ namespace SadnaExpress.ServiceLayer
        
         ConcurrentDictionary<Guid, User> GetCurrent_Users();
         ResponseT<List<SMember>> GetMembers(Guid userID);
-        ResponseT<ShoppingCart> ShowShoppingCart(Guid userID);
         ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a);
 
-        ResponseT<ShoppingCart> GetShoppingCartById(Guid userID);
         ResponseT<Guid> UpdateFirst(Guid userID, string newFirst);
         ResponseT<Guid> UpdateLast(Guid userID, string newLast);
         ResponseT<Guid> UpdatePassword(Guid userID,string newPassword);
@@ -48,7 +46,6 @@ namespace SadnaExpress.ServiceLayer
         void SetIsSystemInitialize(bool isInitialize);
         ResponseT<User> GetUser(Guid userID);
         ResponseT<Member> GetMember(Guid userID);
-        ResponseT<ShoppingCart> GetUserShoppingCart(Guid userID);
         ResponseT<List<Notification>> GetNotifications(Guid userId);
         ResponseT<List<Member>> getAllStoreOwners(ConcurrentDictionary<Guid, Store> stores);
         ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);

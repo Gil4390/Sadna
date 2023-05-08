@@ -23,8 +23,8 @@ namespace SadnaExpressTests.Unit_Tests
             storeID = Guid.NewGuid();
             Item item1 = new Item("pink doll", "toy", 100);
             Item item2 = new Item("iPad", "electronic", 4000);
-            itemO1 = new ItemForOrder(item1, storeID);
-            itemO2 = new ItemForOrder(item2, storeID);
+            itemO1 = new ItemForOrder(item1, storeID, "", "");
+            itemO2 = new ItemForOrder(item2, storeID, "", "");
             orderList = new List<ItemForOrder> {itemO1, itemO2};
         }
 
@@ -42,7 +42,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void AddTwoOrdersToTheSameUserSuccess()
         {
             Item item = new Item("iPad", "electronic", 4000);
-            ItemForOrder itemO = new ItemForOrder(item, Guid.NewGuid());
+            ItemForOrder itemO = new ItemForOrder(item, Guid.NewGuid(), "","");
             List<ItemForOrder> orderList2 = new List<ItemForOrder>{itemO};
             //act
             _orders.AddOrder(userID, orderList);

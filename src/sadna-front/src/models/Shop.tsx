@@ -4,6 +4,7 @@ export interface ItemCart  {
     name: string,
     category: string,
     price: number,
+    priceDiscount: number,
     rating : number, 
     storeId: string,   
     inStock: boolean,  

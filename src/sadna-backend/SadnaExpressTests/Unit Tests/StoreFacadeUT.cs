@@ -38,7 +38,7 @@ namespace SadnaExpressTests.Unit_Tests
             storeID1 = storeFacade.OpenNewStore("Bamba store");
             itemID2 = Guid.NewGuid();
             itemID1 = storeFacade.AddItemToStore(storeID1, "Bamba shosh limited edition", "food", 20.0, 2);
-            itemO1 = new ItemForOrder(storeFacade.GetItemByID(storeID1, itemID1), storeID);
+            itemO1 = new ItemForOrder(storeFacade.GetItemByID(storeID1, itemID1), storeID, "nomatter","Bamba store");
             orderList = new List<ItemForOrder> {itemO1};
             _orders.AddOrder(userID1, orderList);
             numOfOpenStores = 1;

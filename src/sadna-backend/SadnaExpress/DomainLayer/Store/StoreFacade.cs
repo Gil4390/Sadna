@@ -122,6 +122,11 @@ namespace SadnaExpress.DomainLayer.Store
             }
         }
 
+        public double GetItemAfterDiscount(Guid storeID, Item item)
+        {
+            return stores[storeID].GetItemAfterDiscount(item);
+        }
+
         public List<Store> GetAllStoreInfo()
         {
             IsTsInitialized();
@@ -135,6 +140,27 @@ namespace SadnaExpress.DomainLayer.Store
             return stores[storeId];
         }
 
+        public Dictionary<Guid, Dictionary<Item, double>> GetCartItems(Dictionary<Guid, Dictionary<Guid, int>> cart)
+        {
+            Dictionary<Guid, Dictionary<Item, double>> cartItems = new Dictionary<Guid, Dictionary<Item, double>>();
+            foreach (Guid storeId in cart.Keys)
+            {
+                IsStoreExist(storeId);
+                Dictionary<Item, double> itemAfterDiscount = new Dictionary<Item, double>();
+                if (stores[storeId].Active)
+                {
+                    itemAfterDiscount = stores[storeId].GetCartItems(cart[storeId]);
+                    cartItems.Add(storeId, itemAfterDiscount);
+                }
+                else
+                {
+                    throw new Exception($"store {stores[storeId].StoreName} is closed!");
+                }
+            }
+
+            return cartItems;
+        }
+        
         public void AddItemToStores(Dictionary<Guid, Dictionary<Guid, int>> items)
         {
             foreach (Guid storeID in items.Keys)

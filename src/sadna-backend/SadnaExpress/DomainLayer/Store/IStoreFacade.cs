@@ -53,6 +53,8 @@ namespace SadnaExpress.DomainLayer.Store
         int GetItemByQuantity(Guid storeid, Guid itemid);
         void EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
         List<Item> GetItemsInStore(Guid storeId);
+        double GetItemAfterDiscount(Guid storeId, Item item);
+        Dictionary<Guid, Dictionary<Item, double>> GetCartItems(Dictionary<Guid, Dictionary<Guid, int>> cart);
         Store GetStoreInfo(Guid storeId);
 
     }
