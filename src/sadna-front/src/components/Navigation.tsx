@@ -10,7 +10,6 @@ function Navigation(props) {
   const [response, setResponse] = useState<ResponseT>();
 
   const handleLogoutPressing = () => {
-    console.log("water")
     handleLogout(props.id).then(
       value => {
         setResponse(value as ResponseT);
