@@ -30,7 +30,7 @@ namespace SadnaExpressTests.Integration_Tests
             //Arrange
             DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, trading.GetStore(storeID1).Value.GetItemById(itemID1), 10,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
-            trading.AddPolicy(storeID1, policy1);
+            trading.AddPolicy(storeID1, policy1.ID);
             //Act
             List<SItem> items = trading.GetCartItems(buyerID).Value;
             //Assert
@@ -55,8 +55,8 @@ namespace SadnaExpressTests.Integration_Tests
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
             DiscountPolicy policy2 =trading.CreateSimplePolicy(storeID1, trading.GetStore(storeID1).Value, 20,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
-            DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1, policy2).Value;
-            trading.AddPolicy(storeID1, addPolicy);
+            DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1.ID, policy2.ID).Value;
+            trading.AddPolicy(storeID1, addPolicy.ID);
             //Act
             List<SItem> items = trading.GetCartItems(buyerID).Value;
             //Assert
@@ -86,8 +86,8 @@ namespace SadnaExpressTests.Integration_Tests
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
             DiscountPolicy policy2 =trading.CreateSimplePolicy(storeID1, trading.GetStore(storeID1).Value, 20,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
-            DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1, policy2).Value;
-            trading.AddPolicy(storeID1, addPolicy);
+            DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1.ID, policy2.ID).Value;
+            trading.AddPolicy(storeID1, addPolicy.ID);
             //Act
             List<SItem> items = trading.GetItemsForClient(buyerID, "ipad").Value;
             //Assert

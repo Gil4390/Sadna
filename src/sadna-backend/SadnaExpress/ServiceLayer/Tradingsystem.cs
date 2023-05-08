@@ -545,21 +545,26 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.CreateSimplePolicy(store, level, percent, startDate , endDate);
         }
 
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params object[] policys)
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys)
         {
             return storeManager.CreateComplexPolicy(store, op, policys);
         }
 
-        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, DiscountPolicy discountPolicy)
+        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy)
         {
             return storeManager.AddPolicy(store, discountPolicy);
         }
 
-        public void RemovePolicy(Guid store, DiscountPolicy discountPolicy)
+        public void RemovePolicy(Guid store, int discountPolicy)
         {
             storeManager.RemovePolicy(store, discountPolicy);
         }
 
+        public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
+        {
+            return storeManager.GetAllPolicy(userID, storeID);
+        }
+        
         public void LoadData()
         {
             storeManager.LoadData();

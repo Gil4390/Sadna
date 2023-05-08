@@ -44,10 +44,10 @@ namespace SadnaExpress.DomainLayer.Store
         PurchaseCondition[]  GetAllConditions(Guid store);
         Condition AddDiscountCondition<T>(Guid store, T entity, string type, double value);
         DiscountPolicy.DiscountPolicy CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
-        DiscountPolicy.DiscountPolicy CreateComplexPolicy(Guid store, string op, object[] policys);
-        DiscountPolicyTree AddPolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy); 
-        void RemovePolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy);
-
+        DiscountPolicy.DiscountPolicy CreateComplexPolicy(Guid store, string op, int[] policys);
+        DiscountPolicyTree AddPolicy(Guid store, int discountPolicy); 
+        void RemovePolicy(Guid store, int discountPolicy);
+        (Dictionary<DiscountPolicy.DiscountPolicy, bool>, Dictionary<Condition, bool>) GetAllPolicy(Guid storeID);
         void LoadData(Store store1, Store store2);
         Guid GetItemStoreId(Guid Itemid);
         int GetItemByQuantity(Guid storeid, Guid itemid);

@@ -397,18 +397,19 @@ namespace SadnaExpress.DomainLayer.Store
             return GetStore(store).CreateSimplePolicy(level, percent, startDate, endDate);
         }
 
-        public DiscountPolicy.DiscountPolicy CreateComplexPolicy(Guid store, string op, params object[] policys)
+        public DiscountPolicy.DiscountPolicy CreateComplexPolicy(Guid store, string op, params int[] policys)
         {
             IsStoreExist(store);
             return GetStore(store).CreateComplexPolicy(op, policys);
         }
         
-        public DiscountPolicyTree AddPolicy(Guid store, DiscountPolicy.DiscountPolicy discountPolicy)
+        public DiscountPolicyTree AddPolicy(Guid store, int discountPolicy)
         {
             IsStoreExist(store);
             return GetStore(store).AddPolicy(discountPolicy);
         }
-        public void RemovePolicy(Guid store,DiscountPolicy.DiscountPolicy discountPolicy)
+        
+        public void RemovePolicy(Guid store, int discountPolicy)
         {
             IsStoreExist(store);
             GetStore(store).RemovePolicy(discountPolicy);
@@ -521,6 +522,13 @@ namespace SadnaExpress.DomainLayer.Store
             }
         }
 
+        public (Dictionary<DiscountPolicy.DiscountPolicy, bool>, Dictionary<Condition, bool>) GetAllPolicy(Guid storeID)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeID);
+            return (stores[storeID].AllDiscountPolicies, stores[storeID].CondDiscountPolicies) ;
+        }
+
         public PurchaseCondition[]  GetAllConditions(Guid store)
         {
             IsStoreExist(store);
@@ -545,6 +553,14 @@ namespace SadnaExpress.DomainLayer.Store
             Condition cond2 = store1.AddCondition(store1.GetItemById(i2), "min value", 0);
             store1.AddSimplePurchaseCondition(cond1);
             store1.AddSimplePurchaseCondition(cond2);
+            DiscountPolicy.DiscountPolicy policy1 = store1.CreateSimplePolicy(store1, 50, DateTime.Now, new DateTime(2024, 5, 20));
+            Condition cond3 = store1.AddCondition(store1.GetItemById(i1), "min quantity", 2);
+            DiscountPolicy.DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
+
+            DiscountPolicy.DiscountPolicy policy3 = store1.CreateSimplePolicy(store1, 10, DateTime.Now, new DateTime(2024, 5, 20));
+
+            store1.AddPolicy(policy2.ID);
+            store1.AddPolicy(policy3.ID);
         }
 
         public Guid GetItemStoreId(Guid itemid)
