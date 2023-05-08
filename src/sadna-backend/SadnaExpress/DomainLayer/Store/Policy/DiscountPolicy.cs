@@ -100,7 +100,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
 
         public override string ToString()
         {
-            throw new NotImplementedException();
+            return $"(If {cond} \n=> {discountPolicy})";
         }
     }
 
