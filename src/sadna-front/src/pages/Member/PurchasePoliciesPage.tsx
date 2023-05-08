@@ -89,11 +89,11 @@ function PurchasePoliciesPage(props) {
 
 return (
     <div className="container mt-5">
-            <Exit id={props.id}/>
-        <ListGroup>
-          <h5>Create New Store Policy</h5>
-         </ListGroup>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <Exit id={props.id}/>
+      <ListGroup>
+        <h5>Create New Store Policy</h5>
+      </ListGroup>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
       <Button variant="dark"  onClick={openModal} style={{ marginLeft: '10px' }}>
         Add Condition
       </Button>

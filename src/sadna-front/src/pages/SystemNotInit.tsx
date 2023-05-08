@@ -4,7 +4,7 @@ import Exit from "./Exit.tsx";
 function SystemNotInit(props) {
   return (
    <div >
-          <Exit id={props.id}/>
+      <Exit id={props.id}/>
      <div className="container">
     
         <div className="row align-items-center my-5" style={{textAlign:"center"}}>   

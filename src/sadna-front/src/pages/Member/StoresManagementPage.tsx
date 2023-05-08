@@ -84,6 +84,7 @@ function StoresManagementPage(props) {
   return (
   <div>
     <Container className="my-5">
+      <Exit id={props.id}/>
       <h1>Stores Management</h1>
       <Row className="my-3">
         <Col>

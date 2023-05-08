@@ -131,7 +131,7 @@ function PaymentPage(props) {
 
   return (
     <Container className="my-5">
-            <Exit id={props.id}/>
+      <Exit id={props.id}/>
       <h1>Payment</h1>
       <Form>
         <Form.Group controlId="cardNumber">

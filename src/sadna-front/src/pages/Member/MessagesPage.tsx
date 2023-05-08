@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
 import { handleGetUserNotifications, handleMarkNotificationAsRead } from '../../actions/MemberActions.tsx';
 import { Notification } from '../../models/Notification.tsx';
+import Exit from '../Exit.js';
 
 function MessagesPage(props) {
   const [messages, setMessages] = useState<Notification[]>([]);
@@ -34,6 +35,7 @@ function MessagesPage(props) {
 
   return (
     <div className="container">
+      <Exit id={props.id}/>
       <h1>My Notifications</h1>
       <ListGroup>
         {messages.map((message, index) => (
