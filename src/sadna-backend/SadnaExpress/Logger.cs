@@ -67,6 +67,7 @@ namespace SadnaExpress
             // switch from test mode to normal 
             lock (this)
             {
+                //
                 // first check if test file is created
                 // here opens tests output File if it is not created already
                 if (File.Exists(testsPathName).Equals(false))
