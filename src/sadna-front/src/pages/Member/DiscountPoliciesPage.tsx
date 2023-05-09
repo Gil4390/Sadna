@@ -1,4 +1,3 @@
-
 import { Container, ListGroup } from 'react-bootstrap';
 import React, { useState,useEffect } from 'react';
 import { Button, Modal, Form , Row, Col, Card } from 'react-bootstrap';
@@ -137,7 +136,7 @@ function DiscountPoliciesPage(props) {
  
 
   const Create_new_Simple_Discount_Policy = () => {
-    handleCreateSimplePolicy(storeId ,entity,condValue,startDate,endDate).then(
+    handleCreateSimplePolicy(storeId ,EntityChoice+entity,condValue,startDate,endDate).then(
         value => {
           setPolicyList(value as Policy[]);
         })
@@ -190,7 +189,6 @@ return (
                 value={EntityChoice}
                 onChange={(e) => setEntityChoice(e.target.value)}
               >
-                <option>Type</option>
                 <option>Store</option>
                 <option>Category</option>
                 <option>Item</option>
