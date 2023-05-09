@@ -239,9 +239,10 @@ return (
                 onChange={(e) => setOp_1(e.target.value)}
               >
                 <option>Operator</option>
-                <option>AND</option>
-                <option>OR</option>
-                <option>XOR</option>
+                <option>and</option>
+                <option>or</option>
+                <option>xor</option>
+                <option>if</option>
               </Form.Control>
             </Form.Group>
             <Form.Group>
@@ -272,6 +273,16 @@ return (
       <Form.Group>
               <Form.Control
                 as="select"
+                value={op_2}
+                onChange={(e) => setOp_2(e.target.value)}
+              >
+                <option>Operator</option>
+                <option>if</option>
+              </Form.Control>
+            </Form.Group>
+      <Form.Group>
+              <Form.Control
+                as="select"
                 value={cond2_2}
                 onChange={(e) => setCond2_2(e.target.value)}
               >
@@ -279,17 +290,7 @@ return (
                 {condFilter}
               </Form.Control>
             </Form.Group>
-            <Form.Group>
-              <Form.Control
-                as="select"
-                value={op_2}
-                onChange={(e) => setOp_2(e.target.value)}
-              >
-                <option>Operator</option>
-                <option>ADD</option>
-                <option>MAX</option>
-              </Form.Control>
-            </Form.Group>
+
             <Form.Group>
             <Form.Control
                 as="select"
@@ -322,9 +323,8 @@ return (
                 onChange={(e) => setOp_3(e.target.value)}
               >
                 <option>Operator</option>
-                <option>AND</option>
-                <option>OR</option>
-                <option>XOR</option>
+                <option>and</option>
+                <option>max</option>
               </Form.Control>
             </Form.Group>
             <Form.Group>

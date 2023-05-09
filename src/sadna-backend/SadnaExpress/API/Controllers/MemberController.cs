@@ -279,11 +279,12 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.MemberData.createComplexPolicy)]
-        [ResponseType(typeof( ResponseT<DiscountPolicy>))]
+        [ResponseType(typeof(SPolicy[]))]
         [HttpPost]
         public IHttpActionResult CreateComplexPolicy([FromBody] ComplexConditionRequest request)
         {
-            return Ok(tradingSystem.CreateComplexPolicy(request.storeID,request.op, request.policys));
+            tradingSystem.CreateComplexPolicy(request.storeID,request.op, request.policys);
+            return Ok(tradingSystem.GetAllPolicy(request.userID , request.storeID));
         }
         
         [Route(APIConstants.MemberData.addPolicy)]
