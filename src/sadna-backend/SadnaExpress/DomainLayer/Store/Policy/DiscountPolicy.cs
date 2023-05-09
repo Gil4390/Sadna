@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Activation;
 
 namespace SadnaExpress.DomainLayer.Store.Policy
 {
@@ -11,14 +12,18 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             Dictionary<Item, int> basket);
 
         public abstract override string ToString();
+
+        public abstract override int GetHashCode();
+
+        public abstract override bool Equals(object obj);
     }
 
     public class SimpleDiscount<T> : DiscountPolicy
     {
-        private T level;
-        private int percent;
-        private readonly DateTime startDate;
-        private readonly DateTime endDate;
+        public T level;
+        public int percent;
+        public readonly DateTime startDate;
+        public readonly DateTime endDate;
 
         // T can be store or item or category(string)
         public SimpleDiscount(T level, int percent, DateTime startDate, DateTime endDate)
@@ -72,10 +77,42 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 case Item itemType:
                     return $"(Item {itemType.Name} have {percent}% from {startDate} until {endDate})";
                 case string categoryType:
-                    return $"(Item {categoryType} have {percent}%  from {startDate} until {endDate})";
+                    return $"(Category {categoryType} have {percent}%  from {startDate} until {endDate})";
                 default:
                     return "";
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            switch (level)
+            {
+                case Store storeType:
+                    return obj != null && (obj is SimpleDiscount<Store>) &&
+                            ((SimpleDiscount<Store>)obj).level.Equals(level) &&
+                            ((SimpleDiscount<Store>)obj).percent.Equals(percent)
+                            && ((SimpleDiscount<Store>)obj).endDate.Equals(endDate) &&
+                            ((SimpleDiscount<Store>)obj).startDate.Equals(startDate);
+                case Item itemType:
+                    return obj != null && (obj is SimpleDiscount<Item>) &&
+                            ((SimpleDiscount<Item>)obj).level.Equals(level) &&
+                            ((SimpleDiscount<Item>)obj).percent.Equals(percent)
+                            && ((SimpleDiscount<Item>)obj).endDate.Equals(endDate) &&
+                            ((SimpleDiscount<Item>)obj).startDate.Equals(startDate);
+                case string categoryType:
+                    return obj != null && (obj is SimpleDiscount<string>) &&
+                           ((SimpleDiscount<string>)obj).level.Equals(level) &&
+                           ((SimpleDiscount<string>)obj).percent.Equals(percent)
+                           && ((SimpleDiscount<string>)obj).endDate.Equals(endDate) &&
+                           ((SimpleDiscount<string>)obj).startDate.Equals(startDate);
+                default:
+                    return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return level.GetHashCode() ^ percent.GetHashCode() ^  startDate.GetHashCode() ^ endDate.GetHashCode();
         }
     }
 
@@ -102,6 +139,17 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         {
             return $"(If {cond} \n=> {discountPolicy})";
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj != null && (obj is ConditionalDiscount) &&
+                   ((ConditionalDiscount)obj).discountPolicy.Equals(discountPolicy) &&
+                   ((ConditionalDiscount)obj).cond.Equals(cond);
+        }
+        public override int GetHashCode()
+        {
+            return cond.GetHashCode() ^ discountPolicy.GetHashCode();
+        }
     }
 
     
@@ -121,6 +169,17 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             this.cond1 = cond1;
             this.cond2 = cond2;
             this.discountPolicy = discountPolicy;
+        }
+        public override bool Equals(object obj)
+        {
+            return obj != null && (obj is LogicalPolicy) &&
+                   ((LogicalPolicy)obj).discountPolicy.Equals(discountPolicy) &&
+                   ((LogicalPolicy)obj).cond1.Equals(cond1) &&  
+                   ((LogicalPolicy)obj).cond2.Equals(cond2);
+        }
+        public override int GetHashCode()
+        {
+            return cond1.GetHashCode() ^ cond2.GetHashCode() ^ discountPolicy.GetHashCode();
         }
     }
     
@@ -236,6 +295,16 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         {
             return $"(Max between\n{discountPolicy1}\nto {discountPolicy2})";
         }
+        public override bool Equals(object obj)
+        {
+            return obj != null && (obj is MaxDiscount) &&
+                   ((MaxDiscount)obj).discountPolicy1.Equals(discountPolicy1) &&
+                   ((MaxDiscount)obj).discountPolicy2.Equals(discountPolicy2);
+        }
+        public override int GetHashCode()
+        {
+            return discountPolicy1.GetHashCode() ^ discountPolicy2.GetHashCode();
+        }
     }
 
     public class AddDiscount : DiscountPolicy
@@ -280,6 +349,16 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public override string ToString()
         {
             return $"(Add\n{discountPolicy1}\n{discountPolicy2})";
+        }
+        public override bool Equals(object obj)
+        {
+            return obj != null && (obj is AddDiscount) &&
+                   ((AddDiscount)obj).discountPolicy1.Equals(discountPolicy1) &&
+                   ((AddDiscount)obj).discountPolicy2.Equals(discountPolicy2);
+        }
+        public override int GetHashCode()
+        {
+            return discountPolicy1.GetHashCode() ^ discountPolicy2.GetHashCode();
         }
     }
 
@@ -335,6 +414,15 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 i++;
             }
             return output;
+        }
+        public override bool Equals(object obj)
+        {
+            return obj != null && (obj is DiscountPolicyTree) &&
+                   ((DiscountPolicyTree)obj).roots.Equals(roots);
+        }
+        public override int GetHashCode()
+        {
+            return roots.GetHashCode();
         }
     }
 }
