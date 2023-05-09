@@ -32,12 +32,12 @@ namespace SadnaExpressTests.Unit_Tests
             item1 = store.AddItem("Bisli", "Food", 10.0, 2);
             item2 = store.AddItem("Bamba", "Food", 8.0, 2);
             item3 = store.AddItem("Ipad", "electronic", 4000, 2);
-            policy1 = store.CreateSimplePolicy(store.StoreName, 20, new DateTime(2022, 4, 30), new DateTime(2024, 4, 30));
-            policy2 = store.CreateSimplePolicy(store.GetItemById(item1), 50, new DateTime(2022, 4, 30),
+            policy1 = store.CreateSimplePolicy("Store", 20, new DateTime(2022, 4, 30), new DateTime(2024, 4, 30));
+            policy2 = store.CreateSimplePolicy("ItemBisli", 50, new DateTime(2022, 4, 30),
                 new DateTime(2024, 4, 30));
-            policy3 = store.CreateSimplePolicy("Food", 50, new DateTime(2022, 4, 30),
+            policy3 = store.CreateSimplePolicy("CategoryFood", 50, new DateTime(2022, 4, 30),
                 new DateTime(2024, 4, 30));
-            policy4 = store.CreateSimplePolicy(store.GetItemById(item3), 30, new DateTime(2022, 4, 30),
+            policy4 = store.CreateSimplePolicy("ItemIpad", 30, new DateTime(2022, 4, 30),
                 new DateTime(2024, 4, 30));
             basket = new Dictionary<Item, int> {{store.GetItemById(item1), 1}, {store.GetItemById(item2), 1},
                 {store.GetItemById(item3), 1}};
@@ -92,7 +92,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void EndDatePassNoDiscount()
         {
             //Arrange
-            DiscountPolicy policyPass = store.CreateSimplePolicy(store, 20, new DateTime(2022, 4, 30), new DateTime(2022, 5, 30));
+            DiscountPolicy policyPass = store.CreateSimplePolicy("Store", 20, new DateTime(2022, 4, 30), new DateTime(2022, 5, 30));
             store.AddPolicy(policyPass.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
@@ -355,6 +355,27 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.IsFalse(items.ContainsKey(store.GetItemById(item1))); //not return
             Assert.IsFalse(items.ContainsKey(store.GetItemById(item2))); //not return
             Assert.AreEqual(2800, items[store.GetItemById(item3)].Key); // changed
+        }
+        #endregion
+        
+        #region Add the same twice
+        [TestMethod]
+        public void AddTheSameSimplePolicyFail()
+        {
+            //Arrange
+            store.CreateSimplePolicy("ItemIpad", 30, new DateTime(2022, 4, 30), new DateTime(2025, 4, 30));
+            Assert.ThrowsException<Exception>(() =>
+                store.CreateSimplePolicy("ItemIpad", 30, new DateTime(2022, 4, 30), new DateTime(2025, 4, 30)));
+        }
+        
+        [TestMethod]
+        public void AddTheAndPolicyFail()
+        {
+            //Arrange
+            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond2.ID, policy2.ID); //I have 70% on bisli and the rest 20%
+            Assert.ThrowsException<Exception>(() =>
+                store.CreateComplexPolicy("and", cond1.ID, cond2.ID, policy2.ID));
+
         }
         #endregion
         

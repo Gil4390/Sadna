@@ -29,7 +29,7 @@ const cartItemStyles = {
   
           <Card.Body className="d-flex flex-column">
               <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
-                  <span className="fs-2">{props.policyID}</span>
+                  <span className="fs-2">{props.type} {props.policyID}</span>
                 </Card.Title>
                 <Card.Text>
                     <div> <span className="ms-2 ">{props.policyRule}</span></div>

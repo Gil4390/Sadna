@@ -572,11 +572,11 @@ namespace SadnaExpress.DomainLayer.Store
             Condition cond2 = store1.AddCondition(store1.GetItemById(i2), "min value", 0 ,DateTime.MaxValue);
             store1.AddSimplePurchaseCondition(cond1);
             store1.AddSimplePurchaseCondition(cond2);
-            DiscountPolicy policy1 = store1.CreateSimplePolicy(store1, 50, DateTime.Now, new DateTime(2024, 5, 20));
+            DiscountPolicy policy1 = store1.CreateSimplePolicy("StoreZara", 50, DateTime.Now, new DateTime(2024, 5, 20));
             Condition cond3 = store1.AddCondition(store1.GetItemById(i1), "min quantity", 2);
             DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
 
-            DiscountPolicy policy3 = store1.CreateSimplePolicy(store1, 10, DateTime.Now, new DateTime(2024, 5, 20));
+            DiscountPolicy policy3 = store1.CreateSimplePolicy("StoreZara", 10, DateTime.Now, new DateTime(2024, 5, 20));
 
             store1.AddPolicy(policy2.ID);
             store1.AddPolicy(policy3.ID);
