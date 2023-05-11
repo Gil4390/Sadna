@@ -107,22 +107,15 @@ namespace SadnaExpress.DomainLayer.Store
                     IsStoreExist(storeID);
                     if (!stores[storeID].Active)
                         throw new Exception($"The store: {storeID} not active");
-                    if (stores[storeID].CheckPurchasePolicy(items[storeID]))
-                    {
-                        sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders,email);
-                        storeUpdated.Add(storeID, items[storeID]);
-                    }
-                    else
-                    {
-                        throw new Exception($"The shopping cart does not meet the conditions of the store's regulations");
-                    }
+                    sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders,email);
+                    storeUpdated.Add(storeID, items[storeID]);
                 }
                 return sum;
             }
             catch (Exception e)
             {
                 AddItemToStores(storeUpdated);
-                throw;
+                throw e;
             }
         }
 

@@ -541,8 +541,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task.WaitAll();
             // 2 situations: 1. The owner add the item and then removed
             //               2. The owner removed so he can't add the item  
-            Console.WriteLine(task1.Result.ErrorMessage+" 0 "+ task1.Result.Value);
-            Console.WriteLine(task2.Result.ErrorMessage+" 1");
 
             bool situation1 = !task1.Result.ErrorOccured && !task2.Result.ErrorOccured;
             bool situation2 = task1.Result.ErrorOccured && !task2.Result.ErrorOccured;
@@ -868,7 +866,6 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             // create owner 1
             Response res1 = proxyBridge.AppointStoreOwner(storeFounder, storeID, "gil@gmail.com");
-            Console.WriteLine(res1.ErrorMessage);
 
             //create appoint 1 to owner 1
             Guid enter = proxyBridge.Enter().Value;
@@ -920,7 +917,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             List<SMemberForStore> employees = proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value;
             List<string> employeesEmail = new List<string>();
             // convert employees to emails list in order
-            Console.WriteLine(proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).ErrorMessage);
             foreach (SMemberForStore member in employees)
             {
                 employeesEmail.Add(member.Email);

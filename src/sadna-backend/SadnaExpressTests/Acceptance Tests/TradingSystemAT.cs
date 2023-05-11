@@ -29,6 +29,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected Guid itemid1;
         protected Guid itemid11;
         protected Guid itemid22;
+        protected Guid itemid23;
         protected Guid storeid2;
         protected Guid itemid2;
         protected Guid itemNoStock;
@@ -46,6 +47,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             storeid1 = store1.StoreID;
             itemid1 = store1.AddItem("Tshirt", "clothes", 99.8, 40);
             itemid22 = store1.AddItem("Ipad", "electronic", 99.8, 2);
+            itemid23 = store1.AddItem("Cup", "Kitchen", 19.8, 1);
+
             itemid11 = store1.AddItem("Dress", "clothes", 70, 45);
             Store store2 = new Store("Fox");
             storeid2 = store2.StoreID;
@@ -113,7 +116,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetIsSystemInitialize(true);
             
             DiscountPolicy policy1 = store1.CreateSimplePolicy("Store", 50, DateTime.Now, new DateTime(2024, 5, 20));
-            Condition cond3 = store1.AddCondition(store1.GetItemById(itemid1), "min quantity", 2);
+            Condition cond3 = store1.AddCondition(store1.GetItemById(itemid1), "min quantity", 1);
             DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
 
             DiscountPolicy policy3 = store1.CreateSimplePolicy("Store", 10, DateTime.Now, new DateTime(2024, 5, 20));

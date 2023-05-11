@@ -26,9 +26,9 @@ namespace SadnaExpress.DomainLayer.Store
         public Dictionary<Condition, bool> CondDiscountPolicies {get => condDiscountPolicies;set => condDiscountPolicies = value;}
         private ComplexCondition purchasePolicy;
         public ComplexCondition PurchasePolicy { get => purchasePolicy; set => purchasePolicy = value; }
-        public int purchasePolicyCounter;
+        private int purchasePolicyCounter;
         public int PurchasePolicyCounter { get => purchasePolicyCounter; set => purchasePolicyCounter = value; }
-        public int discountPolicyCounter;
+        private int discountPolicyCounter;
         public int DiscountPolicyCounter { get => discountPolicyCounter; set => discountPolicyCounter = value; }
 
         public List<Condition> PurchasePolicyList { get; set; }
@@ -55,11 +55,22 @@ namespace SadnaExpress.DomainLayer.Store
             discountPolicyCounter = 0;
 
         }
+        
         public bool Equals(Store store)
         {
             return store.storeName == storeName && store.itemsInventory.Equals(itemsInventory)
                                                 && store.storeRating == storeRating && store.storeID == storeID
                                                 && store.active == active;
+        }
+        
+        public Item GetItemById(Guid itemID)
+        {
+            return itemsInventory.GetItemById(itemID);
+        }
+
+        public int GetItemByQuantity(Guid itemID)
+        {
+            return itemsInventory.GetItemByQuantity(itemID);
         }
 
         public Item GetItemsByName(string itemName, int minPrice, int maxPrice, string category, int ratingItem)
@@ -106,43 +117,26 @@ namespace SadnaExpress.DomainLayer.Store
             itemsInventory.AddItemToCart(itemID, quantity);
         }
 
+        // purchase 
         public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, string email)
         {
             Dictionary<Item, int> itemsBeforeDiscount = new Dictionary<Item, int>();
             foreach (Guid itemID in items.Keys)
-            {
                 itemsBeforeDiscount[GetItemById(itemID)] = items[itemID];
-            }
-
+            // check the purchase policy
+            if (!EvaluatePurchasePolicy(this, itemsBeforeDiscount))
+                throw new Exception(purchasePolicy.message);
+            // calculate the cart after the discount
             Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();
             if (discountPolicyTree != null)
                 itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
+            // remove the item from the store inventory
             return itemsInventory.PurchaseCart(items, itemAfterDiscount, ref itemForOrders, storeID , storeName,email);
         }
-        public bool CheckPurchasePolicy(Dictionary<Guid, int> items)
-        {
-            Dictionary<Item, int> basket = new Dictionary<Item, int>();
-            foreach (Guid itemID in items.Keys)
-            {
-                basket.Add(GetItemById(itemID),items[itemID]);
-            }
-            if (PurchasePolicy == null)
-                return true;
-            return PurchasePolicy.Evaluate(this, basket);
-        }
         
-
-        public Item GetItemById(Guid itemID)
-        {
-            return itemsInventory.GetItemById(itemID);
-        }
-
-        public int GetItemByQuantity(Guid itemID)
-        {
-            return itemsInventory.GetItemByQuantity(itemID);
-        }
-
+        // policys
+        // DiscountPolicy: create policy in not active state, add policy make it active
         private DiscountPolicy HelperInCreateSimplePolicy(DiscountPolicy discountPolicy)
         {
             if (allDiscountPolicies.ContainsKey(discountPolicy))
@@ -173,21 +167,84 @@ namespace SadnaExpress.DomainLayer.Store
 
             throw new Exception("Entity not valid");
         }
-
-        private Condition checkNotInList(Condition c , DateTime dt=default)
+        
+        private DiscountPolicy HelperInCreateComplexPolicy(DiscountPolicy discountPolicy)
         {
-            foreach (Condition cond in PurchasePolicyList)
+            if (allDiscountPolicies.ContainsKey(discountPolicy))
+                throw new Exception("the policy already exist");
+            discountPolicy.ID = discountPolicyCounter;
+            discountPolicyCounter++;
+            allDiscountPolicies.Add(discountPolicy, false);
+            return discountPolicy;
+        }
+ 
+        public DiscountPolicy CreateComplexPolicy(string op, params int[] policys)
+        {
+            switch (op)
             {
-                if (cond.Equals(c))
-                    return null;
+                case "xor":
+                    XorDiscount xor = new XorDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    return HelperInCreateComplexPolicy(xor);
+                case "and":
+                    AndDiscount and = new AndDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    return HelperInCreateComplexPolicy(and);
+                case "or":
+                    OrDiscount or = new OrDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    return HelperInCreateComplexPolicy(or);
+                case "if":
+                    ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]),GetPolicyByID(policys[1]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    return HelperInCreateComplexPolicy(ifCond);
+                case "max":
+                    MaxDiscount max = new MaxDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    return HelperInCreateComplexPolicy(max);
+                case "add":
+                    AddDiscount add = new AddDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
+                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    return HelperInCreateComplexPolicy(add);
+                default:
+                    throw new Exception("the op not exist");
             }
-
-            AddSimplePurchaseCondition(c);
-            if (dt != default)
-                PurchasePolicyList.Add(c);
-            return c;
         }
         
+        public DiscountPolicyTree AddPolicy(int ID)
+        {
+            if (discountPolicyTree == null)
+                discountPolicyTree = new DiscountPolicyTree(GetPolicyByID(ID));
+            else
+                discountPolicyTree.AddPolicy(GetPolicyByID(ID));
+            allDiscountPolicies[GetPolicyByID(ID)] = true;
+            return discountPolicyTree;
+        }
+
+        public void RemovePolicy(int ID)
+        {
+            discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
+        }
+        
+        private DiscountPolicy GetPolicyByID(int ID)
+        {
+            foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
+                if (discountPolicy.ID == ID)
+                    return discountPolicy;
+            throw new Exception($"The policy with {ID} not exist");
+        }
+        
+        private Condition GetCondByID(int ID)
+        {
+            foreach (Condition condPolicy in condDiscountPolicies.Keys)
+                if (condPolicy.ID == ID)
+                    return condPolicy;
+            throw new Exception($"The condition with {ID} not exist");
+        }
+        
+        // used for both - discount policy and 
         public Condition AddCondition<T>(T entity, string type, double val, DateTime dt=default , string op=default , int opCond=default , bool p=default)
         {
             if (val < 0)
@@ -264,134 +321,51 @@ namespace SadnaExpress.DomainLayer.Store
                 condDiscountPolicies.Add(cond, false);
             return cond;
         }
+        
+        
+        private Condition checkNotInList(Condition c , DateTime dt=default)
+        {
+            foreach (Condition cond in PurchasePolicyList)
+            {
+                if (cond.Equals(c))
+                    return null;
+            }
 
+            if (dt != default)
+                PurchasePolicyList.Add(c);
+            return c;
+        }
+        
+     
+        // purchase policy
         public ConditioningCondition AddConditioning(Condition cond ,Item item ,string type ,  double val)
         {
             ConditioningCondition cc;
             switch (type)
             {
                 case "sum" or "min value" or "max value":
-                    ConditioningResultSum crs = new ConditioningResultSum(item,(int)val);
-                     cc = new ConditioningCondition(cond,crs);
+                    ConditioningResultSum crs = new ConditioningResultSum(item, (int)val);
+                    cc = new ConditioningCondition(cond, crs);
                     PurchasePolicyList.Remove(cond);
-                    cc.ID = purchasePolicyCounter++;;
+                    cc.ID = purchasePolicyCounter++;
+                    ;
                     PurchasePolicyList.Add(cc);
                     AddSimplePurchaseCondition(cc);
-                    return new ConditioningCondition(cond,crs);
-                case "quantity"or "min quantity" or "max quantity":
+                    return new ConditioningCondition(cond, crs);
+                case "quantity" or "min quantity" or "max quantity":
                     ConditioningResultQuantity crq = new ConditioningResultQuantity(item, (int)val);
-                    cc = new ConditioningCondition(cond,crq);
+                    cc = new ConditioningCondition(cond, crq);
                     PurchasePolicyList.Remove(cond);
-                    cc.ID = purchasePolicyCounter++;;
+                    cc.ID = purchasePolicyCounter++;
+                    ;
                     PurchasePolicyList.Add(cc);
                     AddSimplePurchaseCondition(cc);
-                    return new ConditioningCondition(cond,crq);
+                    return new ConditioningCondition(cond, crq);
                 default:
                     throw new Exception("the condition not fine");
             }
-            
-        }
-        private DiscountPolicy HelperInCreateComplexPolicy(DiscountPolicy discountPolicy)
-        {
-            if (allDiscountPolicies.ContainsKey(discountPolicy))
-                throw new Exception("the policy already exist");
-            discountPolicy.ID = discountPolicyCounter;
-            discountPolicyCounter++;
-            allDiscountPolicies.Add(discountPolicy, false);
-            return discountPolicy;
-        }
-        public DiscountPolicy CreateComplexPolicy(string op, params int[] policys)
-        {
-            switch (op)
-            {
-                case "xor":
-                    XorDiscount xor = new XorDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
-                    return HelperInCreateComplexPolicy(xor);
-                case "and":
-                    AndDiscount and = new AndDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
-                    return HelperInCreateComplexPolicy(and);
-                case "or":
-                    OrDiscount or = new OrDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
-                    return HelperInCreateComplexPolicy(or);
-                case "if":
-                    ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]),GetPolicyByID(policys[1]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
-                    return HelperInCreateComplexPolicy(ifCond);
-                case "max":
-                    MaxDiscount max = new MaxDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
-                    return HelperInCreateComplexPolicy(max);
-                case "add":
-                    AddDiscount add = new AddDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
-                    return HelperInCreateComplexPolicy(add);
-                default:
-                    throw new Exception("the op not exist");
-            }
         }
 
-        public DiscountPolicyTree AddPolicy(int ID)
-        {
-            if (discountPolicyTree == null)
-                discountPolicyTree = new DiscountPolicyTree(GetPolicyByID(ID));
-            else
-                discountPolicyTree.AddPolicy(GetPolicyByID(ID));
-            allDiscountPolicies[GetPolicyByID(ID)] = true;
-            return discountPolicyTree;
-        }
-
-        public void RemovePolicy(int ID)
-        {
-            Condition toRemoveCond = null;
-            foreach (Condition condition in condDiscountPolicies.Keys)
-            {
-                if (condition.ID == ID)
-                    toRemoveCond = condition;
-            }
-
-            if (toRemoveCond != null)
-            {
-                condDiscountPolicies.Remove(toRemoveCond);
-                return;
-            }
-            
-            DiscountPolicy toRemove = null;
-            foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
-            {
-                if (discountPolicy.ID == ID)
-                    toRemove = discountPolicy;
-            }
-
-            if (toRemove != null)
-            {
-                discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
-                allDiscountPolicies.Remove(toRemove);
-            }
-            else
-                throw new Exception("Policy/Condition not found");
-        }
-
-        private DiscountPolicy GetPolicyByID(int ID)
-        {
-            foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
-                if (discountPolicy.ID == ID)
-                    return discountPolicy;
-            throw new Exception($"The policy with {ID} not exist");
-        }
-        
-        private Condition GetCondByID(int ID)
-        {
-            foreach (Condition condPolicy in condDiscountPolicies.Keys)
-                if (condPolicy.ID == ID)
-                    return condPolicy;
-            throw new Exception($"The condition with {ID} not exist");
-        }
-        
         public void AddSimplePurchaseCondition(Condition newPurchasePolicy1,Condition newPurchasePolicy2=null , Operator _op = null)
         {
             if (purchasePolicy == null)
@@ -402,7 +376,7 @@ namespace SadnaExpress.DomainLayer.Store
                 purchasePolicy = new ComplexCondition(purchasePolicy.cond1, newPurchasePolicy1, new AndOperator());
             else if (purchasePolicy.cond1 != null && purchasePolicy.cond2 != null)
             {
-                ComplexCondition cr = new ComplexCondition(purchasePolicy.cond1, purchasePolicy.cond2,purchasePolicy._op );
+                ComplexCondition cr = new ComplexCondition(purchasePolicy.cond1, purchasePolicy.cond2, purchasePolicy._op);
                 purchasePolicy = new ComplexCondition(cr, newPurchasePolicy1, new AndOperator());
             }
             else if (newPurchasePolicy1 != null && newPurchasePolicy2 != null)
@@ -503,7 +477,7 @@ namespace SadnaExpress.DomainLayer.Store
         public bool EvaluatePurchasePolicy(Store store, Dictionary<Item, int> basket)
         {
             if (purchasePolicy != null)
-                return purchasePolicy.Evaluate(store , basket);
+                return purchasePolicy.Evaluate(store, basket);
             return true;
         }
 
@@ -683,6 +657,14 @@ namespace SadnaExpress.DomainLayer.Store
             }
 
             return basketItems;
+        }
+        
+        public bool CheckPurchasePolicy(Dictionary<Guid, int> items)
+        {
+            Dictionary<Item, int> basket = new Dictionary<Item, int>();
+            foreach (Guid itemID in items.Keys)
+                basket.Add(GetItemById(itemID),items[itemID]);
+            return EvaluatePurchasePolicy(this, basket);
         }
     }
 }

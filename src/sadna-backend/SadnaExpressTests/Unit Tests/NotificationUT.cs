@@ -63,11 +63,10 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void NotifyWhenTheMemberIsLoginSuccess()
         {
-            int pre = member1.AwaitingNotification.Count;
             notificationSystem.RegisterObserver(storeID,member1);
             member1.LoggedIn = true;
-            notificationSystem.NotifyObservers(storeID,"memeber2 did something", member2.UserId);
-            Assert.AreEqual(pre , member1.AwaitingNotification.Count);
+            notificationSystem.NotifyObservers(storeID,"memeber2 did something", member1.UserId);
+            Assert.AreEqual(0 , member1.AwaitingNotification.Count);
         }
         
         #endregion 

@@ -7,6 +7,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
     public abstract class Condition
     {
         public int ID;
+        public string message=null;
         public abstract bool Evaluate(Store store, Dictionary<Item, int> basket);
         public abstract bool Equals(Condition cond);
     }
@@ -31,9 +32,22 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         }
         public override bool Evaluate(Store store, Dictionary<Item, int> basket)
         {
+            bool output;
             if (typeof(ConditioningCondition) == cond1.GetType() || cond2 == null)
-                return cond1.Evaluate(store, basket);
-            return _op.Calculate(cond1, cond2 , store , basket);
+            {
+                output = cond1.Evaluate(store, basket);
+                if (cond1.message != null)
+                    message = cond1.message;
+                if (cond2 != null)
+                    message = "("+ message + _op + cond2.message + ")";
+                return output;
+            }
+            output = _op.Calculate(cond1, cond2 , store , basket);
+            if (cond1.message != null)
+                message = cond1.message;
+            if (cond2 != null)
+                message = "("+ message + _op + cond2.message + ")";
+            return output;
         }
 
         public override bool Equals(Condition cond)
@@ -172,13 +186,16 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public override bool Evaluate(Store store, Dictionary<Item, int> basket)
         {
             double sum = 0;
+            string type = "";
             switch (entity)
             {
                 case Store storeType:
+                    type = $"store {storeType.StoreName}";
                     foreach (Item item in basket.Keys)
                         sum += item.Price;
                     break;
                 case string stringType:
+                    type = $"category {stringType}";
                     foreach (Item item in basket.Keys)
                         if (item.Category.Equals(entity))
                             sum += item.Price;
@@ -188,6 +205,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                         sum += item.Price;
                     break;
                 case Item item:
+                    type = $"item {item.Name}";
                     foreach (Item i in basket.Keys)
                         if(i.ItemID == item.ItemID)
                             sum += i.Price;
@@ -195,7 +213,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 default:
                     throw new Exception("Category or Store are the one we can evaluate");
             }
-            return Check(sum);
+            return Check(sum, type);
         }
 
         public override bool Equals(Condition cond)
@@ -237,20 +255,25 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             }
         }
 
-        private bool Check(double sum)
+        private bool Check(double sum, string type)
         {
             switch (minmax)
             {
                 case "min":
-                    return sum >= minPrice;
+                    if (sum >= minPrice)
+                        return true;
+                    message = $"The price of {type} is {sum} while the minimum price is {minPrice}";
+                    return false;
                 case "max":
-                    return sum <= minPrice;
+                    if (sum <= minPrice)
+                        return true;
+                    message = $"The price of {type} is {sum} while the maximum is price {minPrice}";
+                    return false;
                 default:
                     throw new Exception("Need to be one of this operators");
             }
-
-            return false;
         }
+        
         public override string ToString()
         {
             string mn = "maximum";
@@ -291,29 +314,34 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public override bool Evaluate(Store store, Dictionary<Item, int> basket)
         {
             int quantity = 0;
+            String type = "";
             switch (entity)
             {
                 case Store storeType:
+                    type = $"store {store.StoreName}";
                     foreach (Item item in basket.Keys)
                         quantity += basket[item];
                     break;
                 case string stringType:
+                    type = $"category {stringType}";
                     foreach (Item item in basket.Keys)
                         if (item.Category.Equals(entity))
                             quantity += basket[item];
                     break;
                 case Item itemType:
+                    type = $"item {itemType.Name}";
                     if (basket.ContainsKey(itemType))
                         quantity = basket[itemType];
                     break;
-                case ShoppingBasket shopping:
+                case ShoppingCart shopping:
+                    type = $"shopping cart";
                     foreach (Item item in basket.Keys)
                         quantity += basket[item];
                     break;
                 default:
                     throw new Exception("Category or Store or item are the one we can evaluate");
             }
-            return Check(quantity);
+            return Check(quantity, type);
         }
 
         public override bool Equals(Condition cond)
@@ -355,14 +383,20 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             }
         }
 
-        private bool Check(int q)
+        private bool Check(int q, string type)
         {
             switch (minmax)
             {
                 case "min":
-                    return this.Quantity <= q;
+                    if (Quantity <= q)
+                        return true;
+                    message = $"The quantity of {type} is {q} while the minimum quantity is {Quantity}";
+                    return false;
                 case "max":
-                    return this.Quantity >= q;
+                    if (Quantity >= q)
+                        return true;
+                    message = $"The quantity of {type} is {q} while the maximum quantity is {Quantity}";
+                    return false;
                 default:
                     throw new Exception("Need to be one of this operators");
             }

@@ -14,6 +14,11 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         {
             return cond1.Evaluate(store, basket) | (cond2 != null && cond2.Evaluate(store, basket));
         }
+
+        public override string ToString()
+        {
+            return " or ";
+        }
     }
 
     public class AndOperator : Operator
@@ -21,6 +26,10 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public override bool Calculate(Condition cond1, Condition cond2, Store store, Dictionary<Item, int> basket)
         {
             return cond1.Evaluate(store, basket) & (cond2 != null && cond2.Evaluate(store, basket));
+        }
+        public override string ToString()
+        {
+            return " and ";
         }
     }
 }

@@ -242,9 +242,9 @@ namespace SadnaExpressTests.Unit_Tests
             store.AddSimplePurchaseCondition(cond1);
             store.AddSimplePurchaseCondition(cond2);
             store.AddSimplePurchaseCondition(cond3);
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            Assert.IsFalse(store.EvaluatePurchasePolicy(store, basket));
         }
+        
         [TestMethod]
         public void Complex_Or_Success()
         {
@@ -262,7 +262,7 @@ namespace SadnaExpressTests.Unit_Tests
             cond1 = store.AddCondition(store.GetItemById(item1), "max quantity", 0);
             cond2 = store.AddCondition(store.GetItemById(item2), "max quantity", 0);
 
-            store.AddSimplePurchaseCondition(cond1);
+            store.AddSimplePurchaseCondition(cond1, null , new OrOperator());
             store.AddSimplePurchaseCondition(cond2 , null , new OrOperator());
             bool res = store.EvaluatePurchasePolicy(store, basket);
             Assert.IsFalse(res);
@@ -383,10 +383,14 @@ namespace SadnaExpressTests.Unit_Tests
             cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
             cond2 = store.AddCondition(store.GetItemById(item1), "min quantity", 2);
             cond3 = store.AddCondition(store.GetItemById(item1), "min quantity", 3);
+            
             store.AddSimplePurchaseCondition(cond1);
             store.AddSimplePurchaseCondition(cond2);
+            
             Assert.IsNotNull(store.GetCondition(cond1));
             Assert.IsNotNull(store.GetCondition(cond2));
+            Assert.IsNotNull(store.GetCondition(cond2));
+            
             store.RemoveCondition(cond3);
             Assert.IsNotNull(store.GetCondition(cond1));
             Assert.IsNotNull(store.GetCondition(cond2));
@@ -413,6 +417,14 @@ namespace SadnaExpressTests.Unit_Tests
             store.AddSimplePurchaseCondition(cc1);
             store.RemoveCondition(cc1);
             Assert.IsNull(store.GetCondition(cc1));
+        }
+        #endregion
+        
+        #region Clean Up
+        [TestCleanup]
+        public void CleanUp()
+        {
+            store.PurchasePolicy = null;
         }
         #endregion
     }
