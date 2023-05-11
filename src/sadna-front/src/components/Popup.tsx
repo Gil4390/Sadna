@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import './Popup.css';
 interface PopupProps {
-    message: string;
+  notification: string;
     onClose: () => void;
   }
   
-  const Popup: React.FC<PopupProps> = ({ message, onClose }) => {
+  const Popup: React.FC<PopupProps> = ({ notification, onClose }) => {
     const [showPopup, setShowPopup] = useState(true);
   
     const handleClosePopup = () => {
@@ -23,7 +23,7 @@ interface PopupProps {
             </button>
             <div className="popup-header">Note! You have received a new message: </div>
            
-            <div className="popup-message">{message}</div>
+            <div className="popup-message">{notification}</div>
             </div>
           </div>
         </div>
