@@ -27,68 +27,16 @@ const App:React.FC=()=>{
   const [isInit, setisInit] = useState<boolean>(false);
   const [userType, setUserType] = useState("guest");
   const [login, setLogin] = useState<boolean>(false);
-
-  const [notification, setNotification] = useState<string>('');
-  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<string[]>([]);
 
   useSignalRNotifications('NotificationHub', {
     ['SendNotification']:(userIdToSend,message)=>{
       if(id===userIdToSend){
-        setNotification(message)
-        setShowPopup(true);
-      //   ReactDOM.render(
-      //     <Popup notification={message} onClose={() => setNotification('')} />,
-      //    document.getElementById('popup-root')
-      //  );
-      }
-    },
-  });
-  // useEffect(() => {
-  //   console.log("!!!!!!!!  MY ID IS: "+id);
-  //   const connection = hubConnection('http://localhost:8081/signalR');
-  //   const hubProxy = connection.createHubProxy('NotificationHub');
-    
-  //   // set up event listeners i.e. for incoming "message" event
-  //   hubProxy.on('SendNotification', function(idToSend,message) {
-  //       console.log("id= "+idToSend+" "+"message: "+message);
-
-  //       if(idToSend===id){
-  //         console.log("my id is: "+id);
-  //         console.log("found!! ")
-  //         setNotification(message);
-  //       }
-  //   });
-    
-  //   // connect
-  //   connection.start()
-  //   .done(function(){ console.log('Now connected, connection ID=' + connection.id); })
-  //   .fail(function(){ console.log('Could not connect'); });
-
-  //   connection.reconnecting(() =>{
-  //     console.log('reconnecting, connection ID=' + connection.id);
-  //   } );
-
-  //   connection.disconnected(() => {
-  //     console.log('disconnected');
-  //   })
-
-  //   return () => {
-  //     connection.stop();
-  //   };
-  // }, [id]);
-
-  // useEffect(() => {
-  //   // Show the popup when notifications state is updated
-    
-  //   if(notification!=''){
-  //     // Render the popup component with the latest notification
-  //     ReactDOM.render(
-  //        <Popup message={notification} onClose={() => setNotification('')} />,
-  //       document.getElementById('popup-root')
-  //     );
-  //   }
-    
-  // }, [notification]);
+        setNotifications(prevNotifications => [...prevNotifications, message])
+     }
+   },
+ });
+ 
 
   const handleLogin = (newId) => {
     setid(newId);
@@ -98,8 +46,14 @@ const App:React.FC=()=>{
   const handleLogout = (newId) => {
     setid(newId);
     setUserType("guest");
-    setLogin(false);
-    
+    setLogin(false); 
+  }
+
+  const handleCloseNotification = () => {
+    if(notifications.length>0){
+      const updatedNotifications = notifications.filter((item, index) => index !== notifications.length - 1); // creates a new array without the last element
+      setNotifications(updatedNotifications);
+    }
   }
 
   useEffect(() => {
@@ -133,8 +87,7 @@ const App:React.FC=()=>{
   return (
       <Router>
         <Navigation id={id} userType={userType} onLogout={handleLogout} username={username}/>
-        <div id="popup-root"></div>
-        {showPopup&&<Popup notification={notification} onClose={()=>setShowPopup(false)}/>}
+        {notifications.map((notification)=><Popup notification={notification} onClose={()=>handleCloseNotification}/>)}
         <Routes>
         <Route path="/" element={<Home id={id} />} />
         <Route path="/ShoppingPage" element={<ShoppingPage id={id} isInit={isInit} />} />
