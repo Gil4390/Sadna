@@ -571,7 +571,7 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.CreateComplexPolicy(store, op, policys);
         }
 
-        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy)
+        public Response AddPolicy(Guid store, int discountPolicy)
         {
             return storeManager.AddPolicy(store, discountPolicy);
         }

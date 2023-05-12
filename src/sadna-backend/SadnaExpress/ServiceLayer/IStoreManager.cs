@@ -52,7 +52,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
         ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
         ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, int[] policys);
-        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy);
+        Response AddPolicy(Guid store, int discountPolicy);
         void RemovePolicy(Guid store, int discountPolicy);
         ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID);
         void LoadData();

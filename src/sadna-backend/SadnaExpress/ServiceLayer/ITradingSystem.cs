@@ -57,7 +57,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
             DateTime endDate);
         ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys);
-        ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy);
+        Response AddPolicy(Guid store, int discountPolicy);
         void RemovePolicy(Guid store, int discountPolicy);
         Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4

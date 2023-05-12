@@ -549,6 +549,7 @@ namespace SadnaExpress.ServiceLayer
                 {
                     spolicies.Add(new SPolicy(cond.ID, cond.ToString(), policies.Item2[cond] , "Condition"));
                 }
+                
                 return new ResponseT<List<SPolicy>>(spolicies);
             }
             catch (Exception ex)
@@ -558,11 +559,12 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy)
+        public Response AddPolicy(Guid store, int discountPolicy)
         {
             try
             {
-                return new ResponseT<DiscountPolicyTree>(storeFacade.AddPolicy(store, discountPolicy));
+                storeFacade.AddPolicy(store, discountPolicy);
+                return new Response();
             }
             catch (Exception ex)
             {

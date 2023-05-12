@@ -14,14 +14,6 @@ const cartItemStyles = {
   {
     const [isActive, setIsActive] = useState(true);
 
-    const buttonStyle = {
-      backgroundColor: isActive ? 'blue' : 'grey',
-      color: 'white',
-      padding: '10px 20px',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-    };
     const [policysList, setPolicyList] = useState<Policy[]>([]);
     const handleRemovePress = () => {
       handleRemovePolicy(props.storID ,props.policyID).then(
@@ -34,12 +26,13 @@ const cartItemStyles = {
     const handleActiveAddPolicy = () => {
       handleAddPolicy(props.storID ,props.policyID).then(
           value => {
-            setIsActive(false);
+            setIsActive(props.active);
           })
           .catch(error => alert(error));
     };
 
     useEffect(() => {
+      setIsActive(props.active);
       props.handleRemove()
     }, [policysList]);
       return (
@@ -50,11 +43,10 @@ const cartItemStyles = {
                 </Card.Title>
                 <Card.Text>
                     <div> <span className="ms-2 ">{props.policyRule}</span></div>
-                <span className="ms-2 ">{props.active}</span>
-                </Card.Text>
+                    props.active                </Card.Text>
           <div className="mt-auto" style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
           <Button variant="danger"onClick={handleRemovePress} >Remove</Button>
-          <div>{isActive && props.type =="Policy" ? (<Button variant="success" onClick={handleActiveAddPolicy}>Activate</Button>):(<span></span>)}</div>
+          <div>{!isActive && props.type =="Policy" ? (<Button variant="success" onClick={handleActiveAddPolicy}>Activate</Button>):(<span></span>)}</div>
           </div>
         </Card.Body>
       </Card>) 

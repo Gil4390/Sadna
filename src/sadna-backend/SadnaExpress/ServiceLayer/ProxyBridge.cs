@@ -369,7 +369,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.CreateComplexPolicy(store, op, policys);
         }
 
-        public ResponseT<DiscountPolicyTree> AddPolicy(Guid store, int discountPolicy)
+        public Response AddPolicy(Guid store, int discountPolicy)
         {
             return _realBridge.AddPolicy(store, discountPolicy);
         }

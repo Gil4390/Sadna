@@ -121,7 +121,6 @@ function DiscountPoliciesPage(props) {
   const GetDiscountPolicy =()=>{
     handleGetAllPolicy(userId ,storeId).then(
       value => {
-        console.log(value)
         setPolicyList(value as Policy[]);
       })
       .catch(error => alert(error));
@@ -147,6 +146,11 @@ function DiscountPoliciesPage(props) {
     handleCreateSimplePolicy(storeId ,EntityChoice+entity,condValue,startDate,endDate).then(
         value => {
           setPolicyList(value as Policy[]);
+            handleDateChange("")
+            handleDateChange2("")
+            setCondValue("")
+            setEntity("")
+            setEntityChoice("")
         })
         .catch(error => alert(error));
   };
@@ -231,12 +235,12 @@ return (
                 <option>Item</option>
               </Form.Control>
             </Form.Group>
-                    {EntityChoice === 'Store' && (
+                    {EntityChoice != 'Store' && (
                 <Form.Group>
-                  <Form.Label>Store Name:</Form.Label>
+                  {/* <Form.Label>{EntityChoice} Name:</Form.Label> */}
                   <Form.Control
                     type="ID"
-                    placeholder="Enter Store Name"
+                    placeholder="EnterName"
                     value={entity}
                     onChange={(e) => setEntity(e.target.value)}
                     required
@@ -252,8 +256,8 @@ return (
                 required
               />
             </Form.Group>
-        <input type="date" value={startDate} style={styles.input} onChange={handleDateChange} min={endDate} required/>
-        <input type="date" value={endDate} style={styles.input} onChange={handleDateChange2}max={startDate} required/>
+        <input type="date" value={startDate} style={styles.input} onChange={handleDateChange} required/>
+        <input type="date" value={endDate} style={styles.input} onChange={handleDateChange2} min={startDate} required/>
         <div style={styles.buttonContainer}>
           <button style={styles.button} onClick={Create_new_Simple_Discount_Policy}>Create</button>
         </div>

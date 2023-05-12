@@ -299,10 +299,11 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.MemberData.addPolicy)]
-        [ResponseType(typeof( ResponseT<DiscountPolicyTree>))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
         public IHttpActionResult AddPolicy([FromBody] DiscountPolicyRequest request)
         {
+            
             return Ok(tradingSystem.AddPolicy(request.storeID,request.discountPolicy));
         }
         
