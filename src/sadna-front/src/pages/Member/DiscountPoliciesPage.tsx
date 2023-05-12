@@ -366,7 +366,7 @@ return (
                 onChange={(e) => setOp_3(e.target.value)}
               >
                 <option>Operator</option>
-                <option>and</option>
+                <option>add</option>
                 <option>max</option>
               </Form.Control>
             </Form.Group>
