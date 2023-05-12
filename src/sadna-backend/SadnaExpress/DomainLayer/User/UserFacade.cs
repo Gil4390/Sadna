@@ -618,7 +618,9 @@ namespace SadnaExpress.DomainLayer.User
 
         public List<Notification> GetNotifications(Guid userId)
         {
-            return members[userId].AwaitingNotification;
+            if(members.ContainsKey(userId))
+                return members[userId].AwaitingNotification;
+            throw new Exception("Member with id " + userId + " does not exist");
         }
 
         public void MarkNotificationAsRead(Guid userID, Guid notificationID)
@@ -852,9 +854,6 @@ namespace SadnaExpress.DomainLayer.User
             members[memberId].AwaitingNotification.Add(new Notification(DateTime.Now, Guid.Empty, "helooooo", memberId));
 
             NotificationSystem.Instance.RegisterObserver(storeid1, storeOwner1);
-            NotificationSystem.Instance.RegisterObserver(storeid1, storeManager1);
-
-            NotificationSystem.Instance.RegisterObserver(storeid2, storeManager2);
             NotificationSystem.Instance.RegisterObserver(storeid2, storeOwner2);
         }
     }
