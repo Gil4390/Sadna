@@ -632,7 +632,7 @@ export function handleCreateSimplePolicy(storeID , level ,percent, startDate,end
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data.value)
+        return Promise.resolve(data)
     })
 }
 

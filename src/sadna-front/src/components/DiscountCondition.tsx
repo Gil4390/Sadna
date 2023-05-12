@@ -43,7 +43,7 @@ const cartItemStyles = {
                 </Card.Title>
                 <Card.Text>
                     <div> <span className="ms-2 ">{props.policyRule}</span></div>
-                    props.active                </Card.Text>
+                    {props.active  }              </Card.Text>
           <div className="mt-auto" style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
           <Button variant="danger"onClick={handleRemovePress} >Remove</Button>
           <div>{!isActive && props.type =="Policy" ? (<Button variant="success" onClick={handleActiveAddPolicy}>Activate</Button>):(<span></span>)}</div>
