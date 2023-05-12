@@ -3,10 +3,10 @@ import React, { useState,useEffect } from 'react';
 import { Button, Modal, Form , Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import Exit from "../Exit.tsx";
-import { handleAddPolicy, handleGetAllPolicy ,handleCreateSimplePolicy,handleCreateComplexPolicy} from '../../actions/MemberActions.tsx';
+import { handleAddPolicy, handleGetAllPolicy ,handleCreateSimplePolicy,handleCreateComplexPolicy , handleAddDiscountCondition} from '../../actions/MemberActions.tsx';
 import { useLocation } from 'react-router-dom';
-import { Policy} from '../../models/Shop.tsx';
-import { DiscountCondition } from  '../../components/DiscountCondition.tsx';
+import { Policy } from '../../models/Shop.tsx';
+import { DiscountCondition , } from  '../../components/DiscountCondition.tsx';
 
 
 
@@ -83,6 +83,15 @@ function DiscountPoliciesPage(props) {
   const [condValue, setCondValue] = useState('');
   const [showTable, setShowTable] = useState(false);
 
+  const [showModal, setShowModal] = useState(false);
+  const [entityCondInDiscount, setentityCondInDiscount] = useState('');
+  const [EntityChoiceInDiscount, setEntityChoiceInDiscount] = useState('');
+  const [WhichCondInDiscount, setWhichCondInDiscount] = useState('');
+  const [condValueInDiscount, setcondValueInDiscount] = useState('');
+  const [otherCondInDiscount, setotherCondInDiscount] = useState('');
+
+  const [showTextbox, setShowTextbox] = useState(false);
+
   const handleButtonClick = () => {
     setShowTable(!showTable);
   };
@@ -109,7 +118,6 @@ function DiscountPoliciesPage(props) {
 
 
 
-
   const GetDiscountPolicy =()=>{
     handleGetAllPolicy(userId ,storeId).then(
       value => {
@@ -125,6 +133,7 @@ function DiscountPoliciesPage(props) {
 
  const [startDate, setSelectedDate] = useState('');
  const [endDate, setSelectedDate2] = useState('');
+ 
 
  function handleDateChange(event) {
     setSelectedDate(event.target.value);
@@ -162,6 +171,32 @@ function DiscountPoliciesPage(props) {
         })
         .catch(error => alert(error));
   };
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+  }
+  const [selectedOption, setSelectedOption] = useState('');
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const handleSubmit = () => {
+    handleAddDiscountCondition(storeId ,entityCondInDiscount, EntityChoiceInDiscount,WhichCondInDiscount,condValueInDiscount,selectedOption,"","","","",otherCondInDiscount).then(
+      value => {
+        setPolicyList(value as Policy[]);
+        setentityCondInDiscount("");
+        setEntityChoiceInDiscount("");
+        setEntityChoiceInDiscount("");
+        setWhichCondInDiscount("");
+        setcondValueInDiscount("")
+        setShowModal(false);
+      })
+      .catch(error => alert(error));
+  };
 
 return (
     <div className="container mt-5">
@@ -170,13 +205,16 @@ return (
           <h5>Create New Store Policy</h5>
          </ListGroup>
          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+         <Button variant="dark"  onClick={openModal} style={{ marginLeft: '10px' }}>Create Condition</Button>
       <Button variant="dark"  onClick={handleButtonClick} style={{ marginLeft: '10px' }}>
-        Create  {showTable ? ' ' : ' '}
+        Create Policy  {showTable ? ' ' : ' '}
       </Button>
        <span>                                               </span>
       <Button variant="dark" onClick={handleButtonClick2} style={{ marginLeft: '10px' }}>
-        Compund
+        Compund Policy
       </Button>
+
+
       </div>
       <p></p>
       {showTable && <div style={styles.container}>
@@ -193,24 +231,29 @@ return (
                 <option>Item</option>
               </Form.Control>
             </Form.Group>
-            <Form.Group>
-              <Form.Control
-                type="ID"
-                placeholder="Enter Name"
-                value={entity}
-                onChange={(e) => setEntity(e.target.value)}
-              />
-            </Form.Group>
+                    {EntityChoice === 'Store' && (
+                <Form.Group>
+                  <Form.Label>Store Name:</Form.Label>
+                  <Form.Control
+                    type="ID"
+                    placeholder="Enter Store Name"
+                    value={entity}
+                    onChange={(e) => setEntity(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              )}
             <Form.Group>
               <Form.Control
                 type="value"
                 placeholder="Amount"
                 value={condValue}
                 onChange={(e) => setCondValue(e.target.value)}
+                required
               />
             </Form.Group>
-        <input type="date" value={startDate} style={styles.input} onChange={handleDateChange}/>
-        <input type="date" value={endDate} style={styles.input} onChange={handleDateChange2}/>
+        <input type="date" value={startDate} style={styles.input} onChange={handleDateChange} min={endDate} required/>
+        <input type="date" value={endDate} style={styles.input} onChange={handleDateChange2}max={startDate} required/>
         <div style={styles.buttonContainer}>
           <button style={styles.button} onClick={Create_new_Simple_Discount_Policy}>Create</button>
         </div>
@@ -346,7 +389,91 @@ return (
             </Col>
             )))}
         </Row>
+        <Modal show={showModal} onHide={closeModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Condition</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+          <Form.Group>
+              <Form.Label>Entity</Form.Label>
+              <Form.Control
+                as="select"
+                value={entityCondInDiscount}
+                onChange={(e) => setentityCondInDiscount(e.target.value)}
+              >
+                <option>Type</option>
+                <option>Store</option>
+                <option>Category</option>
+                <option>Item</option>
+              </Form.Control>
+            </Form.Group>
+            {entityCondInDiscount != 'Store' && entityCondInDiscount != 'Type' && (
+                          <Form.Group>
+                          <Form.Label>Entity Name</Form.Label>
+                          <Form.Control
+                            type="ID"
+                            placeholder="Enter entity's name"
+                            value={EntityChoiceInDiscount}
+                            onChange={(e) => setEntityChoiceInDiscount(e.target.value)}
+                          />
+                        </Form.Group>
+            )}
+            <Form.Group>
+              <Form.Label>Which Condition</Form.Label>
+              <Form.Control
+                as="select"
+                value={WhichCondInDiscount}
+                onChange={(e) => setWhichCondInDiscount(e.target.value)}
+              >
+                <option>Select type</option>
+                <option>min value</option>
+                <option>max value</option>
+                <option>min quantity</option>
+                <option>max quantity</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Condition Value</Form.Label>
+              <Form.Control
+                type="value"
+                placeholder="Enter value"
+                value={condValueInDiscount}
+                onChange={(e) => setcondValueInDiscount(e.target.value)}
+              />
+            </Form.Group>
+            </Form>
+            <Form.Group>
+            <Form.Label>Operator</Form.Label>
+            <Form.Control as="select" onChange={handleOptionChange}>
+            <option value="option">Only condition</option>
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
+          </Form.Control>
+          </Form.Group>
+          {(selectedOption === 'AND'|| selectedOption === 'OR') && (<div>
+            <Form.Group>
+                      <Form.Label>Other condition</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter the condition to build with"
+                        value={otherCondInDiscount}
+                        onChange={(e) => setotherCondInDiscount(e.target.value)}
+                      />
+                    </Form.Group>
+          </div>)}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleSubmit}>
+            Create
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
+    
   );
 }
 

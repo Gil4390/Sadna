@@ -565,7 +565,7 @@ export function handleAddPurchaseCondition(storeID , entity,entityName,type,valu
     })
 }
 export function handleAddDiscountCondition(storeID , entity,entityName,type,value,op,entityRes,entityNameRes,typeRes,valueRes,opCond) {
-    let url = "http://localhost:8080/api/member/add-discount-cond";
+    let url = "http://localhost:8080/api/member/add-cond-dic";
 
     return fetch(url, {
         method: 'POST',
@@ -592,7 +592,6 @@ export function handleAddDiscountCondition(storeID , entity,entityName,type,valu
         return Promise.resolve(data.value)
     })
 }
-
 
 export function handleRemovePurchaseCondition(storeID , condID) {
     let url = "http://localhost:8080/api/member/rm-cond";

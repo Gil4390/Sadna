@@ -94,10 +94,11 @@ namespace SadnaExpress.API.Controllers
             
 
             public const string addCondition = "add-cond";
+            public const string addConditionForDiscount = "add-cond-dic";
+
                 
             public const string removeCondition = "rm-cond";
 
-            public const string addDiscountCondition = "add-discount-cond";
 
             public const string createSimplePolicy = "create-simple-policy";
 
