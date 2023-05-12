@@ -18,11 +18,13 @@ import Popup from './components/Popup.tsx';
 import ReactDOM from 'react-dom';
 import { handleGetMemberName } from './actions/MemberActions.tsx';
 import useSignalRNotifications from './hooks/useSignalRNotifications.ts';
+//import { useLocalStorage } from './hooks/useLocalStorage.ts'; local storage
 
 const App:React.FC=()=>{
 
-  const [response, setResponse] = useState<ResponseT>();
-  const [id, setid] = useState<string>();
+ const [id, setid] = useState<string>();
+  //const [id, setid] = useLocalStorage("id", ""); //local storage (should do the same to isInit)
+
   const [username, setUsername] = useState<string>();
   const [isInit, setisInit] = useState<boolean>(false);
   const [userType, setUserType] = useState("guest");
@@ -36,7 +38,6 @@ const App:React.FC=()=>{
      }
    },
  });
- 
 
   const handleLogin = (newId) => {
     setid(newId);
@@ -57,8 +58,10 @@ const App:React.FC=()=>{
   }
 
   useEffect(() => {
-    handleIsSystemInit().then(value => {setisInit(value);}).catch(error => alert(error));
-    handleEnter().then(value => {setid(value);}).catch(error => alert(error)); 
+    //if(id ===""){
+      handleIsSystemInit().then(value => {setisInit(value);}).catch(error => alert(error));
+      handleEnter().then(value => {setid(value);}).catch(error => alert(error)); 
+   // }
  }, [])
 
 
