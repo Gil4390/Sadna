@@ -5,15 +5,15 @@ import { Button, Modal, Form , Row, Col } from 'react-bootstrap';
 import Exit from "../Exit.tsx";
 import { useLocation } from 'react-router-dom';
 import { handleAddPurchaseCondition, handleGetAllPurchaseConditions, handleRemovePurchaseCondition } from '../../actions/MemberActions.tsx';
-import { PurcahseCondition , Item , Store} from '../../models/Shop.tsx';
-import { Condition } from '../../components/Condition.tsx';
+import { PurcahseCondition , Item , Store, Policy} from '../../models/Shop.tsx';
+import { DiscountCondition } from '../../components/DiscountCondition.tsx';
 
 
 function PurchasePoliciesPage(props) {
   const location = useLocation();
   const { userId, storeId } = location.state;
 
-  const [policysList, setPolicyList] = useState<PurcahseCondition[]>([]);
+  const [policysList, setPolicyList] = useState<Policy[]>([]);
 
 
   const [showModal, setShowModal] = useState(false);
@@ -54,7 +54,7 @@ function PurchasePoliciesPage(props) {
     handleGetAllPurchaseConditions(storeId).then(
       value => {
         console.log(value)
-        setPolicyList(value as PurcahseCondition[]);
+        setPolicyList(value as Policy[]);
       })
       .catch(error => alert(error));
   }
@@ -64,18 +64,14 @@ function PurchasePoliciesPage(props) {
  }, [])
 
   const handleSubmit = () => {
-    handleAddPurchaseCondition(storeId ,EntityChoice, entity,WhichCond,condValue,selectedOption,EntityChoice,entity2,WhichCond2,condValue2,otherCondition).then(
+    handleAddPurchaseCondition(storeId ,EntityChoice, entity,WhichCond,condValue,selectedOption,otherCondition).then(
       value => {
-        setPolicyList(value as PurcahseCondition[]);
+        setPolicyList(value as Policy[]);
         setWhichCond("");
         setEntity("");
         setEntityChoice("");
         setCondValue("");
-        setEntity2("");
-        setEntityChoice2("");
         setOtherCondition("");
-        setWhichCond2("");
-        setCondValue2("");
         setShowModal(false);
       })
       .catch(error => alert(error));
@@ -104,8 +100,8 @@ return (
                 <Row className="mt-3">
           {policysList.length===0? (<div>  No Items </div>): (policysList.map((cond) => (
             // <div key={item.name}>{item.name} </div>
-            <Col  key={cond.condID} className="mt-3">
-              <Condition { ...cond } handleRemove={GetPurcahsePolicys} storID={storeId} ></Condition>
+            <Col  key={cond.policyID} className="mt-3">
+              <DiscountCondition { ...cond } handleRemove={GetPurcahsePolicys} storID={storeId} ></DiscountCondition>
             </Col>
             )))}
         </Row>
@@ -132,6 +128,7 @@ return (
                 <option>Item</option>
               </Form.Control>
             </Form.Group>
+            {EntityChoice != 'Store' && (
             <Form.Group>
               <Form.Label>Entity Name</Form.Label>
               <Form.Control
@@ -141,6 +138,7 @@ return (
                 onChange={(e) => setEntity(e.target.value)}
               />
             </Form.Group>
+            )}
             <Form.Group>
               <Form.Label>Which Condition</Form.Label>
               <Form.Control
@@ -169,12 +167,12 @@ return (
             <Form.Label>Operator</Form.Label>
             <Form.Control as="select" onChange={handleOptionChange}>
             <option value="option">Only condition</option>
-            <option value="AND">AND</option>
-            <option value="OR">OR</option>
-            <option value="option3">Conditional</option>
+            <option value="and">AND</option>
+            <option value="or">OR</option>
+            <option value="if">IF</option>
           </Form.Control>
           </Form.Group>
-          {(selectedOption === 'AND'|| selectedOption === 'OR') && (<div>
+          {(selectedOption === 'and'|| selectedOption === 'or'|| selectedOption == "if") && (<div>
             <Form.Group>
                       <Form.Label>Other condition</Form.Label>
                       <Form.Control
@@ -185,53 +183,6 @@ return (
                       />
                     </Form.Group>
           </div>)}
-          {selectedOption === 'option3' && (
-            <div>
-                    <Form.Group>
-                      <Form.Label>Entity</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={EntityChoice2}
-                        onChange={(e) => setEntityChoice2(e.target.value)} >
-                        <option>Store</option>
-                        <option>Category</option>
-                        <option>Item</option>
-                      </Form.Control>
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Entity ID</Form.Label>
-                      <Form.Control
-                        type="ID"
-                        placeholder="Enter entity's name"
-                        value={entity2}
-                        onChange={(e) => setEntity2(e.target.value)}
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Which Condition</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={WhichCond2}
-                        onChange={(e) => setWhichCond2(e.target.value)}
-                      >
-                        <option>Select type</option>
-                        <option>min value</option>
-                        <option>max value</option>
-                        <option>min quantity</option>
-                        <option>max quantity</option>
-                      </Form.Control>
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Condition Value</Form.Label>
-                      <Form.Control
-                        type="value"
-                        placeholder="Enter value"
-                        value={condValue2}
-                        onChange={(e) => setCondValue2(e.target.value)}
-                      />
-                    </Form.Group>
-            </div>
-          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeModal}>

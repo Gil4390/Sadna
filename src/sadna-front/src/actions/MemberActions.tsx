@@ -536,7 +536,7 @@ export function handleGetAllPurchaseConditions(storeID) {
         return Promise.resolve(data.value)
     })
 }
-export function handleAddPurchaseCondition(storeID , entity,entityName,type,value,op,entityRes,entityNameRes,typeRes,valueRes,opCond) {
+export function handleAddPurchaseCondition(storeID , entity,entityName,type,value,op,opCond) {
     let url = "http://localhost:8080/api/member/add-cond";
 
     return fetch(url, {
@@ -550,10 +550,6 @@ export function handleAddPurchaseCondition(storeID , entity,entityName,type,valu
             type:type,
             value:value,
             op:op,
-            entityRes: entityRes,
-            entityNameRes:entityNameRes,
-            typeRes:typeRes,
-            valueRes:valueRes,
             opCond:opCond,
         })
     }).then(async response => {
@@ -564,7 +560,7 @@ export function handleAddPurchaseCondition(storeID , entity,entityName,type,valu
         return Promise.resolve(data.value)
     })
 }
-export function handleAddDiscountCondition(storeID , entity,entityName,type,value,op,entityRes,entityNameRes,typeRes,valueRes,opCond) {
+export function handleAddDiscountCondition(storeID , entity,entityName,type,value,op,opCond) {
     let url = "http://localhost:8080/api/member/add-cond-dic";
 
     return fetch(url, {
@@ -578,10 +574,6 @@ export function handleAddDiscountCondition(storeID , entity,entityName,type,valu
             type:type,
             value:value,
             op:op,
-            entityRes: entityRes,
-            entityNameRes:entityNameRes,
-            typeRes:typeRes,
-            valueRes:valueRes,
             opCond:opCond,
         })
     }).then(async response => {

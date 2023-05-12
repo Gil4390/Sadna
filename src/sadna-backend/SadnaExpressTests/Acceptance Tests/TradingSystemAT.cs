@@ -116,7 +116,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetIsSystemInitialize(true);
             
             DiscountPolicy policy1 = store1.CreateSimplePolicy("Store", 50, DateTime.Now, new DateTime(2024, 5, 20));
-            Condition cond3 = store1.AddCondition(store1.GetItemById(itemid1), "min quantity", 1);
+            Condition cond3 = store1.AddCondition("Item","Tshirt", "min quantity", 1);
             DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
 
             DiscountPolicy policy3 = store1.CreateSimplePolicy("Store", 10, DateTime.Now, new DateTime(2024, 5, 20));

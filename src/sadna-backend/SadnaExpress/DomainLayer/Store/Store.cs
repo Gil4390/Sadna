@@ -29,7 +29,7 @@ namespace SadnaExpress.DomainLayer.Store
         private int discountPolicyCounter;
         public int DiscountPolicyCounter { get => discountPolicyCounter; set => discountPolicyCounter = value; }
         private List<Condition> purchasePolicyList;
-        public List<Condition> PurchasePolicyList { get; set; }
+        public List<Condition> PurchasePolicyList { get => purchasePolicyList; set => purchasePolicyList = value;}
 
         public int StoreRating
         {
@@ -45,7 +45,7 @@ namespace SadnaExpress.DomainLayer.Store
             storeID = Guid.NewGuid();
             active = true;
             discountPolicyTree = null;
-            purchasePolicyList = new List<ComplexCondition>();
+            purchasePolicyList = new List<Condition>();
             allDiscountPolicies = new Dictionary<DiscountPolicy, bool>();
             condDiscountPolicies = new Dictionary<Condition, bool>();
             purchasePolicyCounter = 0;
@@ -71,7 +71,6 @@ namespace SadnaExpress.DomainLayer.Store
             //not return error
             return itemsInventory.ItemExist(itemid);
         }
-
         public int GetItemByQuantity(Guid itemID)
         {
             return itemsInventory.GetItemByQuantity(itemID);
@@ -156,16 +155,12 @@ namespace SadnaExpress.DomainLayer.Store
             return basketItems;
         }
         
-        // purchase 
+        // purchase the check of the policy done earlier(when we click on check)
         public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, string email)
         {
             Dictionary<Item, int> itemsBeforeDiscount = new Dictionary<Item, int>();
             foreach (Guid itemID in items.Keys)
                 itemsBeforeDiscount[GetItemById(itemID)] = items[itemID];
-            // check the purchase policy
-            if (!EvaluatePurchasePolicy(this, itemsBeforeDiscount))
-                throw new Exception(purchasePolicy.message);
-            Console.WriteLine(purchasePolicy.message);
             // calculate the cart after the discount
             Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();
@@ -285,9 +280,26 @@ namespace SadnaExpress.DomainLayer.Store
             throw new Exception($"The condition with {ID} not exist");
         }
         #endregion
+
+        #region both policies
+
+        public Condition AddCondition(string entityStr, string entityName, string type, double val, DateTime dt=default, string op=default , int opCond=default)
+        {
+            switch (entityStr)
+            {
+                case "Item":
+                    Item entityI = itemsInventory.GetItemByName(entityName);
+                    return AddConditionHelper(entityI, type, val, dt, op, opCond);
+                case "Store":
+                    return AddConditionHelper(this, type, val, dt, op, opCond);
+                case "Category":
+                    return AddConditionHelper(entityStr, type, val, dt, op, opCond);
+                default:
+                    throw new Exception("the entity not exist");
+            }
+        }
         
-        // used for both - discount policy and 
-        public Condition AddCondition<T>(T entity, string type, double val, DateTime dt=default, string op=default , int opCond=default)
+        public Condition AddConditionHelper<T>(T entity, string type, double val, DateTime dt=default, string op=default , int opCond=default)
         {
             if (val < 0)
                 throw new Exception("value must be positive");
@@ -315,137 +327,80 @@ namespace SadnaExpress.DomainLayer.Store
                     cond = new TimeCondition<T>(entity, dt, "after");
                     break;
                 default:
-                    throw new Exception("the condition not fine");
+                    throw new Exception($"the condition type {type} not exist");
             }
-            checkNotInList(cond,dt, op, opCond);
-            return cond;
+            return checkNotInList(cond,dt, op, opCond);
         }
         
-        private void checkNotInList(Condition c , DateTime dt=default, string op=default , int opCond=default)
+        private Condition checkNotInList(Condition c , DateTime dt=default, string op=default , int opCond=default)
         {
-            c.ID = PurchasePolicyCounter;
-            PurchasePolicyCounter++;
-            Console.WriteLine(PurchasePolicyCounter);
             if (dt != default)
             {
                 if (PurchasePolicyList.Contains(c))
                     throw new Exception("the condition already exist");
-                AddSimplePurchaseCondition(c, GetCondByID(opCond), op);
+                 c = AddSimplePurchaseCondition(c, GetPurchaseCond(opCond), op);
             }
             else
                 if (!condDiscountPolicies.ContainsKey(c))
                     condDiscountPolicies.Add(c, false);
+            c.ID = PurchasePolicyCounter;
+            PurchasePolicyCounter++;
+            return c;
         }
-        
-        // purchase policy
-        public void AddSimplePurchaseCondition(Condition newPurchasePolicy1,Condition newPurchasePolicy2=null , string op = null)
+        #endregion
+
+
+        #region purchase policy
+        public Condition AddSimplePurchaseCondition(Condition newPurchasePolicy1,Condition newPurchasePolicy2=null , string op = null)
         {
-            Condition purchasePolicy;
+            Condition purchasePolicy = newPurchasePolicy1;
             switch (op)
             {
                 case "and":
-                    purchasePolicy = new ComplexCondition(newPurchasePolicy1, newPurchasePolicy2);
+                    purchasePolicy = new AndCondition(newPurchasePolicy1, newPurchasePolicy2);
+                    PurchasePolicyList.Remove(newPurchasePolicy2);
                     break;
                 case "or":
-                    purchasePolicy = new ComplexCondition(newPurchasePolicy1, newPurchasePolicy2);
+                    purchasePolicy = new OrCondition(newPurchasePolicy1, newPurchasePolicy2);
+                    PurchasePolicyList.Remove(newPurchasePolicy2);
                     break;
                 case "if":
                     purchasePolicy = new ConditioningCondition(newPurchasePolicy1, newPurchasePolicy2);
+                    PurchasePolicyList.Remove(newPurchasePolicy2);
                     break;
-                default:
-                    throw new Exception("The operator not exist");
             }
             PurchasePolicyList.Add(purchasePolicy);
+            return purchasePolicy;
         }
-        
-        public ComplexCondition GetCondition(Condition cond , ComplexCondition tree=null)
+
+        public Condition GetPurchaseCond(int condID)
         {
-            if (cond == null || PurchasePolicy == null)
-                return null;
-            if (cond.GetType() == typeof(ComplexCondition))
+            foreach (Condition cond in purchasePolicyList)
             {
-                if (tree == null)
-                    tree = PurchasePolicy;
-                ComplexCondition searchCond1 = GetCondition(cond , (ComplexCondition)tree.cond1);
-                if (searchCond1 != null)
-                    return searchCond1;
-                ComplexCondition searchCond2 = GetCondition(cond , (ComplexCondition)tree.cond2);
-                if (searchCond2 != null)
-                    return searchCond2;
-            }
-            if (tree == null)
-            {
-                if (cond.Equals(PurchasePolicy.cond1) || cond.Equals(PurchasePolicy.cond2))
+                if (cond.ID == condID)
                     return cond;
             }
-            else if (cond.Equals(tree))
-                return cond;
             return null;
         }
-
-        public void RemoveCondition(Condition cond, ComplexCondition tree = null)
+        
+        public void RemoveCondition(int condID)
         {
-            if (cond == null || PurchasePolicy == null)
+            Condition cond = GetPurchaseCond(condID);
+            if (cond == null)
             {
-                throw new Exception("Condition now exists");
+                throw new Exception($"Condition {condID} not found");
             }
-            if (cond.GetType() == typeof(ComplexCondition))
-            {
-                if (tree == null)
-                    tree = PurchasePolicy;
-                Condition searchCond1 = GetCondition(cond ,(ComplexCondition)tree.cond1);
-                if (searchCond1 != null)
-                {
-                    tree.cond1 = null;
-                    PurchasePolicyList.Remove(searchCond1);
-                }
-                Condition searchCond2 = GetCondition(cond ,(ComplexCondition)tree.cond2);
-                if (searchCond2 != null)
-                {
-                    tree.cond2 = null;
-                    PurchasePolicyList.Remove(searchCond2);
-                }
-            
-            }
-            else if (tree == null)
-            {
-                if (cond.Equals(PurchasePolicy.cond1))
-                {
-                    PurchasePolicyList.Remove(PurchasePolicy.cond1);
-                    PurchasePolicy = null;
-                }
-                else if (cond.Equals(PurchasePolicy.cond2))
-                {
-                    PurchasePolicyList.Remove(PurchasePolicy.cond2);
-                    PurchasePolicy.cond2 = null;
-                }
-            }
-            else if (cond.Equals(tree))
-            {
-                PurchasePolicyList = new List<Condition>();
-                PurchasePolicy = null;
-            }
-        }
-
-        public void RemoveConditionFromList(Condition cond , ComplexCondition tree=null)
-        {
-            Condition condToRemove = null;
-            foreach (Condition condInList in PurchasePolicyList)
-            {
-                if (condInList.Equals(cond))
-                    condToRemove = condInList;
-            }
-
-            if (condToRemove != null)
-                PurchasePolicyList.Remove(condToRemove);
+            purchasePolicyList.Remove(cond);
         }
 
         public bool EvaluatePurchasePolicy(Store store, Dictionary<Item, int> basket)
         {
+            bool output = true;
             foreach (Condition purchasePolicy in PurchasePolicyList)
             {
-                if (purchasePolicy != null)
-                    return purchasePolicy.Evaluate(store, basket);
+                output = output && purchasePolicy.Evaluate(store, basket);
+                if (!output)
+                    throw new Exception(purchasePolicy.message);
             }
             return true;
         }
@@ -462,5 +417,6 @@ namespace SadnaExpress.DomainLayer.Store
                 basket.Add(GetItemById(itemID),items[itemID]);
             return EvaluatePurchasePolicy(this, basket);
         }
+        #endregion
     }
 }

@@ -462,25 +462,6 @@ return (
               />
             </Form.Group>
             </Form>
-            <Form.Group>
-            <Form.Label>Operator</Form.Label>
-            <Form.Control as="select" onChange={handleOptionChange}>
-            <option value="option">Only condition</option>
-            <option value="AND">AND</option>
-            <option value="OR">OR</option>
-          </Form.Control>
-          </Form.Group>
-          {(selectedOption === 'AND'|| selectedOption === 'OR') && (<div>
-            <Form.Group>
-                      <Form.Label>Other condition</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter the condition to build with"
-                        value={otherCondInDiscount}
-                        onChange={(e) => setotherCondInDiscount(e.target.value)}
-                      />
-                    </Form.Group>
-          </div>)}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeModal}>

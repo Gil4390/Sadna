@@ -312,7 +312,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.IsSystemInitialize();
         }
 
-        public ResponseT<PurchaseCondition[]> GetAllConditions(Guid store)
+        public ResponseT<SPolicy[]> GetAllConditions(Guid store)
         {
             throw new NotImplementedException();
         }

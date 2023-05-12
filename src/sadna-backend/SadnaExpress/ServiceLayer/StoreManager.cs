@@ -438,27 +438,12 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<Condition> GetCondition<T, M>(Guid store ,T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
-        {
-            try
-            {
-                Condition cond = storeFacade.GetCondition(store , entity,type,value,dt,entityRes , typeRes , valueRes);
-                return new ResponseT<Condition>(cond);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetCondition) + ": " + ex.Message);
-                return new ResponseT<Condition>(ex.Message);
-            }
-        }
-
         public ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             try
             {
-                Condition c = storeFacade.AddCondition(store, entity, entityName, type, value, dt, entityRes,
-                    entityResName, typeRes, valueRes , op ,opCond);
+                Condition c = storeFacade.AddCondition(store, entity, entityName, type, value, dt, op ,opCond);
                 return new ResponseT<Condition>(c);
             }
             catch (Exception ex)
@@ -480,20 +465,21 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<PurchaseCondition[] > GetAllConditions(Guid store)
+        public ResponseT<SPolicy[]> GetAllConditions(Guid store)
         {
-            try 
+            try
             {
+                List<SPolicy> cond = new List<SPolicy>();
                 foreach (Condition condition in storeFacade.GetAllConditions(store))
                 {
-                    
+                    cond.Add(new SPolicy(condition.ID, condition.ToString(), true, "Condition"));
                 }
-                return new ResponseT<PurchaseCondition[] >();
+                return new ResponseT<SPolicy[]>(cond.ToArray());
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetAllConditions) + ": " + ex.Message);
-                return new ResponseT<PurchaseCondition[] >(ex.Message);
+                return new ResponseT<SPolicy[]>(ex.Message);
             }
         }
         

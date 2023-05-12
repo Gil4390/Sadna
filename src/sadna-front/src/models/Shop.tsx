@@ -34,11 +34,6 @@ export interface PurcahseCondition {
     type: string,
     value: number,
     op : string,  
-    entityRes: string,  
-    entityIDRes: string, 
-    entityNameRes: string, 
-    typeRes: string,  
-    valueRes: number,  
     opCond: number,  
 };
 

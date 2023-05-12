@@ -10,6 +10,8 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public string message=null;
         public abstract bool Evaluate(Store store, Dictionary<Item, int> basket);
         public abstract bool Equals(Condition cond);
+        public abstract override string ToString();
+        
     }
     
     #region quantity
@@ -315,11 +317,28 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             switch (beforeAfter)
             {
                 case "before":
-                    return this.timing.Hour > DateTime.Now.Hour;
+                    return timing.Hour > DateTime.Now.Hour;
                 case "after":
-                    return this.timing.Hour <= DateTime.Now.Hour;
+                    return timing.Hour <= DateTime.Now.Hour;
                 default:
                     throw new Exception("Need to be one of this operators");
+            }
+        }
+        public override string ToString()
+        {
+            string mn = "after";
+            if (beforeAfter.Equals("before"))
+                mn = "before";
+            switch (entity)
+            {
+                case Store storeType:
+                    return $"(Purchase for {storeType.StoreName} is {mn} {timing}$)";
+                case Item itemType:
+                    return $"(Purchase for {itemType.Name} is {mn} {timing}$)";
+                case string categoryType:
+                    return $"(Purchase for {categoryType} is {mn} {timing}$)";
+                default:
+                    return "";
             }
         }
     }
@@ -328,17 +347,17 @@ namespace SadnaExpress.DomainLayer.Store.Policy
     #region condition conditional
     public class ConditioningCondition : ComplexCondition
     {
-        public Condition cond;
-        public Condition res;
 
         public ConditioningCondition(Condition cond1, Condition result) : base(cond1, result)
         {
         }
         public override bool Evaluate(Store store, Dictionary<Item, int> basket)
         {
-            if (cond.Evaluate(store, basket))
+            if (cond1.Evaluate(store, basket))
             {
-                return res.Evaluate(store, basket);
+                bool output = cond2.Evaluate(store, basket);
+                message = cond2.message;
+                return output;
             }
 
             return true;
@@ -349,10 +368,14 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             switch (eCondition)
             {
                 case ConditioningCondition cc2:
-                    return cond.Equals(cc2.cond) && res.Equals(cc2.res);
+                    return cond1.Equals(cc2.cond1) && cond2.Equals(cc2.cond2);
                 default:
                     return false;
             }
+        }
+        public override string ToString()
+        {
+            return $"(if {cond1}\nthan {cond2})";
         }
     }
     #endregion
@@ -360,9 +383,6 @@ namespace SadnaExpress.DomainLayer.Store.Policy
     #region or condition
     public class OrCondition: ComplexCondition
     {
-        public Condition cond1;
-        public Condition cond2;
-
         public OrCondition(Condition cond1, Condition cond2) : base(cond1, cond2)
         {
         }
@@ -379,14 +399,17 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 message = "("+ cond2.message + ")";
             return output;
         }
+        public override string ToString()
+        {
+            return $"({cond1} \nor {cond2})";
+        }
     }
     #endregion
 
     #region and condition
-    public class AndCondition: ComplexCondition
+
+    public class AndCondition : ComplexCondition
     {
-        public Condition cond1;
-        public Condition cond2;
 
         public AndCondition(Condition cond1, Condition cond2) : base(cond1, cond2)
         {
@@ -397,10 +420,16 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             bool output;
             output = cond1.Evaluate(store, basket) && cond2.Evaluate(store, basket);
             if (cond1.message != null && cond2.message != null)
-                message = "("+ cond1.message + "and" + cond2.message + ")";
+                message = "(" + cond1.message + "and" + cond2.message + ")";
             return output;
         }
+
+        public override string ToString()
+        {
+            return $"({cond1} \nand {cond2})";
+        }
     }
+
     #endregion
     
     #region complex
@@ -439,6 +468,11 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 default:
                     return false;
             }
+        }
+
+        public override string ToString()
+        {
+            return cond1.ToString();
         }
     }
     #endregion

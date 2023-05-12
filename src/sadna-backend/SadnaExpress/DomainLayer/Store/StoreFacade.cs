@@ -391,11 +391,6 @@ namespace SadnaExpress.DomainLayer.Store
             _orders = orders;
         }
 
-        public Condition GetCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes=default, string typeRes=default, double valueRes=default)
-        {
-            return null;
-        }
-
         public DiscountPolicy CreateSimplePolicy<T>(Guid store ,T level, int percent, DateTime startDate, DateTime endDate)
         {
             IsStoreExist(store);
@@ -446,95 +441,18 @@ namespace SadnaExpress.DomainLayer.Store
         }
 
         public Condition AddCondition(Guid store, string entity, string entityName, string type, double value,
-            DateTime dt = default, string entityRes = default, string entityResName = default,
-            string typeRes = default, double valueRes = default, string op = default, int opCond = default)
+            DateTime dt = default, string op = default, int opCond = default)
         {
+            IsTsInitialized();
             IsStoreExist(store);
-            Condition newCond;
-            if (entity == "Item")
-            {
-                foreach (Item i in GetItemsInStore(store))
-                {
-                    if (i.Name == entityName)
-                    {
-                        newCond = GetStore(store).AddCondition(i, type, value, dt, op, opCond);
-                        /*if (entityResName != "")
-                        {
-                            foreach (Item j in GetItemsInStore(store))
-                            {
-                                if (j.Name == entityResName)
-                                {
-                                    Condition newCondCond = GetStore(store)
-                                        .AddCondition(j, type, val: valueRes, op: "if", opCond: typeRes);
-                                    return newCondCond;
-                                }
-                            }
-                        }*/
-
-                        return newCond;
-                    }
-                }
-            }
-            else if (entity == "Category")
-            {
-                newCond = GetStore(store).AddCondition<string>(entityName, type, value, dt);
-                if (entityResName != "")
-                {
-                    /*
-                                        foreach (Item j in GetItemsInStore(store))
-                                        {
-                                            if (j.Name == entityResName)
-                                            {
-                                                ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
-                                                return newCondCond;
-                                            }
-                                        }
-                                    }*/
-                    return newCond;
-                }
-                else if (entity == "Store")
-                {
-                    newCond = GetStore(store).AddCondition<Store>(GetStore(store), type, value, dt);
-                    if (entityResName != "")
-                    {
-                        /*
-                                            foreach (Item j in GetItemsInStore(store))
-                                            {
-                                                if (j.Name == entityResName)
-                                                {
-                                                    ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
-                                                    return newCondCond;
-                                                }
-                                            }
-                                        }*/
-                        return newCond;
-                    }
-
-                    return null;
-                }
-            }
-
-            return null;
+            return stores[store].AddCondition(entity, entityName, type, value, dt, op, opCond);
         }
 
         public void RemoveCondition(Guid storeID ,int condID)
         {
+            IsTsInitialized();
             IsStoreExist(storeID);
-            foreach (Condition cond in GetStore(storeID).PurchasePolicyList)
-            {
-                if (cond.ID == condID)
-                {
-                    GetStore(storeID).RemoveConditionFromList(cond);
-                    try
-                    {
-                        GetStore(storeID).RemoveCondition(cond);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                }
-            }
+            stores[storeID].RemoveCondition(condID);
         }
 
         public (Dictionary<DiscountPolicy, bool>, Dictionary<Condition, bool>) GetAllPolicy(Guid storeID)
@@ -564,17 +482,15 @@ namespace SadnaExpress.DomainLayer.Store
             stores.TryAdd(store1.StoreID, store1);
             stores.TryAdd(store2.StoreID, store2);
             
-            Condition cond1 = store1.AddCondition(store1.GetItemById(i1), "min quantity", 0,DateTime.MaxValue);
-            Condition cond2 = store1.AddCondition(store1.GetItemById(i2), "min value", 0 ,DateTime.MaxValue);
-            store1.AddSimplePurchaseCondition(cond1);
-            store1.AddSimplePurchaseCondition(cond2);
+            Condition cond1 = store1.AddCondition("Item", "Tshirt", "min quantity", 2,DateTime.MaxValue);
+            Condition cond2 = store1.AddCondition("Item", "Ipad", "min value", 1 ,DateTime.MaxValue);
+ 
             DiscountPolicy policy1 = store1.CreateSimplePolicy("StoreZara", 50, DateTime.Now, new DateTime(2024, 5, 20));
-            Condition cond3 = store1.AddCondition(store1.GetItemById(i1), "min quantity", 2);
+            Condition cond3 = store1.AddCondition("Item", "Tshirt", "min quantity", 2);
             DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
 
             DiscountPolicy policy3 = store1.CreateSimplePolicy("StoreZara", 10, DateTime.Now, new DateTime(2024, 5, 20));
 
-            //store1.AddPolicy(policy2.ID);
             store1.AddPolicy(policy3.ID);
         }
 

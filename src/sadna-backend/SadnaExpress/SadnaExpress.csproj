@@ -63,7 +63,6 @@
     <Compile Include="DomainLayer\User\IObserver.cs" />
     <Compile Include="DomainLayer\Store\Policy\Condition.cs" />
     <Compile Include="DomainLayer\Store\Policy\DiscountPolicy.cs" />
-    <Compile Include="DomainLayer\Store\Policy\Operator.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\IOrders.cs" />
     <Compile Include="DomainLayer\Store\IStoreFacade.cs" />
