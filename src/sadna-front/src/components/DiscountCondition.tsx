@@ -3,6 +3,8 @@ import { Button, Card } from "react-bootstrap"
 import { Policy } from '../../models/Shop.tsx';
 import { handleRemovePolicy , handleAddPolicy } from "../actions/MemberActions.tsx";
 import React, { useState,useEffect } from 'react';
+import { ResponseT,Response } from '../../models/Response.tsx';
+
 
 
 const cartItemStyles = {
@@ -26,10 +28,23 @@ const cartItemStyles = {
     const handleActiveAddPolicy = () => {
       handleAddPolicy(props.storID ,props.policyID).then(
           value => {
-            setIsActive(props.active);
+            setPolicyResponse(value as ResponseT)
           })
           .catch(error => alert(error));
     };
+
+    const [policyResponse, setPolicyResponse]=useState<ResponseT>();
+    useEffect(() => {
+      if(policyResponse!=undefined)
+        if(policyResponse?.errorOccured)
+          alert(policyResponse?.errorMessage) 
+        else{
+          console.log("Na")
+          setIsActive(!isActive);
+        }
+        setPolicyResponse(undefined);
+    }, [policyResponse])
+
 
     useEffect(() => {
       setIsActive(props.active);

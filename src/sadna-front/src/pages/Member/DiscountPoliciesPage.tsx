@@ -148,9 +148,6 @@ function DiscountPoliciesPage(props) {
   const Create_new_Simple_Discount_Policy = () => {
     handleCreateSimplePolicy(storeId ,EntityChoice+entity,condValue,startDate,endDate).then(
         value => {
-          //setPolicyList(value as Policy[]);
-          // value.errorOccured ?
-          // alert(value.errorMessage) :  (<span></span>)
           setSelectedDate('')
           setSelectedDate2('')
             setCondValue('')
