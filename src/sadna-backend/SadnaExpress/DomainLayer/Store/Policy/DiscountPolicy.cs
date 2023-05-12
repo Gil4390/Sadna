@@ -137,7 +137,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
 
         public override string ToString()
         {
-            return $"(If {cond} \n=> {discountPolicy})";
+            return $"(If {cond} \n => {discountPolicy})";
         }
 
         public override bool Equals(object obj)
@@ -348,7 +348,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         }
         public override string ToString()
         {
-            return $"(Add\n{discountPolicy1}\n{discountPolicy2})";
+            return $"(Add between {discountPolicy1}\nto {discountPolicy2})";
         }
         public override bool Equals(object obj)
         {
