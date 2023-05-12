@@ -281,12 +281,11 @@ namespace SadnaExpress.API.Controllers
         
         
         [Route(APIConstants.MemberData.createSimplePolicy)]
-        [ResponseType(typeof(SPolicy[]))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
         public IHttpActionResult CreateSimplePolicy([FromBody] PolicyRequest request)
         {
-            tradingSystem.CreateSimplePolicy(request.storeID,request.level,request.percent,request.startDate,request.endDate);
-            return Ok(tradingSystem.GetAllPolicy(request.userID , request.storeID));
+            return Ok(tradingSystem.CreateSimplePolicy(request.storeID,request.level,request.percent,request.startDate,request.endDate));
         }
         
         [Route(APIConstants.MemberData.createComplexPolicy)]

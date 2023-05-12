@@ -155,6 +155,8 @@ namespace SadnaExpress.DomainLayer.Store
         
         public DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
         {
+            if (percent < 0)
+                throw new Exception("Invalid percent amount");
             if (level.GetType() == typeof(string))
             {
                 switch (level.ToString())
@@ -168,7 +170,8 @@ namespace SadnaExpress.DomainLayer.Store
                         return HelperInCreateSimplePolicy(new SimpleDiscount<string>(s.Substring(8), percent, startDate, endDate));
                 }
             }
-            return null;
+
+            throw new Exception("Entity not valid");
         }
 
         private Condition checkNotInList(Condition c , DateTime dt=default)

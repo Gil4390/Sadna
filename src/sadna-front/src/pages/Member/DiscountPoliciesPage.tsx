@@ -7,6 +7,8 @@ import { handleAddPolicy, handleGetAllPolicy ,handleCreateSimplePolicy,handleCre
 import { useLocation } from 'react-router-dom';
 import { Policy } from '../../models/Shop.tsx';
 import { DiscountCondition , } from  '../../components/DiscountCondition.tsx';
+import { ResponseT,Response } from '../../models/Response.tsx';
+
 
 
 
@@ -141,19 +143,33 @@ function DiscountPoliciesPage(props) {
     setSelectedDate2(event.target.value);
   }
  
+  const [policyResponse, setPolicyResponse]=useState<ResponseT>();
 
   const Create_new_Simple_Discount_Policy = () => {
     handleCreateSimplePolicy(storeId ,EntityChoice+entity,condValue,startDate,endDate).then(
         value => {
-          setPolicyList(value as Policy[]);
-            handleDateChange("")
-            handleDateChange2("")
-            setCondValue("")
-            setEntity("")
-            setEntityChoice("")
+          setSelectedDate('')
+          setSelectedDate2('')
+            setCondValue('')
+            setEntity('')
+            setEntityChoice('')
+            setPolicyResponse(value as ResponseT);
         })
         .catch(error => alert(error));
   };
+
+  useEffect(() => {
+    if(policyResponse!=undefined)
+      if(policyResponse?.errorOccured)
+        alert(policyResponse?.errorMessage) 
+      else{
+        console.log("Na")
+        GetDiscountPolicy();
+      }
+      setPolicyResponse(undefined);
+  }, [policyResponse])
+
+
   const Create_new_Condition_Policy_1 = () => {
     handleCreateComplexPolicy(storeId ,op_1,[cond1_1,cond2_1,policy_1]).then(
         value => {
