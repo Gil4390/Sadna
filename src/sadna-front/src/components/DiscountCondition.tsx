@@ -42,7 +42,7 @@ const cartItemStyles = {
                   <span className="fs-2">{props.type} {props.policyID}</span>
                 </Card.Title>
                 <Card.Text>
-                    <div> <span className="ms-2 ">{props.policyRule}</span></div>
+                    <div> <span className="ms-2 "><pre>{props.policyRule}</pre></span></div>
                     props.active                </Card.Text>
           <div className="mt-auto" style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
           <Button variant="danger"onClick={handleRemovePress} >Remove</Button>
