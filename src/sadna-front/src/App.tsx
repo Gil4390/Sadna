@@ -100,8 +100,8 @@ const App:React.FC=()=>{
         <Route path="/MessagesPage" element={<MessagesPage id={id}/>} />
         <Route path="/StoresManagementPage" element={<StoresManagementPage id={id}/>} />
         <Route path="/PurchasedItemsPage" element={<PurchasedItemsPage id={id} />} />
-        <Route path="/DiscountPoliciesPage" element={<DiscountPoliciesPage id={id}/>} />
-        <Route path="/PurchasePoliciesPage" element={<PurchasePoliciesPage id={id}/>} />
+        <Route path="/DiscountPoliciesPage" element={<DiscountPoliciesPage/>} />
+        <Route path="/PurchasePoliciesPage" element={<PurchasePoliciesPage />} />
         <Route path="/ManageStoreEmployeesPage" element={<ManageStoreEmployeesPage id={id}/>} />
         <Route path="/ManageItemsPage" element={<ManageItemsPage id={id}/>} />
         <Route path="/PurchasedStoreItemsPage" element={<PurchasedStoreItemsPage id={id}/>} />

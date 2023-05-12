@@ -118,10 +118,11 @@ namespace SadnaExpress.API.Controllers
             public const string getStoreInfo = "get-store-info";
             
             public const string checkPurchaseCondition = "check-purchase-conds";
+            
+            public const string getAllPolicy = "get-all-policy";
 
             public const string getMemberName = "get-member-name";
             
-            public const string getAllPolicy = "get-all-policy";
         }
 
         public static class AdminData

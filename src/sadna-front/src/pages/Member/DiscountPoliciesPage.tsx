@@ -10,6 +10,7 @@ import { DiscountCondition } from  '../../components/DiscountCondition.tsx';
 
 
 
+
 function DiscountPoliciesPage(props) {
 
   const location = useLocation();
@@ -117,9 +118,7 @@ function DiscountPoliciesPage(props) {
       })
       .catch(error => alert(error));
   }
-  useEffect(() => {
-    GetDiscountPolicy();
- }, [])
+
  useEffect(() => {
     GetDiscountPolicy();
  }, [])
@@ -288,7 +287,6 @@ return (
                 {condFilter}
               </Form.Control>
             </Form.Group>
-
             <Form.Group>
             <Form.Control
                 as="select"

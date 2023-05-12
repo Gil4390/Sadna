@@ -1,7 +1,7 @@
 
 import { Button, Card } from "react-bootstrap"
 import { Policy } from '../../models/Shop.tsx';
-import { handleRemovePolicy } from "../actions/MemberActions.tsx";
+import { handleRemovePolicy , handleAddPolicy } from "../actions/MemberActions.tsx";
 import React, { useState,useEffect } from 'react';
 
 
@@ -12,6 +12,16 @@ const cartItemStyles = {
   
   export function DiscountCondition (props)
   {
+    const [isActive, setIsActive] = useState(true);
+
+    const buttonStyle = {
+      backgroundColor: isActive ? 'blue' : 'grey',
+      color: 'white',
+      padding: '10px 20px',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+    };
     const [policysList, setPolicyList] = useState<Policy[]>([]);
     const handleRemovePress = () => {
       handleRemovePolicy(props.storID ,props.condID).then(
@@ -20,7 +30,15 @@ const cartItemStyles = {
         })
         .catch(error => alert(error));
     };
-  
+
+    const handleActiveAddPolicy = () => {
+      handleAddPolicy(props.storID ,props.condID).then(
+          value => {
+            setIsActive(false);
+          })
+          .catch(error => alert(error));
+    };
+
     useEffect(() => {
       props.handleRemove()
     }, [policysList]);
@@ -35,8 +53,9 @@ const cartItemStyles = {
                     <div> <span className="ms-2 ">{props.policyRule}</span></div>
                 <span className="ms-2 ">{props.active}</span>
                 </Card.Text>
-          <div className="mt-auto">
+          <div className="mt-auto" style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
           <Button variant="danger"onClick={handleRemovePress} >Remove</Button>
+          <div>{isActive && props.type =="Policy" ? (<Button variant="success" onClick={handleActiveAddPolicy}>Activate</Button>):(<span></span>)}</div>
           </div>
         </Card.Body>
       </Card>) 
