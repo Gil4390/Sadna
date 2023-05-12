@@ -1,4 +1,4 @@
-import { useContext, useEffect,useState, useRef } from 'react';
+import { useEffect,useState, useRef } from 'react';
 import { Connection, hubConnection } from 'signalr-no-jquery';
 export type SignalRNotificationCallback = (...params: any[]) => void;
 
