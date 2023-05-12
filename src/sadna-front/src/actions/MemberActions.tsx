@@ -653,7 +653,7 @@ export function handleCreateComplexPolicy(storeID , op, policys) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data.value)
+        return Promise.resolve(data)
     })
 }
 
