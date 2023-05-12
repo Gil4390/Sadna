@@ -354,11 +354,6 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
-        {
-            return _realBridge.AddDiscountCondition(store, entity, type, value);
-        }
-
         public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
         {
             return _realBridge.CreateSimplePolicy(store, level, percent, startDate, endDate);

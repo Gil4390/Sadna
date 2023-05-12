@@ -484,7 +484,11 @@ namespace SadnaExpress.ServiceLayer
         {
             try 
             {
-                return new ResponseT<PurchaseCondition[] >(storeFacade.GetAllConditions(store));
+                foreach (Condition condition in storeFacade.GetAllConditions(store))
+                {
+                    
+                }
+                return new ResponseT<PurchaseCondition[] >();
             }
             catch (Exception ex)
             {
@@ -492,20 +496,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<PurchaseCondition[] >(ex.Message);
             }
         }
-
-        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
-        {
-            try
-            {
-                return new ResponseT<Condition>(storeFacade.AddDiscountCondition(store, entity, type, value));
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(AddDiscountCondition) + ": " + ex.Message);
-                return new ResponseT<Condition>(ex.Message);
-            }
-        }
-
+        
         public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
         {
             try
@@ -620,7 +611,7 @@ namespace SadnaExpress.ServiceLayer
             try
             {
                 userFacade.EditItem(userId, storeId);
-                storeFacade.EditItem(userId, storeId, itemId, itemName, itemCategory, itemPrice, quantity);
+                storeFacade.EditItem(storeId, itemId, itemName, itemCategory, itemPrice, quantity);
                 return new Response();
             }
             catch (Exception ex)

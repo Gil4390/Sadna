@@ -259,6 +259,7 @@ namespace SadnaExpress.API.Controllers
             ResponseT<PurchaseCondition[]> a = tradingSystem.GetAllConditions(request.storeID);
             return Ok(a);
         }
+        
         [Route(APIConstants.MemberData.removeCondition)]
         [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
         [HttpPost]
@@ -278,11 +279,12 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.MemberData.createComplexPolicy)]
-        [ResponseType(typeof(Response))]
+        [ResponseType(typeof(SPolicy[]))]
         [HttpPost]
         public IHttpActionResult CreateComplexPolicy([FromBody] ComplexConditionRequest request)
         {
-            return Ok(tradingSystem.CreateComplexPolicy(request.storeID,request.op, request.policys));
+            tradingSystem.CreateComplexPolicy(request.storeID,request.op, request.policys);
+            return Ok(tradingSystem.GetAllPolicy(request.userID , request.storeID));
         }
         
         [Route(APIConstants.MemberData.addPolicy)]

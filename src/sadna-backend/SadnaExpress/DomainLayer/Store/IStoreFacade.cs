@@ -41,8 +41,7 @@ namespace SadnaExpress.DomainLayer.Store
         Condition AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);
         void RemoveCondition(Guid storeID ,int condID);
-        PurchaseCondition[]  GetAllConditions(Guid store);
-        Condition AddDiscountCondition<T>(Guid store, T entity, string type, double value);
+        List<Condition> GetAllConditions(Guid store);
         DiscountPolicy CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
         DiscountPolicy CreateComplexPolicy(Guid store, string op, int[] policys);
         DiscountPolicyTree AddPolicy(Guid store, int discountPolicy); 
@@ -51,12 +50,11 @@ namespace SadnaExpress.DomainLayer.Store
         void LoadData(Store store1, Store store2);
         Guid GetItemStoreId(Guid Itemid);
         int GetItemByQuantity(Guid storeid, Guid itemid);
-        void EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
+        void EditItem(Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
         List<Item> GetItemsInStore(Guid storeId);
         double GetItemAfterDiscount(Guid storeId, Item item);
         Dictionary<Guid, Dictionary<Item, double>> GetCartItems(Dictionary<Guid, Dictionary<Guid, int>> cart);
         Store GetStoreInfo(Guid storeId);
-
         void CheckPurchaseConditions(Dictionary<Guid, Dictionary<Guid, int>> value);
     }
 }

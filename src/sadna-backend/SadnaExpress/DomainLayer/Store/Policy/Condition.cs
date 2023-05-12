@@ -12,294 +12,12 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public abstract bool Equals(Condition cond);
     }
     
-    public class ComplexCondition: Condition
-    {
-        public Condition cond1;
-        public Condition cond2;
-        public Operator _op;
-
-        public ComplexCondition(Condition cond1, Condition cond2, Operator op)
-        {
-            this.cond1 = cond1;
-            this.cond2 = cond2;
-            _op = op;
-        }
-        public ComplexCondition(Condition cond1)
-        {
-            this.cond1 = cond1;
-            this.cond2 = null;
-            _op = null;
-        }
-        public override bool Evaluate(Store store, Dictionary<Item, int> basket)
-        {
-            bool output;
-            if (typeof(ConditioningCondition) == cond1.GetType() || cond2 == null)
-            {
-                output = cond1.Evaluate(store, basket);
-                if (cond1.message != null)
-                    message = cond1.message;
-                if (cond2 != null)
-                    message = "("+ message + _op + cond2.message + ")";
-                return output;
-            }
-            output = _op.Calculate(cond1, cond2 , store , basket);
-            if (cond1.message != null)
-                message = cond1.message;
-            if (cond2 != null)
-                message = "("+ message + _op + cond2.message + ")";
-            return output;
-        }
-
-        public override bool Equals(Condition cond)
-        {
-            switch (cond)
-            {
-                case ComplexCondition cc1:
-                    return cond1.Equals(cc1.cond1) && cond2.Equals(cc1.cond2) && _op.GetType() == cc1.GetType();
-                default:
-                    return false;
-            }
-        }
-        
-    }
-
-    public class ConditioningCondition : Condition
-    {
-        public Condition cond;
-        public ConditioningResult res;
-
-        public ConditioningCondition(Condition cond1, ConditioningResult result)
-        {
-            this.cond = cond1;
-            this.res = result;
-        }
-        public override bool Evaluate(Store store, Dictionary<Item, int> basket)
-        {
-            return res.Evaluate(basket) & cond.Evaluate(store, basket);
-        }
-
-        public override bool Equals(Condition eCondition)
-        {
-            switch (eCondition)
-            {
-                case ConditioningCondition cc2:
-                    return cond.Equals(cc2.cond) && res.Equals(cc2.res);
-                default:
-                    return false;
-            }
-        }
-    }
-    
-    public abstract class ConditioningResult
-    {
-        public Item item;
-
-        public ConditioningResult(Item item)
-        {
-            this.item = item;
-        }
-
-        public abstract bool Evaluate(Dictionary<Item, int> basket);
-
-        public abstract bool Equals(ConditioningResult cr);
-
-    }
-    
-    public class ConditioningResultQuantity : ConditioningResult
-    {
-        public int quantity;
-        public ConditioningResultQuantity(Item item , int q) : base(item)
-        {
-            this.quantity = q;
-        }
-
-        public override bool Evaluate(Dictionary<Item, int> basket)
-        {
-            int newQuantity = 0;
-            foreach (Item i in basket.Keys)
-            {
-                newQuantity += basket[i];
-            }
-            return newQuantity == quantity;
-        }
-
-        public override bool Equals(ConditioningResult cr)
-        {
-            switch (cr)
-            {
-                case ConditioningResultQuantity cc1:
-                    return cr.item.ItemID == item.ItemID && quantity == cc1.quantity;
-                default:
-                    return false;
-            }
-        }
-    }
-
-    public class ConditioningResultSum : ConditioningResult
-    {
-        public double sum;
-        public ConditioningResultSum(Item item , int s) : base(item)
-        {
-            this.sum = s;
-        }
-
-        public override bool Evaluate(Dictionary<Item, int> basket)
-        {
-            double newSum = 0;
-            foreach (Item i in basket.Keys)
-            {
-                newSum += basket[i];
-            }
-            return newSum == sum;
-        }
-
-        public override bool Equals(ConditioningResult cr)
-        {
-            switch (cr)
-            {
-                case ConditioningResultSum cc1:
-                    return cr.item.ItemID == item.ItemID && sum == cc1.sum;
-                default:
-                    return false;
-            }
-        }
-    }
-
-    public class ValueCondition<T> : Condition
-    {
-        public T entity;
-        public double minPrice;
-        public string minmax;
-        public string op;
-        public int opCond;
-
-        // T can be store or category(string)
-        public ValueCondition(T entity, double minPrice, string minmax)
-        {
-            this.entity = entity;
-            this.minPrice = minPrice;
-            this.minmax = minmax;
-            op = "";
-            opCond = -1;
-        }
-
-        public override bool Evaluate(Store store, Dictionary<Item, int> basket)
-        {
-            double sum = 0;
-            string type = "";
-            switch (entity)
-            {
-                case Store storeType:
-                    type = $"store {storeType.StoreName}";
-                    foreach (Item item in basket.Keys)
-                        sum += item.Price;
-                    break;
-                case string stringType:
-                    type = $"category {stringType}";
-                    foreach (Item item in basket.Keys)
-                        if (item.Category.Equals(entity))
-                            sum += item.Price;
-                    break;
-                case ShoppingBasket shopping:
-                    foreach (Item item in basket.Keys)
-                        sum += item.Price;
-                    break;
-                case Item item:
-                    type = $"item {item.Name}";
-                    foreach (Item i in basket.Keys)
-                        if(i.ItemID == item.ItemID)
-                            sum += i.Price;
-                    break;
-                default:
-                    throw new Exception("Category or Store are the one we can evaluate");
-            }
-            return Check(sum, type);
-        }
-
-        public override bool Equals(Condition cond)
-        {
-            switch (cond)
-            {
-                case ValueCondition<T> cc1:
-                    switch (cc1.entity)
-                    {
-                        case Item i:
-                            switch (entity)
-                            {
-                                case Item i2:
-                                    return i.Equals(i2) && cc1.minPrice == minPrice && cc1.minmax == minmax;
-                                default:
-                                    return false;
-                            }
-                        case Store i:
-                            switch (entity)
-                            {
-                                case Store i2:
-                                    return i.Equals(i2) && cc1.minPrice == minPrice && cc1.minmax == minmax;
-                                default:
-                                    return false;
-                            }
-                        case string category:
-                            switch (entity)
-                            {
-                                case string category2:
-                                    return category == category2 && cc1.minPrice == minPrice && cc1.minmax == minmax;
-                                default:
-                                    return false;
-                            }
-                        default:
-                            return false;
-                    }
-                default:
-                    return false;
-            }
-        }
-
-        private bool Check(double sum, string type)
-        {
-            switch (minmax)
-            {
-                case "min":
-                    if (sum >= minPrice)
-                        return true;
-                    message = $"The price of {type} is {sum} while the minimum price is {minPrice}";
-                    return false;
-                case "max":
-                    if (sum <= minPrice)
-                        return true;
-                    message = $"The price of {type} is {sum} while the maximum is price {minPrice}";
-                    return false;
-                default:
-                    throw new Exception("Need to be one of this operators");
-            }
-        }
-        
-        public override string ToString()
-        {
-            string mn = "maximum";
-            if (minmax.Equals("min"))
-                mn = "minimum";
-            switch (entity)
-            {
-                case Store storeType:
-                    return $"({mn} purchase for {storeType.StoreName} is {minPrice}$)";
-                case Item itemType:
-                    return $"({mn} purchase for  {itemType.Name} is {minPrice}$)";
-                case string categoryType:
-                    return $"({mn} purchase for {categoryType} is {minPrice}$)";
-                default:
-                    return "";
-            }
-        }
-    }
-    
+    #region quantity
     public class QuantityCondition<T> : Condition
     {
         public T entity;
         public int Quantity;
         public string minmax;
-        public string op;
-        public int opCond;
 
         // T can be store or item or category(string)
         public QuantityCondition(T entity, int Quantity , string minmax)
@@ -307,8 +25,6 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             this.entity = entity;
             this.Quantity = Quantity;
             this.minmax = minmax;
-            op = "";
-            opCond = -1;
         }
 
         public override bool Evaluate(Store store, Dictionary<Item, int> basket)
@@ -420,14 +136,140 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             }
         }
     }
+    #endregion
     
+    #region value
+    public class ValueCondition<T> : Condition
+    {
+        public T entity;
+        public double minPrice;
+        public string minmax;
+
+        // T can be store or category(string)
+        public ValueCondition(T entity, double minPrice, string minmax)
+        {
+            this.entity = entity;
+            this.minPrice = minPrice;
+            this.minmax = minmax;
+        }
+
+        public override bool Evaluate(Store store, Dictionary<Item, int> basket)
+        {
+            double sum = 0;
+            string type = "";
+            switch (entity)
+            {
+                case Store storeType:
+                    type = $"store {storeType.StoreName}";
+                    foreach (Item item in basket.Keys)
+                        sum += item.Price;
+                    break;
+                case string stringType:
+                    type = $"category {stringType}";
+                    foreach (Item item in basket.Keys)
+                        if (item.Category.Equals(entity))
+                            sum += item.Price;
+                    break;
+                case ShoppingBasket shopping:
+                    foreach (Item item in basket.Keys)
+                        sum += item.Price;
+                    break;
+                case Item item:
+                    type = $"item {item.Name}";
+                    foreach (Item i in basket.Keys)
+                        if(i.ItemID == item.ItemID)
+                            sum += i.Price;
+                    break;
+                default:
+                    throw new Exception("Category or Store are the one we can evaluate");
+            }
+            return Check(sum, type);
+        }
+
+        public override bool Equals(Condition cond)
+        {
+            switch (cond)
+            {
+                case ValueCondition<T> cc1:
+                    switch (cc1.entity)
+                    {
+                        case Item i:
+                            switch (entity)
+                            {
+                                case Item i2:
+                                    return i.Equals(i2) && cc1.minPrice == minPrice && cc1.minmax == minmax;
+                                default:
+                                    return false;
+                            }
+                        case Store i:
+                            switch (entity)
+                            {
+                                case Store i2:
+                                    return i.Equals(i2) && cc1.minPrice == minPrice && cc1.minmax == minmax;
+                                default:
+                                    return false;
+                            }
+                        case string category:
+                            switch (entity)
+                            {
+                                case string category2:
+                                    return category == category2 && cc1.minPrice == minPrice && cc1.minmax == minmax;
+                                default:
+                                    return false;
+                            }
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+
+        private bool Check(double sum, string type)
+        {
+            switch (minmax)
+            {
+                case "min":
+                    if (sum >= minPrice)
+                        return true;
+                    message = $"The price of {type} is {sum} while the minimum price is {minPrice}";
+                    return false;
+                case "max":
+                    if (sum <= minPrice)
+                        return true;
+                    message = $"The price of {type} is {sum} while the maximum is price {minPrice}";
+                    return false;
+                default:
+                    throw new Exception("Need to be one of this operators");
+            }
+        }
+        
+        public override string ToString()
+        {
+            string mn = "maximum";
+            if (minmax.Equals("min"))
+                mn = "minimum";
+            switch (entity)
+            {
+                case Store storeType:
+                    return $"({mn} purchase for {storeType.StoreName} is {minPrice}$)";
+                case Item itemType:
+                    return $"({mn} purchase for  {itemType.Name} is {minPrice}$)";
+                case string categoryType:
+                    return $"({mn} purchase for {categoryType} is {minPrice}$)";
+                default:
+                    return "";
+            }
+        }
+    }
+    #endregion
+    
+    #region time
     public class TimeCondition<T> : Condition
     {
         public T entity;
         public DateTime timing;
         public string beforeAfter;
-        public string op;
-        public int opCond;
 
         // T can be store or item or category(string)
         public TimeCondition(T entity, DateTime timing , string beforeAfter)
@@ -435,8 +277,6 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             this.entity = entity;
             this.timing = timing;
             this.beforeAfter = beforeAfter;
-            op = "";
-            opCond = -1;
         }
 
         public override bool Evaluate(Store store, Dictionary<Item, int> basket)
@@ -483,132 +323,124 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             }
         }
     }
-
-    public class PurchaseCondition
+    #endregion
+    
+    #region condition conditional
+    public class ConditioningCondition : ComplexCondition
     {
-        private int condID;
-        public int CondID
+        public Condition cond;
+        public Condition res;
+
+        public ConditioningCondition(Condition cond1, Condition result) : base(cond1, result)
         {
-            get => condID;
-            set => condID = value;
+        }
+        public override bool Evaluate(Store store, Dictionary<Item, int> basket)
+        {
+            if (cond.Evaluate(store, basket))
+            {
+                return res.Evaluate(store, basket);
+            }
+
+            return true;
         }
 
-        private string entity;
-        public string Entity
+        public override bool Equals(Condition eCondition)
         {
-            get => entity;
-            set => entity = value;
+            switch (eCondition)
+            {
+                case ConditioningCondition cc2:
+                    return cond.Equals(cc2.cond) && res.Equals(cc2.res);
+                default:
+                    return false;
+            }
         }
-
-        private string entityID;
-        public string EntityID
-        {
-            get => entityID;
-            set => entityID = value;
-        }
-        
-        private string entityName;
-        public string EntityName
-        {
-            get => entityName;
-            set => entityName = value;
-        }
-
-        private string type;
-        public string Type
-        {
-            get => type;
-            set => type = value;
-        }
-
-        private int value;
-        public int Value
-        {
-            get => value;
-            set => this.value = value;
-        }
-
-        private string op;
-        public string Op
-        {
-            get => op;
-            set => op = value;
-        }
-
-        private string entityRes;
-        public string EntityRes
-        {
-            get => entityRes;
-            set => entityRes = value;
-        }
-
-        private string entityIDRes;
-        public string EntityIDRes
-        {
-            get => entityIDRes;
-            set => entityIDRes = value;
-        }
-        private string entityNameRes;
-        public string EntityNameRes
-        {
-            get => entityNameRes;
-            set => entityNameRes = value;
-        }
-
-        private string typeRes;
-        public string TypeRes
-        {
-            get => typeRes;
-            set => typeRes = value;
-        }
-
-        private int valueRes;
-        public int ValueRes
-        {
-            get => valueRes;
-            set => valueRes = value;
-        }
-
-        private int opCond;
-        public int OpCond
-        {
-            get => opCond;
-            set => opCond = value;
-        }
-
-        public PurchaseCondition(int condId, string entity, string entityId, string entityName, string type, int value, string op, string entityRes, string entityIdRes, string entityNameRes, string typeRes, int valueRes, int opCond)
-        {
-            condID = condId;
-            this.entity = entity;
-            entityID = entityId;
-            this.entityName = entityName;
-            this.type = type;
-            this.value = value;
-            this.op = op;
-            this.entityRes = entityRes;
-            entityIDRes = entityIdRes;
-            this.entityNameRes = entityNameRes;
-            this.typeRes = typeRes;
-            this.valueRes = valueRes;
-            this.opCond = opCond;
-        }
-        
-        public PurchaseCondition(int condId, string entity, string entityId,string entityName, string type, int value)
-        {
-            this.condID = condId;
-            this.entity = entity;
-            entityID = entityId;
-            this.entityName = entityName;
-            this.type = type;
-            this.value = value;
-            this.op = "";
-            this.entityRes = "";
-            entityIDRes = "";
-            this.typeRes = "";
-            this.valueRes = -1;
-            this.opCond = -1;
-        }
-
-        
     }
+    #endregion
+    
+    #region or condition
+    public class OrCondition: ComplexCondition
+    {
+        public Condition cond1;
+        public Condition cond2;
+
+        public OrCondition(Condition cond1, Condition cond2) : base(cond1, cond2)
+        {
+        }
+
+        public override bool Evaluate(Store store, Dictionary<Item, int> basket)
+        {
+            bool output;
+            output = cond1.Evaluate(store, basket) || cond2.Evaluate(store, basket);
+            if (cond1.message != null && cond2.message != null)
+                message = "("+ cond1.message + "and" + cond2.message + ")";
+            else if (cond1.message != null)
+                message = "("+ cond1.message + ")";
+            else if (cond2.message != null)
+                message = "("+ cond2.message + ")";
+            return output;
+        }
+    }
+    #endregion
+
+    #region and condition
+    public class AndCondition: ComplexCondition
+    {
+        public Condition cond1;
+        public Condition cond2;
+
+        public AndCondition(Condition cond1, Condition cond2) : base(cond1, cond2)
+        {
+        }
+
+        public override bool Evaluate(Store store, Dictionary<Item, int> basket)
+        {
+            bool output;
+            output = cond1.Evaluate(store, basket) && cond2.Evaluate(store, basket);
+            if (cond1.message != null && cond2.message != null)
+                message = "("+ cond1.message + "and" + cond2.message + ")";
+            return output;
+        }
+    }
+    #endregion
+    
+    #region complex
+    public class ComplexCondition: Condition
+    {
+        public Condition cond1;
+        public Condition cond2;
+
+        public ComplexCondition(Condition cond1, Condition cond2)
+        {
+            this.cond1 = cond1;
+            this.cond2 = cond2;
+        }
+        public ComplexCondition(Condition cond1)
+        {
+            this.cond1 = cond1;
+            this.cond2 = null;
+        }
+        public override bool Evaluate(Store store, Dictionary<Item, int> basket)
+        {
+            if (cond2 == null)
+            {
+                bool output = cond1.Evaluate(store, basket);
+                message = cond1.message;
+                return output;
+            }
+            return true;
+        }
+
+        public override bool Equals(Condition cond)
+        {
+            switch (cond)
+            {
+                case ComplexCondition cc1:
+                    return cond1.Equals(cc1.cond1) && cond2.Equals(cc1.cond2);
+                default:
+                    return false;
+            }
+        }
+    }
+    #endregion
+
 }

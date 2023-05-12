@@ -395,14 +395,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return null;
         }
-        
 
-        public Condition AddDiscountCondition<T>(Guid store ,T entity, string type, double value)
-        {
-            IsStoreExist(store);
-            Condition newCond = GetStore(store).AddCondition(entity, type, value);
-            return newCond;
-        }
         public DiscountPolicy CreateSimplePolicy<T>(Guid store ,T level, int percent, DateTime startDate, DateTime endDate)
         {
             IsStoreExist(store);
@@ -427,7 +420,7 @@ namespace SadnaExpress.DomainLayer.Store
             GetStore(store).RemovePolicy(discountPolicy);
         }
 
-        public void EditItem(Guid userId, Guid storeID,Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)
+        public void EditItem(Guid storeID,Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
             IsTsInitialized();
             IsStoreExist(storeID);
@@ -452,65 +445,75 @@ namespace SadnaExpress.DomainLayer.Store
             return items;
         }
 
-        public Condition AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
-            string typeRes = default, double valueRes = default , string op= default, int opCond= default)
+        public Condition AddCondition(Guid store, string entity, string entityName, string type, double value,
+            DateTime dt = default, string entityRes = default, string entityResName = default,
+            string typeRes = default, double valueRes = default, string op = default, int opCond = default)
         {
             IsStoreExist(store);
+            Condition newCond;
             if (entity == "Item")
             {
                 foreach (Item i in GetItemsInStore(store))
                 {
                     if (i.Name == entityName)
                     {
-                        Condition newCond = GetStore(store).AddCondition<Item>(i, type, value, dt , op , opCond);
-                        if (entityResName != "")
+                        newCond = GetStore(store).AddCondition(i, type, value, dt, op, opCond);
+                        /*if (entityResName != "")
                         {
                             foreach (Item j in GetItemsInStore(store))
                             {
                                 if (j.Name == entityResName)
                                 {
-                                    ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
+                                    Condition newCondCond = GetStore(store)
+                                        .AddCondition(j, type, val: valueRes, op: "if", opCond: typeRes);
                                     return newCondCond;
                                 }
                             }
-                        }
-                        
+                        }*/
+
                         return newCond;
                     }
                 }
             }
             else if (entity == "Category")
             {
-                Condition newCond = GetStore(store).AddCondition<string>(entityName, type, value, dt);
+                newCond = GetStore(store).AddCondition<string>(entityName, type, value, dt);
                 if (entityResName != "")
                 {
-                    foreach (Item j in GetItemsInStore(store))
-                    {
-                        if (j.Name == entityResName)
-                        {
-                            ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
-                            return newCondCond;
-                        }
-                    }
+                    /*
+                                        foreach (Item j in GetItemsInStore(store))
+                                        {
+                                            if (j.Name == entityResName)
+                                            {
+                                                ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
+                                                return newCondCond;
+                                            }
+                                        }
+                                    }*/
+                    return newCond;
                 }
-                return newCond; 
-            }
-            else if (entity == "Store")
-            {
-                Condition newCond = GetStore(store).AddCondition<Store>(GetStore(store), type, value, dt);
-                if (entityResName != "")
+                else if (entity == "Store")
                 {
-                    foreach (Item j in GetItemsInStore(store))
+                    newCond = GetStore(store).AddCondition<Store>(GetStore(store), type, value, dt);
+                    if (entityResName != "")
                     {
-                        if (j.Name == entityResName)
-                        {
-                            ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
-                            return newCondCond;
-                        }
+                        /*
+                                            foreach (Item j in GetItemsInStore(store))
+                                            {
+                                                if (j.Name == entityResName)
+                                                {
+                                                    ConditioningCondition newCondCond =  GetStore(store).AddConditioning(newCond, j , typeRes, valueRes);
+                                                    return newCondCond;
+                                                }
+                                            }
+                                        }*/
+                        return newCond;
                     }
+
+                    return null;
                 }
-                return newCond; 
             }
+
             return null;
         }
 
@@ -541,7 +544,7 @@ namespace SadnaExpress.DomainLayer.Store
             return (stores[storeID].AllDiscountPolicies, stores[storeID].CondDiscountPolicies) ;
         }
 
-        public PurchaseCondition[]  GetAllConditions(Guid store)
+        public List<Condition> GetAllConditions(Guid store)
         {
             IsStoreExist(store);
             return GetStore(store).GetAllConditions();
@@ -571,7 +574,7 @@ namespace SadnaExpress.DomainLayer.Store
 
             DiscountPolicy policy3 = store1.CreateSimplePolicy("StoreZara", 10, DateTime.Now, new DateTime(2024, 5, 20));
 
-            store1.AddPolicy(policy2.ID);
+            //store1.AddPolicy(policy2.ID);
             store1.AddPolicy(policy3.ID);
         }
 

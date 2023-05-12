@@ -49,7 +49,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);  
         void RemoveCondition(Guid storeID ,int condID);
         ResponseT<PurchaseCondition[] > GetAllConditions(Guid store);
-        ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
         ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
         ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, int[] policys);
         Response AddPolicy(Guid store, int discountPolicy);

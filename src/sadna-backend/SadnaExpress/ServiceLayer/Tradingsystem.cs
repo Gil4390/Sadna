@@ -556,11 +556,6 @@ namespace SadnaExpress.ServiceLayer
             storeManager.RemoveCondition(storeID,condID);
         }
 
-        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
-        {
-            return storeManager.AddDiscountCondition(store, entity, type, value);
-        }
-
         public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
         {
             return storeManager.CreateSimplePolicy(store, level, percent, startDate , endDate);
