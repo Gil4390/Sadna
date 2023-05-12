@@ -344,7 +344,33 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void RemovePolicy(int ID)
         {
-            discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
+            Condition toRemoveCond = null;
+            foreach (Condition condition in condDiscountPolicies.Keys)
+            {
+                if (condition.ID == ID)
+                    toRemoveCond = condition;
+            }
+
+            if (toRemoveCond != null)
+            {
+                condDiscountPolicies.Remove(toRemoveCond);
+                return;
+            }
+            
+            DiscountPolicy toRemove = null;
+            foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
+            {
+                if (discountPolicy.ID == ID)
+                    toRemove = discountPolicy;
+            }
+
+            if (toRemove != null)
+            {
+                discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
+                allDiscountPolicies.Remove(toRemove);
+            }
+            else
+                throw new Exception("Policy/Condition not found");
         }
 
         private DiscountPolicy GetPolicyByID(int ID)

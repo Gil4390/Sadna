@@ -24,7 +24,7 @@ const cartItemStyles = {
     };
     const [policysList, setPolicyList] = useState<Policy[]>([]);
     const handleRemovePress = () => {
-      handleRemovePolicy(props.storID ,props.condID).then(
+      handleRemovePolicy(props.storID ,props.policyID).then(
         value => {
           setPolicyList(value as Policy[]);
         })
@@ -32,7 +32,7 @@ const cartItemStyles = {
     };
 
     const handleActiveAddPolicy = () => {
-      handleAddPolicy(props.storID ,props.condID).then(
+      handleAddPolicy(props.storID ,props.policyID).then(
           value => {
             setIsActive(false);
           })
@@ -44,7 +44,6 @@ const cartItemStyles = {
     }, [policysList]);
       return (
         <Card className="h-100 col-md-100">
-  
           <Card.Body className="d-flex flex-column">
               <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
                   <span className="fs-2">{props.type} {props.policyID}</span>

@@ -296,12 +296,13 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.MemberData.removePolicy)]
-        [ResponseType(typeof( ResponseT<DiscountPolicyTree>))]
+        [ResponseType(typeof(SPolicy[]))]
         [HttpPost]
         public IHttpActionResult RemovePolicy([FromBody] DiscountPolicyRequest request)
         {
             tradingSystem.RemovePolicy(request.storeID,request.discountPolicy);
-            return Ok(new Response());
+            List<SPolicy> a = tradingSystem.GetAllPolicy(request.userID, request.storeID).Value;
+            return Ok(a.ToArray());
         }
         
         [Route(APIConstants.MemberData.getItems)]

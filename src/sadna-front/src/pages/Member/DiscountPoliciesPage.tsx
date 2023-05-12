@@ -342,7 +342,7 @@ return (
           {policysList.length===0? (<div>  No Items </div>): (policysList.map((cond) => (
             // <div key={item.name}>{item.name} </div>
             <Col  key={cond.policyID} className="mt-3">
-              <DiscountCondition { ...cond } handleRemove={GetDiscountPolicy}></DiscountCondition>
+              <DiscountCondition { ...cond } handleRemove={GetDiscountPolicy} storID={storeId} ></DiscountCondition>
             </Col>
             )))}
         </Row>
