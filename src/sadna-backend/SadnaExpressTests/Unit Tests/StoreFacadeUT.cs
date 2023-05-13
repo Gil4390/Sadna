@@ -61,9 +61,9 @@ namespace SadnaExpressTests.Unit_Tests
             storeFacade.AddItemToStore(store1, "Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", "garden", 4000.0, 1);
             Guid store2 = storeFacade.OpenNewStore("hi");
             storeFacade.AddItemToStore(store2, "Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", "electronics", 5000.0, 2);
-            Assert.AreEqual(2, storeFacade.GetItemsByName("Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver").Count);
-            Assert.AreEqual(1, storeFacade.GetItemsByName("Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", maxPrice:4000).Count);
-            Assert.AreEqual(1, storeFacade.GetItemsByName("Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", category:"garden").Count);
+            Assert.AreEqual(2, storeFacade.GetItemsByKeysWord("Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver").Count);
+            Assert.AreEqual(1, storeFacade.GetItemsByKeysWord("Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", maxPrice:4000).Count);
+            Assert.AreEqual(1, storeFacade.GetItemsByKeysWord("Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", category:"garden").Count);
         }
         
         [TestMethod]
@@ -73,7 +73,7 @@ namespace SadnaExpressTests.Unit_Tests
             storeFacade.AddItemToStore(store1, "Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", "electronics", 4000.0, 1);
             Guid store2 = storeFacade.OpenNewStore("hi");
             storeFacade.AddItemToStore(store2, "Apple iPhone 11 Unlocked, 64GB/128GB/256GB, All Colours", "electronics", 5000.0, 2);
-            Assert.AreEqual(1, storeFacade.GetItemsByName("Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver").Count);
+            Assert.AreEqual(1, storeFacade.GetItemsByKeysWord("Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver").Count);
         }
         
         [TestMethod]
@@ -84,8 +84,8 @@ namespace SadnaExpressTests.Unit_Tests
             Guid store2 = storeFacade.OpenNewStore("hi");
             storeFacade.AddItemToStore(store2, "Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", "electronics", 5000.0, 2);
             storeFacade.AddItemToStore(store2, "Apple iPhone 11 Unlocked, 64GB/128GB/256GB, All Colours", "electronics", 5000.0, 2);
-            Assert.AreEqual(3, storeFacade.GetItemsByCategory("electronics").Count);
-            Assert.AreEqual(2, storeFacade.GetItemsByCategory("electronics", minPrice:4500, maxPrice:5000).Count);
+            Assert.AreEqual(3, storeFacade.GetItemsByKeysWord("",category:"electronics").Count);
+            Assert.AreEqual(2, storeFacade.GetItemsByKeysWord("", minPrice:4500, maxPrice:5000, category:"electronics").Count);
         }
         
         [TestMethod]
@@ -96,7 +96,7 @@ namespace SadnaExpressTests.Unit_Tests
             Guid store2 = storeFacade.OpenNewStore("hi");
             storeFacade.AddItemToStore(store2, "Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", "electronics", 5000.0, 2);
             storeFacade.AddItemToStore(store2, "Apple iPhone 11 Unlocked, 64GB/128GB/256GB, All Colours", "electronics", 5000.0, 2);
-            Assert.AreEqual(2, storeFacade.GetItemsByCategory("electronics").Count);
+            Assert.AreEqual(2, storeFacade.GetItemsByKeysWord("", category:"electronics").Count);
         }
         
         [TestMethod]

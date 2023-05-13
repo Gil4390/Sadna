@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.ServiceLayer.Obj;
 
 namespace SadnaExpressTests.Integration_Tests
 {
@@ -51,9 +52,9 @@ namespace SadnaExpressTests.Integration_Tests
 
             //Act
             ResponseT<Guid> res = trading.AddItemToStore(userID, storeID1,"head phones", "electronicy", 175, 56);
-            ResponseT<List<Item>> res1 = trading.GetItemsByCategory(guestID, "electronicy");
-            ResponseT<List<Item>> res2 = trading.GetItemsByName(guestID, "head phones");
-            ResponseT<List<Item>> res3 = trading.GetItemsByKeysWord(guestID, "head");
+            ResponseT<List<SItem>> res1 = trading.GetItemsForClient(guestID, "",category:"electronicy");
+            ResponseT<List<SItem>> res2 = trading.GetItemsForClient(guestID, "head phones");
+            ResponseT<List<SItem>> res3 = trading.GetItemsForClient(guestID, "head");
 
             //Assert
             Assert.IsFalse(res.ErrorOccured);

@@ -22,10 +22,8 @@ namespace SadnaExpress.ServiceLayer
         Response Register(Guid userID, string email, string firstName, string lastName, string password); //1.3
         ResponseT<Guid> Login(Guid userID, string email, string password); //1.4
         ResponseT<List<Store>> GetAllStoreInfo(); //2.1
-        // 2.2
-        ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
-        ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1);
-        ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
+        ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
+            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);// 2.2
         Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount); //2.3
         //2.4
         Response RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID);
@@ -59,13 +57,11 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys);
         Response AddPolicy(Guid store, int discountPolicy);
         void RemovePolicy(Guid store, int discountPolicy);
-        Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
-        Response RemoveStoreOwner(Guid userID1, Guid storeID, string userEmail); //4.5 only for tests
+        Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
-        Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission); //only for tests
         Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
@@ -106,9 +102,6 @@ namespace SadnaExpress.ServiceLayer
         public void getNotificationsForOfflineMembers();
         
         ResponseT<List<SItem>> GetCartItems(Guid userID);
-        ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
-            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
-
         ResponseT<ConcurrentDictionary<Guid, Store>> GetStores();
 
         ResponseT<List<Member>> GetStoreOwners();
@@ -116,9 +109,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
         ResponseT<List<Item>> GetItemsInStore(Guid userID,Guid storeId);
         ResponseT<bool> IsAdmin(Guid userID);
-
         ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID);
-
         ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId);
         Response MarkNotificationAsRead(Guid userID, Guid notificationID);
         Response CheckPurchaseConditions(Guid userID);

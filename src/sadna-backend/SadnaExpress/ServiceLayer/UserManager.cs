@@ -126,20 +126,6 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-
-        public Response RemoveStoreOwner(Guid userID, Guid storeID, string userEmail)
-        {
-            try
-            {
-                userFacade.RemoveStoreOwner(userID, storeID, userEmail);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(AppointStoreOwner)+": "+ex.Message);
-                return new Response(ex.Message);
-            }
-        }
         public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {
             try
@@ -164,20 +150,6 @@ namespace SadnaExpress.ServiceLayer
             catch (Exception ex)
             {
                 Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(AddStoreManagerPermissions)+": "+ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-
-        public Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
-        {
-            try
-            {
-                userFacade.RemoveStoreManagerPermissions(userID, storeID, userEmail, permission);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(RemoveStoreManagerPermissions)+": "+ex.Message);
                 return new Response(ex.Message);
             }
         }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.ServiceLayer.Obj;
 using static SadnaExpressTests.Mocks;
 
 namespace SadnaExpressTests.Acceptance_Tests
@@ -480,9 +481,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void MemberSearchProductsByCategoryHome_HappyTest()
         {
-            Task<ResponseT<List<Item>>> task = Task.Run(() =>
+            Task<ResponseT<List<SItem>>> task = Task.Run(() =>
             {
-                return proxyBridge.GetItemsByCategory(memberId, "Home");
+                return proxyBridge.GetItemsForClient(memberId, "",category:"Home");
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
@@ -492,9 +493,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void MemberSearchProductsByCategoryClothes_HappyTest()
         {
-            Task<ResponseT<List<Item>>> task = Task.Run(() =>
+            Task<ResponseT<List<SItem>>> task = Task.Run(() =>
             {
-                return proxyBridge.GetItemsByCategory(memberId, "clothes");
+                return proxyBridge.GetItemsForClient(memberId, "", category:"clothes");
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
@@ -504,9 +505,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void MemberSearchProductsByCategoryClothesMixMaxPrice_HappyTest()
         {
-            Task<ResponseT<List<Item>>> task = Task.Run(() =>
+            Task<ResponseT<List<SItem>>> task = Task.Run(() =>
             {
-                return proxyBridge.GetItemsByCategory(memberId, "clothes", 90);
+                return proxyBridge.GetItemsForClient(memberId, "",90, category:"clothes");
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
@@ -516,9 +517,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void MemberSearchProductsByCategoryThatDoesntExist_BadTest()
         {
-            Task<ResponseT<List<Item>>> task = Task.Run(() =>
+            Task<ResponseT<List<SItem>>> task = Task.Run(() =>
             {
-                return proxyBridge.GetItemsByCategory(memberId, "shay");
+                return proxyBridge.GetItemsForClient(memberId, "shay");
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
@@ -528,42 +529,21 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void MemberSearchProductsByNameTowel_HappyTest()
         {
-            Task<ResponseT<List<Item>>> task = Task.Run(() => { return GetItemsByName("Towel"); });
+            Task<ResponseT<List<SItem>>> task = Task.Run(() => { return proxyBridge.GetItemsForClient(userid,"Towel"); });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
             Assert.IsTrue(task.Result.Value.Count == 1);
         }
-
-        private ResponseT<List<Item>> GetItemsByName(string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue,
-            int ratingItem = -1, string category = null, int ratingStore = -1)
-        {
-            return proxyBridge.GetItemsByName(memberId, itemName, minPrice, maxPrice, ratingItem, category,
-                ratingStore);
-        }
-
-        private ResponseT<List<Item>> GetItemsByCategory(string category, int minPrice = 0,
-            int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1)
-        {
-
-            return proxyBridge.GetItemsByCategory(memberId, category, minPrice, maxPrice, ratingItem, ratingStore);
-        }
-
-        private ResponseT<List<Item>> GetItemsByKeysWord(string keyWords, int minPrice = 0,
-            int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
-        {
-            return proxyBridge.GetItemsByKeysWord(memberId, keyWords, minPrice, maxPrice, ratingItem, category,
-                ratingStore);
-        }
-
+        
         [TestMethod]
         [TestCategory("Concurrency")]
         public void MultipleClientsSearchForItems1_HappyTest()
         {
-            Task<ResponseT<List<Item>>>[] clientTasks = new Task<ResponseT<List<Item>>>[]
+            Task<ResponseT<List<SItem>>>[] clientTasks = new Task<ResponseT<List<SItem>>>[]
             {
-                Task.Run(() => GetItemsByName("Towel")),
-                Task.Run(() => GetItemsByCategory("clothes")),
-                Task.Run(() => GetItemsByCategory("clothes", 90))
+                Task.Run(() => proxyBridge.GetItemsForClient(userid,"Towel")),
+                Task.Run(() => proxyBridge.GetItemsForClient(userid,"", category:"clothes")),
+                Task.Run(() => proxyBridge.GetItemsForClient(userid,"", 90, category:"clothes"))
             };
 
             // Wait for all clients to complete
@@ -583,12 +563,12 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void MultipleClientsSearchForItems2_HappyTest()
         {
-            Task<ResponseT<List<Item>>>[] clientTasks = new Task<ResponseT<List<Item>>>[]
+            Task<ResponseT<List<SItem>>>[] clientTasks = new Task<ResponseT<List<SItem>>>[]
             {
-                Task.Run(() => GetItemsByName("Towel")),
-                Task.Run(() => GetItemsByCategory("Home")),
-                Task.Run(() => GetItemsByCategory("clothes", 90)),
-                Task.Run(() => GetItemsByKeysWord("to"))
+                Task.Run(() => proxyBridge.GetItemsForClient(userid,"Towel")),
+                Task.Run(() => proxyBridge.GetItemsForClient(userid,"",category:"Home")),
+                Task.Run(() => proxyBridge.GetItemsForClient(userid,"", 90, category:"clothes")),
+                Task.Run(() => proxyBridge.GetItemsForClient(userid,"to"))
             };
 
             // Wait for all clients to complete
@@ -618,10 +598,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 return proxyBridge.CloseStore(storeOwnerid, storeid1);
             });
 
-            Task<ResponseT<List<Item>>>[] clientTasks = new Task<ResponseT<List<Item>>>[] {
-                Task.Run(() => proxyBridge.GetItemsByName(memberId,"Towel")),
-                Task.Run(() => proxyBridge.GetItemsByCategory(memberId2,"clothes")),
-                Task.Run(() => proxyBridge.GetItemsByKeysWord(memberId3,"rt"))
+            Task<ResponseT<List<SItem>>>[] clientTasks = new Task<ResponseT<List<SItem>>>[] {
+                Task.Run(() => proxyBridge.GetItemsForClient(memberId,"Towel")),
+                Task.Run(() => proxyBridge.GetItemsForClient(memberId2,"",category:"clothes")),
+                Task.Run(() => proxyBridge.GetItemsForClient(memberId3,"rt"))
              };
             
           

@@ -319,35 +319,7 @@ namespace SadnaExpress.ServiceLayer
             List<Store> stores = storeFacade.GetAllStoreInfo();
             return new ResponseT<List<Store>>(stores);
         }
-        
-        public ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
-        {
-            try
-            {
-                List<Item> items = storeFacade.GetItemsByName(itemName, minPrice, maxPrice, ratingItem, category, ratingStore);
-                return new ResponseT<List<Item>>(items);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetItemsByName)+": "+ex.Message);
-                return new ResponseT<List<Item>>(ex.Message);
-            }
-        }
 
-        public ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
-        {
-            try
-            {
-                List<Item> items = storeFacade.GetItemsByCategory(category, minPrice, maxPrice, ratingItem, ratingStore);
-                return new ResponseT<List<Item>>(items);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetItemsByCategory)+": "+ex.Message);
-                return new ResponseT<List<Item>>(ex.Message);
-            }
-        }
-        
         public ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
             try

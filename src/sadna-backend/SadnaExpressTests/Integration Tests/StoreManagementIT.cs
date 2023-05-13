@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpressTests.Integration_Tests
@@ -84,14 +85,12 @@ namespace SadnaExpressTests.Integration_Tests
         public void UserCloseStoreItemsNotAppearInSearchByCategory_BadTest()
         {
             //Arrange
-
-
             //Act
-            ResponseT<List<Item>> res1 = trading.GetItemsByKeysWord(userID, "ipad");
+            ResponseT<List<SItem>> res1 = trading.GetItemsForClient(userID, "ipad");
 
             Response res = trading.CloseStore(userID, storeID1);
 
-            ResponseT<List<Item>> res2= trading.GetItemsByKeysWord(userID, "ipad");
+            ResponseT<List<SItem>> res2= trading.GetItemsForClient(userID, "ipad");
 
             //Assert
             Assert.IsFalse(res.ErrorOccured);
