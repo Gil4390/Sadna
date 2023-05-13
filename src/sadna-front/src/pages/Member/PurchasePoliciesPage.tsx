@@ -55,6 +55,7 @@ function PurchasePoliciesPage(props) {
       setEntity('a')
     }
     else{
+      setEntity('')
       setEntityChoice(e)
     }
   }

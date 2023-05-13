@@ -14,9 +14,8 @@ const cartItemStyles = {
   
   export function DiscountCondition (props)
   {
-    const [isActive, setIsActive] = useState(true);
+    const [isActive, setIsActive] = useState(props.active);
 
-    const [policysList, setPolicyList] = useState<Policy[]>([]);
     const handleRemovePress = () => {
       if (props.purchase)
       {
@@ -50,7 +49,7 @@ const cartItemStyles = {
         if(policyResponse?.errorOccured)
           alert(policyResponse?.errorMessage) 
         else{
-          setIsActive(!isActive);
+          setIsActive(true);
         }
         setPolicyResponse(undefined);
     }, [policyResponse])
