@@ -245,12 +245,13 @@ return (
                 value={EntityChoice}
                 onChange={(e) => setEntityChoice(e.target.value)}
               >
+               <option>Type</option>
                 <option>Store</option>
                 <option>Category</option>
                 <option>Item</option>
               </Form.Control>
             </Form.Group>
-                    {EntityChoice != 'Store' && (
+                  {EntityChoice != 'Store' && (
                 <Form.Group>
                   {/* <Form.Label>{EntityChoice} Name:</Form.Label> */}
                   <Form.Control
