@@ -314,21 +314,17 @@ namespace SadnaExpress.ServiceLayer
 
         public ResponseT<SPolicy[]> GetAllConditions(Guid store)
         {
-            throw new NotImplementedException();
+            return _realBridge.GetAllConditions(store);
         }
 
         public ResponseT<Condition> AddCondition(Guid store, string entity, string entityName, string type, double value, DateTime dt = default,
             string entityRes = default, string entityResName = default, string typeRes = default, double valueRes = default,
             string op = default, int opCond = default)
         {
-            throw new NotImplementedException();
+            return _realBridge.AddCondition(store, entity, entityName, type, value, dt, entityRes, entityName, typeRes,
+                valueRes, op, opCond);
         }
 
-        public ResponseT<Condition> AddCondition(Guid store, string entity, string entityName, string type, double value, DateTime dt = default,
-            string entityRes = default, string entityResName = default, string typeRes = default, double valueRes = default)
-        {
-            throw new NotImplementedException();
-        }
 
         public void RemoveCondition(Guid storeID, int condID)
         {
@@ -337,12 +333,6 @@ namespace SadnaExpress.ServiceLayer
 
 
         public ResponseT<Condition> GetCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
-            M entityRes = default, string typeRes = default, double valueRes = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResponseT<Condition> AddCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
             M entityRes = default, string typeRes = default, double valueRes = default)
         {
             throw new NotImplementedException();
@@ -426,7 +416,7 @@ namespace SadnaExpress.ServiceLayer
 
         public Response CheckPurchaseConditions(Guid userID)
         {
-            throw new NotImplementedException();
+            return _realBridge.CheckPurchaseConditions(userID);
         }
 
         public ResponseT<List<SMember>> GetMembers(Guid userID)
