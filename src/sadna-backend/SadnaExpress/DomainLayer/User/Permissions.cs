@@ -144,9 +144,6 @@ namespace SadnaExpress.DomainLayer.User
                     if (!employees.Contains(child))
                         stack.Push(child);
             }
-
-            foreach (PromotedMember employee in employees)
-                Console.WriteLine($"{employee.Email}: \n + {employee.FirstName} {employee.LastName} \n");
             return employees;
         }
 

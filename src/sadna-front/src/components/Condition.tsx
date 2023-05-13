@@ -1,6 +1,6 @@
 
 import { Button, Card } from "react-bootstrap"
-import { PurcahseCondition , Item , Store} from '../../models/Shop.tsx';
+import { PurcahseCondition , Policy, Item , Store} from '../../models/Shop.tsx';
 import { handleRemovePurchaseCondition } from "../actions/MemberActions.tsx";
 import React, { useState,useEffect } from 'react';
 

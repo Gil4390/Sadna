@@ -646,8 +646,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                 return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
             });
             task.Wait();
-            Console.WriteLine(task.Result.ErrorMessage);
-            Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
+            Assert.IsFalse(task.Result.ErrorOccured); // no error occurred
             Assert.AreEqual(0,proxyBridge.GetDetailsOnCart(id).Value.Baskets.Count); // the shopping basket get empty
             Assert.AreEqual(39, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid1)); //the quantity updated
         }
@@ -732,15 +731,16 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Guid id1 = new Guid();
             Guid id2 = new Guid();
-            Guid id3 = proxyBridge.Enter().Value;
-            proxyBridge.Login(id3, "AsiAzar@gmail.com", "A#!a12345678");
             // Create guest 1 cart
-            id1=proxyBridge.Enter().Value; 
-            AddItemToCart(id1,storeid1,itemid22,1);
-            // create guest 2 cart
-            id2=proxyBridge.Enter().Value; 
-            AddItemToCart(id2,storeid1,itemid22,1);
-            proxyBridge.EditItemQuantity(storeOwnerid,storeid1,itemid22,-1);
+            id1  =proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id1, storeid1, itemid1, 2); //because policy
+            proxyBridge.AddItemToCart(id1,storeid1,itemid23,1);
+             
+            // Create guest 2 cart
+            id2 = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id2, storeid1, itemid1, 3); //because policy
+            proxyBridge.AddItemToCart(id2,storeid1,itemid23,1);
+            
             Task<ResponseT<List<ItemForOrder>>>[] clientTasks = new Task<ResponseT<List<ItemForOrder>>>[] {
                 Task.Run(() => {
                     return proxyBridge.PurchaseCart(id1,"5411556648", "Rabbi Akiva 5");
@@ -751,10 +751,11 @@ namespace SadnaExpressTests.Acceptance_Tests
             };
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
+
             // one of the guest doesn't have quantity
             Assert.IsTrue((clientTasks[0].Result.ErrorOccured || clientTasks[1].Result.ErrorOccured)
                           &&(!(clientTasks[0].Result.ErrorOccured && clientTasks[1].Result.ErrorOccured)));
-            Assert.AreEqual(0, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid22));
+            Assert.AreEqual(0, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid23));
         }
         [TestMethod]
         [TestCategory("Concurrency")]

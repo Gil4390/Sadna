@@ -163,7 +163,6 @@ function DiscountPoliciesPage(props) {
       if(policyResponse?.errorOccured)
         alert(policyResponse?.errorMessage) 
       else{
-        console.log("Na")
         GetDiscountPolicy();
       }
       setPolicyResponse(undefined);
@@ -173,21 +172,21 @@ function DiscountPoliciesPage(props) {
   const Create_new_Condition_Policy_1 = () => {
     handleCreateComplexPolicy(storeId ,op_1,[cond1_1,cond2_1,policy_1]).then(
         value => {
-          setPolicyList(value as Policy[]);
+          setPolicyResponse(value as ResponseT);
         })
         .catch(error => alert(error));
   };
   const Create_new_Condition_Policy_2 = () => {
     handleCreateComplexPolicy(storeId ,op_2,[cond2_2,policy_2]).then(
         value => {
-          setPolicyList(value as Policy[]);
+          setPolicyResponse(value as ResponseT);
         })
         .catch(error => alert(error));
   };
   const Create_new_Condition_Policy_3 = () => {
     handleCreateComplexPolicy(storeId ,op_3,[policy1_3,policy2_3]).then(
         value => {
-          setPolicyList(value as Policy[]);
+          setPolicyResponse(value as ResponseT);
         })
         .catch(error => alert(error));
   };
@@ -463,25 +462,6 @@ return (
               />
             </Form.Group>
             </Form>
-            <Form.Group>
-            <Form.Label>Operator</Form.Label>
-            <Form.Control as="select" onChange={handleOptionChange}>
-            <option value="option">Only condition</option>
-            <option value="AND">AND</option>
-            <option value="OR">OR</option>
-          </Form.Control>
-          </Form.Group>
-          {(selectedOption === 'AND'|| selectedOption === 'OR') && (<div>
-            <Form.Group>
-                      <Form.Label>Other condition</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter the condition to build with"
-                        value={otherCondInDiscount}
-                        onChange={(e) => setotherCondInDiscount(e.target.value)}
-                      />
-                    </Form.Group>
-          </div>)}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeModal}>

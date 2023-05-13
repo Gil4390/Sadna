@@ -312,7 +312,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.IsSystemInitialize();
         }
 
-        public ResponseT<PurchaseCondition[]> GetAllConditions(Guid store)
+        public ResponseT<SPolicy[]> GetAllConditions(Guid store)
         {
             throw new NotImplementedException();
         }
@@ -352,11 +352,6 @@ namespace SadnaExpress.ServiceLayer
             M entityRes = default, string typeRes = default, double valueRes = default)
         {
             throw new NotImplementedException();
-        }
-
-        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
-        {
-            return _realBridge.AddDiscountCondition(store, entity, type, value);
         }
 
         public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)

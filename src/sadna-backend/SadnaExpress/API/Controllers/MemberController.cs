@@ -220,11 +220,11 @@ namespace SadnaExpress.API.Controllers
 
 
         [Route(APIConstants.MemberData.getAllConditions)]
-        [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
+        [ResponseType(typeof(ResponseT<SPolicy[]>))]
         [HttpPost]
         public IHttpActionResult GetAllConditions([FromBody] StoreIDRequest request)
         {
-            ResponseT<PurchaseCondition[] > a = tradingSystem.GetAllConditions(request.storeID);
+            ResponseT<SPolicy[] > a = tradingSystem.GetAllConditions(request.storeID);
             return Ok(a);
         }
         
@@ -238,40 +238,30 @@ namespace SadnaExpress.API.Controllers
         // }
         
         [Route(APIConstants.MemberData.addCondition)]
-        [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
+        [ResponseType(typeof(ResponseT<SPolicy[]>))]
         [HttpPost]
         public IHttpActionResult AddCondition([FromBody] ConditionRequest request)
         {
             tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
                 request.type, request.value, DateTime.MaxValue, request.entityRes, request.entityNameRes, request.typeRes,
                 request.valueRes , request.op,request.opCond);
-            ResponseT<PurchaseCondition[]> a = tradingSystem.GetAllConditions(request.storeID);
+            ResponseT<SPolicy[]> a = tradingSystem.GetAllConditions(request.storeID);
             return Ok(a);
         }
         [Route(APIConstants.MemberData.addConditionForDiscount)]
-        [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
+        [ResponseType(typeof(ResponseT<SPolicy[]>))]
         [HttpPost]
         public IHttpActionResult AddConditionForDiscount([FromBody] ConditionRequest request)
         {
             tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
                 request.type, request.value, new DateTime(), request.entityRes, request.entityNameRes, request.typeRes,
                 request.valueRes , request.op,request.opCond);
-            ResponseT<PurchaseCondition[]> a = tradingSystem.GetAllConditions(request.storeID);
+            ResponseT<SPolicy[]> a = tradingSystem.GetAllConditions(request.storeID);
             return Ok(a);
         }
-        // [Route(APIConstants.MemberData.addDiscountCondition)]
-        // [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
-        // [HttpPost]
-        // public IHttpActionResult AddConditionForDiscount([FromBody] ConditionRequest request)
-        // {
-        //     tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
-        //         request.type, request.value, new DateTime(), request.entityRes, request.entityNameRes, request.typeRes,
-        //         request.valueRes , request.op,request.opCond);
-        //     ResponseT<PurchaseCondition[]> a = tradingSystem.GetAllConditions(request.storeID);
-        //     return Ok(a);
-        // }
+        
         [Route(APIConstants.MemberData.removeCondition)]
-        [ResponseType(typeof(ResponseT<PurchaseCondition[]>))]
+        [ResponseType(typeof(ResponseT<SPolicy[]>))]
         [HttpPost]
         public IHttpActionResult RemoveCondition([FromBody] ConditionIDRequest request)
         {
