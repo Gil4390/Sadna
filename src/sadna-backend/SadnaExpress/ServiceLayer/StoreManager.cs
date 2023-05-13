@@ -552,11 +552,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response RemovePolicy(Guid store, int discountPolicy)
+        public Response RemovePolicy(Guid store, int discountPolicy , string type)
         {
             try
             {
-                storeFacade.RemovePolicy(store, discountPolicy);
+                storeFacade.RemovePolicy(store, discountPolicy , type);
                 return new Response();
             }
             catch (Exception ex)

@@ -27,9 +27,9 @@ const cartItemStyles = {
       }
       else
       {
-        handleRemovePolicy(props.storID ,props.policyID).then(
+        handleRemovePolicy(props.storID ,props.policyID , props.type).then(
           value => {
-            setCondResponse(value as ResponseT)
+            setCondResponseDis(value as Response)
           })
           .catch(error => alert(error));
       }
@@ -65,6 +65,17 @@ const cartItemStyles = {
         }
         setCondResponse(undefined);
     }, [condResponse])
+
+    const [condResponseDis, setCondResponseDis]=useState<Response>();
+    useEffect(() => {
+      if(condResponseDis!=undefined)
+        if(condResponseDis?.errorOccured)
+          alert(condResponseDis?.errorMessage) 
+        else{
+          props.getPolicys()
+        }
+        setCondResponseDis(undefined);
+    }, [condResponseDis])
 
 
     // useEffect(() => {

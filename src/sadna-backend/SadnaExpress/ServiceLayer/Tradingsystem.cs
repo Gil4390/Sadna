@@ -564,9 +564,9 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.AddPolicy(store, discountPolicy);
         }
 
-        public Response RemovePolicy(Guid store, int discountPolicy)
+        public Response RemovePolicy(Guid store, int discountPolicy , string type)
         {
-            return storeManager.RemovePolicy(store, discountPolicy);
+            return storeManager.RemovePolicy(store, discountPolicy , type);
         }
         public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
         {

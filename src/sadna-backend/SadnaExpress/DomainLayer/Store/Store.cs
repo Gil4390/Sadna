@@ -259,32 +259,37 @@ namespace SadnaExpress.DomainLayer.Store
             return discountPolicyTree;
         }
 
-        public void RemovePolicy(int ID)
+        public void RemovePolicy(int ID , string type)
         {
-            Condition toRemoveCond = null;
-            foreach (Condition condition in condDiscountPolicies.Keys)
+            if (type == "Condition")
             {
-                if (condition.ID == ID)
-                    toRemoveCond = condition;
+                Condition toRemoveCond = null;
+                foreach (Condition condition in condDiscountPolicies.Keys)
+                {
+                    if (condition.ID == ID)
+                        toRemoveCond = condition;
+                }
+
+                if (toRemoveCond != null)
+                {
+                    condDiscountPolicies.Remove(toRemoveCond);
+                } 
             }
 
-            if (toRemoveCond != null)
+            else if (type == "Policy")
             {
-                condDiscountPolicies.Remove(toRemoveCond);
-                return;
-            }
-            
-            DiscountPolicy toRemove = null;
-            foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
-            {
-                if (discountPolicy.ID == ID)
-                    toRemove = discountPolicy;
-            }
+                DiscountPolicy toRemove = null;
+                foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
+                {
+                    if (discountPolicy.ID == ID)
+                        toRemove = discountPolicy;
+                }
 
-            if (toRemove != null)
-            {
-                discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
-                allDiscountPolicies.Remove(toRemove);
+                if (toRemove != null)
+                {
+                    discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
+                    allDiscountPolicies.Remove(toRemove);
+                } 
             }
             else
                 throw new Exception("Policy/Condition not found");

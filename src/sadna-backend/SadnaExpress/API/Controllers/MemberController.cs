@@ -298,9 +298,9 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.MemberData.removePolicy)]
         [ResponseType(typeof(Response))]
         [HttpPost]
-        public IHttpActionResult RemovePolicy([FromBody] DiscountPolicyRequest request)
+        public IHttpActionResult RemovePolicy([FromBody] DiscountPolicyRemoveRequest request)
         {
-            return Ok(tradingSystem.RemovePolicy(request.storeID,request.discountPolicy));
+            return Ok(tradingSystem.RemovePolicy(request.storeID,request.discountPolicy ,request.type));
         }
         
         [Route(APIConstants.MemberData.getItems)]

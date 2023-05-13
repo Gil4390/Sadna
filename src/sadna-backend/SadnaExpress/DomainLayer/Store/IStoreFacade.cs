@@ -42,7 +42,7 @@ namespace SadnaExpress.DomainLayer.Store
         DiscountPolicy CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
         DiscountPolicy CreateComplexPolicy(Guid store, string op, int[] policys);
         DiscountPolicyTree AddPolicy(Guid store, int discountPolicy); 
-        void RemovePolicy(Guid store, int discountPolicy);
+        void RemovePolicy(Guid store, int discountPolicy , string type);
         (Dictionary<DiscountPolicy, bool>, Dictionary<Condition, bool>) GetAllPolicy(Guid storeID);
         void LoadData(Store store1, Store store2);
         Guid GetItemStoreId(Guid Itemid);

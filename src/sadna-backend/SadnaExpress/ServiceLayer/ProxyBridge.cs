@@ -369,9 +369,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.AddPolicy(store, discountPolicy);
         }
 
-        public Response RemovePolicy(Guid store, int discountPolicy)
+        public Response RemovePolicy(Guid store, int discountPolicy, string type)
         {
-            return _realBridge.RemovePolicy(store, discountPolicy);
+            return _realBridge.RemovePolicy(store, discountPolicy , type);
         }
 
         public ResponseT<List<SItem>> GetCartItems(Guid userID)
