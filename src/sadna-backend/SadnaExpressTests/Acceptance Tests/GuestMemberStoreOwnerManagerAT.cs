@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.SModels;
+using Response = SadnaExpress.ServiceLayer.Response;
+
 
 namespace SadnaExpressTests.Acceptance_Tests
 {
@@ -31,12 +36,12 @@ namespace SadnaExpressTests.Acceptance_Tests
         public override void SetUp()
         {
             base.SetUp();
-
             store4Founder = proxyBridge.Enter().Value;
             proxyBridge.Register(store4Founder, "storeFounder4Mail@gmail.com", "radwan", "ganem", "A#!a12345678");
             store4Founder = proxyBridge.Login(store4Founder, "storeFounder4Mail@gmail.com", "A#!a12345678").Value;
             storeID4 = proxyBridge.OpenNewStore(store4Founder, "Store 4").Value;
 
+            
             store5Founder = proxyBridge.Enter().Value;
             proxyBridge.Register(store5Founder, "storeFounderMail@gmail.com", "tal", "galmor", "A#!a12345678");
             store5Founder = proxyBridge.Login(store5Founder, "storeFounderMail@gmail.com", "A#!a12345678").Value;
@@ -75,19 +80,112 @@ namespace SadnaExpressTests.Acceptance_Tests
         #region Notification
 
         #region
-
-        [TestMethod]
-        public void CloseStoreNotification()
+        
+        public List<Notification> unreadMessages(List<Notification> notifications)
         {
-            int pre = proxyBridge.GetNotifications(store5Owner).Value.Count;
+            List<Notification> notificationsUnRead = new List<Notification>();
+            foreach (Notification notification in notifications)
+            {
+                if(!notification.Read)
+                    notificationsUnRead.Add(notification);
+            }
+
+            return notificationsUnRead;
+        }
+        [TestMethod]
+        public void BuyProductGetNotificationOffline()
+        {
+            int pre = unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count;
+            //Arrange
+            proxyBridge.Logout(store5Owner);
+            //Act
+            Guid enterId = proxyBridge.Enter().Value;
+            proxyBridge.Login(enterId, "gil@gmail.com", "asASD876!@");
+            Item item = proxyBridge.GetItemsInStore(store5Owner, storeID5).Value[0];
+            proxyBridge.AddItemToCart(memberId, storeID5, item.ItemID, 1);
+            proxyBridge.PurchaseCart(memberId, "5044222", "Rabbi Akiva 5");
+            //Assert
+            Assert.AreEqual(unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count,pre + 1);
+        }
+        
+        
+        [TestMethod]
+        public void CloseStoreGetNotificationOffline()
+        {
+            int pre = unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count;
             //Arrange
             proxyBridge.Logout(store5Owner);
             //Act
             proxyBridge.CloseStore(store5Founder, storeID5);
             //Assert
-            Assert.AreEqual(proxyBridge.GetNotifications(store5Owner).Value.Count,pre + 1);
+            Assert.AreEqual(unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count,pre + 1);
+        }
+ 
+        [TestMethod]
+        public void CloseStoreNotificationNotGettingTheSameMessageTwice()
+        {
+            int pre = unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count;
+            //Arrange
+            proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
+            proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
+            //Act
+            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            //Assert
+            // USER OFFLINE - gets the message
+            Assert.AreEqual(pre + 1,unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
+            // USER ONLINE - marks the message as read
+            proxyBridge.GetMember(store5Owner ).Value.LoggedIn = true;
+            unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification)[0].Read = true;
+            Assert.AreEqual(0, unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
+            // USER OFFLINE 
+            proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
+            // USER ONLINE - enters the system again and the message is still marked as read
+            proxyBridge.GetMember(store5Owner ).Value.LoggedIn = true;
+            Assert.AreEqual(0, unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
         }
 
+      
+    
+        [TestMethod]
+        public void removeStoreOwnerGetNotificationOffline()
+        {
+            int pre = unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count;
+            //Arrange
+            proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
+            proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
+            //Act
+            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            //Assert
+            Assert.AreEqual(pre + 1,unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
+        }
+     
+        
+        [TestMethod]
+        public void removeStoreOwnerNotificationUnReadUpdated()
+        {
+            int pre = unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count;
+            //Arrange
+            proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
+            proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
+            //Act
+            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            //Assert
+            Assert.AreEqual(pre + 1,unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
+            proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
+            unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification)[0].Read =true;
+            Assert.AreEqual(0, unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
+            
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         // not in this version
         public void OpenStoreNotification()
         {   
@@ -99,19 +197,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Assert
             Assert.AreEqual(proxyBridge.GetMember(store5Founder).Value.AwaitingNotification.Count,2);
         }
-        [TestMethod]
-        public void removeStoreOwnerNotification()
-        {
-            int pre = proxyBridge.GetMember(store5Owner).Value.AwaitingNotification.Count;
-            //Arrange
-            proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
-            proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
-            //Act
-            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
-            //Assert
-            Assert.AreEqual(pre + 1,proxyBridge.GetMember(store5Owner).Value.AwaitingNotification.Count);
-        }
-    
         #endregion
 
         #endregion
