@@ -1,7 +1,7 @@
 
 import { Button, Card } from "react-bootstrap"
 import { Policy } from '../../models/Shop.tsx';
-import { handleRemovePolicy , handleAddPolicy } from "../actions/MemberActions.tsx";
+import { handleRemovePolicy , handleAddPolicy, handleRemovePurchaseCondition } from "../actions/MemberActions.tsx";
 import React, { useState,useEffect } from 'react';
 import { ResponseT,Response } from '../../models/Response.tsx';
 
@@ -18,11 +18,22 @@ const cartItemStyles = {
 
     const [policysList, setPolicyList] = useState<Policy[]>([]);
     const handleRemovePress = () => {
-      handleRemovePolicy(props.storID ,props.policyID).then(
-        value => {
-          setPolicyList(value as Policy[]);
-        })
-        .catch(error => alert(error));
+      if (props.purchase)
+      {
+        handleRemovePurchaseCondition(props.storID ,props.policyID).then(
+          value => {
+            setCondResponse(value as ResponseT)
+          })
+          .catch(error => alert(error));
+      }
+      else
+      {
+        handleRemovePolicy(props.storID ,props.policyID).then(
+          value => {
+            setCondResponse(value as ResponseT)
+          })
+          .catch(error => alert(error));
+      }
     };
 
     const handleActiveAddPolicy = () => {
@@ -39,17 +50,29 @@ const cartItemStyles = {
         if(policyResponse?.errorOccured)
           alert(policyResponse?.errorMessage) 
         else{
-          console.log("Na")
           setIsActive(!isActive);
         }
         setPolicyResponse(undefined);
     }, [policyResponse])
 
 
+    const [condResponse, setCondResponse]=useState<ResponseT>();
     useEffect(() => {
-      setIsActive(props.active);
-      props.handleRemove()
-    }, [policysList]);
+      if(condResponse!=undefined)
+        if(condResponse?.errorOccured)
+          alert(condResponse?.errorMessage) 
+        else{
+          props.getPolicys()
+        }
+        setCondResponse(undefined);
+    }, [condResponse])
+
+
+    // useEffect(() => {
+    //   props.getPolicys()
+    // }, [policysList]);
+
+
       return (
         <Card className="h-100 col-md-100">
           <Card.Body className="d-flex flex-column">

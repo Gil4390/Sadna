@@ -544,9 +544,9 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.AddCondition(store , entity,entityName,type,value,dt,entityRes , entityResName, typeRes , valueRes  ,op , opCond);
         }
 
-        public void RemoveCondition(Guid storeID ,int condID)
+        public Response RemoveCondition(Guid storeID ,int condID)
         {
-            storeManager.RemoveCondition(storeID,condID);
+            return storeManager.RemoveCondition(storeID,condID);
         }
 
         public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
@@ -564,9 +564,9 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.AddPolicy(store, discountPolicy);
         }
 
-        public void RemovePolicy(Guid store, int discountPolicy)
+        public Response RemovePolicy(Guid store, int discountPolicy)
         {
-            storeManager.RemovePolicy(store, discountPolicy);
+            return storeManager.RemovePolicy(store, discountPolicy);
         }
         public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
         {

@@ -45,12 +45,12 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
         ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);  
-        void RemoveCondition(Guid storeID ,int condID);
+        Response RemoveCondition(Guid storeID ,int condID);
         ResponseT<SPolicy[]> GetAllConditions(Guid store);
         ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
         ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, int[] policys);
         Response AddPolicy(Guid store, int discountPolicy);
-        void RemovePolicy(Guid store, int discountPolicy);
+        Response RemovePolicy(Guid store, int discountPolicy);
         ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID);
         void LoadData();
         Guid GetItemStoreId(Guid Itemid);

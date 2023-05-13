@@ -261,12 +261,11 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.MemberData.removeCondition)]
-        [ResponseType(typeof(ResponseT<SPolicy[]>))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
         public IHttpActionResult RemoveCondition([FromBody] ConditionIDRequest request)
         {
-            tradingSystem.RemoveCondition(request.storeID,request.condID);
-            return Ok(tradingSystem.GetAllConditions(request.storeID));
+            return Ok(tradingSystem.RemoveCondition(request.storeID,request.condID));
         }
         
         
@@ -297,13 +296,11 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.MemberData.removePolicy)]
-        [ResponseType(typeof(SPolicy[]))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
         public IHttpActionResult RemovePolicy([FromBody] DiscountPolicyRequest request)
         {
-            tradingSystem.RemovePolicy(request.storeID,request.discountPolicy);
-            List<SPolicy> a = tradingSystem.GetAllPolicy(request.userID, request.storeID).Value;
-            return Ok(a.ToArray());
+            return Ok(tradingSystem.RemovePolicy(request.storeID,request.discountPolicy));
         }
         
         [Route(APIConstants.MemberData.getItems)]

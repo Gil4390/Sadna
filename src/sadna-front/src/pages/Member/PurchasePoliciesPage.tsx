@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { handleAddPurchaseCondition, handleGetAllPurchaseConditions, handleRemovePurchaseCondition } from '../../actions/MemberActions.tsx';
 import { PurcahseCondition , Item , Store, Policy} from '../../models/Shop.tsx';
 import { DiscountCondition } from '../../components/DiscountCondition.tsx';
+import { ResponseT,Response } from '../../models/Response.tsx';
 
 
 function PurchasePoliciesPage(props) {
@@ -50,7 +51,6 @@ function PurchasePoliciesPage(props) {
 
 
   const GetPurcahsePolicys =()=>{
-
     handleGetAllPurchaseConditions(storeId).then(
       value => {
         console.log(value)
@@ -77,6 +77,17 @@ function PurchasePoliciesPage(props) {
       .catch(error => alert(error));
   };
 
+  const [condResponse, setCondResponse]=useState<ResponseT>();
+  useEffect(() => {
+    if(condResponse!=undefined)
+      if(condResponse?.errorOccured)
+        alert(condResponse?.errorMessage) 
+      else{
+        GetPurcahsePolicys();
+      }
+      setCondResponse(undefined);
+  }, [condResponse])
+
 return (
     <div className="container mt-5">
       <Exit id={props.id}/>
@@ -101,7 +112,7 @@ return (
           {policysList.length===0? (<div>  No Items </div>): (policysList.map((cond) => (
             // <div key={item.name}>{item.name} </div>
             <Col  key={cond.policyID} className="mt-3">
-              <DiscountCondition { ...cond } handleRemove={GetPurcahsePolicys} storID={storeId} ></DiscountCondition>
+              <DiscountCondition { ...cond } getPolicys={GetPurcahsePolicys} purchase={true} storID={storeId} ></DiscountCondition>
             </Col>
             )))}
         </Row>

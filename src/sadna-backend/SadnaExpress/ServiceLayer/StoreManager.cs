@@ -453,15 +453,17 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public void RemoveCondition(Guid storeID , int condID)
+        public Response RemoveCondition(Guid storeID , int condID)
         {
             try
             {
                 storeFacade.RemoveCondition(storeID ,condID);
+                return new Response();
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemoveCondition) + ": " + ex.Message);
+                return new Response(ex.Message);
             }
         }
 
@@ -550,15 +552,17 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public void RemovePolicy(Guid store, int discountPolicy)
+        public Response RemovePolicy(Guid store, int discountPolicy)
         {
             try
             {
                 storeFacade.RemovePolicy(store, discountPolicy);
+                return new Response();
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemovePolicy) + ": " + ex.Message);
+                return new Response(ex.Message);
             }
         }
 

@@ -330,7 +330,7 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public void RemoveCondition(Guid storeID, int condID)
+        public Response RemoveCondition(Guid storeID, int condID)
         {
             throw new NotImplementedException();
         }
@@ -369,9 +369,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.AddPolicy(store, discountPolicy);
         }
 
-        public void RemovePolicy(Guid store, int discountPolicy)
+        public Response RemovePolicy(Guid store, int discountPolicy)
         {
-            _realBridge.RemovePolicy(store, discountPolicy);
+            return _realBridge.RemovePolicy(store, discountPolicy);
         }
 
         public ResponseT<List<SItem>> GetCartItems(Guid userID)

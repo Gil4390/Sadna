@@ -602,7 +602,7 @@ export function handleRemovePurchaseCondition(storeID , condID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data.value)
+        return Promise.resolve(data)
     })
 }
 export function handleCreateSimplePolicy(storeID , level ,percent, startDate,endDate ) {
