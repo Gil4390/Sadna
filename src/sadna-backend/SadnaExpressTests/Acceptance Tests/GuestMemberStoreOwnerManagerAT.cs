@@ -107,22 +107,43 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Assert
             Assert.AreEqual(unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count,pre + 1);
         }
-        
+        [TestMethod]
+        public void BuyProductGetNotificationOnline()
+        {
+            int pre = unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count;
+            //Act
+            Guid enterId = proxyBridge.Enter().Value;
+            proxyBridge.Login(enterId, "gil@gmail.com", "asASD876!@");
+            Item item = proxyBridge.GetItemsInStore(store5Owner, storeID5).Value[0];
+            proxyBridge.AddItemToCart(memberId, storeID5, item.ItemID, 1);
+            proxyBridge.PurchaseCart(memberId, "5044222", "Rabbi Akiva 5");
+            //Assert
+            Assert.AreEqual(unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count,pre + 1);
+        }
         
         [TestMethod]
         public void CloseStoreGetNotificationOffline()
         {
             int pre = unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count;
-            //Arrange
             proxyBridge.Logout(store5Owner);
             //Act
             proxyBridge.CloseStore(store5Founder, storeID5);
             //Assert
             Assert.AreEqual(unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count,pre + 1);
         }
- 
         [TestMethod]
-        public void CloseStoreNotificationNotGettingTheSameMessageTwice()
+        public void CloseStoreGetNotificationOnline()
+        {
+            int pre = unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count;
+            //Arrange
+            proxyBridge.GetMember(store5Owner ).Value.LoggedIn = true;
+            //Act
+            proxyBridge.CloseStore(store5Founder, storeID5);
+            //Assert
+            Assert.AreEqual(unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count,pre + 1);
+        }
+        [TestMethod]
+        public void CloseStoreNotGettingTheSameMessageTwice()
         {
             int pre = unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count;
             //Arrange
@@ -144,7 +165,18 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.AreEqual(0, unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
         }
 
-      
+        
+        [TestMethod]
+        public void removeStoreOwnerGetNotificationOnline()
+        {
+            int pre = unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count;
+            //Arrange
+            proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
+            //Act
+            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            //Assert
+            Assert.AreEqual(pre + 1,unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
+        }
     
         [TestMethod]
         public void removeStoreOwnerGetNotificationOffline()
@@ -177,7 +209,20 @@ namespace SadnaExpressTests.Acceptance_Tests
             
         }
         
-        
+        [TestMethod]
+        public void appointStoreOwnerGettingNotificationWhenMemberBuyProduct()
+        {
+            int pre = unreadMessages(proxyBridge.GetMember(store5Manager).Value.AwaitingNotification).Count;
+            proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeManagerMail2@gmail.com");
+            Guid enterId = proxyBridge.Enter().Value;
+            proxyBridge.Login(enterId, "gil@gmail.com", "asASD876!@");
+            Item item = proxyBridge.GetItemsInStore(store5Owner, storeID5).Value[0];
+            proxyBridge.AddItemToCart(memberId, storeID5, item.ItemID, 1);
+            proxyBridge.PurchaseCart(memberId, "5044222", "Rabbi Akiva 5");
+            
+            Assert.AreEqual(pre + 1, unreadMessages(proxyBridge.GetMember(store5Manager).Value.AwaitingNotification).Count);
+            
+        }
         
         
         
