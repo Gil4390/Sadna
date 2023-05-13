@@ -238,15 +238,13 @@ namespace SadnaExpress.API.Controllers
         // }
         
         [Route(APIConstants.MemberData.addCondition)]
-        [ResponseType(typeof(ResponseT<SPolicy[]>))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
         public IHttpActionResult AddCondition([FromBody] ConditionRequest request)
         {
-            tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
+            return Ok(tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
                 request.type, request.value, DateTime.MaxValue, request.entityRes, request.entityNameRes, request.typeRes,
-                request.valueRes , request.op,request.opCond);
-            ResponseT<SPolicy[]> a = tradingSystem.GetAllConditions(request.storeID);
-            return Ok(a);
+                request.valueRes , request.op,request.opCond));
         }
         [Route(APIConstants.MemberData.addConditionForDiscount)]
         [ResponseType(typeof(ResponseT<SPolicy[]>))]

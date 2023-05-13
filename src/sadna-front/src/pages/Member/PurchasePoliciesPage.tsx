@@ -66,13 +66,14 @@ function PurchasePoliciesPage(props) {
   const handleSubmit = () => {
     handleAddPurchaseCondition(storeId ,EntityChoice, entity,WhichCond,condValue,selectedOption,otherCondition).then(
       value => {
-        setPolicyList(value as Policy[]);
+        // setPolicyList(value as Policy[]);
         setWhichCond("");
         setEntity("");
         setEntityChoice("");
         setCondValue("");
         setOtherCondition("");
         setShowModal(false);
+        setCondResponse(value as ResponseT)
       })
       .catch(error => alert(error));
   };
