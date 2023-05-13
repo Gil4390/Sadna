@@ -41,10 +41,10 @@ namespace SadnaExpressTests.Unit_Tests
                 new DateTime(2024, 4, 30));
             basket = new Dictionary<Item, int> {{store.GetItemById(item1), 1}, {store.GetItemById(item2), 1},
                 {store.GetItemById(item3), 1}};
-            cond1 = store.AddCondition(store, "min value", 50);
-            cond2 = store.AddCondition(store.GetItemById(item3), "min quantity", 2);
-            cond3 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
-            cond4 = store.AddCondition("Food", "min value", 100);
+            cond1 = store.AddCondition("Store","", "min value", 50);
+            cond2 = store.AddCondition("Item", "Ipad", "min quantity", 2);
+            cond3 = store.AddCondition("Item","Bisli", "min quantity", 1);
+            cond4 = store.AddCondition("Category","Food", "min value", 100);
 
         }
         #endregion

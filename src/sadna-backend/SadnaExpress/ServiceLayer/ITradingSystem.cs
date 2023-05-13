@@ -96,7 +96,7 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Notification>> GetNotifications(Guid userID);
         bool IsSystemInitialize();
 
-        ResponseT<PurchaseCondition[] > GetAllConditions(Guid store);
+        ResponseT<SPolicy[]> GetAllConditions(Guid store);
         
         ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);
@@ -104,9 +104,7 @@ namespace SadnaExpress.ServiceLayer
         
         // this functions needs to notify to offline members their notifications.
         public void getNotificationsForOfflineMembers();
-
-        ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value);
-
+        
         ResponseT<List<SItem>> GetCartItems(Guid userID);
         ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
             int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);

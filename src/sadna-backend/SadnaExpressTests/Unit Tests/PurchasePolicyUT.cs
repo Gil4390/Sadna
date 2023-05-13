@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
@@ -48,10 +49,11 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void AddNewSimpleConditionSuccess()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 2);
-            store.AddSimplePurchaseCondition(cond1);
-            Assert.IsNotNull(store.PurchasePolicy.cond1);
-            Assert.IsNull(store.PurchasePolicy.cond2);
+            //Act
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 2, DateTime.MaxValue);
+            //Assert
+            Assert.IsTrue(store.PurchasePolicyList.Contains(cond1));
+            Assert.IsFalse(store.PurchasePolicyList.Contains(cond2));
         }
         
         [TestMethod]
@@ -59,7 +61,7 @@ namespace SadnaExpressTests.Unit_Tests
         {
             try
             {
-                cond1 = store.AddCondition(item1, "min quantity", -1);
+                cond1 = store.AddCondition("Item","Bisli", "min quantity", -1,DateTime.MaxValue);
             }
             catch (Exception e)
             {
@@ -72,7 +74,7 @@ namespace SadnaExpressTests.Unit_Tests
         {
             try
             {
-                cond1 = store.AddCondition(item1, "min num", 2);
+                cond1 = store.AddCondition("Item","Bisli", "min num", 2, DateTime.MaxValue);
             }
             catch (Exception e)
             {
@@ -81,11 +83,11 @@ namespace SadnaExpressTests.Unit_Tests
         }
         
         [TestMethod]
-        public void AddNewSimpleConditionFail_EmptyItem()
+        public void AddNewSimpleConditionFail_ItemNotExist()
         {
             try
             {
-                cond1 = store.AddCondition(new Item("a","b",1), "min num", 2);
+                cond1 = store.AddCondition("Item","blabla", "min num", 2, DateTime.MaxValue);
             }
             catch (Exception e)
             {
@@ -107,48 +109,54 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void Simple1Condition_Success_quantity()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            store.AddSimplePurchaseCondition(cond1);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 0, DateTime.MaxValue);
+            //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
+            //Assert
             Assert.IsTrue(res);
         }
         [TestMethod]
         public void Simple1Condition_Fail_maxQuantity()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "max quantity", 0);
-            store.AddSimplePurchaseCondition(cond1);
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "max quantity", 0, DateTime.MaxValue);
+            //Assert
+            Assert.ThrowsException<Exception>(()=> store.EvaluatePurchasePolicy(store, basket));
         }
         [TestMethod]
         public void Simple1Condition_Success_value()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min value", 0);
-            store.AddSimplePurchaseCondition(cond1);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min value", 0, DateTime.MaxValue);
+            //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
+            //Assert
             Assert.IsTrue(res);
         }
         [TestMethod]
         public void Simple1Condition_Fail_value()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "max value", 0);
-            store.AddSimplePurchaseCondition(cond1);
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "max value", 0, DateTime.MaxValue);  
+            //Assert
+            Assert.ThrowsException<Exception>(()=>store.EvaluatePurchasePolicy(store, basket));
         }
         [TestMethod]
         public void Simple1Condition_Success_time()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "before time", 0 , DateTime.MaxValue);
-            store.AddSimplePurchaseCondition(cond1);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "before time", 0 , DateTime.MaxValue);
+            //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
+            //Assert
             Assert.IsTrue(res);
         }
-        [TestMethod]
         public void Simple1Condition_Fail_time()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "after time", 0 , DateTime.MaxValue);
-            store.AddSimplePurchaseCondition(cond1);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "after time", 0 , new DateTime(1998/10/30));
+            //Assert
             bool res = store.EvaluatePurchasePolicy(store, basket);
             Assert.IsFalse(res);
         }
@@ -158,63 +166,76 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void TwoConditions_Success_min_quantity_value()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min value", 0);
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 0, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bisli", "min value", 0, DateTime.MaxValue);
+    
+            //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
+            
+            //Assert
             Assert.IsTrue(res);
         }
         [TestMethod]
         public void TwoConditions_Success_min_quantity_max_value()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            cond2 = store.AddCondition(store.GetItemById(item1), "max value", 1000000);
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 0, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bisli", "max value", 1000000, DateTime.MaxValue);
+
+            //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
+            
+            //Assert
             Assert.IsTrue(res);
         }
         [TestMethod]
         public void TwoConditions_Success_max_quantity_max_value()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "max quantity", 100);
-            cond2 = store.AddCondition(store.GetItemById(item1), "max value", 1000000);
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "max quantity", 100, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bisli", "max value", 1000000, DateTime.MaxValue);
+
+            //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
+            
+            //Assert
             Assert.IsTrue(res);
         }
         [TestMethod]
         public void TwoConditions_Success_max_quantity_min_value()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "max quantity", 100);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min value", 0);
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "max quantity", 100, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bisli", "min value", 0, DateTime.MaxValue);
+
+            //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
+            
+            //Assert
             Assert.IsTrue(res);
         }
         
         [TestMethod]
         public void TwoConditions_fail_contradictory_quantity()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "max quantity", 0);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "max quantity", 0, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bisli", "min quantity", 0, DateTime.MaxValue);
+            
+            //Assert
+            Assert.ThrowsException<Exception>(()=>store.EvaluatePurchasePolicy(store, basket));
         }
+        
         [TestMethod]
         public void TwoConditions_fail_contradictory_value()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "max value", 0);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min value", 0);
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "max value", 0, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bisli", "min value", 0, DateTime.MaxValue);
+
+            //Assert
+            Assert.ThrowsException<Exception>(()=>store.EvaluatePurchasePolicy(store, basket));
         }
         #endregion
         
@@ -222,50 +243,51 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void Complex_Success()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
-            cond2 = store.AddCondition(store.GetItemById(item2), "min value", 2);
-            cond3 = store.AddCondition(store.GetItemById(item3), "min value", 3);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 1, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bamba", "min value", 2, DateTime.MaxValue);
+            cond3 = store.AddCondition("Item","Ipad", "min value", 3, DateTime.MaxValue);
 
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
-            store.AddSimplePurchaseCondition(cond3);
+            //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
+            
+            //Assert
             Assert.IsTrue(res);
         }
         [TestMethod]
         public void Complex_Fail()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
-            cond2 = store.AddCondition(store.GetItemById(item2), "min value", 0);
-            cond3 = store.AddCondition(store.GetItemById(item2), "max value", 0);
-
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
-            store.AddSimplePurchaseCondition(cond3);
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 1, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bamba", "min value", 0, DateTime.MaxValue);
+            cond3 = store.AddCondition("Item","Bamba", "max value", 0, DateTime.MaxValue);
+            //Act
+            Assert.ThrowsException<Exception>(()=>store.EvaluatePurchasePolicy(store, basket));
         }
+        
         [TestMethod]
         public void Complex_Or_Success()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
-            cond2 = store.AddCondition(store.GetItemById(item2), "min quantity", 0);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 1, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bamba", "min quantity", 0, DateTime.MaxValue);
 
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2 , null , new OrOperator());
+            //Act
+            store.AddSimplePurchaseCondition(cond1 , cond2 , "or");
+            
+            //Assert
             bool res = store.EvaluatePurchasePolicy(store, basket);
             Assert.IsTrue(res);
         }
         [TestMethod]
         public void Complex_Or_Fail()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "max quantity", 0);
-            cond2 = store.AddCondition(store.GetItemById(item2), "max quantity", 0);
-
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2 , null , new OrOperator());
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "max quantity", 0, DateTime.MaxValue );
+            cond2 = store.AddCondition("Item","Bamba", "max quantity", 0, DateTime.MaxValue);
+            
+            //Assert
+            Assert.ThrowsException<Exception>(()=>store.EvaluatePurchasePolicy(store, basket));
         }
         #endregion
         
@@ -273,29 +295,36 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void ConditionalSimple_Success()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            ConditioningCondition cc1 = store.AddConditioning(cond1, store.GetItemById(item1),"sum", 3);
-            store.AddSimplePurchaseCondition(cc1);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 0, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bamba", "max quantity", 2, DateTime.MaxValue);
+            Condition cc1 = store.AddSimplePurchaseCondition(cond1, cond2,"if");
+
+            //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
+            
+            //Assert
             Assert.IsTrue(res);
         }
         [TestMethod]
         public void ConditionalSimple_Fail_condition()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 100);
-            ConditioningCondition cc1 = store.AddConditioning(cond1, store.GetItemById(item1),"sum", 3);
-            store.AddSimplePurchaseCondition(cc1);
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 100,DateTime.MaxValue);
+            Condition cc1 = store.AddCondition("Item", "Bisli","max quantity", 1000,DateTime.MaxValue,"if", cond1.ID);
+            
+            //Assert
+            Assert.ThrowsException<Exception>(() => store.EvaluatePurchasePolicy(store, basket));
         }
         [TestMethod]
         public void ConditionalSimple_Fail_basket()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            ConditioningCondition cc1 = store.AddConditioning(cond1, store.GetItemById(item1),"sum", 0);
-            store.AddSimplePurchaseCondition(cc1);
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 30, DateTime.MaxValue);
+            Condition cc1 = store.AddCondition("Item","Bisli","min value", 0, DateTime.MaxValue,"if", cond1.ID);
+            
+            //Act
+            Assert.ThrowsException<Exception>(()=>store.EvaluatePurchasePolicy(store, basket));
         }
         #endregion
         
@@ -303,24 +332,26 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void ConditionalComplex_Success()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min value", 2);
-            cond3 = store.BuildCondition(cond1, cond2, new AndOperator());
-            ConditioningCondition cc1 = store.AddConditioning(cond1, store.GetItemById(item1),"sum", 3);
-            store.AddSimplePurchaseCondition(cc1);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "min quantity", 1, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item","Bisli", "min value", 2, DateTime.MaxValue);
+            cond3 = store.AddSimplePurchaseCondition(cond1, cond2, "and");
+            
+            //Act
+            Condition cc1 = store.AddCondition( "Item","Bamba","min quantity", 0, DateTime.MaxValue,"if", cond3.ID);
+            
+            //Assert
             bool res = store.EvaluatePurchasePolicy(store, basket);
             Assert.IsTrue(res);
         }
         [TestMethod]
         public void ConditionalComplex_Fail()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "max quantity", 1);
-            cond2 = store.AddCondition(store.GetItemById(item1), "max value", 2);
-            cond3 = store.BuildCondition(cond1, cond2, new AndOperator());
-            ConditioningCondition cc1 = store.AddConditioning(cond1, store.GetItemById(item1),"sum", 1);
-            store.AddSimplePurchaseCondition(cc1);
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            //Arrange
+            cond1 = store.AddCondition("Item","Bamba", "max quantity", 0, DateTime.MaxValue);
+            Condition cc1 = store.AddCondition("Item","Bisli","max value", 15, DateTime.MaxValue,"if", cond1.ID);
+            //Act
+            Assert.ThrowsException<Exception>(()=>store.EvaluatePurchasePolicy(store, basket));
         }
         #endregion
         
@@ -328,17 +359,10 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void GetConditionSuccess()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            store.AddSimplePurchaseCondition(cond1);
-            Assert.IsNotNull(store.GetCondition(cond1));
-        }
-        [TestMethod]
-        public void GetConditionFail()
-        {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
-            store.AddSimplePurchaseCondition(cond1);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min quantity", 2);
-            Assert.IsNull(store.GetCondition(cond2));
+            //Act
+            cond1 = store.AddCondition("Item", "Bisli", "min quantity", 0, DateTime.MaxValue);
+            //Assert
+            Assert.IsTrue(store.PurchasePolicyList.Contains(cond1));
         }
         #endregion
         
@@ -346,73 +370,76 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void RemoveConditionSuccess()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            store.AddSimplePurchaseCondition(cond1);
-            store.RemoveCondition(cond1);
-            Assert.IsNull(store.GetCondition(cond1));
-            Assert.IsNull(store.PurchasePolicy);
+            //Arrange
+            cond1 = store.AddCondition("Item", "Bisli", "min quantity", 0, DateTime.MaxValue);
+            //Act
+            store.RemoveCondition(cond1.ID);
+            //Assert
+            Assert.IsNull(store.GetPurchaseCond(cond1.ID));
+            Assert.IsFalse(store.PurchasePolicyList.Contains(cond1));
         }
+        
         [TestMethod]
-        public void RemoveConditionFail()
+        public void RemoveComplexConditionSuccess()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min quantity", 2);
-            store.AddSimplePurchaseCondition(cond1);
-            store.RemoveCondition(cond2);
-            Assert.IsNotNull(store.GetCondition(cond1));
-            Assert.IsNull(store.GetCondition(cond2));
-            Assert.IsNotNull(store.PurchasePolicy);
+            //Arrange
+            cond1 = store.AddCondition("Item", "Bisli", "min quantity", 0, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item", "Bisli", "min quantity", 2, DateTime.MaxValue, "and", cond1.ID);
+            //Act
+            store.RemoveCondition(cond2.ID);
+            //Assert
+            Assert.IsNull(store.GetPurchaseCond(cond2.ID));
         }
         
         [TestMethod]
         public void RemoveSimpleConditionSuccess()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min quantity", 2);
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
-            Assert.IsNotNull(store.GetCondition(cond1));
-            Assert.IsNotNull(store.GetCondition(cond2));
-            store.RemoveCondition(cond2);
-            Assert.IsNotNull(store.GetCondition(cond1));
-            Assert.IsNull(store.GetCondition(cond2));
+            //Arrange
+            cond1 = store.AddCondition("Item", "Bisli", "min quantity", 1,DateTime.MaxValue);
+            cond2 = store.AddCondition("Item", "Bisli", "min quantity", 2, DateTime.MaxValue);
+
+            Assert.IsTrue(store.PurchasePolicyList.Contains(cond1));
+            Assert.IsTrue(store.PurchasePolicyList.Contains(cond2));
+             //Act
+            store.RemoveCondition(cond2.ID);
+            
+            //Assert
+            Assert.IsTrue(store.PurchasePolicyList.Contains(cond1));
+            Assert.IsFalse(store.PurchasePolicyList.Contains(cond2));
         }
-        [TestMethod]
-        public void RemoveSimpleConditionFail()
-        {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min quantity", 2);
-            cond3 = store.AddCondition(store.GetItemById(item1), "min quantity", 3);
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
-            Assert.IsNotNull(store.GetCondition(cond1));
-            Assert.IsNotNull(store.GetCondition(cond2));
-            store.RemoveCondition(cond3);
-            Assert.IsNotNull(store.GetCondition(cond1));
-            Assert.IsNotNull(store.GetCondition(cond2));
-        }
+
         [TestMethod]
         public void RemoveSimpleConditionFailNull()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 1);
-            cond2 = store.AddCondition(store.GetItemById(item1), "min quantity", 2);
-            store.AddSimplePurchaseCondition(cond1);
-            store.AddSimplePurchaseCondition(cond2);
-            Assert.IsNotNull(store.GetCondition(cond1));
-            Assert.IsNotNull(store.GetCondition(cond2));
+            //Arrange
+            cond1 = store.AddCondition("Item", "Bisli", "min quantity", 1, DateTime.MaxValue);
+            cond2 = store.AddCondition("Item", "Bisli", "min quantity", 2, DateTime.MaxValue);
+            Assert.IsTrue(store.PurchasePolicyList.Contains(cond1));
+            Assert.IsTrue(store.PurchasePolicyList.Contains(cond2));
 
-            Assert.ThrowsException<Exception>(() => {store.RemoveCondition(cond4); });
-            Assert.IsNotNull(store.GetCondition(cond1));
-            Assert.IsNotNull(store.GetCondition(cond2));
+            //Assert
+            Assert.ThrowsException<Exception>(() => store.RemoveCondition(7));
+            Assert.IsTrue(store.PurchasePolicyList.Contains(cond1));
+            Assert.IsTrue(store.PurchasePolicyList.Contains(cond2));
         }
         [TestMethod]
         public void RemoveConditionalConditionSuccess()
         {
-            cond1 = store.AddCondition(store.GetItemById(item1), "min quantity", 0);
-            ConditioningCondition cc1 = store.AddConditioning(cond1, store.GetItemById(item1),"sum", 3);
-            store.AddSimplePurchaseCondition(cc1);
-            store.RemoveCondition(cc1);
-            Assert.IsNull(store.GetCondition(cc1));
+            //Arrange
+            cond1 = store.AddCondition("Item", "Bisli", "min quantity", 0, DateTime.MaxValue);
+            Condition cc1 = store.AddCondition("Item", "Bisli" ,"max quantity", 3,DateTime.MaxValue,"if", cond1.ID);
+            //Act
+            store.RemoveCondition(cc1.ID);
+            //Assert
+            Assert.IsFalse(store.PurchasePolicyList.Contains(cc1));
+        }
+        #endregion
+        
+        #region Clean Up
+        [TestCleanup]
+        public void CleanUp()
+        {
+            store.PurchasePolicyList = new List<Condition>();
         }
         #endregion
     }

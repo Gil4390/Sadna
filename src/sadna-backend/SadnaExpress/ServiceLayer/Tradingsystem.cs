@@ -533,17 +533,10 @@ namespace SadnaExpress.ServiceLayer
             return userManager.IsSystemInitialize();
         }
 
-        public ResponseT<PurchaseCondition[] > GetAllConditions(Guid store)
+        public ResponseT<SPolicy[]> GetAllConditions(Guid store)
         {
             return storeManager.GetAllConditions(store);
         }
-
-        public ResponseT<Condition> GetCondition<T, M>(Guid store , T entity, string type, double value,DateTime dt=default, M entityRes = default, string typeRes = default,
-            double valueRes = default)
-        {
-            return storeManager.GetCondition(store ,entity,type,value, dt,entityRes , typeRes , valueRes);
-        }
-        
 
         public ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
@@ -554,11 +547,6 @@ namespace SadnaExpress.ServiceLayer
         public void RemoveCondition(Guid storeID ,int condID)
         {
             storeManager.RemoveCondition(storeID,condID);
-        }
-
-        public ResponseT<Condition> AddDiscountCondition<T>(Guid store, T entity, string type, double value)
-        {
-            return storeManager.AddDiscountCondition(store, entity, type, value);
         }
 
         public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)

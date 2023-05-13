@@ -139,7 +139,7 @@ namespace SadnaExpressTests.Integration_Tests
         public void PolicyDiscountOfItemsInCart()
         {
             // Arrange
-            DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, trading.GetStore(storeID1).Value.GetItemById(itemID1), 10,
+            DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, "Itemipad 32", 10,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
             trading.AddPolicy(storeID1, policy1.ID);
             // Act
@@ -154,9 +154,9 @@ namespace SadnaExpressTests.Integration_Tests
         public void PolicyAddDiscountOfItemsInCart()
         {
             // Arrange
-            DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, trading.GetStore(storeID1).Value.GetItemById(itemID1), 10,
+            DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, "Itemipad 32", 10,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
-            DiscountPolicy policy2 =trading.CreateSimplePolicy(storeID1, trading.GetStore(storeID1).Value, 20,
+            DiscountPolicy policy2 =trading.CreateSimplePolicy(storeID1, "Store", 20,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
             DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1.ID, policy2.ID).Value;
             trading.AddPolicy(storeID1, addPolicy.ID);
@@ -169,9 +169,9 @@ namespace SadnaExpressTests.Integration_Tests
         public void PolicyAddDiscountOfIllegalDate()
         {
             // Arrange
-            DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, trading.GetStore(storeID1).Value.GetItemById(itemID1), 10,
+            DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, "Itemipad 32", 10,
                 new DateTime(2022, 05, 22), new DateTime(2022, 05, 22)).Value;
-            DiscountPolicy policy2 =trading.CreateSimplePolicy(storeID1, trading.GetStore(storeID1).Value, 20,
+            DiscountPolicy policy2 =trading.CreateSimplePolicy(storeID1, "Store", 20,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
             DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1.ID, policy2.ID).Value;
             trading.AddPolicy(storeID1, addPolicy.ID);
