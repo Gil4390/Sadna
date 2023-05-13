@@ -1,4 +1,5 @@
-﻿using System;
+﻿﻿using System;
+using System.Collections.Generic;
 using SadnaExpress.DomainLayer;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -43,6 +44,7 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(pre + 1 , notificationSystem.StoreOwners[storeID].Count);
         }
         
+        
         [TestMethod]
         public void RemoveObserverSuccess()
         {
@@ -52,6 +54,8 @@ namespace SadnaExpressTests.Unit_Tests
             notificationSystem.RemoveObserver(storeID,member1);
             Assert.AreEqual(pre - 1 , notificationSystem.StoreOwners[storeID].Count);
         }
+        
+        
         [TestMethod]
         public void NotifyWhenTheMemberIsNotLoginSuccess()
         {
@@ -60,15 +64,86 @@ namespace SadnaExpressTests.Unit_Tests
             notificationSystem.NotifyObservers(storeID,"memeber2 did something", member2.UserId);
             Assert.AreEqual(pre + 1 , member1.AwaitingNotification.Count);
         }
+        
+        
         [TestMethod]
         public void NotifyWhenTheMemberIsLoginSuccess()
         {
+            int pre = member1.AwaitingNotification.Count;
             notificationSystem.RegisterObserver(storeID,member1);
             member1.LoggedIn = true;
-            notificationSystem.NotifyObservers(storeID,"memeber2 did something", member1.UserId);
-            Assert.AreEqual(0 , member1.AwaitingNotification.Count);
+            notificationSystem.NotifyObservers(storeID,"memeber1 did something", member2.UserId);
+            Assert.AreEqual(pre + 1 , member1.AwaitingNotification.Count);
         }
         
+        
+        [TestMethod]
+        public void NotificationWasNotRead()
+        {
+            notificationSystem.RegisterObserver(storeID,member1);
+            member1.LoggedIn = true;
+            notificationSystem.NotifyObservers(storeID,"memeber1 did something", member2.UserId);
+            Assert.AreEqual(1 , unreadMessages(member1.AwaitingNotification).Count);
+        }
+        
+        
+        [TestMethod]
+        public void NotificationMarkedAsRead()
+        {
+            notificationSystem.RegisterObserver(storeID,member1);
+            member1.LoggedIn = true;
+            notificationSystem.NotifyObservers(storeID,"memeber1 did something", member2.UserId);
+            member1.AwaitingNotification[0].Read = true;
+            Assert.AreEqual(0 , unreadMessages(member1.AwaitingNotification).Count);
+        }
+        
+        
+        [TestMethod]
+        public void NotificationToAllMembers()
+        {
+            notificationSystem.RegisterObserver(storeID,member1);
+            notificationSystem.RegisterObserver(storeID,member2);
+
+            member1.LoggedIn = true;
+            notificationSystem.NotifyObservers(storeID,"memeber1 did something", member2.UserId);
+            notificationSystem.NotifyObservers(storeID,"memeber1 did something", member2.UserId);
+
+            Assert.AreEqual(2 , unreadMessages(member1.AwaitingNotification).Count + unreadMessages(member2.AwaitingNotification).Count);
+        }
+        
+        [TestMethod]
+        public void OnlyOneMemberMarkAsRead()
+        {
+            notificationSystem.RegisterObserver(storeID,member1);
+            notificationSystem.RegisterObserver(storeID,member2);
+            member1.LoggedIn = true;
+            notificationSystem.NotifyObservers(storeID,"memeber1 did something", member2.UserId);
+            notificationSystem.NotifyObservers(storeID,"memeber1 did something", member2.UserId);
+            unreadMessages(member1.AwaitingNotification)[0].Read = true;
+            Assert.AreEqual(1 , unreadMessages(member1.AwaitingNotification).Count + unreadMessages(member2.AwaitingNotification).Count);
+        }
+        
+        [TestMethod]
+        public void RegisterTwiceTheSameMember()
+        {
+            int pre = notificationSystem.StoreOwners.Count;
+            notificationSystem.RegisterObserver(storeID,member1);
+            notificationSystem.RegisterObserver(storeID,member1);
+
+            Assert.AreEqual( notificationSystem.StoreOwners.Count , pre + 1)  ;
+        }
+  
+        public List<Notification> unreadMessages(List<Notification> notifications)
+        {
+            List<Notification> notificationsUnRead = new List<Notification>();
+            foreach (Notification notification in notifications)
+            {
+                if(!notification.Read)
+                    notificationsUnRead.Add(notification);
+            }
+
+            return notificationsUnRead;
+        }
         #endregion 
     }
     
