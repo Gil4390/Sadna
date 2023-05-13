@@ -48,7 +48,16 @@ function PurchasePoliciesPage(props) {
   const closeModal = () => {
     setShowModal(false);
   };
-
+  const handleStoreCond =(e ) =>{
+    if (e === 'Store' )
+    {
+      setEntityChoice(e)
+      setEntity('a')
+    }
+    else{
+      setEntityChoice(e)
+    }
+  }
 
   const GetPurcahsePolicys =()=>{
     handleGetAllPurchaseConditions(storeId).then(
@@ -67,11 +76,11 @@ function PurchasePoliciesPage(props) {
     handleAddPurchaseCondition(storeId ,EntityChoice, entity,WhichCond,condValue,selectedOption,otherCondition).then(
       value => {
         // setPolicyList(value as Policy[]);
-        setWhichCond("");
-        setEntity("");
-        setEntityChoice("");
-        setCondValue("");
-        setOtherCondition("");
+        setWhichCond('');
+        setEntity('a');
+        setEntityChoice('');
+        setCondValue('');
+        setOtherCondition('');
         setShowModal(false);
         setCondResponse(value as ResponseT)
       })
@@ -132,7 +141,7 @@ return (
               <Form.Control
                 as="select"
                 value={EntityChoice}
-                onChange={(e) => setEntityChoice(e.target.value)}
+                onChange={(e) => handleStoreCond(e.target.value)}
               >
                 <option>Type</option>
                 <option>Store</option>
@@ -148,6 +157,7 @@ return (
                 placeholder="Enter entity's name"
                 value={entity}
                 onChange={(e) => setEntity(e.target.value)}
+
               />
             </Form.Group>
             )}

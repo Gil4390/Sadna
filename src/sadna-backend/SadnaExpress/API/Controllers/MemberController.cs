@@ -242,9 +242,11 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult AddCondition([FromBody] ConditionRequest request)
         {
-            return Ok(tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
-                request.type, request.value, DateTime.MaxValue, request.entityRes, request.entityNameRes, request.typeRes,
-                request.valueRes , request.op,request.opCond));
+            Response a = tradingSystem.AddCondition(request.storeID, request.entity, request.entityName,
+                request.type, request.value, DateTime.MaxValue, request.entityRes, request.entityNameRes,
+                request.typeRes,
+                request.valueRes, request.op, request.opCond);
+            return Ok(a);
         }
         [Route(APIConstants.MemberData.addConditionForDiscount)]
         [ResponseType(typeof(ResponseT<SPolicy[]>))]

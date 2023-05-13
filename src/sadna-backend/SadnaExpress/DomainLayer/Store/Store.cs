@@ -309,7 +309,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         #region both policies
 
-        public Condition AddCondition(string entityStr, string entityName, string type, double val, DateTime dt=default, string op=default , int opCond=default)
+        public Condition AddCondition(string entityStr, string entityName, string type, double val, DateTime dt=default, string op=default , int opCond=-1)
         {
             switch (entityStr)
             {
@@ -364,7 +364,10 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 if (PurchasePolicyList.Contains(c))
                     throw new Exception("the condition already exist");
-                 c = AddSimplePurchaseCondition(c, GetPurchaseCond(opCond), op);
+                if (!string.IsNullOrEmpty(op))
+                    c = AddSimplePurchaseCondition(c, GetPurchaseCond(opCond), op);
+                else
+                    c = AddSimplePurchaseCondition(c, null, op);
             }
             else
                 if (!condDiscountPolicies.ContainsKey(c))

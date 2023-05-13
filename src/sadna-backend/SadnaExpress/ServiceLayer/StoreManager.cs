@@ -438,13 +438,13 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        public Response AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             try
             {
-                Condition c = storeFacade.AddCondition(store, entity, entityName, type, value, dt, op ,opCond);
-                return new ResponseT<Condition>(c);
+                storeFacade.AddCondition(store, entity, entityName, type, value, dt, op ,opCond);
+                return new Response();
             }
             catch (Exception ex)
             {

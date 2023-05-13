@@ -317,7 +317,7 @@ namespace SadnaExpress.ServiceLayer
             throw new NotImplementedException();
         }
 
-        public ResponseT<Condition> AddCondition(Guid store, string entity, string entityName, string type, double value, DateTime dt = default,
+        public Response AddCondition(Guid store, string entity, string entityName, string type, double value, DateTime dt = default,
             string entityRes = default, string entityResName = default, string typeRes = default, double valueRes = default,
             string op = default, int opCond = default)
         {

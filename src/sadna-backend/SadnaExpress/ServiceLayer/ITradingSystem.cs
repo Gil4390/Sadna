@@ -98,7 +98,7 @@ namespace SadnaExpress.ServiceLayer
 
         ResponseT<SPolicy[]> GetAllConditions(Guid store);
         
-        ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        Response AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);
         Response RemoveCondition(Guid storeID ,int condID);
         
