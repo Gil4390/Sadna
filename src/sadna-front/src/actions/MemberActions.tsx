@@ -581,7 +581,7 @@ export function handleAddDiscountCondition(storeID , entity,entityName,type,valu
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data.value)
+        return Promise.resolve(data)
     })
 }
 

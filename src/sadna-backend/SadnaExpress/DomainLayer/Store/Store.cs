@@ -319,7 +319,12 @@ namespace SadnaExpress.DomainLayer.Store
                 case "Store":
                     return AddConditionHelper(this, type, val, dt, op, opCond);
                 case "Category":
-                    return AddConditionHelper(entityStr, type, val, dt, op, opCond);
+                    foreach (Item i in itemsInventory.items_quantity.Keys)
+                    {
+                        if (i.Category == entityName)
+                            return AddConditionHelper(entityStr, type, val, dt, op, opCond);
+                    }
+                    throw new Exception("Category doesn't exists in store");
                 default:
                     throw new Exception("the entity not exist");
             }
@@ -368,6 +373,14 @@ namespace SadnaExpress.DomainLayer.Store
                     c = AddSimplePurchaseCondition(c, GetPurchaseCond(opCond), op);
                 else
                     c = AddSimplePurchaseCondition(c, null, op);
+                // else
+                // {
+                //     Condition cond2 = GetPurchaseCond(opCond);
+                //     if (cond2 == null)
+                //         throw new Exception($"condition {opCond} not exist");
+                //     c = AddSimplePurchaseCondition(c,cond2, op);
+                // }
+
             }
             else
                 if (!condDiscountPolicies.ContainsKey(c))
