@@ -75,16 +75,6 @@ namespace SadnaExpress.DomainLayer.Store
         {
             return itemsInventory.GetItemByQuantity(itemID);
         }
-
-        public Item GetItemsByName(string itemName, int minPrice, int maxPrice, string category, int ratingItem)
-        {
-            return itemsInventory.GetItemByName(itemName, minPrice, maxPrice, category, ratingItem);
-        }
-
-        public List<Item> GetItemsByCategory(string category, int minPrice, int maxPrice, int ratingItem)
-        {
-            return itemsInventory.GetItemsByCategory(category, minPrice, maxPrice, ratingItem);
-        }
         public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category)
         {
             return itemsInventory.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category);

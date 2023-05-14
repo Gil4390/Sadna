@@ -239,7 +239,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Act
             Task<Response> task1 = Task.Run(() => 
             {
-                return proxyBridge.RemoveStoreOwner(storeOwnerid, storeid1,"gil@gmail.com");
+                return proxyBridge.RemovePermission(storeOwnerid, storeid1,"gil@gmail.com", "owner permissions");
             });
             Task<Response> task2 = Task.Run(() =>
             {

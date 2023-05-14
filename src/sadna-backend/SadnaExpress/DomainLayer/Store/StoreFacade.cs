@@ -237,45 +237,7 @@ namespace SadnaExpress.DomainLayer.Store
             Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItemQuantity)+" edited quantity from store "+ storeID + "- "+storeID + "- "+quantity);
 
         }
-        public List<Item> GetItemsByName(string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
-        {
-            IsTsInitialized();
-            List<Item> allItems = new List<Item>(); 
-            foreach (Store store in stores.Values)
-            {
-                lock (store)
-                {
-                    if (!store.Active)
-                        continue;
-                    if (ratingStore != -1 && store.StoreRating != ratingStore)
-                        continue;
-                    Item item = store.GetItemsByName(itemName, minPrice, maxPrice, category, ratingItem);
-                    if (item != null)
-                        allItems.Add(item);
-                }
-            }
-            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByName));
 
-            return allItems;
-        }
-        public List<Item> GetItemsByCategory(string category, int minPrice, int maxPrice, int ratingItem, int ratingStore)
-        {
-            IsTsInitialized();
-            List<Item> allItems = new List<Item>(); 
-            foreach (Store store in stores.Values)
-            {
-                lock (store)
-                {
-                    if (!store.Active)
-                        continue;
-                    if (ratingStore != -1 && store.StoreRating != ratingStore)
-                        continue;
-                    allItems.AddRange(store.GetItemsByCategory(category, minPrice, maxPrice, ratingItem));
-                }
-            }
-            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByCategory));
-            return allItems;
-        }
         public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
             IsTsInitialized();

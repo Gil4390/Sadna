@@ -24,10 +24,8 @@ namespace SadnaExpress.DomainLayer.User
         void EditItem(Guid userID,Guid storeID);
         void RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);
         void AppointStoreOwner(Guid userID,Guid storeID, string email);
-        void RemoveStoreOwner(Guid userID,Guid storeID, string email);
         void AppointStoreManager(Guid userID, Guid storeID, string email);
         void AddStoreManagerPermissions(Guid userID,Guid storeID, string email, string Permission);
-        void RemoveStoreManagerPermissions(Guid userID,Guid storeID, string email, string Permission);
         void CloseStore(Guid userID,Guid storeID);
         List<PromotedMember> GetEmployeeInfoInStore(Guid userID, Guid storeID);
         void UpdateFirst(Guid userID, string newFirst);

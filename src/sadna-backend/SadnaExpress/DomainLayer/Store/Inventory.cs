@@ -45,20 +45,7 @@ namespace SadnaExpress.DomainLayer.Store
                     return item;
             throw new Exception($"the item name {itemName} not exist!");
         }
-        public List<Item> GetItemsByCategory(string category, int minPrice, int maxPrice, int ratingItem)
-        {
-            List<Item> items = new List<Item>();
-            foreach (Item item in items_quantity.Keys)
-            {
-                if (item.Category.ToLower().Equals(category.ToLower()) && item.Price >= minPrice && item.Price <= maxPrice)
-                {
-                    if (ratingItem != -1 && item.Rating != ratingItem)
-                        continue;
-                    items.Add(item);
-                }
-            }
-            return items;
-        }
+      
         public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category)
         {
             List<Item> items = new List<Item>();

@@ -36,6 +36,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected ConcurrentDictionary<Guid, Store> stores;
         protected IPasswordHash passwordHash;
         protected PromotedMember storeOwner;
+        protected DiscountPolicy policy3;
         [TestInitialize]
         public virtual void SetUp()
         {
@@ -89,7 +90,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             macs.TryAdd(memberId4, newMac);
             Member member4 = new Member(memberId4, "bar@gmail.com", "Bar", "Bar", passwordHash.Hash("asASD159!@"+newMac));
 
-            
+
             newMac = passwordHash.Mac();
             macs.TryAdd(systemManagerid, newMac);
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", passwordHash.Hash("AS87654askj"+newMac));
@@ -119,7 +120,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Condition cond3 = store1.AddCondition("Item","Tshirt", "min quantity", 1);
             DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
 
-            DiscountPolicy policy3 = store1.CreateSimplePolicy("Store", 10, DateTime.Now, new DateTime(2024, 5, 20));
+            policy3 = store1.CreateSimplePolicy("Store", 10, DateTime.Now, new DateTime(2024, 5, 20));
 
             store1.AddPolicy(policy2.ID);
             store1.AddPolicy(policy3.ID);

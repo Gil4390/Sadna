@@ -26,7 +26,21 @@ function MessagesPage(props) {
         .catch(error => alert(error));
       }
     
-    
+    function formatDate(dateString: string): string {
+      const date = new Date(dateString);
+      const options: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        timeZone: "UTC",
+      };
+      return date.toLocaleString(undefined, options);
+    }
+      
+      
 
 
   useEffect(() => {
@@ -42,7 +56,7 @@ function MessagesPage(props) {
           <ListGroup.Item key={index} variant={message.read ? "light" : "warning"}>
             <div className="d-flex justify-content-between">
               <div>{message.message}</div>
-              <div>{message.time}</div>
+              <div>{formatDate(message.time)}</div>
             </div>
             {!message.read && (
               <Button variant="primary" size="sm" onClick={() => MarkNotificationAsRead(message)}>
