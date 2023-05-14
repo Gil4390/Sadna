@@ -371,10 +371,10 @@ namespace SadnaExpress.DomainLayer.Store
             return GetStore(store).AddPolicy(discountPolicy);
         }
         
-        public void RemovePolicy(Guid store, int discountPolicy)
+        public void RemovePolicy(Guid store, int discountPolicy , string type)
         {
             IsStoreExist(store);
-            GetStore(store).RemovePolicy(discountPolicy);
+            GetStore(store).RemovePolicy(discountPolicy , type);
         }
 
         public void EditItem(Guid storeID,Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)

@@ -148,6 +148,10 @@ namespace SadnaExpress.API.ClientRequests
         public Guid storeID{ get; set; }
         public int discountPolicy{ get; set; }
     }
+    public class DiscountPolicyRemoveRequest : DiscountPolicyRequest
+    {
+        public string type{ get; set; }
+    }
     public class NotificationRequest : ClientRequest
     { public Guid notificationID { get; set;} }
     

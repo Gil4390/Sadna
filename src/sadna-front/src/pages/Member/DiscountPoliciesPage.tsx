@@ -130,7 +130,7 @@ function DiscountPoliciesPage(props) {
 
  useEffect(() => {
     GetDiscountPolicy();
- }, [])
+ }, [ ])
 
  const [startDate, setSelectedDate] = useState('');
  const [endDate, setSelectedDate2] = useState('');
@@ -146,6 +146,7 @@ function DiscountPoliciesPage(props) {
   const [policyResponse, setPolicyResponse]=useState<ResponseT>();
 
   const Create_new_Simple_Discount_Policy = () => {
+    setShowTable(!showTable);
     handleCreateSimplePolicy(storeId ,EntityChoice+entity,condValue,startDate,endDate).then(
         value => {
           setSelectedDate('')
@@ -170,6 +171,7 @@ function DiscountPoliciesPage(props) {
 
 
   const Create_new_Condition_Policy_1 = () => {
+    setShowTable2(!showTable);
     handleCreateComplexPolicy(storeId ,op_1,[cond1_1,cond2_1,policy_1]).then(
         value => {
           setPolicyResponse(value as ResponseT);
@@ -177,6 +179,7 @@ function DiscountPoliciesPage(props) {
         .catch(error => alert(error));
   };
   const Create_new_Condition_Policy_2 = () => {
+    setShowTable2(!showTable);
     handleCreateComplexPolicy(storeId ,op_2,[cond2_2,policy_2]).then(
         value => {
           setPolicyResponse(value as ResponseT);
@@ -184,6 +187,7 @@ function DiscountPoliciesPage(props) {
         .catch(error => alert(error));
   };
   const Create_new_Condition_Policy_3 = () => {
+    setShowTable2(!showTable);
     handleCreateComplexPolicy(storeId ,op_3,[policy1_3,policy2_3]).then(
         value => {
           setPolicyResponse(value as ResponseT);
@@ -206,7 +210,8 @@ function DiscountPoliciesPage(props) {
   const handleSubmit = () => {
     handleAddDiscountCondition(storeId ,entityCondInDiscount, EntityChoiceInDiscount,WhichCondInDiscount,condValueInDiscount,selectedOption,"","","","",otherCondInDiscount).then(
       value => {
-        setPolicyList(value as Policy[]);
+        setPolicyResponse(value as ResponseT);
+        // setPolicyList(value as Policy[]);
         setentityCondInDiscount("");
         setEntityChoiceInDiscount("");
         setEntityChoiceInDiscount("");
@@ -245,12 +250,13 @@ return (
                 value={EntityChoice}
                 onChange={(e) => setEntityChoice(e.target.value)}
               >
+               <option>Type</option>
                 <option>Store</option>
                 <option>Category</option>
                 <option>Item</option>
               </Form.Control>
             </Form.Group>
-                    {EntityChoice != 'Store' && (
+                  {EntityChoice != 'Store' && (
                 <Form.Group>
                   {/* <Form.Label>{EntityChoice} Name:</Form.Label> */}
                   <Form.Control
@@ -404,7 +410,7 @@ return (
           {policysList.length===0? (<div>  No Items </div>): (policysList.map((cond) => (
             // <div key={item.name}>{item.name} </div>
             <Col  key={cond.policyID} className="mt-3">
-              <DiscountCondition { ...cond } handleRemove={GetDiscountPolicy} storID={storeId} ></DiscountCondition>
+              <DiscountCondition { ...cond } getPolicys={GetDiscountPolicy} purchase={false} storID={storeId}  ></DiscountCondition>
             </Col>
             )))}
         </Row>

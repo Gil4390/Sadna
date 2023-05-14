@@ -56,7 +56,8 @@ namespace SadnaExpress.ServiceLayer
             DateTime endDate);
         ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys);
         Response AddPolicy(Guid store, int discountPolicy);
-        void RemovePolicy(Guid store, int discountPolicy);
+        Response RemovePolicy(Guid store, int discountPolicy , string type);
+        Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
         Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
@@ -94,9 +95,9 @@ namespace SadnaExpress.ServiceLayer
 
         ResponseT<SPolicy[]> GetAllConditions(Guid store);
         
-        ResponseT<Condition> AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        Response AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);
-        void RemoveCondition(Guid storeID ,int condID);
+        Response RemoveCondition(Guid storeID ,int condID);
         
         // this functions needs to notify to offline members their notifications.
         public void getNotificationsForOfflineMembers();

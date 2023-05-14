@@ -402,7 +402,6 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         {
             if (!roots.Remove(discountPolicy))
                 throw new Exception("policy not found");
-            
         }
         
         public override string ToString()
