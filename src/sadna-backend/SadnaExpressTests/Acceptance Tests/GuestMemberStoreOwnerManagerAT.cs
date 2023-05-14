@@ -145,7 +145,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
             proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
             //Act
-            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            proxyBridge.RemovePermission(store5Founder, storeID5, "storeOwnerMail2@gmail.com","owner permissions");
             //Assert
             // USER OFFLINE - gets the message
             Assert.AreEqual(pre + 1,unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
@@ -168,7 +168,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Arrange
             proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
             //Act
-            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            proxyBridge.RemovePermission(store5Founder, storeID5, "storeOwnerMail2@gmail.com", "owner permissions");
             //Assert
             Assert.AreEqual(pre + 1,unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
         }
@@ -181,7 +181,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
             proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
             //Act
-            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            proxyBridge.RemovePermission(store5Founder, storeID5, "storeOwnerMail2@gmail.com","owner permissions");
             //Assert
             Assert.AreEqual(pre + 1,unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
         }
@@ -195,7 +195,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.GetMember(store5Owner ).Value.LoggedIn = false;
             proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
             //Act
-            proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+            proxyBridge.RemovePermission(store5Founder, storeID5, "storeOwnerMail2@gmail.com", "owner permissions");
             //Assert
             Assert.AreEqual(pre + 1,unreadMessages(proxyBridge.GetMember(store5Owner).Value.AwaitingNotification).Count);
             proxyBridge.GetMember(store5Founder ).Value.LoggedIn = true;
@@ -254,7 +254,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //error not occured 
 
-            int count = proxyBridge.GetItemsByName(store5Owner, "chips").Value.Count;
+            int count = proxyBridge.GetItemsForClient(store5Owner, "chips").Value.Count;
             Assert.AreEqual(1, count); //item was added
         }
         [TestMethod]
@@ -270,7 +270,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error occured 
 
-            int count = proxyBridge.GetItemsByName(tempid, "bamba").Value.Count;
+            int count = proxyBridge.GetItemsForClient(tempid, "bamba").Value.Count;
             Assert.AreEqual(0, count); //item was not added
         }
         [TestMethod]
@@ -297,7 +297,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error occured  
 
-            int count = proxyBridge.GetItemsByName(tempid, "bamba").Value.Count;
+            int count = proxyBridge.GetItemsForClient(tempid, "bamba").Value.Count;
             Assert.AreEqual(0, count); //item was not added
         }
         [TestMethod]
@@ -314,7 +314,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error occured  
 
-            int count = proxyBridge.GetItemsByName(tempid, "bamba").Value.Count;
+            int count = proxyBridge.GetItemsForClient(tempid, "bamba").Value.Count;
             Assert.AreEqual(0, count); //item was not added
         }
 
@@ -338,7 +338,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(error1occured || error2occured); //at lest one should fail
             Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
 
-            int count = proxyBridge.GetItemsByName(userid, "chips").Value.Count;
+            int count = proxyBridge.GetItemsForClient(userid, "chips").Value.Count;
             Assert.AreEqual(1, count); //item was added
         }
         #endregion
@@ -354,7 +354,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //error not occured  
 
-            int count = proxyBridge.GetItemsByName(store5Founder, "bisli").Value.Count;
+            int count = proxyBridge.GetItemsForClient(store5Founder, "bisli").Value.Count;
             Assert.AreEqual(0, count); //item was removed
         }
         [TestMethod]
@@ -367,7 +367,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error occured 
 
-            int count = proxyBridge.GetItemsByName(store5Founder, "bisli").Value.Count;
+            int count = proxyBridge.GetItemsForClient(store5Founder, "bisli").Value.Count;
             Assert.AreEqual(1, count); //item was removed
         }
         [TestMethod]
@@ -389,7 +389,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(error1occured || error2occured); //at least one should fail
             Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
 
-            int count = proxyBridge.GetItemsByName(userid, "bisli").Value.Count;
+            int count = proxyBridge.GetItemsForClient(userid, "bisli").Value.Count;
             Assert.AreEqual(0, count); //item was removed
         }
         [TestMethod]
@@ -410,9 +410,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             bool error2occured = task2.Result.ErrorOccured;
             Assert.IsTrue(!error1occured && !error2occured); //need success
 
-            int count = proxyBridge.GetItemsByName(userid, "bisli").Value.Count;
+            int count = proxyBridge.GetItemsForClient(userid, "bisli").Value.Count;
             Assert.AreEqual(0, count); //item was removed
-            int count2 = proxyBridge.GetItemsByName(userid, "doritos").Value.Count;
+            int count2 = proxyBridge.GetItemsForClient(userid, "doritos").Value.Count;
             Assert.AreEqual(0, count2); //item was removed
         }
         #endregion
@@ -428,7 +428,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //error not occured  
 
-            int count = proxyBridge.GetItemsByName(store5Founder, "bisli bbq").Value.Count;
+            int count = proxyBridge.GetItemsForClient(store5Founder, "bisli bbq").Value.Count;
             Assert.AreEqual(1, count);
         }
         [TestMethod]
@@ -441,7 +441,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //error not occured  
 
-            int count = proxyBridge.GetItemsByCategory(store5Founder, "snacks").Value.Count;
+            int count = proxyBridge.GetItemsForClient(store5Founder, "", category:"snacks").Value.Count;
             Assert.AreEqual(1, count);
         }
         [TestMethod]
@@ -454,7 +454,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error occured  
 
-            int count = proxyBridge.GetItemsByName(store5Founder, "bisli").Value.Count;
+            int count = proxyBridge.GetItemsForClient(store5Founder, "bisli").Value.Count;
             Assert.AreEqual(1, count);
         }
         [TestMethod]
@@ -473,8 +473,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(task2.Result.ErrorOccured); //error not occured  
                                                        
 
-            int count1 = proxyBridge.GetItemsByName(store5Founder, "aaa").Value.Count;
-            int count2 = proxyBridge.GetItemsByName(store5Founder, "bbb").Value.Count;
+            int count1 = proxyBridge.GetItemsForClient(store5Founder, "aaa").Value.Count;
+            int count2 = proxyBridge.GetItemsForClient(store5Founder, "bbb").Value.Count;
 
             Assert.AreEqual(1, count1+count2);
 
@@ -509,7 +509,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             proxyBridge.AddItemToStore(loggedInUserID1, storeID5, "testItem", "test", 50.0, 45);
 
-            int count = proxyBridge.GetItemsByName(store5Owner, "testItem").Value.Count;
+            int count = proxyBridge.GetItemsForClient(store5Owner, "testItem").Value.Count;
             Assert.AreEqual(1, count); //item was added because the user has permissions
         }
 
@@ -569,7 +569,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
 
             proxyBridge.AddItemToStore(loggedInUserID1, storeID5, "testItem", "test", 50.0, 45);
-            int count = proxyBridge.GetItemsByName(store5Owner, "testItem").Value.Count;
+            int count = proxyBridge.GetItemsForClient(store5Owner, "testItem").Value.Count;
             Assert.AreEqual(1, count); //item was added because the user has permissions
         }
 
@@ -580,7 +580,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void RemoveStoreOwner_Good()
         {
             Task<Response> task = Task.Run(() => {
-                return proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+                return proxyBridge.RemovePermission(store5Founder, storeID5, "storeOwnerMail2@gmail.com", "owner permissions");
             });
 
             task.Wait();
@@ -595,11 +595,11 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.AppointStoreOwner(store5Owner, storeID5, "gil@gmail.com");
             Task<Response>[] clientTasks = new Task<Response>[] {
                 Task.Run(() => {
-                    return proxyBridge.RemoveStoreOwner(store5Owner,storeID5, "gil@gmail.com");
+                    return proxyBridge.RemovePermission(store5Owner,storeID5, "gil@gmail.com", "owner permissions");
                 }),
                 Task.Run(() =>
                 {
-                    return proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+                    return proxyBridge.RemovePermission(store5Founder, storeID5, "storeOwnerMail2@gmail.com", "owner permissions");
                 })
             };
             // Wait for all clients to complete
@@ -623,7 +623,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<Response>[] clientTasks = new Task<Response>[] {
                 Task.Run(() =>
                 {
-                    return proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+                    return proxyBridge.RemovePermission(store5Founder, storeID5, "storeOwnerMail2@gmail.com","owner permissions");
                 }),
                 Task.Run(() =>
                 {
@@ -655,7 +655,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             });
             
             Task<Response> task2 = Task.Run(() => {
-                return proxyBridge.RemoveStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
+                return proxyBridge.RemovePermission(store5Founder, storeID5, "storeOwnerMail2@gmail.com", "owner permissions");
             });
 
             task1.Wait();

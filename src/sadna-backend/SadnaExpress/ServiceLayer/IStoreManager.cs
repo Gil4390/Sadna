@@ -12,8 +12,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
     {
         ResponseT<List<Store>> GetAllStoreInfo(); //2.1
         // 2.2
-        ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore);
-        ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice, int maxPrice, int ratingItem, int ratingStore);
         ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore);
         Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount); //2.3
         //2.4

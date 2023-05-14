@@ -149,22 +149,6 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
-        public ResponseT<List<Item>> GetItemsByName(Guid userID, string itemName, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
-        {
-            return storeManager.GetItemsByName(userID, itemName, minPrice, maxPrice, ratingItem, category, ratingStore);
-        }
-        public ResponseT<List<Item>> GetItemsByCategory(Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1)
-        {
-            return storeManager.GetItemsByCategory(userID, category, minPrice, maxPrice, ratingItem, ratingStore);
-        }
-
-        public ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice = 0,
-         int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
-        {
-            return storeManager.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category,
-                ratingStore);
-        }
-
         public ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
             int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
@@ -327,19 +311,9 @@ namespace SadnaExpress.ServiceLayer
             return userManager.AddStoreManagerPermissions(userID, storeID, userEmail, permission);
         }
 
-        public Response RemoveStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission)
-        {
-            return userManager.RemoveStoreManagerPermissions(userID, storeID, userEmail, permission);
-        }
-
         public Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2)
         {
             throw new NotImplementedException();
-        }
-
-        public Response RemoveStoreOwner(Guid userID, Guid storeID, string userEmail)
-        {
-            return userManager.RemoveStoreOwner(userID, storeID, userEmail);
         }
 
         public Response CloseStore(Guid userID, Guid storeID)

@@ -403,7 +403,7 @@ namespace SadnaExpressTests.Unit_Tests
             _userFacade.Exit(userIdManager);
             // remove permission fail
             Assert.ThrowsException<Exception>(() =>
-                _userFacade.RemoveStoreManagerPermissions(userId1, storeID, "nogaschw@gmail.com", "get store history"));
+                _userFacade.RemovePermission(userId1, storeID, "nogaschw@gmail.com", "get store history"));
         }
 
         [TestMethod]
@@ -419,7 +419,7 @@ namespace SadnaExpressTests.Unit_Tests
             _userFacade.Exit(userIdManager);
             _userFacade.AppointStoreManager(userId1, storeID, "nogaschw@gmail.com");
             // add permission
-            _userFacade.RemoveStoreManagerPermissions(userId1, storeID, "nogaschw@gmail.com", "get store history");
+            _userFacade.RemovePermission(userId1, storeID, "nogaschw@gmail.com", "get store history");
             //check permission 
             List<string> per = new List<string>();
             per.Add("get store history");
@@ -458,7 +458,7 @@ namespace SadnaExpressTests.Unit_Tests
             member.ShoppingCart.AddItemToCart(storeID, Guid.NewGuid(), 2);
             member.LoggedIn = true;
             _userFacade.AppointStoreOwner(founderid,storeID,"AssiAzar@gmail.com");            
-            _userFacade.RemoveStoreManagerPermissions(founderid,storeID,"AssiAzar@gmail.com", "owner permissions");
+            _userFacade.RemovePermission(founderid,storeID,"AssiAzar@gmail.com", "owner permissions");
             //Act
             _userFacade.RemoveUserMembership(systemManagerid, "AssiAzar@gmail.com");
             //Assert

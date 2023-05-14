@@ -940,15 +940,15 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.AppointStoreOwner(memberId5, storeID, "member9@gmail.com");
             
             //Act
-            proxyBridge.RemoveStoreOwner(storeFounder, storeID, "gil@gmail.com");
-            proxyBridge.RemoveStoreOwner(memberId, storeID, "sebatian@gmail.com");
-            proxyBridge.RemoveStoreOwner(memberId, storeID, "amihai@gmail.com");
-            proxyBridge.RemoveStoreOwner(memberId2, storeID, "bar@gmail.com");
-            proxyBridge.RemoveStoreOwner(memberId2, storeID, "member5@gmail.com");
-            proxyBridge.RemoveStoreOwner(memberId3, storeID, "member6@gmail.com");
-            proxyBridge.RemoveStoreOwner(memberId3, storeID, "member7@gmail.com");
-            proxyBridge.RemoveStoreOwner(memberId6, storeID, "member8@gmail.com");
-            proxyBridge.RemoveStoreOwner(memberId5, storeID, "member9@gmail.com");
+            proxyBridge.RemovePermission(storeFounder, storeID, "gil@gmail.com", "owner permissions");
+            proxyBridge.RemovePermission(memberId, storeID, "sebatian@gmail.com", "owner permissions");
+            proxyBridge.RemovePermission(memberId, storeID, "amihai@gmail.com", "owner permissions");
+            proxyBridge.RemovePermission(memberId2, storeID, "bar@gmail.com", "owner permissions");
+            proxyBridge.RemovePermission(memberId2, storeID, "member5@gmail.com", "owner permissions");
+            proxyBridge.RemovePermission(memberId3, storeID, "member6@gmail.com", "owner permissions");
+            proxyBridge.RemovePermission(memberId3, storeID, "member7@gmail.com", "owner permissions");
+            proxyBridge.RemovePermission(memberId6, storeID, "member8@gmail.com", "owner permissions");
+            proxyBridge.RemovePermission(memberId5, storeID, "member9@gmail.com", "owner permissions");
             //Assert
             //check that only the founder has left
             Assert.AreEqual(1, proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value.Count);
