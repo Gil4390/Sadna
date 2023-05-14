@@ -1008,6 +1008,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid memberId5 = proxyBridge.Enter().Value;
             proxyBridge.Register(memberId5, "member5@gmail.com", "member", "member", "A#!a12345678");
             proxyBridge.AppointStoreOwner(memberId2, storeID, "member5@gmail.com");
+            memberId5 = proxyBridge.Login(memberId5, "member5@gmail.com", "A#!a12345678").Value;
 
             //create appoint 1 to member2
             enter = proxyBridge.Enter().Value;

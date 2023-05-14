@@ -442,9 +442,11 @@ namespace SadnaExpressTests.Acceptance_Tests
             {
                 id6 = proxyBridge.Enter().Value;
                 proxyBridge.Register(id6, "Mass@amazon.io", "Dan", "Mass", "123AaC!@#");
+                id6 = proxyBridge.Login(id3, "Mass@amazon.io", "123AaC!@#").Value;
+
                 Thread.Sleep(100);
                 storeID = proxyBridge.OpenNewStore(id6, "StoreWillNotShouldOpen").Value;
-                return proxyBridge.AddItemToCart(id6, storeid1, itemid11, 1);
+                return proxyBridge.AddItemToCart(id6, storeID, itemid11, 1);
             });
             Task<Response> task7 = Task.Run(() =>
             {
@@ -588,9 +590,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             {
                 id6 = proxyBridge.Enter().Value;
                 proxyBridge.Register(id6, "Mass@amazon.io", "Dan", "Mass", "123AaC!@#");
+                id6 = proxyBridge.Login(id3, "Mass@amazon.io", "123AaC!@#").Value;
                 Thread.Sleep(100);
                 storeID = proxyBridge.OpenNewStore(id6, "StoreWillNotShouldOpen").Value;
-                return proxyBridge.AddItemToCart(id6, storeid1, itemid11, 1);
+                return proxyBridge.AddItemToCart(id6, storeID, itemid11, 1);
             });
                 Task<Response> task7 = Task.Run(() =>
             {
@@ -909,7 +912,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid memberId5 = proxyBridge.Enter().Value;
             proxyBridge.Register(memberId5, "member5@gmail.com", "member", "member", "A#!a12345678");
             proxyBridge.AppointStoreOwner(memberId2, storeID, "member5@gmail.com");
-            
+            memberId5 = proxyBridge.Login(memberId5, "member5@gmail.com", "A#!a12345678").Value;
+
             //create appoint 1 to member2
             enter = proxyBridge.Enter().Value;
             proxyBridge.Login(enter, "amihai@gmail.com", "asASD753!@");
@@ -921,6 +925,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //create appoint 2 to member2
             Guid memberId7 = proxyBridge.Enter().Value;
             proxyBridge.Register(memberId7, "member7@gmail.com", "member", "member", "A#!a12345678");
+            memberId7 = proxyBridge.Login(memberId7, "member7@gmail.com", "A#!a12345678").Value;
             proxyBridge.AppointStoreOwner(memberId3, storeID, "member7@gmail.com");
             
             //create appoint 1 to member6
@@ -929,6 +934,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             
             Guid memberId8 = proxyBridge.Enter().Value;
             proxyBridge.Register(memberId8, "member8@gmail.com", "member", "member", "A#!a12345678");
+            memberId8 = proxyBridge.Login(memberId8, "member8@gmail.com", "A#!a12345678").Value;
             proxyBridge.AppointStoreOwner(memberId6, storeID, "member8@gmail.com");
             
             //create appoint 1 to member 5
@@ -937,8 +943,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             
             Guid memberId9 = proxyBridge.Enter().Value;
             proxyBridge.Register(memberId9, "member9@gmail.com", "member", "member", "A#!a12345678");
+            memberId9 = proxyBridge.Login(memberId9, "member9@gmail.com", "A#!a12345678").Value;
             proxyBridge.AppointStoreOwner(memberId5, storeID, "member9@gmail.com");
-            
+
             //Act
             proxyBridge.RemovePermission(storeFounder, storeID, "gil@gmail.com", "owner permissions");
             proxyBridge.RemovePermission(memberId, storeID, "sebatian@gmail.com", "owner permissions");
