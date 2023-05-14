@@ -105,7 +105,7 @@ function ShoppingPage(props) {
     props.isInit?
     (<div>
       <Exit id={props.id}/>
-      <Container>
+      <Container style={{paddingBottom: "4rem"}}>
         <Row className="mt-3">
           <Col>
             <Form>
