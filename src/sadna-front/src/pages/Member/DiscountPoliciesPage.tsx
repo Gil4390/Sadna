@@ -130,7 +130,7 @@ function DiscountPoliciesPage(props) {
 
  useEffect(() => {
     GetDiscountPolicy();
- }, [])
+ }, [ ])
 
  const [startDate, setSelectedDate] = useState('');
  const [endDate, setSelectedDate2] = useState('');
