@@ -79,7 +79,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             if (itemsInBasket.ContainsKey(itemId))
                 return itemsInBasket[itemId];
-            throw new Exception("Item id "+ itemId +" is not in store id "+ storeID+ " shpping basket");
+            throw new Exception("Item id "+ itemId +" is not in store id "+ storeID+ " shopping basket");
         }
 
         public void AddBasket(ShoppingBasket sb)

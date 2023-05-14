@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.SModels;
@@ -492,6 +495,96 @@ namespace SadnaExpressTests.Acceptance_Tests
             List<SPolicy> sPolicies = proxyBridge.GetAllPolicy(storeOwnerid, storeid1).Value;
             //Assert
             Assert.AreEqual(3, sPolicies.Count);
+        }
+        [TestMethod]
+        public void AddNewPolicy()
+        {
+            //Arrange
+            DiscountPolicy policy = proxyBridge.CreateSimplePolicy(storeid1, "ItemDress",50, DateTime.Now, new DateTime(2024,05,13)).Value;
+            //Act
+            proxyBridge.AddPolicy(storeid1, policy.ID);
+            //Assert
+            Assert.AreEqual(35, proxyBridge.GetItemsForClient(store4Founder, "Dress").Value[0].PriceDiscount);
+        }
+        [TestMethod]
+        public void AddNewComplexPolicy()
+        {
+            //Arrange
+            DiscountPolicy policy1 = proxyBridge.CreateSimplePolicy(storeid1, "ItemDress",50, DateTime.Now, new DateTime(2024,05,13)).Value;
+            DiscountPolicy policy2 = proxyBridge.CreateComplexPolicy(storeid1, "add", policy1.ID, policy3.ID).Value;
+            //Act
+            proxyBridge.AddPolicy(storeid1, policy2.ID);
+            //Assert
+            Assert.AreEqual(28, proxyBridge.GetItemsForClient(store4Founder, "Dress").Value[0].PriceDiscount);
+        } 
+        [TestMethod]
+        public void Add2Policy()
+        {
+            //Arrange
+            DiscountPolicy policy1 = proxyBridge.CreateSimplePolicy(storeid1, "ItemDress",50, DateTime.Now, new DateTime(2024,05,13)).Value;
+            //Act
+            proxyBridge.AddPolicy(storeid1, policy1.ID);
+            proxyBridge.AddPolicy(storeid1, policy3.ID);
+
+            //Assert
+            Assert.AreEqual(35, proxyBridge.GetItemsForClient(store4Founder, "Dress").Value[0].PriceDiscount);
+        }
+        [TestMethod]
+        public void AddConditionPolicy()
+        {
+            //Arrange
+            proxyBridge.AddItemToCart(userid, storeid2, itemid2, 1);
+            //Act
+            Condition cond = proxyBridge.AddCondition(storeid2, "Item","Pants", "min value", 200, dt: DateTime.MaxValue).Value;
+            //Assert
+            //try to purchase
+            Response t = proxyBridge.CheckPurchaseConditions(userid);
+            Assert.IsTrue(t.ErrorOccured);
+            Assert.AreEqual("The price of item Pants is 150 while the minimum price is 200",
+                t.ErrorMessage);
+            proxyBridge.EditItemFromCart(userid, storeid2, itemid2, 2);
+            Assert.IsFalse(proxyBridge.CheckPurchaseConditions(userid).ErrorOccured);
+        }
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void AddConditionWhilePurchaseHim_Good()
+        {
+            Random random = new Random();
+            int randomSleep = random.Next(0, 2);
+            //Arrange
+            proxyBridge.AddItemToCart(userid, storeid2, itemid2, 1);
+            
+            Task<Response> task1=Task.Run(() => {
+                return proxyBridge.CheckPurchaseConditions(userid);
+            });
+            Task<ResponseT<Condition>> task2 = Task.Run(() => {
+                Thread.Sleep(randomSleep);
+                return proxyBridge.AddCondition(storeid2, "Item", "Pants", "min value", 200, dt: DateTime.MaxValue);
+            });
+            // Wait for all clients to complete
+            task1.Wait();
+            task2.Wait();
+            // 2 situations: 1. The user purchase item and after the condition added
+            //               2. The condition added so the user cant buy
+
+            bool situation1 = !task1.Result.ErrorOccured && !task2.Result.ErrorOccured;
+            bool situation2 = task1.Result.ErrorOccured && !task2.Result.ErrorOccured;
+            Assert.IsTrue(situation1 || situation2);
+            if (situation2)
+            {
+                Assert.AreEqual("The price of item Pants is 150 while the minimum price is 200",
+                    task1.Result.ErrorMessage);
+            }
+            bool added = false;
+            foreach (SPolicy sPolicy in proxyBridge.GetAllConditions(storeid2).Value)
+            {
+                if (sPolicy.PolicyID == task2.Result.Value.ID)
+                {
+                    added = true;
+                }
+            }
+            Assert.IsTrue(added);
+            Logger.Instance.Info("*****************************************************");
         }
         #endregion
 

@@ -180,7 +180,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                     type = $"item {item.Name}";
                     foreach (Item i in basket.Keys)
                         if(i.ItemID == item.ItemID)
-                            sum += i.Price;
+                            sum += i.Price*basket[i];
                     break;
                 default:
                     throw new Exception("Category or Store are the one we can evaluate");
