@@ -103,14 +103,15 @@ namespace SadnaExpress.DomainLayer.User
                         throw new Exception("Member with this email already exists");
 
                 }
-                
-                
+
+
+                Guid newID = Guid.NewGuid();
                 string newMac = _ph.Mac();
-                macs.TryAdd(id, newMac);
-                string hashPassword = _ph.Hash(password+newMac);
-                Member newMember = new Member(id, email, firstName, lastName, hashPassword);
-                
-                members.TryAdd(id, newMember);
+                macs.TryAdd(newID, newMac);
+                string hashPassword = _ph.Hash(password + newMac);
+                Member newMember = new Member(newID, email, firstName, lastName, hashPassword);
+
+                members.TryAdd(newID, newMember);
                 Logger.Instance.Info(newMember.UserId, nameof(UserFacade) + ": " + nameof(Register) + ": registered with " + email +".");
             }
         }

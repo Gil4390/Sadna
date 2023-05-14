@@ -683,6 +683,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             id2=proxyBridge.Enter().Value; 
             AddItemToCart(id2,storeid1,itemid1,1);
             AddItemToCart(id2,storeid1,itemid22,1);
+
+            storeOwnerid = proxyBridge.Login(storeOwnerid, "AsiAzar@gmail.com", "A#!a12345678").Value;
+            
             // Act
                 Task<ResponseT<List<ItemForOrder>>> task1 = Task.Run(() => {
                     return proxyBridge.PurchaseCart(id1,"5411556648", "Rabbi Akiva 5");
@@ -706,7 +709,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(situation1 || situation2);
             Assert.AreEqual(0, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid22));
             if (situation1)
-                Assert.AreEqual(2, proxyBridge.GetStorePurchases(storeOwnerid, storeid1).Value.Count);
+                Assert.AreEqual(4, proxyBridge.GetStorePurchases(storeOwnerid, storeid1).Value.Count);
             else
                 Assert.AreEqual(2, proxyBridge.GetStorePurchases(storeOwnerid, storeid1).Value.Count);
         }
