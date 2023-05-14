@@ -535,7 +535,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Arrange
             proxyBridge.AddItemToCart(userid, storeid2, itemid2, 1);
             //Act
-            Condition cond = proxyBridge.AddCondition(storeid2, "Item","Pants", "min value", 200, dt: DateTime.MaxValue).Value;
+            proxyBridge.AddCondition(storeid2, "Item","Pants", "min value", 200, dt: DateTime.MaxValue);
             //Assert
             //try to purchase
             Response t = proxyBridge.CheckPurchaseConditions(userid);
@@ -549,6 +549,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void AddConditionWhilePurchaseHim_Good()
         {
+            SPolicy[] prePolicies= proxyBridge.GetAllConditions(storeid2).Value;
             Random random = new Random();
             int randomSleep = random.Next(0, 2);
             //Arrange
@@ -557,7 +558,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<Response> task1=Task.Run(() => {
                 return proxyBridge.CheckPurchaseConditions(userid);
             });
-            Task<ResponseT<Condition>> task2 = Task.Run(() => {
+            Task<Response> task2 = Task.Run(() => {
                 Thread.Sleep(randomSleep);
                 return proxyBridge.AddCondition(storeid2, "Item", "Pants", "min value", 200, dt: DateTime.MaxValue);
             });
@@ -575,16 +576,17 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Assert.AreEqual("The price of item Pants is 150 while the minimum price is 200",
                     task1.Result.ErrorMessage);
             }
-            bool added = false;
-            foreach (SPolicy sPolicy in proxyBridge.GetAllConditions(storeid2).Value)
+            Assert.AreEqual(prePolicies.Length + 1, proxyBridge.GetAllConditions(storeid2).Value.Length);
+            bool added = true;
+            foreach (SPolicy cond in proxyBridge.GetAllConditions(storeid2).Value)
             {
-                if (sPolicy.PolicyID == task2.Result.Value.ID)
+                if (!prePolicies.Contains(cond) && cond.PolicyRule.Equals("(minimum purchase for  Pants is 200$)"))
                 {
                     added = true;
                 }
             }
+            
             Assert.IsTrue(added);
-            Logger.Instance.Info("*****************************************************");
         }
         #endregion
 
