@@ -174,17 +174,29 @@ return (
                 <option>max value</option>
                 <option>min quantity</option>
                 <option>max quantity</option>
+                <option>before date</option>
+                <option>after date</option>
               </Form.Control>
             </Form.Group>
-            <Form.Group>
-              <Form.Label>Condition Value</Form.Label>
+            {(WhichCond == 'before date' || WhichCond == 'after date' ) ? (
+              <Form.Group>
+              <Form.Label>Choose Date</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="Enter value"
+                value={condValue}
+                onChange={(e) => setCondValue(e.target.value)}
+              />
+              </Form.Group>
+            ):(  <Form.Group>
+              <Form.Label>Choose Value</Form.Label>
               <Form.Control
                 type="value"
                 placeholder="Enter value"
                 value={condValue}
                 onChange={(e) => setCondValue(e.target.value)}
               />
-            </Form.Group>
+            </Form.Group>)}
             </Form>
             <Form.Group>
             <Form.Label>Operator</Form.Label>
