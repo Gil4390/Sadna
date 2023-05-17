@@ -120,10 +120,10 @@ return (
       <p></p>
 
                 <Row className="mt-3">
-          {policysList.length===0? (<div>  No Items </div>): (policysList.map((cond) => (
+          {policysList.length===0? (<div>  There is no policies </div>): (policysList.map((cond) => (
             // <div key={item.name}>{item.name} </div>
             <Col  key={cond.policyID} className="mt-3">
-              <DiscountCondition { ...cond } getPolicys={GetPurcahsePolicys} purchase={true} storID={storeId} ></DiscountCondition>
+              <DiscountCondition obj={cond} onPolicyChanged={GetPurcahsePolicys} purchase={true} userID={userId} storeID={storeId} ></DiscountCondition>
             </Col>
             )))}
         </Row>

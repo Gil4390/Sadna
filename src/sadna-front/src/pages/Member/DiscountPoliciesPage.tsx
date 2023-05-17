@@ -10,14 +10,7 @@ import { DiscountCondition , } from  '../../components/DiscountCondition.tsx';
 import { ResponseT,Response } from '../../models/Response.tsx';
 
 
-
-
-
 function DiscountPoliciesPage(props) {
-
-  const location = useLocation();
-  const { userId, storeId } = location.state;
-
   
   const styles = {
     container: {
@@ -65,8 +58,12 @@ function DiscountPoliciesPage(props) {
       fontWeight: 'bold',
     },
   };
+  
+  const location = useLocation();
+  const { userId, storeId } = location.state;
   const [entity2, setEntity2] = useState('');
   const [EntityChoice2, setEntityChoice2] = useState('');
+
   const [cond1_1, setCond1_1] = useState('');
   const [op_1, setOp_1] = useState('');
   const [op_2, setOp_2] = useState('');
@@ -90,6 +87,13 @@ function DiscountPoliciesPage(props) {
   const [EntityChoiceInDiscount, setEntityChoiceInDiscount] = useState('');
   const [WhichCondInDiscount, setWhichCondInDiscount] = useState('');
   const [condValueInDiscount, setcondValueInDiscount] = useState('');
+  const [policysList, setPolicyList] = useState<Policy[]>([]);
+  const [policyResponse, setPolicyResponse]=useState<ResponseT>();
+  const [showTable2, setShowTable2] = useState(false);
+
+  const [startDate, setSelectedDate] = useState('');
+  const [endDate, setSelectedDate2] = useState('');
+  const [selectedOption, setSelectedOption] = useState('');
   const [otherCondInDiscount, setotherCondInDiscount] = useState('');
 
   const [showTextbox, setShowTextbox] = useState(false);
@@ -97,28 +101,28 @@ function DiscountPoliciesPage(props) {
   const handleButtonClick = () => {
     setShowTable(!showTable);
   };
-  const [showTable2, setShowTable2] = useState(false);
 
   const handleButtonClick2 = () => {
     setShowTable2(!showTable2);
   };
-  const [policysList, setPolicyList] = useState<Policy[]>([]);
+ 
   
 
  const filteredList = policysList.filter((item) => item.type === "Condition");
+
  const condFilter = filteredList.map((item2) => (
    <option key={item2.policyID} value={item2.policyID}>
      {item2.policyID}
    </option>
  ));
+
  const filteredList2 = policysList.filter((item) => item.type === "Policy");
+ 
  const policyFilter = filteredList2.map((item2) => (
    <option key={item2.policyID} value={item2.policyID}>
      {item2.policyID}
    </option>
  ));
-
-
 
   const GetDiscountPolicy =()=>{
     handleGetAllPolicy(userId ,storeId).then(
@@ -132,18 +136,14 @@ function DiscountPoliciesPage(props) {
     GetDiscountPolicy();
  }, [ ])
 
- const [startDate, setSelectedDate] = useState('');
- const [endDate, setSelectedDate2] = useState('');
- 
-
  function handleDateChange(event) {
     setSelectedDate(event.target.value);
   }
+
   function handleDateChange2(event) {
     setSelectedDate2(event.target.value);
   }
- 
-  const [policyResponse, setPolicyResponse]=useState<ResponseT>();
+
 
   const Create_new_Simple_Discount_Policy = () => {
     setShowTable(!showTable);
@@ -151,10 +151,37 @@ function DiscountPoliciesPage(props) {
         value => {
           setSelectedDate('')
           setSelectedDate2('')
-            setCondValue('')
-            setEntity('')
-            setEntityChoice('')
-            setPolicyResponse(value as ResponseT);
+          setCondValue('')
+          setEntity('')
+          setEntityChoice('')
+          setPolicyResponse(value as ResponseT);
+        })
+        .catch(error => alert(error));
+  };
+
+  const Create_new_Condition_Policy_1 = () => {
+    setShowTable2(!showTable);
+    handleCreateComplexPolicy(storeId ,op_1,[cond1_1,cond2_1,policy_1]).then(
+        value => {
+          setPolicyResponse(value as ResponseT);
+        })
+        .catch(error => alert(error));
+  };
+
+  const Create_new_Condition_Policy_2 = () => {
+    setShowTable2(!showTable);
+    handleCreateComplexPolicy(storeId ,op_2,[cond2_2,policy_2]).then(
+        value => {
+          setPolicyResponse(value as ResponseT);
+        })
+        .catch(error => alert(error));
+  };
+
+  const Create_new_Condition_Policy_3 = () => {
+    setShowTable2(!showTable);
+    handleCreateComplexPolicy(storeId ,op_3,[policy1_3,policy2_3]).then(
+        value => {
+          setPolicyResponse(value as ResponseT);
         })
         .catch(error => alert(error));
   };
@@ -170,34 +197,9 @@ function DiscountPoliciesPage(props) {
   }, [policyResponse])
 
 
-  const Create_new_Condition_Policy_1 = () => {
-    setShowTable2(!showTable);
-    handleCreateComplexPolicy(storeId ,op_1,[cond1_1,cond2_1,policy_1]).then(
-        value => {
-          setPolicyResponse(value as ResponseT);
-        })
-        .catch(error => alert(error));
-  };
-  const Create_new_Condition_Policy_2 = () => {
-    setShowTable2(!showTable);
-    handleCreateComplexPolicy(storeId ,op_2,[cond2_2,policy_2]).then(
-        value => {
-          setPolicyResponse(value as ResponseT);
-        })
-        .catch(error => alert(error));
-  };
-  const Create_new_Condition_Policy_3 = () => {
-    setShowTable2(!showTable);
-    handleCreateComplexPolicy(storeId ,op_3,[policy1_3,policy2_3]).then(
-        value => {
-          setPolicyResponse(value as ResponseT);
-        })
-        .catch(error => alert(error));
-  };
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   }
-  const [selectedOption, setSelectedOption] = useState('');
 
   const openModal = () => {
     setShowModal(true);
@@ -407,10 +409,10 @@ return (
       </div>
     </div>}
          <Row className="mt-3">
-          {policysList.length===0? (<div>  No Items </div>): (policysList.map((cond) => (
+          {policysList.length===0? (<div>  There is no policies </div>): (policysList.map((cond) => (
             // <div key={item.name}>{item.name} </div>
-            <Col  key={cond.policyID} className="mt-3">
-              <DiscountCondition { ...cond } getPolicys={GetDiscountPolicy} purchase={false} storID={storeId}  ></DiscountCondition>
+            <Col  key={(cond.policyID+cond.type)} className="mt-3">
+              <DiscountCondition obj={cond} onPolicyChanged={GetDiscountPolicy} purchase={false} storeID={storeId} userID={userId}  ></DiscountCondition>
             </Col>
             )))}
         </Row>

@@ -14,12 +14,15 @@ const cartItemStyles = {
   
   export function DiscountCondition (props)
   {
-    const [isActive, setIsActive] = useState(props.active);
+    const [isActive, setIsActive] = useState(props.obj.active);
+    const [condResponse, setCondResponse]=useState<ResponseT>();
+    const [condResponseDis, setCondResponseDis]=useState<Response>();
+    const [activatePolicyResponse, setActivatePolicyResponse]=useState<ResponseT>();
 
     const handleRemovePress = () => {
       if (props.purchase)
       {
-        handleRemovePurchaseCondition(props.storID ,props.policyID).then(
+        handleRemovePurchaseCondition(props.userID,props.storeID ,props.obj.policyID).then(
           value => {
             setCondResponse(value as ResponseT)
           })
@@ -27,7 +30,7 @@ const cartItemStyles = {
       }
       else
       {
-        handleRemovePolicy(props.storID ,props.policyID , props.type).then(
+        handleRemovePolicy(props.userID,props.storeID ,props.obj.policyID , props.obj.type).then(
           value => {
             setCondResponseDis(value as Response)
           })
@@ -36,65 +39,56 @@ const cartItemStyles = {
     };
 
     const handleActiveAddPolicy = () => {
-      handleAddPolicy(props.storID ,props.policyID).then(
+      handleAddPolicy(props.userID,props.storeID ,props.obj.policyID).then(
           value => {
-            setPolicyResponse(value as ResponseT)
+            setActivatePolicyResponse(value as ResponseT)
           })
           .catch(error => alert(error));
     };
 
-    const [policyResponse, setPolicyResponse]=useState<ResponseT>();
     useEffect(() => {
-      if(policyResponse!=undefined)
-        if(policyResponse?.errorOccured)
-          alert(policyResponse?.errorMessage) 
+      if(activatePolicyResponse!=undefined)
+        if(activatePolicyResponse?.errorOccured)
+          alert(activatePolicyResponse?.errorMessage) 
         else{
+          props.onPolicyChanged();
           setIsActive(true);
         }
-        setPolicyResponse(undefined);
-    }, [policyResponse])
+        setActivatePolicyResponse(undefined);
+    }, [activatePolicyResponse])
 
-
-    const [condResponse, setCondResponse]=useState<ResponseT>();
     useEffect(() => {
       if(condResponse!=undefined)
         if(condResponse?.errorOccured)
           alert(condResponse?.errorMessage) 
         else{
-          props.getPolicys()
+          props.onPolicyChanged();
         }
         setCondResponse(undefined);
     }, [condResponse])
 
-    const [condResponseDis, setCondResponseDis]=useState<Response>();
     useEffect(() => {
       if(condResponseDis!=undefined)
         if(condResponseDis?.errorOccured)
           alert(condResponseDis?.errorMessage) 
         else{
-          props.getPolicys()
+          props.onPolicyChanged();
         }
         setCondResponseDis(undefined);
     }, [condResponseDis])
-
-
-    // useEffect(() => {
-    //   props.getPolicys()
-    // }, [policysList]);
-
 
       return (
         <Card className="h-100 col-md-100">
           <Card.Body className="d-flex flex-column">
               <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
-                  <span className="fs-2">{props.type} {props.policyID}</span>
-                </Card.Title>
-                <Card.Text>
-                                      <div> <span className="ms-2 "><pre>{props.policyRule}</pre></span></div>
-                    {props.active  }              </Card.Text>
+                  <span className="fs-2">{props.obj.type} {props.obj.policyID}</span>
+              </Card.Title>
+           <Card.Text>
+          <div> <span className="ms-2 "><pre>{props.obj.policyRule}</pre></span></div> 
+          </Card.Text>        
           <div className="mt-auto" style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
           <Button variant="danger"onClick={handleRemovePress} >Remove</Button>
-          <div>{!isActive && props.type =="Policy" ? (<Button variant="success" onClick={handleActiveAddPolicy}>Activate</Button>):(<span></span>)}</div>
+          {!isActive && props.obj.type =="Policy" && (<Button variant="success" onClick={handleActiveAddPolicy}>Activate</Button>)}
           </div>
         </Card.Body>
       </Card>) 

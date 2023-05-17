@@ -291,8 +291,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult AddPolicy([FromBody] DiscountPolicyRequest request)
         {
-            
-            return Ok(tradingSystem.AddPolicy(request.storeID,request.discountPolicy));
+            Response res = tradingSystem.AddPolicy(request.storeID, request.discountPolicy);
+            return Ok(res);
         }
         
         [Route(APIConstants.MemberData.removePolicy)]
@@ -300,7 +300,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult RemovePolicy([FromBody] DiscountPolicyRemoveRequest request)
         {
-            return Ok(tradingSystem.RemovePolicy(request.storeID,request.discountPolicy ,request.type));
+            Response res = tradingSystem.RemovePolicy(request.storeID, request.discountPolicy, request.type);
+            return Ok(res);
         }
         
         [Route(APIConstants.MemberData.getItems)]
@@ -365,12 +366,12 @@ namespace SadnaExpress.API.Controllers
             return Ok(res);
         }
         [Route(APIConstants.MemberData.getAllPolicy)]
-        [ResponseType(typeof(SPolicy[]))]
+        [ResponseType(typeof(List<SPolicy>))]
         [HttpPost]
         public IHttpActionResult GetAllPolicy([FromBody] StoreIDRequest request)
         {
-            List<SPolicy> a = tradingSystem.GetAllPolicy(request.userID, request.storeID).Value;
-            return Ok(a.ToArray());
+            List<SPolicy> res = tradingSystem.GetAllPolicy(request.userID, request.storeID).Value;
+            return Ok(res);
         }
     }
 }
