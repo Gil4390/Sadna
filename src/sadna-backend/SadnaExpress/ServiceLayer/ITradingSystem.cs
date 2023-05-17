@@ -59,6 +59,7 @@ namespace SadnaExpress.ServiceLayer
         Response RemovePolicy(Guid store, int discountPolicy , string type);
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
+        Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
         Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
