@@ -178,6 +178,24 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(task.Result.ErrorOccured); //error accured 
             Assert.IsFalse(task.Result.Value); //value is false
         }
+
+        [TestMethod()]
+        public void UserTryToLogInWhenSystemIsNotInit_BadTest()
+        {
+            //Arrange
+            Guid tempid = Guid.Empty;
+
+            //Act
+            Task<ResponseT<Guid>> task = Task.Run(() => {
+                tempid = proxyBridge.Enter().Value;
+                return proxyBridge.Login(tempid, "gil@gmail.com", "asASD876!@");
+            });
+
+            task.Wait();
+
+            //Assert
+            Assert.IsTrue(task.Result.ErrorOccured); //error accured 
+        }
         #endregion
 
         #region Payment 1.3
