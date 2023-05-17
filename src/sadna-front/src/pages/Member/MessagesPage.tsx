@@ -52,7 +52,7 @@ function MessagesPage(props) {
       <Exit id={props.id}/>
       <h1>My Notifications</h1>
       <ListGroup>
-        {messages.map((message, index) => (
+      {messages.length===0? (<div className="row align-items-center my-5">  You don't have any messages </div>):(messages.map((message, index) => (
           <ListGroup.Item key={index} variant={message.read ? "light" : "warning"}>
             <div className="d-flex justify-content-between">
               <div>{message.message}</div>
@@ -64,7 +64,7 @@ function MessagesPage(props) {
               </Button>
             )}
           </ListGroup.Item>
-        ))}
+        )))}
       </ListGroup>
     </div>
   );
