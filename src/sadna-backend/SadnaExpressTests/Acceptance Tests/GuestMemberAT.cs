@@ -1115,6 +1115,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(task.Result.ErrorOccured);//error occurred
             Assert.AreEqual(1,proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count);// the shopping basket same
             Assert.AreEqual(40, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid1));//the quantity same
+            Assert.AreEqual(0, proxyBridge.GetNotifications(memberId).Value.Count); //purchase did not completed to check that member did not got a notification for succssess purchase
         }
         [TestMethod]
         public void PurchaseItemFromStoreNotActive_BadTest()
