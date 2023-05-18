@@ -133,7 +133,7 @@ namespace SadnaExpress.DomainLayer.Store
             }
             Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();
-            Console.WriteLine((discountPolicyTree));
+
             if (discountPolicyTree != null)
                 itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
             foreach (Item item in itemsBeforeDiscount.Keys)
@@ -258,11 +258,12 @@ namespace SadnaExpress.DomainLayer.Store
 
             else if (type == "Policy")
             {
-                if (discountPolicyTree != null)
+                DiscountPolicy toRemove = GetPolicyByID(ID);
+                if (discountPolicyTree != null && allDiscountPolicies[toRemove])
                 {
-                    discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
+                    discountPolicyTree.RemovePolicy(toRemove);
                 }
-                allDiscountPolicies.Remove(GetPolicyByID(ID));
+                allDiscountPolicies.Remove(toRemove);
                 
             }
             else

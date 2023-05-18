@@ -587,14 +587,12 @@ namespace SadnaExpress.ServiceLayer
 
         public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
         {
-            //TODO
-            throw new NotImplementedException();
+            return storeManager.GetStoreRevenue(userID, storeID, date);
         }
 
         public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
         {
-            //TODO
-            throw new NotImplementedException();
+            return storeManager.GetSystemRevenue(userID,date);
         }
     }
 }
