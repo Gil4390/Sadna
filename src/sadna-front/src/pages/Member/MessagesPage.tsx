@@ -28,6 +28,7 @@ function MessagesPage(props) {
     
     function formatDate(dateString: string): string {
       const date = new Date(dateString);
+      date.setHours(date.getHours()+3)
       const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "long",

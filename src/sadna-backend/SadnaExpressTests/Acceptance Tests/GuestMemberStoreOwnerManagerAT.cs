@@ -1173,8 +1173,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsFalse(task2.Result.ErrorOccured); //error not occured
         }
         #endregion
-
-
+        
         #region request store purchase history 4.13
 
         [TestMethod]
@@ -1201,7 +1200,65 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
         #endregion
 
+        #region Get store revenue
+        [TestMethod]
+        public void StoreOwnerRevenue2StoreAnd2UsersRevenue_HappyTest()
+        {
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            
+            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+            proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            
+            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id2 = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id2, storeid1, itemid1, 3);
+            proxyBridge.PurchaseCart(id2, "5411556648", "Rabbi Akiva 5");
+            
+            Assert.AreEqual(149.7, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+        }
+        
+        [TestMethod]
+        public void StoreOwnerGetRevenue1UserAnd2StoreInSamePurchaseRevenue_HappyTest()
+        {
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            
+            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+            proxyBridge.AddItemToCart(id, storeid1, itemid1, 3);
+            proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
 
+            Assert.AreEqual(149.7, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+        }
+
+        [TestMethod]
+        public void StoreOwnerGetRevenue2UsersNotHisStoreRevenue_HappyTest()
+        {
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            
+            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+            proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            
+            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id2 = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id2, storeid2, itemid2, 3);
+            proxyBridge.PurchaseCart(id2, "5411556648", "Rabbi Akiva 5");
+            
+            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+        }
+        #endregion
         [TestCleanup]
         public override void CleanUp()
         {

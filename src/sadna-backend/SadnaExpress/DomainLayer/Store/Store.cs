@@ -133,6 +133,7 @@ namespace SadnaExpress.DomainLayer.Store
             }
             Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();
+
             if (discountPolicyTree != null)
                 itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
             foreach (Item item in itemsBeforeDiscount.Keys)
@@ -154,6 +155,7 @@ namespace SadnaExpress.DomainLayer.Store
             // calculate the cart after the discount
             Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();
+
             if (discountPolicyTree != null)
                 itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
             // remove the item from the store inventory
@@ -210,29 +212,29 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 case "xor":
                     XorDiscount xor = new XorDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    RemovePolicy(policys[2], "Policy");
                     return HelperInCreateComplexPolicy(xor);
                 case "and":
                     AndDiscount and = new AndDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    RemovePolicy(policys[2], "Policy");
                     return HelperInCreateComplexPolicy(and);
                 case "or":
                     OrDiscount or = new OrDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    RemovePolicy(policys[2], "Policy");
                     return HelperInCreateComplexPolicy(or);
                 case "if":
                     ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]),GetPolicyByID(policys[1]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    RemovePolicy(policys[1], "Policy");
                     return HelperInCreateComplexPolicy(ifCond);
                 case "max":
                     MaxDiscount max = new MaxDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    RemovePolicy(policys[0], "Policy");
+                    RemovePolicy(policys[1], "Policy");
                     return HelperInCreateComplexPolicy(max);
                 case "add":
                     AddDiscount add = new AddDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    RemovePolicy(policys[0], "Policy");
+                    RemovePolicy(policys[1], "Policy");
                     return HelperInCreateComplexPolicy(add);
                 default:
                     throw new Exception("the op not exist");
@@ -252,34 +254,17 @@ namespace SadnaExpress.DomainLayer.Store
         public void RemovePolicy(int ID , string type)
         {
             if (type == "Condition")
-            {
-                Condition toRemoveCond = null;
-                foreach (Condition condition in condDiscountPolicies.Keys)
-                {
-                    if (condition.ID == ID)
-                        toRemoveCond = condition;
-                }
-
-                if (toRemoveCond != null)
-                {
-                    condDiscountPolicies.Remove(toRemoveCond);
-                } 
-            }
+                condDiscountPolicies.Remove(GetCondByID(ID));
 
             else if (type == "Policy")
             {
-                DiscountPolicy toRemove = null;
-                foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
+                DiscountPolicy toRemove = GetPolicyByID(ID);
+                if (discountPolicyTree != null && allDiscountPolicies[toRemove])
                 {
-                    if (discountPolicy.ID == ID)
-                        toRemove = discountPolicy;
+                    discountPolicyTree.RemovePolicy(toRemove);
                 }
-
-                if (toRemove != null)
-                {
-                    discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
-                    allDiscountPolicies.Remove(toRemove);
-                } 
+                allDiscountPolicies.Remove(toRemove);
+                
             }
             else
                 throw new Exception("Policy/Condition not found");
@@ -304,58 +289,69 @@ namespace SadnaExpress.DomainLayer.Store
 
         #region both policies
 
-        public Condition AddCondition(string entityStr, string entityName, string type, double val, DateTime dt=default, string op=default , int opCond=-1)
+        public Condition AddCondition(string entityStr, string entityName, string type, object value, DateTime dt=default, string op=default , int opCond=-1)
         {
             switch (entityStr)
             {
                 case "Item":
                     Item entityI = itemsInventory.GetItemByName(entityName);
-                    return AddConditionHelper(entityI, type, val, dt, op, opCond);
+                    return AddConditionHelper(entityI, type, value, dt, op, opCond);
                 case "Store":
-                    return AddConditionHelper(this, type, val, dt, op, opCond);
+                    return AddConditionHelper(this, type, value, dt, op, opCond);
                 case "Category":
                     foreach (Item i in itemsInventory.items_quantity.Keys)
-                    {
                         if (i.Category == entityName)
-                            return AddConditionHelper(entityStr, type, val, dt, op, opCond);
-                    }
+                            return AddConditionHelper(entityStr, type, value, dt, op, opCond);
                     throw new Exception("Category doesn't exists in store");
                 default:
                     throw new Exception("the entity not exist");
             }
         }
         
-        public Condition AddConditionHelper<T>(T entity, string type, double val, DateTime dt=default, string op=default , int opCond=default)
+        public Condition AddConditionHelper<T>(T entity, string type, object val, DateTime dt=default, string op=default , int opCond=default)
         {
-            if (val < 0)
-                throw new Exception("value must be positive");
             if (entity == null)
-                throw new Exception("entity must be not null");
+                throw new Exception("entity must be not null");   
             Condition cond;
-            switch (type)
+            try
             {
-                case "min value":
-                    cond = new ValueCondition<T>(entity, val, "min");
-                    break;
-                case "max value":
-                    cond = new ValueCondition<T>(entity, val, "max");
-                    break;
-                case "min quantity":
-                    cond = new QuantityCondition<T>(entity, (int)val, "min");
-                    break;
-                case "max quantity":
-                    cond = new QuantityCondition<T>(entity, (int)val, "max");  
-                    break;
-                case "before time":
-                    cond = new TimeCondition<T>(entity, dt, "before");
-                    break;
-                case "after time":
-                    cond = new TimeCondition<T>(entity, dt, "after");
-                    break;
-                default:
-                    throw new Exception($"the condition type {type} not exist");
+                int intValue = int.Parse($"{val}");
+                if (intValue < 0)
+                    throw new Exception("value must be positive");
+                switch (type)
+                {
+                    case "min value":
+                        cond = new ValueCondition<T>(entity, (int)val, "min");
+                        return checkNotInList(cond,dt, op, opCond);
+                    case "max value":
+                        cond = new ValueCondition<T>(entity, (int)val, "max");
+                        return checkNotInList(cond,dt, op, opCond);
+                    case "min quantity":
+                        cond = new QuantityCondition<T>(entity, (int)val, "min");
+                        return checkNotInList(cond,dt, op, opCond);
+                    case "max quantity":
+                        cond = new QuantityCondition<T>(entity, (int)val, "max");
+                        return checkNotInList(cond,dt, op, opCond);
+                }
             }
-            return checkNotInList(cond,dt, op, opCond);
+            catch (Exception e){}
+            
+            try
+            {
+                switch (type)
+                {
+                    case "before date":
+                        cond = new TimeCondition<T>(entity, DateTime.Parse((string)val), "before");
+                        return checkNotInList(cond,dt, op, opCond);
+                    case "after date":
+                        cond = new TimeCondition<T>(entity, DateTime.Parse((string)val), "after");
+                        return checkNotInList(cond,dt, op, opCond);
+                    default:
+                        throw new Exception($"the condition type {type} not exist");
+                }
+            }
+            catch (Exception e){}
+            return null;
         }
         
         private Condition checkNotInList(Condition c , DateTime dt=default, string op=default , int opCond=default)
@@ -368,13 +364,6 @@ namespace SadnaExpress.DomainLayer.Store
                     c = AddSimplePurchaseCondition(c, GetPurchaseCond(opCond), op);
                 else
                     c = AddSimplePurchaseCondition(c, null, op);
-                // else
-                // {
-                //     Condition cond2 = GetPurchaseCond(opCond);
-                //     if (cond2 == null)
-                //         throw new Exception($"condition {opCond} not exist");
-                //     c = AddSimplePurchaseCondition(c,cond2, op);
-                // }
 
             }
             else

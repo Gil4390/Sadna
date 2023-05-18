@@ -272,8 +272,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public T entity;
         public DateTime timing;
         public string beforeAfter;
-
-        // T can be store or item or category(string)
+        
         public TimeCondition(T entity, DateTime timing , string beforeAfter)
         {
             this.entity = entity;

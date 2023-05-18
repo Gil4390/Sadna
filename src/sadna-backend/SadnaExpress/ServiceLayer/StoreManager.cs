@@ -141,7 +141,10 @@ namespace SadnaExpress.ServiceLayer
                 // Notify to store owners
                 foreach (ShoppingBasket basket in shoppingCart.Baskets)
                     NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store "+storeFacade.GetStore(basket.StoreID).StoreName+" !", userID);
-             
+
+                //for bar - notify a user that his purchase completed succssefully by notification
+                userFacade.NotifyBuyerPurchase(userID);
+
                 // delete the exist shopping cart
                 userFacade.PurchaseCart(userID);
                 return new ResponseT<List<ItemForOrder>>(itemForOrders);
@@ -410,7 +413,7 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        public Response AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             try
@@ -538,6 +541,34 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, storeID, new List<string> { "owner permissions", "founder permissions", });
+                return new ResponseT<double>(Orders.Instance.GetStoreRevenue(storeID, date));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStoreRevenue) + ": " + ex.Message);
+                return new ResponseT<double>(ex.Message);
+            }
+        }
+
+        public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, Guid.Empty, new List<string> { "system manager permissions" });
+                return new ResponseT<double>(Orders.Instance.GetSystemRevenue(date));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetSystemRevenue) + ": " + ex.Message);
+                return new ResponseT<double>(ex.Message);
+            }
+        }
+        
         public void LoadData()
         {
             Store store1 = new Store("Zara");

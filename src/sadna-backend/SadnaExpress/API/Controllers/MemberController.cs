@@ -38,7 +38,6 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.MemberData.openStore)]
         [ResponseType(typeof(ResponseT<Guid>))]
         [HttpPost]
-        
         public IHttpActionResult OpenNewStore([FromBody] OpenStoreRequest request)
         {
             return Ok(tradingSystem.OpenNewStore(request.userID, request.storeName));
@@ -371,6 +370,15 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult GetAllPolicy([FromBody] StoreIDRequest request)
         {
             List<SPolicy> res = tradingSystem.GetAllPolicy(request.userID, request.storeID).Value;
+            return Ok(res);
+        }
+
+        [Route(APIConstants.MemberData.getStoreRevenue)]
+        [ResponseType(typeof(ResponseT<double>))]
+        [HttpPost]
+        public IHttpActionResult GetStoreRevenue([FromBody] StoreRevenueRequest request)
+        {
+            double res = tradingSystem.GetStoreRevenue(request.userID, request.storeID, request.date).Value;
             return Ok(res);
         }
 

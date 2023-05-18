@@ -402,7 +402,7 @@ namespace SadnaExpress.DomainLayer.Store
             return items;
         }
 
-        public Condition AddCondition(Guid store, string entity, string entityName, string type, double value,
+        public Condition AddCondition(Guid store, string entity, string entityName, string type, object value,
             DateTime dt = default, string op = default, int opCond = default)
         {
             IsTsInitialized();

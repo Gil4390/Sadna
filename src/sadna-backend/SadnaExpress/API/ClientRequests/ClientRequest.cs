@@ -119,7 +119,7 @@ namespace SadnaExpress.API.ClientRequests
         public string entity { get; set; }
         public string entityName { get; set; }
         public string type { get; set; }
-        public int value { get; set; }
+        public object value { get; set; }
         public string op { get; set; }
         public string entityRes { get; set; }
         public string entityNameRes { get; set; }
@@ -176,6 +176,15 @@ namespace SadnaExpress.API.ClientRequests
     {
         public Guid itemID { get; set; }
         public string bidResponse { get; set; }
+    }
 
+    public class StoreRevenueRequest : ClientRequest
+    {
+        public Guid storeID { get; set; }
+        public DateTime date { get; set; }
+    }
+    public class SystemRevenueRequest : ClientRequest
+    {
+        public DateTime date { get; set; }
     }
 }

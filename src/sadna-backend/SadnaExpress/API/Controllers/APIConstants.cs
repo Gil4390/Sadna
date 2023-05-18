@@ -127,6 +127,8 @@ namespace SadnaExpress.API.Controllers
 
             public const string getMemberName = "get-member-name";
 
+            public const string getStoreRevenue = "get-store-revenue";
+
             public const string getBidsInStore = "get-bids-in-store";
 
             public const string reactToBid = "react-to-bid";
@@ -150,6 +152,8 @@ namespace SadnaExpress.API.Controllers
             public const string allpurchasesStore= "all-purchases-stores";
             
             public const string removeMember = "rm-member";
+
+            public const string getSystemRevenue = "get-system-revenue";
         }
     }
 }

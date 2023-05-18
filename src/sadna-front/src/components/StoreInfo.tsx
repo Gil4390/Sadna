@@ -76,6 +76,9 @@ export function StoreInfo(props) {
       {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => handleNavigate ("/PurchasePoliciesPage",props.id , props.store)} style={{margin: "5px"}}>
         Purchase Policies
       </Button>}
+      {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => handleNavigate ("/StoreRevenuePage",props.id , props.store)} style={{margin: "5px"}}>
+        Revenue
+      </Button>}
       {(store?.isOpen && permission.founder ? (
         <div> 
           <Button variant="danger" onClick={handleCloseStorePress} style={{margin: "5px"}}>
