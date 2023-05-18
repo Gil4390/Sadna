@@ -118,9 +118,6 @@ namespace SadnaExpress.DomainLayer.User
 
         public Guid Login(Guid id, string email, string password)
         {
-            if (_isTSInitialized == false) //if user id not system manager and system is not initialized user cannot login
-                IsTSSystemManagerID(id);
-
             if (members.ContainsKey(id) && members[id].LoggedIn)
                 throw new Exception($"Hi {members[id].FirstName} you are already logged in!");
 
@@ -145,6 +142,8 @@ namespace SadnaExpress.DomainLayer.User
                     {
                         if (members.ContainsKey(member.UserId))
                         {
+                            if (_isTSInitialized == false) //if user id not system manager and system is not initialized user cannot login
+                                IsTSSystemManagerID(member.UserId);
                             member.LoggedIn = true;
                             User user;
                             current_Users.TryRemove(id, out user); 

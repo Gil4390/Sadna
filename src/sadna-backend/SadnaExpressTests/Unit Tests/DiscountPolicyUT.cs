@@ -48,8 +48,9 @@ namespace SadnaExpressTests.Unit_Tests
 
         }
         #endregion
-        
+
         #region Simple policy calculate
+
         [TestMethod]
         public void CalculatePolicyOnItemSuccess()
         {
@@ -62,7 +63,7 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.IsFalse(items.ContainsKey(store.GetItemById(item2))); // not return 
             Assert.IsFalse(items.ContainsKey(store.GetItemById(item3))); //not return
         }
-        
+
         [TestMethod]
         public void CalculatePolicyOnStoreSuccess()
         {
@@ -75,6 +76,7 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
+
         [TestMethod]
         public void CalculatePolicyOnCategorySuccess()
         {
@@ -92,22 +94,26 @@ namespace SadnaExpressTests.Unit_Tests
         public void EndDatePassNoDiscount()
         {
             //Arrange
-            DiscountPolicy policyPass = store.CreateSimplePolicy("Store", 20, new DateTime(2022, 4, 30), new DateTime(2022, 5, 30));
+            DiscountPolicy policyPass =
+                store.CreateSimplePolicy("Store", 20, new DateTime(2022, 4, 30), new DateTime(2022, 5, 30));
             store.AddPolicy(policyPass.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.AreEqual(0,items.Count); 
+            Assert.AreEqual(0, items.Count);
         }
+
         #endregion
-        
+
         #region If condition Caculate
 
         [TestMethod]
         public void CalculateConditionalPolicySuccess()
         {
             //Arrange
-            DiscountPolicy complex = store.CreateComplexPolicy("if", cond1.ID, policy1.ID); //if I buy more than 50 I get 20% on the items
+            DiscountPolicy
+                complex = store.CreateComplexPolicy("if", cond1.ID,
+                    policy1.ID); //if I buy more than 50 I get 20% on the items
             store.AddPolicy(complex.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
@@ -116,25 +122,32 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
+
         [TestMethod]
         public void CalculateConditionalPolicyFail()
         {
             //Arrange
-            DiscountPolicy complex = store.CreateComplexPolicy("if", cond2.ID, policy1.ID); //if I buy more than 2 from Ipad I get 20% on the items
+            DiscountPolicy
+                complex = store.CreateComplexPolicy("if", cond2.ID,
+                    policy1.ID); //if I buy more than 2 from Ipad I get 20% on the items
             store.AddPolicy(complex.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.AreEqual(0,items.Count); //the cond not pass
+            Assert.AreEqual(0, items.Count); //the cond not pass
         }
+
         #endregion
-        
+
         #region And condition Caculate
+
         [TestMethod]
         public void CalculateAndPolicyTwoOkSuccess()
         {
             //Arrange
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond3.ID, policy1.ID); //if I buy more than 50 nis and more than one bisli I get 20% on the items
+            DiscountPolicy
+                and = store.CreateComplexPolicy("and", cond1.ID, cond3.ID,
+                    policy1.ID); //if I buy more than 50 nis and more than one bisli I get 20% on the items
             store.AddPolicy(and.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
@@ -143,36 +156,46 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
+
         [TestMethod]
         public void CalculateAndPolicyOneFail()
         {
             //Arrange
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond2.ID, policy1.ID); //if I buy more than 50 nis and more than two Ipad I get 20% on the items
+            DiscountPolicy
+                and = store.CreateComplexPolicy("and", cond1.ID, cond2.ID,
+                    policy1.ID); //if I buy more than 50 nis and more than two Ipad I get 20% on the items
             store.AddPolicy(and.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.AreEqual(0,items.Count);
+            Assert.AreEqual(0, items.Count);
         }
+
         [TestMethod]
         public void CalculateAndPolicyTwoFail()
         {
             //Arrange
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond2.ID, cond4.ID, policy1.ID);  //if I buy more than 100 nis and more than two Ipad I get 20% on the items
+            DiscountPolicy
+                and = store.CreateComplexPolicy("and", cond2.ID, cond4.ID,
+                    policy1.ID); //if I buy more than 100 nis and more than two Ipad I get 20% on the items
             store.AddPolicy(and.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.AreEqual(0,items.Count);
+            Assert.AreEqual(0, items.Count);
         }
+
         #endregion
-        
+
         #region Or condition Caculate
+
         [TestMethod]
         public void CalculateOrPolicyOneOkCondSuccess()
         {
             //Arrange
-            DiscountPolicy or = store.CreateComplexPolicy("or", cond4.ID, cond3.ID, policy1.ID); //if I buy more than 100 nis food or more than one bisli I get 20% on the items
+            DiscountPolicy
+                or = store.CreateComplexPolicy("or", cond4.ID, cond3.ID,
+                    policy1.ID); //if I buy more than 100 nis food or more than one bisli I get 20% on the items
             store.AddPolicy(or.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
@@ -181,11 +204,14 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
+
         [TestMethod]
         public void CalculateOrPolicyTwoOkCondSuccess()
         {
             //Arrange
-            DiscountPolicy or = store.CreateComplexPolicy("or", cond1.ID, cond3.ID, policy1.ID); //if I buy more than 50 nis or more than one bisli I get 20% on the items
+            DiscountPolicy
+                or = store.CreateComplexPolicy("or", cond1.ID, cond3.ID,
+                    policy1.ID); //if I buy more than 50 nis or more than one bisli I get 20% on the items
             store.AddPolicy(or.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
@@ -194,36 +220,46 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
+
         [TestMethod]
         public void CalculateOrPolicyBothFail()
         {
             //Arrange
-            DiscountPolicy or = store.CreateComplexPolicy("or", cond2.ID, cond4.ID, policy1.ID); //if I buy more than 100 nis Food and more than one Ipad I get 20% on the items
+            DiscountPolicy
+                or = store.CreateComplexPolicy("or", cond2.ID, cond4.ID,
+                    policy1.ID); //if I buy more than 100 nis Food and more than one Ipad I get 20% on the items
             store.AddPolicy(or.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.AreEqual(0,items.Count);
+            Assert.AreEqual(0, items.Count);
         }
+
         #endregion
-        
+
         #region Xor condition Caculate
+
         [TestMethod]
         public void CalculateXorPolicyTwoOkFail()
         {
             //Arrange
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1.ID, cond3.ID, policy1.ID); //if I buy more than 50 nis xor more than one bisli I get 20% on the items
+            DiscountPolicy
+                xor = store.CreateComplexPolicy("xor", cond1.ID, cond3.ID,
+                    policy1.ID); //if I buy more than 50 nis xor more than one bisli I get 20% on the items
             store.AddPolicy(xor.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.AreEqual(0,items.Count);
+            Assert.AreEqual(0, items.Count);
         }
+
         [TestMethod]
         public void CalculateXorPolicyOneSuccess()
         {
             //Arrange
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID, policy1.ID); //if I buy more than 50 nis xor more than two Ipad I get 20% on the items
+            DiscountPolicy
+                xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID,
+                    policy1.ID); //if I buy more than 50 nis xor more than two Ipad I get 20% on the items
             store.AddPolicy(xor.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
@@ -232,25 +268,30 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
+
         [TestMethod]
         public void CalculateXorPolicyTwoFail()
         {
             //Arrange
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond2.ID, cond4.ID, policy1.ID);  //if I buy more than 100 nis xor more than two Ipad I get 20% on the items
+            DiscountPolicy
+                xor = store.CreateComplexPolicy("xor", cond2.ID, cond4.ID,
+                    policy1.ID); //if I buy more than 100 nis xor more than two Ipad I get 20% on the items
             store.AddPolicy(xor.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
-            Assert.AreEqual(0,items.Count);
+            Assert.AreEqual(0, items.Count);
         }
+
         #endregion
-        
+
         #region Max condition Caculate
+
         [TestMethod]
         public void CalculateMaxPolicy1BetterSuccess()
         {
             //Arrange
-            DiscountPolicy max = store.CreateComplexPolicy("max",policy1.ID, policy2.ID); 
+            DiscountPolicy max = store.CreateComplexPolicy("max", policy1.ID, policy2.ID);
             store.AddPolicy(max.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
@@ -260,11 +301,12 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
+
         [TestMethod]
         public void CalculateMaxPolicy3BetterSuccess()
         {
             //Arrange
-            DiscountPolicy max = store.CreateComplexPolicy("max", policy1.ID, policy4.ID); 
+            DiscountPolicy max = store.CreateComplexPolicy("max", policy1.ID, policy4.ID);
             store.AddPolicy(max.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
@@ -274,14 +316,17 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.IsFalse(items.ContainsKey(store.GetItemById(item2))); //not return
 
         }
+
         #endregion
-        
+
         #region Add condition Caculate
+
         [TestMethod]
         public void CalculateAddPolicySuccess()
         {
             //Arrange
-            DiscountPolicy add = store.CreateComplexPolicy("add", policy1.ID, policy3.ID); //20% on store and 50% on food 
+            DiscountPolicy
+                add = store.CreateComplexPolicy("add", policy1.ID, policy3.ID); //20% on store and 50% on food 
             store.AddPolicy(add.ID);
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
@@ -290,15 +335,21 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(2.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
+
         #endregion
-        
+
         #region All Kind condition Caculate
+
         [TestMethod]
         public void CalculateLongXorAndPolicy()
         {
             //Arrange
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID, policy1.ID); //if I buy more than 50 nis xor more than two ipad I get 20% on the items
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond3.ID, policy2.ID); //if I buy more than 50 nis and more than one bisli I get 50% on the bisli
+            DiscountPolicy
+                xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID,
+                    policy1.ID); //if I buy more than 50 nis xor more than two ipad I get 20% on the items
+            DiscountPolicy
+                and = store.CreateComplexPolicy("and", cond1.ID, cond3.ID,
+                    policy2.ID); //if I buy more than 50 nis and more than one bisli I get 50% on the bisli
             store.AddPolicy(xor.ID);
             store.AddPolicy(and.ID);
             //Act
@@ -308,13 +359,19 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(6.4, items[store.GetItemById(item2)].Key); // changed
             Assert.AreEqual(3200, items[store.GetItemById(item3)].Key); // changed
         }
+
         [TestMethod]
         public void CalculateLongAddAndPolicy()
         {
             //Arrange
-            DiscountPolicy add = store.CreateComplexPolicy("add", policy1.ID, policy2.ID); //I have 70% on bisli and the rest 20%
-            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID, policy3.ID); //if I buy more than 50 nis xor more than two ipad I get 50% on the "Food"
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond3.ID, xor.ID);  //if I buy more than 50 nis and more than one bisli
+            DiscountPolicy
+                add = store.CreateComplexPolicy("add", policy1.ID, policy2.ID); //I have 70% on bisli and the rest 20%
+            DiscountPolicy
+                xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID,
+                    policy3.ID); //if I buy more than 50 nis xor more than two ipad I get 50% on the "Food"
+            DiscountPolicy
+                and = store.CreateComplexPolicy("and", cond1.ID, cond3.ID,
+                    xor.ID); //if I buy more than 50 nis and more than one bisli
             store.AddPolicy(add.ID);
             store.AddPolicy(and.ID);
             //Act
@@ -329,7 +386,8 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateTwoNotCommonPolicys()
         {
             //Arrange
-            DiscountPolicy add = store.CreateComplexPolicy("add", policy1.ID, policy2.ID); //I have 70% on bisli and the rest 20%
+            DiscountPolicy
+                add = store.CreateComplexPolicy("add", policy1.ID, policy2.ID); //I have 70% on bisli and the rest 20%
 
             store.AddPolicy(policy4.ID);
             store.AddPolicy(add.ID);
@@ -345,10 +403,12 @@ namespace SadnaExpressTests.Unit_Tests
         public void CalculateOneCondNotPolicys()
         {
             //Arrange
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond2.ID, policy2.ID); //I have 70% on bisli and the rest 20%
+            DiscountPolicy
+                and = store.CreateComplexPolicy("and", cond1.ID, cond2.ID,
+                    policy2.ID); //I have 70% on bisli and the rest 20%
             store.AddPolicy(policy4.ID);
             store.AddPolicy(and.ID);
-            
+
             //Act
             Dictionary<Item, KeyValuePair<double, DateTime>> items = store.DiscountPolicyTree.calculate(store, basket);
             //Assert
@@ -356,9 +416,11 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.IsFalse(items.ContainsKey(store.GetItemById(item2))); //not return
             Assert.AreEqual(2800, items[store.GetItemById(item3)].Key); // changed
         }
+
         #endregion
-        
+
         #region Add the same twice
+
         [TestMethod]
         public void AddTheSameSimplePolicyFail()
         {
@@ -367,19 +429,73 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.ThrowsException<Exception>(() =>
                 store.CreateSimplePolicy("ItemIpad", 30, new DateTime(2022, 4, 30), new DateTime(2025, 4, 30)));
         }
-        
+
         [TestMethod]
         public void AddTheAndPolicyFail()
         {
             //Arrange
-            DiscountPolicy and = store.CreateComplexPolicy("and", cond1.ID, cond2.ID, policy2.ID); //I have 70% on bisli and the rest 20%
+            DiscountPolicy
+                and = store.CreateComplexPolicy("and", cond1.ID, cond2.ID,
+                    policy2.ID); //I have 70% on bisli and the rest 20%
             Assert.ThrowsException<Exception>(() =>
                 store.CreateComplexPolicy("and", cond1.ID, cond2.ID, policy2.ID));
-
         }
         #endregion
         
+        #region Remove
+        [TestMethod]
+        public void RemoveSimplePolicy()
+        {
+            //Arrange
+            store.AddPolicy(policy1.ID);
+            Assert.IsTrue(store.AllDiscountPolicies.ContainsKey(policy1));
+            int prePolicy = store.AllDiscountPolicies.Count;
+            //Act
+            store.RemovePolicy(policy1.ID, "Policy");
+            //Assert
+            Assert.AreEqual(prePolicy - 1, store.AllDiscountPolicies.Count);
+            Assert.IsFalse(store.AllDiscountPolicies.ContainsKey(policy1));
+        }
+
+        [TestMethod]
+        public void RemoveComplexPolicy()
+        {
+            //Arrange
+            DiscountPolicy
+                xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID,
+                    policy1.ID); //if I buy more than 50 nis xor more than two ipad I get 20% on the items
+            store.AddPolicy(xor.ID);
+            Assert.IsTrue(store.AllDiscountPolicies.ContainsKey(xor));
+            int prePolicy = store.AllDiscountPolicies.Count;
+            //Act
+            store.RemovePolicy(xor.ID, "Policy");
+            //Assert
+            Assert.AreEqual(prePolicy - 1, store.AllDiscountPolicies.Count);
+            Assert.IsFalse(store.AllDiscountPolicies.ContainsKey(xor));
+        }
+        [TestMethod]
+        public void RemoveConditionInComplexPolicy()
+        {
+            //Arrange
+            DiscountPolicy xor = store.CreateComplexPolicy("xor", cond1.ID, cond2.ID,
+                    policy1.ID); //if I buy more than 50 nis xor more than two ipad I get 20% on the items
+            store.AddPolicy(xor.ID);
+            Assert.IsTrue(store.AllDiscountPolicies.ContainsKey(xor));
+            int prePolicy = store.AllDiscountPolicies.Count;
+            Assert.IsTrue(store.CondDiscountPolicies.ContainsKey(cond1));
+            int preCond = store.CondDiscountPolicies.Count;
+            //Act
+            store.RemovePolicy(cond1.ID, "Condition");
+            //Assert
+            Assert.AreEqual(prePolicy, store.AllDiscountPolicies.Count);
+            Assert.IsTrue(store.AllDiscountPolicies.ContainsKey(xor));
+            Assert.AreEqual(preCond-1, store.CondDiscountPolicies.Count);
+            Assert.IsFalse(store.CondDiscountPolicies.ContainsKey(cond1));
+        }
+        #endregion
+
         #region Clean Up
+
         [TestCleanup]
         public void CleanUp()
         {
@@ -387,6 +503,8 @@ namespace SadnaExpressTests.Unit_Tests
             store.AllDiscountPolicies = null;
             store.DiscountPolicyTree = null;
         }
+
         #endregion
     }
+
 }

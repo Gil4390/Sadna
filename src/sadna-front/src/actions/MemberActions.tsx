@@ -557,7 +557,7 @@ export function handleAddPurchaseCondition(storeID , entity,entityName,type,valu
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data.value)
+        return Promise.resolve(data)
     })
 }
 export function handleAddDiscountCondition(storeID , entity,entityName,type,value,op,opCond) {
@@ -581,11 +581,11 @@ export function handleAddDiscountCondition(storeID , entity,entityName,type,valu
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data.value)
+        return Promise.resolve(data)
     })
 }
 
-export function handleRemovePurchaseCondition(storeID , condID) {
+export function handleRemovePurchaseCondition(userID,storeID , condID) {
     let url = "http://localhost:8080/api/member/rm-cond";
 
     return fetch(url, {
@@ -593,6 +593,7 @@ export function handleRemovePurchaseCondition(storeID , condID) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userID:userID,
             storeID:storeID,
             condID:condID,
 
@@ -602,7 +603,7 @@ export function handleRemovePurchaseCondition(storeID , condID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data.value)
+        return Promise.resolve(data)
     })
 }
 export function handleCreateSimplePolicy(storeID , level ,percent, startDate,endDate ) {
@@ -649,7 +650,7 @@ export function handleCreateComplexPolicy(storeID , op, policys) {
     })
 }
 
-export function handleAddPolicy(storeID , discountPolicy) {
+export function handleAddPolicy(userID,storeID , discountPolicy) {
     let url = "http://localhost:8080/api/member/add-policy";
 
     return fetch(url, {
@@ -657,6 +658,7 @@ export function handleAddPolicy(storeID , discountPolicy) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userID:userID,
             storeID:storeID,
             discountPolicy:discountPolicy,
         })
@@ -669,7 +671,7 @@ export function handleAddPolicy(storeID , discountPolicy) {
     })
 }
 
-export function handleRemovePolicy(storeID , discountPolicy) {
+export function handleRemovePolicy(userID,storeID , discountPolicy , type) {
     let url = "http://localhost:8080/api/member/rm-policy";
 
     return fetch(url, {
@@ -677,8 +679,10 @@ export function handleRemovePolicy(storeID , discountPolicy) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userID:userID,
             storeID:storeID,
             discountPolicy:discountPolicy,
+            type:type
         })
     }).then(async response => {
         const data = await response.json();

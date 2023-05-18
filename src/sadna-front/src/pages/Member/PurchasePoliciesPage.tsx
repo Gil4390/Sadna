@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { handleAddPurchaseCondition, handleGetAllPurchaseConditions, handleRemovePurchaseCondition } from '../../actions/MemberActions.tsx';
 import { PurcahseCondition , Item , Store, Policy} from '../../models/Shop.tsx';
 import { DiscountCondition } from '../../components/DiscountCondition.tsx';
+import { ResponseT,Response } from '../../models/Response.tsx';
 
 
 function PurchasePoliciesPage(props) {
@@ -47,10 +48,19 @@ function PurchasePoliciesPage(props) {
   const closeModal = () => {
     setShowModal(false);
   };
-
+  const handleStoreCond =(e ) =>{
+    if (e === 'Store' )
+    {
+      setEntityChoice(e)
+      setEntity('a')
+    }
+    else{
+      setEntity('')
+      setEntityChoice(e)
+    }
+  }
 
   const GetPurcahsePolicys =()=>{
-
     handleGetAllPurchaseConditions(storeId).then(
       value => {
         console.log(value)
@@ -66,16 +76,28 @@ function PurchasePoliciesPage(props) {
   const handleSubmit = () => {
     handleAddPurchaseCondition(storeId ,EntityChoice, entity,WhichCond,condValue,selectedOption,otherCondition).then(
       value => {
-        setPolicyList(value as Policy[]);
-        setWhichCond("");
-        setEntity("");
-        setEntityChoice("");
-        setCondValue("");
-        setOtherCondition("");
+        // setPolicyList(value as Policy[]);
+        setWhichCond('');
+        setEntity('a');
+        setEntityChoice('');
+        setCondValue('');
+        setOtherCondition('');
         setShowModal(false);
+        setCondResponse(value as ResponseT)
       })
       .catch(error => alert(error));
   };
+
+  const [condResponse, setCondResponse]=useState<ResponseT>();
+  useEffect(() => {
+    if(condResponse!=undefined)
+      if(condResponse?.errorOccured)
+        alert(condResponse?.errorMessage) 
+      else{
+        GetPurcahsePolicys();
+      }
+      setCondResponse(undefined);
+  }, [condResponse])
 
 return (
     <div className="container mt-5">
@@ -98,10 +120,10 @@ return (
       <p></p>
 
                 <Row className="mt-3">
-          {policysList.length===0? (<div>  No Items </div>): (policysList.map((cond) => (
+          {policysList.length===0? (<div>  There is no policies </div>): (policysList.map((cond) => (
             // <div key={item.name}>{item.name} </div>
             <Col  key={cond.policyID} className="mt-3">
-              <DiscountCondition { ...cond } handleRemove={GetPurcahsePolicys} storID={storeId} ></DiscountCondition>
+              <DiscountCondition obj={cond} onPolicyChanged={GetPurcahsePolicys} purchase={true} userID={userId} storeID={storeId} ></DiscountCondition>
             </Col>
             )))}
         </Row>
@@ -120,7 +142,7 @@ return (
               <Form.Control
                 as="select"
                 value={EntityChoice}
-                onChange={(e) => setEntityChoice(e.target.value)}
+                onChange={(e) => handleStoreCond(e.target.value)}
               >
                 <option>Type</option>
                 <option>Store</option>
@@ -136,6 +158,7 @@ return (
                 placeholder="Enter entity's name"
                 value={entity}
                 onChange={(e) => setEntity(e.target.value)}
+
               />
             </Form.Group>
             )}

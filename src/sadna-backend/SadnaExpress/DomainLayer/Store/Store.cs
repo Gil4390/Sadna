@@ -249,9 +249,40 @@ namespace SadnaExpress.DomainLayer.Store
             return discountPolicyTree;
         }
 
-        public void RemovePolicy(int ID)
+        public void RemovePolicy(int ID , string type)
         {
-            discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
+            if (type == "Condition")
+            {
+                Condition toRemoveCond = null;
+                foreach (Condition condition in condDiscountPolicies.Keys)
+                {
+                    if (condition.ID == ID)
+                        toRemoveCond = condition;
+                }
+
+                if (toRemoveCond != null)
+                {
+                    condDiscountPolicies.Remove(toRemoveCond);
+                } 
+            }
+
+            else if (type == "Policy")
+            {
+                DiscountPolicy toRemove = null;
+                foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
+                {
+                    if (discountPolicy.ID == ID)
+                        toRemove = discountPolicy;
+                }
+
+                if (toRemove != null)
+                {
+                    discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
+                    allDiscountPolicies.Remove(toRemove);
+                } 
+            }
+            else
+                throw new Exception("Policy/Condition not found");
         }
         
         private DiscountPolicy GetPolicyByID(int ID)
@@ -273,7 +304,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         #region both policies
 
-        public Condition AddCondition(string entityStr, string entityName, string type, double val, DateTime dt=default, string op=default , int opCond=default)
+        public Condition AddCondition(string entityStr, string entityName, string type, double val, DateTime dt=default, string op=default , int opCond=-1)
         {
             switch (entityStr)
             {
@@ -283,7 +314,12 @@ namespace SadnaExpress.DomainLayer.Store
                 case "Store":
                     return AddConditionHelper(this, type, val, dt, op, opCond);
                 case "Category":
-                    return AddConditionHelper(entityStr, type, val, dt, op, opCond);
+                    foreach (Item i in itemsInventory.items_quantity.Keys)
+                    {
+                        if (i.Category == entityName)
+                            return AddConditionHelper(entityStr, type, val, dt, op, opCond);
+                    }
+                    throw new Exception("Category doesn't exists in store");
                 default:
                     throw new Exception("the entity not exist");
             }
@@ -328,7 +364,18 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 if (PurchasePolicyList.Contains(c))
                     throw new Exception("the condition already exist");
-                 c = AddSimplePurchaseCondition(c, GetPurchaseCond(opCond), op);
+                if (!string.IsNullOrEmpty(op))
+                    c = AddSimplePurchaseCondition(c, GetPurchaseCond(opCond), op);
+                else
+                    c = AddSimplePurchaseCondition(c, null, op);
+                // else
+                // {
+                //     Condition cond2 = GetPurchaseCond(opCond);
+                //     if (cond2 == null)
+                //         throw new Exception($"condition {opCond} not exist");
+                //     c = AddSimplePurchaseCondition(c,cond2, op);
+                // }
+
             }
             else
                 if (!condDiscountPolicies.ContainsKey(c))

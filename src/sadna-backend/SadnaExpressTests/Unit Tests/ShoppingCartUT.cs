@@ -29,6 +29,7 @@ namespace SadnaExpressTests.Unit_Tests
             shoppingCart.AddItemToCart(storeID, itemID, 5);
             //Assert
             Assert.AreEqual(1, shoppingCart.Baskets.Count);
+            Assert.AreEqual(5,shoppingCart.GetItemQuantityInCart(storeID, itemID));
         }
 
         [TestMethod()]
@@ -41,16 +42,21 @@ namespace SadnaExpressTests.Unit_Tests
             shoppingCart.AddItemToCart(storeID, itemID, 5);
             //Assert
             Assert.AreEqual(1, shoppingCart.Baskets.Count);
+            Assert.AreEqual(5,shoppingCart.GetItemQuantityInCart(storeID, itemID));
+            Assert.AreEqual(2,shoppingCart.GetItemQuantityInCart(storeID, itemID2));
         }
         [TestMethod()]
         public void AddMoreItemFromDiffStoreSuccess()
         {
             //arrange
-            shoppingCart.AddItemToCart(Guid.NewGuid(), itemID, 2);
+            Guid newStoreID = Guid.NewGuid();
+            shoppingCart.AddItemToCart(newStoreID, itemID, 2);
             //Act
             shoppingCart.AddItemToCart(storeID, itemID, 5);
             //Assert
             Assert.AreEqual(2, shoppingCart.Baskets.Count);
+            Assert.AreEqual(5,shoppingCart.GetItemQuantityInCart(storeID, itemID));
+            Assert.AreEqual(2,shoppingCart.GetItemQuantityInCart(newStoreID, itemID));
         }
         
         [TestMethod()]
@@ -74,6 +80,8 @@ namespace SadnaExpressTests.Unit_Tests
             shoppingCart.RemoveItemFromCart(storeID,itemID);
             //Assert
             Assert.AreEqual(1, shoppingCart.Baskets.Count);
+            Assert.ThrowsException<Exception>(()=>shoppingCart.GetItemQuantityInCart(storeID, itemID));
+            Assert.AreEqual(2,shoppingCart.GetItemQuantityInCart(storeID, itemID2));
         }
         [TestMethod()]
         public void RemoveBasketNotExist()
@@ -114,6 +122,7 @@ namespace SadnaExpressTests.Unit_Tests
             shoppingCart.EditItemFromCart(storeID, itemID, 5);
             //Assert
             Assert.AreEqual(1, shoppingCart.Baskets.Count);
+            Assert.AreEqual(5,shoppingCart.GetItemQuantityInCart(storeID, itemID));
         }
         
 
