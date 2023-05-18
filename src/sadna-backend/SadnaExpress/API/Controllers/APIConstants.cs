@@ -123,7 +123,10 @@ namespace SadnaExpress.API.Controllers
             public const string getAllPolicy = "get-all-policy";
 
             public const string getMemberName = "get-member-name";
-            
+
+            public const string getStoreRevenue = "get-store-revenue";
+
+
         }
 
         public static class AdminData
@@ -141,6 +144,8 @@ namespace SadnaExpress.API.Controllers
             public const string allpurchasesStore= "all-purchases-stores";
             
             public const string removeMember = "rm-member";
+
+            public const string getSystemRevenue = "get-system-revenue";
         }
     }
 }

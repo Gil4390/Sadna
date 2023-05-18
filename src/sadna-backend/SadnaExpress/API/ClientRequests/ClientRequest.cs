@@ -160,4 +160,14 @@ namespace SadnaExpress.API.ClientRequests
         public Guid storeID{ get; set; }
         public int condID{ get; set; }
     }
+
+    public class StoreRevenueRequest : ClientRequest
+    {
+        public Guid storeID { get; set; }
+        public DateTime date { get; set; }
+    }
+    public class SystemRevenueRequest : ClientRequest
+    {
+        public DateTime date { get; set; }
+    }
 }

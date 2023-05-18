@@ -431,6 +431,16 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetMemberName(userID);
         }
+
+        public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
+        {
+            return _realBridge.GetStoreRevenue(userID, storeID, date);
+        }
+
+        public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
+        {
+            return _realBridge.GetSystemRevenue(userID, date);
+        }
     }
 
 
