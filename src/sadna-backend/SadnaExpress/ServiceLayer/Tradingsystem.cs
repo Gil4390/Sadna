@@ -512,7 +512,7 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetAllConditions(store);
         }
 
-        public Response AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        public Response AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             return storeManager.AddCondition(store , entity,entityName,type,value,dt,entityRes , entityResName, typeRes , valueRes  ,op , opCond);
