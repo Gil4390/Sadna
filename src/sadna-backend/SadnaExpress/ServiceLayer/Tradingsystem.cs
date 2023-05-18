@@ -588,6 +588,7 @@ namespace SadnaExpress.ServiceLayer
         public Response PlaceBid(Guid userID, Guid itemID, double price)
         {
             //TODO NOGA
+            return new Response();
             throw new NotImplementedException();
         }
 
