@@ -584,5 +584,17 @@ namespace SadnaExpress.ServiceLayer
             res.Value = name;
             return res;
         }
+
+        public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
+        {
+            //TODO
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
+        {
+            //TODO
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Button, Form, FormControl, InputGroup } from 'react-bootstrap';
-import { handleGetSystemRevenue } from '../../actions/AdminActions.tsx';
+import { handleGetStoreRevenue } from '../../actions/MemberActions.tsx';
 import Exit from '../Exit.tsx';
 
-function AdminRevenuePage(props) {
+function StoreRevenuePage(props) {
   const [selectedDate, setSelectedDate] = useState('');
   const [revenueAmount, setRevenueAmount] = useState(0);
 
@@ -12,7 +12,7 @@ function AdminRevenuePage(props) {
   };
 
   const handleRequest = () => {
-    handleGetSystemRevenue(props.id, selectedDate).then(
+    handleGetStoreRevenue(props.id, props.storeId, selectedDate).then(
       value => {
         setRevenueAmount(value as number);
       }
@@ -22,7 +22,7 @@ function AdminRevenuePage(props) {
   return (
     <div className="container">
       <Exit id={props.id}/>
-      <h1>System Revenue</h1>
+      <h1>Store Revenue</h1>
 
       <Form>
         <Form.Group controlId="dateSelect">
@@ -48,4 +48,4 @@ function AdminRevenuePage(props) {
   );
 }
 
-export default AdminRevenuePage;
+export default StoreRevenuePage;
