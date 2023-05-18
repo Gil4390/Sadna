@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.Services;
+using Newtonsoft.Json.Bson;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -62,5 +63,6 @@ namespace SadnaExpress.DomainLayer.User
 
         ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID);
         void MarkNotificationAsRead(Guid userID, Guid notificationID);
+        void NotifyBuyerPurchase(Guid userID);
     }
 }

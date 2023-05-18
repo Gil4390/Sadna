@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Microsoft.AspNet.SignalR.Messaging;
+using SadnaExpress.API.SignalR;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
@@ -141,7 +143,10 @@ namespace SadnaExpress.ServiceLayer
                 // Notify to store owners
                 foreach (ShoppingBasket basket in shoppingCart.Baskets)
                     NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store "+storeFacade.GetStore(basket.StoreID).StoreName+" !", userID);
-             
+
+                //for bar - notify a user that his purchase completed succssefully by notification
+                userFacade.NotifyBuyerPurchase(userID);
+
                 // delete the exist shopping cart
                 userFacade.PurchaseCart(userID);
                 return new ResponseT<List<ItemForOrder>>(itemForOrders);

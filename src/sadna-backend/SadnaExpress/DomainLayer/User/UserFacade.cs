@@ -9,6 +9,9 @@ using System.Security.Cryptography.X509Certificates;
 using SadnaExpress.ServiceLayer;
 using System.Threading.Tasks;
 using NodaTime;
+using SadnaExpress.API.SignalR;
+using Microsoft.AspNet.SignalR.Messaging;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -20,6 +23,7 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<Guid, string> macs;
 
         private readonly string guestEmail = "guest";
+        private readonly string purchaseNotificationForBuyer = "Your purchase completed successfully, thank you for buying at Sadna Express!";
         private bool _isTSInitialized;
         private IPasswordHash _ph = new PasswordHash();
         private IRegistration _reg = new Registration();
@@ -769,6 +773,13 @@ namespace SadnaExpress.DomainLayer.User
 
         }
 
+        public void NotifyBuyerPurchase(Guid userID)
+        {
+            NotificationNotifier.GetInstance().SendNotification(userID, purchaseNotificationForBuyer);
+            if (members.ContainsKey(userID))
+                members[userID].Update(new Notification(DateTime.Now, userID, purchaseNotificationForBuyer, userID));
+        }
+
         public void LoadData(Guid storeid1, Guid storeid2)
         {
             Guid systemManagerid = Guid.NewGuid();
@@ -856,5 +867,6 @@ namespace SadnaExpress.DomainLayer.User
             NotificationSystem.Instance.RegisterObserver(storeid1, storeOwner1);
             NotificationSystem.Instance.RegisterObserver(storeid2, storeOwner2);
         }
+
     }
 }
