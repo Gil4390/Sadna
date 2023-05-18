@@ -584,5 +584,23 @@ namespace SadnaExpress.ServiceLayer
             res.Value = name;
             return res;
         }
+
+        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        {
+            //TODO NOGA
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<SBid> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            //TODO NOGA
+            throw new NotImplementedException();
+        }
+
+        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        {
+            //TODO NOGA
+            throw new NotImplementedException();
+        }
     }
 }

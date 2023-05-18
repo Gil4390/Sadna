@@ -114,5 +114,8 @@ namespace SadnaExpress.ServiceLayer
         Response MarkNotificationAsRead(Guid userID, Guid notificationID);
         Response CheckPurchaseConditions(Guid userID);
         ResponseT<string> GetMemberName(Guid userID);
+        Response PlaceBid(Guid userID, Guid itemID, double price);
+        ResponseT<SBid> GetBidsInStore(Guid userID, Guid storeID);
+        Response ReactToBid(Guid userID, Guid itemID, string bidResponse);
     }
 }

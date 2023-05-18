@@ -160,4 +160,22 @@ namespace SadnaExpress.API.ClientRequests
         public Guid storeID{ get; set; }
         public int condID{ get; set; }
     }
+
+    public class BidRequest : ClientRequest
+    {
+        public Guid itemID { get; set; }
+        public double price { get; set; }
+    }
+
+    public class BidsInStoreRequest : ClientRequest
+    {
+        public Guid storeID { get; set; }
+    }
+
+    public class ReactToBidRequest : ClientRequest
+    {
+        public Guid itemID { get; set; }
+        public string bidResponse { get; set; }
+
+    }
 }

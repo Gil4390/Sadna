@@ -38,6 +38,9 @@ namespace SadnaExpress.API.Controllers
 
             public const string purchaseCart = "purchase-cart";
 
+            public const string placeBid = "place-bid";
+
+
         }
 
         public static class MemberData
@@ -123,7 +126,13 @@ namespace SadnaExpress.API.Controllers
             public const string getAllPolicy = "get-all-policy";
 
             public const string getMemberName = "get-member-name";
-            
+
+            public const string getBidsInStore = "get-bids-in-store";
+
+            public const string reactToBid = "react-to-bid";
+
+
+
         }
 
         public static class AdminData
