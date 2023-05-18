@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class Item
     {
         private Guid itemID;
-        public Guid ItemID {get=>itemID;}
+        [Key]
+        public Guid ItemID { get => itemID; set => itemID = value; }
 
         private string name;
         public string Name {get => name; set => name = value;}
@@ -35,5 +37,11 @@ namespace SadnaExpress.DomainLayer.Store
                    item.rating == rating;
         }
         
+
+        public Item()
+        {
+
+        }
+
     }
 }

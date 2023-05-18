@@ -1,15 +1,32 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
 namespace SadnaExpress.DomainLayer.Store
 {
     public class Inventory
     {
-        public ConcurrentDictionary<Item, int> items_quantity;
         
+        [NotMapped]
+        public ConcurrentDictionary<Item, int> items_quantity { get; set; }
+
+        [Key]
+        public Guid StoreID { get; set; }
+        public string Items_quantityDB
+        { 
+            get => JsonConvert.SerializeObject(items_quantity);
+            set => items_quantity = JsonConvert.DeserializeObject<ConcurrentDictionary<Item, int>>(value); 
+        }
+
+
         public Inventory()
         {
             items_quantity = new ConcurrentDictionary<Item, int>();

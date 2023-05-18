@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace SadnaExpress.DomainLayer.Store.Policy
 {
+    [NotMapped]
     public abstract class Condition
     {
         public int ID;

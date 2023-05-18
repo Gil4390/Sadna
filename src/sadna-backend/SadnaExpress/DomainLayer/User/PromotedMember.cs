@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
@@ -8,10 +10,45 @@ namespace SadnaExpress.DomainLayer.User
     public class PromotedMember : Member
     {
         private ConcurrentDictionary<Guid, PromotedMember> directSupervisor;
+        
+        public string DirectSupervisor 
+        { 
+            get => JsonConvert.SerializeObject(directSupervisor); 
+            set => directSupervisor = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid,PromotedMember>>(value);
+        }
+
         private ConcurrentDictionary<Guid, List<PromotedMember>> appoint;
+
+        public string Appoint { 
+            get => JsonConvert.SerializeObject(appoint); 
+            set => appoint = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<PromotedMember>>>(value);
+        }
+
         private readonly ConcurrentDictionary<Guid, List<string>> permissions;
-        public ConcurrentDictionary<Guid, List<string>> Permission{get=>permissions;}
+        [NotMapped]
+        public ConcurrentDictionary<Guid, List<string>> Permission{ get => permissions; set => Permission = value; }
+
+        // todo
+        private ConcurrentDictionary<Guid, List<string>> permissionsDB;
+        public string PermissionDB
+        {
+            get => JsonConvert.SerializeObject(permissions);
+            set => permissionsDB = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(value);
+        }
+
+        // todo
+        public Permissions PermissionsHolder
+        {
+            get => permissionsHolder;
+            set => PermissionsHolder = value;
+        }
+
         private readonly Permissions permissionsHolder;
+
+        public PromotedMember()
+        {
+
+        }
 
         /* permissions:
          * owner permissions

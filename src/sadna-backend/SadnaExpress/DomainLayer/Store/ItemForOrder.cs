@@ -1,21 +1,24 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class ItemForOrder
     {
+        [Key]
+        public Guid ItemForOrderId { get; set; }
         private Guid itemID;
-        public Guid ItemID {get=>itemID;}
+        public Guid ItemID { get => itemID; set => itemID = value; }
         private Guid storeID;
-        public Guid StoreID {get=>storeID;}
+        public Guid StoreID {get=>storeID; set => storeID = value; }
         private string name;
-        public string Name {get => name;}
+        public string Name {get => name; set => name = value; }
         private string category;
-        public string Category {get => category;}
+        public string Category {get => category; set => category = value; }
         private double price;
-        public double Price {get => price;}
+        public double Price {get => price; set => price = value; }
         private int rating;
-        public int Rating {get => rating;}
+        public int Rating {get => rating; set => rating = value; }
         
         private string userEmail;
 
@@ -55,6 +58,11 @@ namespace SadnaExpress.DomainLayer.Store
             this.userEmail = userEmail;
             this.storeName = storeName;
             this.storeID = storeID;
+        }
+
+        public ItemForOrder()
+        {
+
         }
     }
 }

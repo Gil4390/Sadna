@@ -59,6 +59,8 @@
     <Compile Include="API\SignalR\NotificationNotifier.cs" />
     <Compile Include="API\SignalR\SignalRServerConfig.cs" />
     <Compile Include="API\SignalR\SignalRServiceHost.cs" />
+    <Compile Include="DataLayer\DatabaseContext.cs" />
+    <Compile Include="DomainLayer\User\Macs.cs" />
     <Compile Include="DomainLayer\User\Notification.cs" />
     <Compile Include="DomainLayer\User\IObserver.cs" />
     <Compile Include="DomainLayer\Store\Policy\Condition.cs" />
@@ -89,6 +91,11 @@
     <Compile Include="DomainLayer\User\UserFacade.cs" />
     <Compile Include="ExternalServices\PaymentService.cs" />
     <Compile Include="ExternalServices\SupplierService.cs" />
+    <Compile Include="Migrations\20230518120839_Intial.cs" />
+    <Compile Include="Migrations\20230518120839_Intial.designer.cs">
+      <DependentUpon>20230518120839_Intial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\DatabaseContextModelSnapshot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />
@@ -117,6 +124,20 @@
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Owin" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.2.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore">
+      <Version>3.1.32</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
+      <Version>3.1.32</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer">
+      <Version>3.1.32</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <Version>3.1.32</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Owin" Version="4.2.2" />
     <PackageReference Include="Microsoft.Owin.Cors" Version="4.2.2" />
     <PackageReference Include="Microsoft.Owin.FileSystems" Version="4.2.2" />

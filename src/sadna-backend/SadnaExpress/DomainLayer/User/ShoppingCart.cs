@@ -1,20 +1,25 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class ShoppingCart
     {
+        [Key]
+        public Guid ShoppingCartId {get; set;}
         private HashSet<ShoppingBasket> baskets;
 
         public HashSet<ShoppingBasket> Baskets
         {
             get => baskets;
+            set => baskets = value;
         }
 
         public ShoppingCart()
         {
             baskets = new HashSet<ShoppingBasket>();
+            ShoppingCartId = Guid.NewGuid();
         }
 
         public override string ToString()

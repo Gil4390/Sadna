@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using SadnaExpress.DomainLayer.Store;
 
@@ -8,6 +9,7 @@ namespace SadnaExpress.DomainLayer.User
     public class User
     {
         protected Guid userId;
+        [Key]
         public Guid UserId {get => userId; set => userId = value;}
         protected ShoppingCart shoppingCart;
         

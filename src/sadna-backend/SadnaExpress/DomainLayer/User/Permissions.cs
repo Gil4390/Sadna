@@ -1,10 +1,13 @@
 ﻿using SadnaExpress.DomainLayer.Store;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Exception = System.Exception;
 
 namespace SadnaExpress.DomainLayer.User
 {
+    // todo
+    [NotMapped]
     public class Permissions
     {
         private static readonly object syncRoot = new object();
