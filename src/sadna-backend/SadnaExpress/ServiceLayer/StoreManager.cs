@@ -541,6 +541,34 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, storeID, new List<string> { "owner permissions", "founder permissions", });
+                return new ResponseT<double>(Orders.Instance.GetStoreRevenue(storeID, date));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStoreRevenue) + ": " + ex.Message);
+                return new ResponseT<double>(ex.Message);
+            }
+        }
+
+        public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, Guid.Empty, new List<string> { "system manager permissions" });
+                return new ResponseT<double>(Orders.Instance.GetSystemRevenue(date));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetSystemRevenue) + ": " + ex.Message);
+                return new ResponseT<double>(ex.Message);
+            }
+        }
+        
         public void LoadData()
         {
             Store store1 = new Store("Zara");

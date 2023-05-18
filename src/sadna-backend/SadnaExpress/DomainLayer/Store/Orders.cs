@@ -107,6 +107,35 @@ namespace SadnaExpress.DomainLayer.Store
             return new Dictionary<Guid, List<Order>>(storeOrders);
         }
 
+        public double GetStoreRevenue(Guid storeID, DateTime date)
+        {
+            double sum = 0;
+            foreach (Order order in GetOrdersByStoreId(storeID))
+            {
+                if (order.OrderTime >= date)
+                {
+                    sum += order.CalculatorAmount();
+                }
+            }
+            return sum;
+        }
+        
+        public double GetSystemRevenue(DateTime date)
+        {
+            double sum = 0;
+            foreach (List<Order> orderList in storeOrders.Values)
+            {
+                foreach (Order order in orderList)
+                {
+                    if (order.OrderTime >= date)
+                    {
+                        sum += order.CalculatorAmount();
+                    }
+                }
+            }
+            return sum;
+        }
+
         public void CleanUp()
         {
             instance = null;

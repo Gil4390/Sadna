@@ -2,17 +2,22 @@ import React, { useState } from 'react';
 import { Button, Form, FormControl, InputGroup } from 'react-bootstrap';
 import { handleGetStoreRevenue } from '../../actions/MemberActions.tsx';
 import Exit from '../Exit.tsx';
+import { useLocation } from 'react-router-dom';
 
 function StoreRevenuePage(props) {
+  
+  const location = useLocation();
+  const { userId, storeId } = location.state;
   const [selectedDate, setSelectedDate] = useState('');
   const [revenueAmount, setRevenueAmount] = useState(0);
+  
 
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
   };
 
   const handleRequest = () => {
-    handleGetStoreRevenue(props.id, props.storeId, selectedDate).then(
+    handleGetStoreRevenue(userId, storeId, selectedDate).then(
       value => {
         setRevenueAmount(value as number);
       }
