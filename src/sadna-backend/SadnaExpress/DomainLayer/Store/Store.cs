@@ -133,6 +133,7 @@ namespace SadnaExpress.DomainLayer.Store
             }
             Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();
+            Console.WriteLine((discountPolicyTree));
             if (discountPolicyTree != null)
                 itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
             foreach (Item item in itemsBeforeDiscount.Keys)
@@ -154,6 +155,7 @@ namespace SadnaExpress.DomainLayer.Store
             // calculate the cart after the discount
             Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();
+
             if (discountPolicyTree != null)
                 itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
             // remove the item from the store inventory
@@ -210,29 +212,29 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 case "xor":
                     XorDiscount xor = new XorDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    RemovePolicy(policys[2], "Policy");
                     return HelperInCreateComplexPolicy(xor);
                 case "and":
                     AndDiscount and = new AndDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    RemovePolicy(policys[2], "Policy");
                     return HelperInCreateComplexPolicy(and);
                 case "or":
                     OrDiscount or = new OrDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[2]));
+                    RemovePolicy(policys[2], "Policy");
                     return HelperInCreateComplexPolicy(or);
                 case "if":
                     ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]),GetPolicyByID(policys[1]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    RemovePolicy(policys[1], "Policy");
                     return HelperInCreateComplexPolicy(ifCond);
                 case "max":
                     MaxDiscount max = new MaxDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    RemovePolicy(policys[0], "Policy");
+                    RemovePolicy(policys[1], "Policy");
                     return HelperInCreateComplexPolicy(max);
                 case "add":
                     AddDiscount add = new AddDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[0]));
-                    allDiscountPolicies.Remove(GetPolicyByID(policys[1]));
+                    RemovePolicy(policys[0], "Policy");
+                    RemovePolicy(policys[1], "Policy");
                     return HelperInCreateComplexPolicy(add);
                 default:
                     throw new Exception("the op not exist");
@@ -252,34 +254,16 @@ namespace SadnaExpress.DomainLayer.Store
         public void RemovePolicy(int ID , string type)
         {
             if (type == "Condition")
-            {
-                Condition toRemoveCond = null;
-                foreach (Condition condition in condDiscountPolicies.Keys)
-                {
-                    if (condition.ID == ID)
-                        toRemoveCond = condition;
-                }
-
-                if (toRemoveCond != null)
-                {
-                    condDiscountPolicies.Remove(toRemoveCond);
-                } 
-            }
+                condDiscountPolicies.Remove(GetCondByID(ID));
 
             else if (type == "Policy")
             {
-                DiscountPolicy toRemove = null;
-                foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
-                {
-                    if (discountPolicy.ID == ID)
-                        toRemove = discountPolicy;
-                }
-
-                if (toRemove != null)
+                if (discountPolicyTree != null)
                 {
                     discountPolicyTree.RemovePolicy(GetPolicyByID(ID));
-                    allDiscountPolicies.Remove(toRemove);
-                } 
+                }
+                allDiscountPolicies.Remove(GetPolicyByID(ID));
+                
             }
             else
                 throw new Exception("Policy/Condition not found");
