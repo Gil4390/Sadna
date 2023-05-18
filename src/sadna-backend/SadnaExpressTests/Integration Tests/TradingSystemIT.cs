@@ -12,6 +12,7 @@ namespace SadnaExpressTests.Integration_Tests
     {
         protected TradingSystem trading;
         protected Guid userID;
+        protected Guid buyerMemberID;
         protected Guid buyerID;
         protected Guid storeID1;
         protected Guid storeID2;
@@ -28,6 +29,12 @@ namespace SadnaExpressTests.Integration_Tests
             userID = trading.Enter().Value;
             trading.Register(userID, "RotemSela@gmail.com", "noga", "schwartz", "asASD876!@");
             userID = trading.Login(userID, "RotemSela@gmail.com", "asASD876!@").Value;
+
+            // create buyer member
+            buyerMemberID = trading.Enter().Value;
+            trading.Register(buyerMemberID, "dor@gmail.com", "dor", "biton", "asASD876!@");
+            buyerMemberID = trading.Login(buyerMemberID, "dor@gmail.com", "asASD876!@").Value;
+
             // open stores
             storeID1 = trading.OpenNewStore(userID, "hello").Value;
             storeID2 = trading.OpenNewStore(userID, "hello2").Value;
@@ -37,9 +44,13 @@ namespace SadnaExpressTests.Integration_Tests
             itemID2 = trading.AddItemToStore(userID, storeID2, "ipad 32", "electronic", 3000, 1).Value;
             // create guest
             buyerID = trading.Enter().Value;
-            // add items to cart
+            // add items to cart for buyer
             trading.AddItemToCart(buyerID, storeID1, itemID1, 2);
             trading.AddItemToCart(buyerID, storeID2, itemID2, 1);
+
+            // add items to cart buyer member
+            trading.AddItemToCart(buyerMemberID, storeID1, itemID1, 2);
+            trading.AddItemToCart(buyerMemberID, storeID2, itemID2, 1);
         }
 
         public virtual void CleanUp()

@@ -181,6 +181,17 @@ namespace SadnaExpressTests.Integration_Tests
             Assert.AreEqual(9400, Orders.Instance.GetOrdersByUserId(buyerID)[0].CalculatorAmount());
         }
 
+        [TestMethod]
+        public void MemberPurchaseGetNotificationSuccess()
+        {
+            // Act
+            trading.PurchaseCart(buyerMemberID, "0502485415400", "Rabbi Akiva 5 Beer Sheva");
+
+            // Assert
+            Assert.AreEqual(1, trading.GetNotifications(buyerMemberID).Value.Count);
+            Assert.AreEqual("Your purchase completed successfully, thank you for buying at Sadna Express!", trading.GetNotifications(buyerMemberID).Value[0].Message);
+        }
+
         [TestCleanup]
         public override void CleanUp()
         {

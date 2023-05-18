@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.Services;
 
+
 namespace SadnaExpress.DomainLayer.User
 {
     public interface IUserFacade
@@ -62,5 +63,6 @@ namespace SadnaExpress.DomainLayer.User
 
         ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID);
         void MarkNotificationAsRead(Guid userID, Guid notificationID);
+        void NotifyBuyerPurchase(Guid userID);
     }
 }
