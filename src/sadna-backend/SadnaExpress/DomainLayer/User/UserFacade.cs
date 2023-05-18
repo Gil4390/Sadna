@@ -10,8 +10,6 @@ using SadnaExpress.ServiceLayer;
 using System.Threading.Tasks;
 using NodaTime;
 using SadnaExpress.API.SignalR;
-using Microsoft.AspNet.SignalR.Messaging;
-using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.DomainLayer.User
 {

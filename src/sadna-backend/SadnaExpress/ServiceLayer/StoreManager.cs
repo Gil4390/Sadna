@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Microsoft.AspNet.SignalR.Messaging;
-using SadnaExpress.API.SignalR;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
