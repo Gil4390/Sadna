@@ -130,7 +130,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected class Mock_Bad_SupplierService : Mock_SupplierService
         {
             // bad connection
-            public override bool Connect()
+            public override bool Handshake()
             {
                 return false;
             }
@@ -140,9 +140,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected class Mock_Bad_PaymentService : Mock_PaymentService
         {
             // bad connection
-            public override bool Connect()
+            public override string Handshake()
             {
-                return false;
+                return "Not OK";
             }
 
         }

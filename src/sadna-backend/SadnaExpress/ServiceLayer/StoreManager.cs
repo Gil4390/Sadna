@@ -109,7 +109,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid userID, SPaymentDetails paymentDetails, SSupplyDetails usersDetail)
         {
             Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
             try
@@ -125,15 +125,18 @@ namespace SadnaExpress.ServiceLayer
                     cart.Add(basket.StoreID, basket.ItemsInBasket);
                 // try to purchase the items. (the function update the quantity in the inventory in this function)
                 double amount = storeFacade.PurchaseCart(cart, ref itemForOrders, userFacade.GetUserEmail(userID));
-                if (!userFacade.PlacePayment(amount, paymentDetails))
+                int transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
+                if (transaction_payment_id == -1)
                 {
                     storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
                     throw new Exception("Payment operation failed");
                 }
-                if (!userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail))
+                
+                int transaction_supply_id = userFacade.PlaceSupply(usersDetail);
+                if (transaction_supply_id == -1) 
                 {
                     storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
-                    userFacade.CancelPayment(amount, paymentDetails); // because we need to refund the user
+                    userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
                     throw new Exception("Supply operation failed");
                 }
                 Orders.Instance.AddOrder(userID, itemForOrders);

@@ -2,6 +2,7 @@
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using System;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpressTests.Integration_Tests
 {
@@ -390,7 +391,10 @@ namespace SadnaExpressTests.Integration_Tests
 
 
             // purchase cart as guest
-            var res = trading.PurchaseCart(expectedBuyerId1, "5411556648", "Rabbi Akiva 5");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            var res = trading.PurchaseCart(expectedBuyerId1, transactionDetails, transactionDetailsSupply);
             Assert.IsFalse(res.ErrorOccured);//no error occurred purhcase succeed
 
             // cart now empy as guest

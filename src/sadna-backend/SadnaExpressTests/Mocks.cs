@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 namespace SadnaExpressTests
@@ -21,81 +22,82 @@ namespace SadnaExpressTests
                 isConnected = true;
             }
 
-            public virtual bool CancelOrder(string orderNum)
+            public virtual bool Cancel_Supply(string orderNum)
             {
                 return true;
             }
 
-            public virtual bool Connect()
+            public object Send(Dictionary<string, string> content)
+            {
+                throw new NotImplementedException();
+            }
+
+            public virtual bool Handshake()
             {
                 return isConnected;
             }
 
 
-            public virtual bool ShipOrder(string orderDetails, string userDetails)
+            public virtual int Supply(SSupplyDetails userDetails)
             {
-                return true;
+                return 1000;
             }
-
-            public virtual bool ValidateAddress(string address)
-            {
-                return true;
-            }
+            
         }
         public class Mock_Bad_PaymentService : Mock_PaymentService
         {
-            public override bool Pay(double amount, string transactionDetails)
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
             {
                 Thread.Sleep(11000); // Wait for 11 seconds
-                return true; // Return true after waiting
+                return -1; // Return true after waiting
             }
         }
         public class Mock_Bad_Credit_Limit_Payment : Mock_PaymentService
         {
-            public override bool Pay(double amount, string transactionDetails)
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
             {
                 if (amount > 100) 
-                    return false;
-                return true;
+                    return -1;
+                return -1;
             }
         }
 
         public class Mock_5sec_PaymentService : Mock_PaymentService
         {
-            public override bool Pay(double amount, string transactionDetails)
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
             {
                 Thread.Sleep(5000); // Wait for 5 seconds
-                return true; // Return true after waiting
+                return 1; // Return true after waiting
             }
 
         }
 
         public class Mock_Bad_SupplierService : Mock_SupplierService
         {
-            public override bool ShipOrder(string orderDetails, string userDetails)
+            public override int Supply(SSupplyDetails userDetails)
             {
                 Thread.Sleep(11000); // Wait for 11 seconds
-                return true; // Return true after waiting
+                return 100; // Return true after waiting
             }
 
         }
         
         public class Mock_Bad_Address_SupplierService : Mock_SupplierService
         {
-            public override bool ShipOrder(string orderDetails, string userDetails)
+            public override int Supply(SSupplyDetails userDetails)
             {
-                if (userDetails.Contains("La La Land"))
-                    return false;
-                return true; 
+                if (!userDetails.ValidationSettings())
+                    return -1;
+                return 100; 
             }
         }
 
         public class Mock_5sec_SupplierService : Mock_SupplierService
         {
-            public override bool ShipOrder(string orderDetails, string userDetails)
+            public override int Supply(SSupplyDetails userDetails)
             {
                 Thread.Sleep(5000); // Wait for 5 seconds
-                return true; // Return true after waiting
+                return 100; // Return true after waiting
             }
 
         }
@@ -109,16 +111,22 @@ namespace SadnaExpressTests
                 isConnected = true;
             }
 
-            public virtual bool Connect()
+
+            public object Send(Dictionary<string, string> content)
             {
-                return isConnected;
+                throw new NotImplementedException();
             }
 
-            public virtual bool Pay(double amount, string transactionDetails)
+            public virtual string Handshake()
             {
-                return true;
+                return "OK";
             }
-            public virtual bool cancel(double amount, string transactionDetails)
+
+            public virtual int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                return 10000;
+            }
+            public virtual bool Cancel_Pay(double amount, int transaction_id)
             {
                 return true;
             }

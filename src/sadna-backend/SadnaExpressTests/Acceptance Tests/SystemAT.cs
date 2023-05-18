@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.ExternalServices;
+using SadnaExpress.ServiceLayer.SModels;
 using static SadnaExpressTests.Mocks;
 
 namespace SadnaExpressTests.Acceptance_Tests
@@ -205,13 +207,15 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Arrange
             Guid id = new Guid();
             proxyBridge.SetIsSystemInitialize(true);
-            proxyBridge.SetPaymentService(new Mocks.Mock_5sec_PaymentService());
+            proxyBridge.SetPaymentService(new PaymentService());
             //Act
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
-                
-                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured);//error not occurred
@@ -222,12 +226,15 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Arrange
             Guid id = new Guid();
             proxyBridge.SetIsSystemInitialize(true);
-            proxyBridge.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
+            proxyBridge.SetPaymentService(new PaymentService());
             //Act
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
-                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("-", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             //Assert
@@ -244,7 +251,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
-                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             //Assert
@@ -264,8 +274,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid1, itemid1, 1);
-                
-                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured);//error not occurred
@@ -281,7 +293,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
-                return proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("-","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             //Assert
@@ -298,7 +313,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
-                return proxyBridge.PurchaseCart(id, "5411556648", "La La Land");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("-", "-", "-", "-", "-");
+
+                return proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             //Assert

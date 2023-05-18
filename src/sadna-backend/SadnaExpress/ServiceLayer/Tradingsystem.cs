@@ -193,7 +193,7 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetCartItems(userID);
         }
 
-        public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, SPaymentDetails paymentDetails, SSupplyDetails usersDetail)
         {
             ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
             return response;
@@ -593,6 +593,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
         {
             return storeManager.GetSystemRevenue(userID,date);
+        }
+
+        public Response Handshake()
+        {
+            return userManager.Handshake();
         }
     }
 }

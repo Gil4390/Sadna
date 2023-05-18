@@ -227,14 +227,6 @@ namespace SadnaExpress.API.Controllers
             return Ok(a);
         }
         
-        // [Route(APIConstants.MemberData.getCondition)]
-        // [ResponseType(typeof(ResponseT<Condition>))]
-        // [HttpPost]
-        // public IHttpActionResult GetCondition<T , M>([FromBody] ConditionRequest request)
-        // {
-        //     // return Ok(tradingSystem.GetCondition(request.storeID, request.entity, request.type,
-        //     //     request.value, request.dt, request.entityRes, request.typeRes, request.valueRes));
-        // }
         
         [Route(APIConstants.MemberData.addCondition)]
         [ResponseType(typeof(Response))]
