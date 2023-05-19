@@ -381,5 +381,23 @@ namespace SadnaExpress.API.Controllers
             double res = tradingSystem.GetStoreRevenue(request.userID, request.storeID, request.date).Value;
             return Ok(res);
         }
+
+        [Route(APIConstants.MemberData.getBidsInStore)]
+        [ResponseType(typeof(SBid))]
+        [HttpPost]
+        public IHttpActionResult GetBidsInStore([FromBody] BidsInStoreRequest request)
+        {
+            ResponseT<SBid> res = tradingSystem.GetBidsInStore(request.userID, request.storeID);
+            return Ok(res);
+        }
+
+        [Route(APIConstants.MemberData.reactToBid)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult ReactToBid([FromBody] ReactToBidRequest request)
+        {
+            Response res = tradingSystem.ReactToBid(request.userID, request.itemID, request.bidResponse);
+            return Ok(res);
+        }
     }
 }

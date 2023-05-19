@@ -93,6 +93,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />
     <Compile Include="ServiceLayer\IUserManager.cs" />
+    <Compile Include="ServiceLayer\SModels\SBid.cs" />
     <Compile Include="ServiceLayer\SModels\SItem.cs" />
     <Compile Include="ServiceLayer\Response.cs" />
     <Compile Include="ServiceLayer\ResponseT.cs" />

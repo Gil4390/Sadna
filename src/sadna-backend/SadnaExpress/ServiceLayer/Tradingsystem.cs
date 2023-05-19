@@ -594,5 +594,24 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.GetSystemRevenue(userID,date);
         }
+
+        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        {
+            //TODO NOGA
+            return new Response();
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<SBid> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            //TODO NOGA
+            throw new NotImplementedException();
+        }
+
+        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        {
+            //TODO NOGA
+            throw new NotImplementedException();
+        }
     }
 }

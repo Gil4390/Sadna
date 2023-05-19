@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Modal } from "react-bootstrap"
-import { handleAddItemCart , handleEditItemCart, handleRemoveItemCart} from '../actions/GuestActions.tsx';
+import { Button, Card, Form, Modal } from "react-bootstrap"
+import { handleAddItemCart , handleEditItemCart, handlePlaceBid, handleRemoveItemCart} from '../actions/GuestActions.tsx';
 import {Response} from '../../models/Response.tsx';
 import { handleGetItemReviews } from '../actions/MemberActions.tsx';
 import { Review } from '../models/Review.js';
@@ -29,12 +28,19 @@ const ReviewsModal = ({ show, handleClose, item, reviews}) => {
 
 export function StoreItem(props) {
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showBidModal, setShowBidModal] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
     
   const [amountInCart, setAmountInCart] = useState(props.item.count);
   const [responseAddItemCart, setResponseAddItemCart] = useState<Response>();
   const [responseDecreaseCartQuantity, setResponseDecreaseCartQuantity] = useState<Response>();
   const [responseRemoveItemFromCart, setResponseRemoveItemFromCart] = useState<Response>();
+  const [responsePlaceBid, setResponsePlaceBid] = useState<Response>();
+  const [price, setPrice] = useState(0);
+  const handlePriceChange = (event) => {
+    setPrice(event.target.value);
+  }
+
 
  //console.log(`id: ${props.item.itemId}, name: ${props.item.name}`,`category: ${props.item.category}, Price: ${props.item.price}, Rating: ${props.item.rating}, storeid: ${props.item.storeId} instock : ${props.item.inStock}`)
   const increaseCartQuantity =(id) => {
@@ -69,6 +75,21 @@ export function StoreItem(props) {
         setResponseRemoveItemFromCart(value);
       })
       .catch(error => alert(error));
+  }
+
+  const handleClickBid = () => {
+    setShowBidModal(true);
+  }
+  
+  const sendBid = (event) => {
+    event.preventDefault();
+    setShowBidModal(false);
+    handlePlaceBid(props.id, props.item.itemId, price).then(
+      value => {
+        setResponsePlaceBid(value as Response);
+      }
+    ).catch(error => alert(error));
+
   }
 
   const handleClickReviews = (item) => {
@@ -119,11 +140,34 @@ export function StoreItem(props) {
                 </div>)):(<div></div>)}
 
           </div>
+
+          <Button onClick={() => handleClickBid()} style={{margin: "0.5rem"}}>
+            Place Bid
+          </Button>
+          
           <Button onClick={() => handleClickReviews(props.item)} style={{margin: "0.5rem"}}>
             Reviews
           </Button>
 
         </Card.Body>
+
+        <Modal show={showBidModal} onHide={() => setShowBidModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Place bid on: {props.item.name}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+
+            <Form onSubmit={sendBid}>
+              <Form.Group controlId="price">
+                  <Form.Control type="text" placeholder="Enter bid price" value={price} onChange={handlePriceChange}></Form.Control>
+              </Form.Group>
+              <Button variant="primary" type="submit" style={{margin: "0.5rem"}}>
+                Place Bid
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
+
         <ReviewsModal 
           show={showReviewModal}
           handleClose={() => setShowReviewModal(false)}

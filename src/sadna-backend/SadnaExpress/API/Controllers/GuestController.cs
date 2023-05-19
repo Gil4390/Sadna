@@ -137,5 +137,15 @@ namespace SadnaExpress.API.Controllers
         }
 
 
+        [Route(APIConstants.GuestData.placeBid)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult PlaceBid([FromBody] BidRequest request)
+        {
+            Response res = tradingSystem.PlaceBid(request.userID, request.itemID, request.price);
+            return Ok(res);
+        }
+
+
     }
 }

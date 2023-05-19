@@ -116,5 +116,8 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<string> GetMemberName(Guid userID);
         ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date);
         ResponseT<double> GetSystemRevenue(Guid userID, DateTime date);
+        Response PlaceBid(Guid userID, Guid itemID, double price);
+        ResponseT<SBid> GetBidsInStore(Guid userID, Guid storeID);
+        Response ReactToBid(Guid userID, Guid itemID, string bidResponse);
     }
 }
