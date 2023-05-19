@@ -5,6 +5,8 @@ export interface ItemCart  {
     category: string,
     price: number,
     priceDiscount: number,
+    offerPrice: number,
+    openBid: boolean,
     rating : number, 
     storeId: string,   
     inStock: boolean,  
@@ -22,6 +24,8 @@ export interface Item  {
     name: string,
     category: string,
     price: number,
+    offerPrice: number,
+    openBid: boolean,
     rating : number,  
     quantity: number,  
 };
