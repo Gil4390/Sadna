@@ -59,6 +59,7 @@
     <Compile Include="API\SignalR\NotificationNotifier.cs" />
     <Compile Include="API\SignalR\SignalRServerConfig.cs" />
     <Compile Include="API\SignalR\SignalRServiceHost.cs" />
+    <Compile Include="DomainLayer\User\Bid.cs" />
     <Compile Include="DomainLayer\User\Notification.cs" />
     <Compile Include="DomainLayer\User\IObserver.cs" />
     <Compile Include="DomainLayer\Store\Policy\Condition.cs" />

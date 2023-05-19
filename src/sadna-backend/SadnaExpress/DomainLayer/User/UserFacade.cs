@@ -19,6 +19,7 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<Guid, User> current_Users; //users that are in the system and not login
         private ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private ConcurrentDictionary<Guid, string> macs;
+        private ConcurrentDictionary<Guid, PromotedMember> founders;
 
         private readonly string guestEmail = "guest";
         private readonly string purchaseNotificationForBuyer = "Your purchase completed successfully, thank you for buying at Sadna Express!";
@@ -66,7 +67,10 @@ namespace SadnaExpress.DomainLayer.User
             User user;
             Member member;
             if (current_Users.TryRemove(id, out user))
+            {
                 Logger.Instance.Info(id, nameof(UserFacade) + ": " + nameof(Exit) + ": exited from the system.");
+                user.RemoveBids();
+            }
             else if (members.ContainsKey(id))
             {
                 lock (members[id])
@@ -149,7 +153,7 @@ namespace SadnaExpress.DomainLayer.User
                             member.LoggedIn = true;
                             User user;
                             current_Users.TryRemove(id, out user); 
-                            member.ShoppingCart.AddUserShoppingCart(user.ShoppingCart);
+                            member.deepCopy(user);
                         }
                         else
                         {
@@ -182,9 +186,9 @@ namespace SadnaExpress.DomainLayer.User
         public void AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
         {
             IsTsInitialized();
-            if (members.ContainsKey(userID)){
-                if (!isLoggedIn(userID))
-                        throw new Exception("the user is not logged in");
+            if (members.ContainsKey(userID))
+            {
+                isLoggedIn(userID);
                 members[userID].AddItemToCart(storeID, itemID, itemAmount);
             }
             else 
@@ -230,7 +234,7 @@ namespace SadnaExpress.DomainLayer.User
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(GetDetailsOnCart)+" ask to displays his shopping cart");
             return current_Users[userID].ShoppingCart;
         }
-        
+
         public void PurchaseCart(Guid userID)
         {
             String internedKey = String.Intern(userID.ToString());
@@ -238,12 +242,12 @@ namespace SadnaExpress.DomainLayer.User
             lock (internedKey)
             {
                 if (members.ContainsKey(userID))
-                    members[userID].ShoppingCart = new ShoppingCart();
+                    members[userID].PurchaseCart();
                 else
-                    current_Users[userID].ShoppingCart = new ShoppingCart();
+                    current_Users[userID].PurchaseCart();
             }
         }
-        
+
         public void OpenNewStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
@@ -252,6 +256,7 @@ namespace SadnaExpress.DomainLayer.User
             if (founder != null) 
                 members[userID] = founder;
 
+            founders.TryAdd(storeID, founder);
             NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
 
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
@@ -401,6 +406,47 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             List<PromotedMember> employees = members[userID].GetEmployeeInfoInStore(storeID);
             return employees;
+        }
+
+        public void PlaceBid(Guid userID, Guid storeID, Guid itemID, string itemName, double price)
+        {
+            IsTsInitialized();
+            List<PromotedMember> decisionBids = new List<PromotedMember>();
+            foreach (PromotedMember employee in founders[storeID].GetEmployeeInfoInStore(storeID))
+                if (employee.hasPermissions(storeID, new List<string>{"founder permissions", "owner permissions", "policies permission"}))
+                    decisionBids.Add(employee);
+
+            if (members.ContainsKey(userID))
+            {
+                isLoggedIn(userID);
+                members[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
+            }
+            else
+                current_Users[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
+            
+            Logger.Instance.Info(userID,
+                nameof(UserFacade) + ": " + nameof(PlaceBid) + "Item " + itemName + "asked for new price " + price + " by user " + userID);
+        }
+        
+        public void ReactToBid(Guid userID, Guid storeID,  string itemName, string bidResponse)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+            
+            members[userID].ReactToBid(storeID, itemName, bidResponse);
+            
+            Logger.Instance.Info(userID,
+                nameof(UserFacade) + ": " + nameof(ReactToBid) + "Item " + itemName + "get bid response " + bidResponse + " by user " + userID);
+        }
+        
+        public List<Bid> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+            
+            Logger.Instance.Info(userID,
+                nameof(UserFacade) + ": " + nameof(ReactToBid) + "get bid in store " + storeID + " by user " + userID);
+            return members[userID].GetBidsInStore(storeID);
         }
 
         public void RemoveUserMembership(Guid userID, string email)

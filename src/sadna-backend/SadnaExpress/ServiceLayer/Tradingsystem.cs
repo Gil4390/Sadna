@@ -597,21 +597,17 @@ namespace SadnaExpress.ServiceLayer
 
         public Response PlaceBid(Guid userID, Guid itemID, double price)
         {
-            //TODO NOGA
-            return new Response();
-            throw new NotImplementedException();
+            return storeManager.PlaceBid(userID, itemID, price);
         }
 
-        public ResponseT<SBid> GetBidsInStore(Guid userID, Guid storeID)
+        public ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID)
         {
-            //TODO NOGA
-            throw new NotImplementedException();
+            return userManager.GetBidsInStore(userID, storeID);
         }
 
         public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
         {
-            //TODO NOGA
-            throw new NotImplementedException();
+            return storeManager.ReactToBid(userID, itemID, bidResponse);
         }
     }
 }

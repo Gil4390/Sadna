@@ -11,6 +11,7 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<Guid, List<PromotedMember>> appoint;
         private readonly ConcurrentDictionary<Guid, List<string>> permissions;
         public ConcurrentDictionary<Guid, List<string>> Permission{get=>permissions;}
+        private ConcurrentDictionary<Guid, List<Bid>> bidsOffers;
         private readonly Permissions permissionsHolder;
 
         /* permissions:
@@ -24,6 +25,7 @@ namespace SadnaExpress.DomainLayer.User
          * add new manager
          * get employees info
          * product management permissions
+         * policies permission
          */
         public PromotedMember(Guid id, string email, string firstName, string lastName, string password, ShoppingCart shoppingCart=null, bool login=false) : base(id,
             email, firstName, lastName, password)
@@ -85,7 +87,8 @@ namespace SadnaExpress.DomainLayer.User
             List<string> removedValue2;
             PromotedMember removedValue3;
             appoint.TryRemove(storeID, out removedValue1);
-            permissions.TryRemove(storeID, out removedValue2);
+            foreach (string per in permissions[storeID])
+                removePermission(storeID, per);
             directSupervisor.TryRemove(storeID, out removedValue3);
         }
 
@@ -118,11 +121,15 @@ namespace SadnaExpress.DomainLayer.User
         public void removePermission(Guid storeID, string per)
         {
             permissions[storeID].Remove(per);
+            
             if (permissions[storeID].Count == 0)
             {
                 List<string> output = new List<string>();
                 permissions.TryRemove(storeID, out output);
             }
+            if (per.Equals("policies permission"))
+                foreach (Bid bid in bidsOffers[storeID])
+                    bid.RemoveEmployee(this);
         }
         public override PromotedMember AppointStoreOwner(Guid storeID, Member newOwner)
         {
@@ -175,6 +182,28 @@ namespace SadnaExpress.DomainLayer.User
             if (!hasPermissions(storeID,
                     new List<string> {"founder permissions"}))
             throw new Exception("The member doesn’t have permissions to close store");
+        }
+
+        public void AddBid(Guid storeID, Bid bid)
+        {
+            bidsOffers[storeID].Add(bid);
+        }
+        
+        public void RemoveBid(Guid storeID, Bid bid)
+        {
+            bidsOffers[storeID].Remove(bid);
+        }
+        
+        public override void ReactToBid(Guid storeID, string itemName, string bidResponse)
+        {
+            foreach (Bid bid in bidsOffers[storeID])
+                if (bid.ItemName.Equals(itemName))
+                    bid.ReactToBid(this, bidResponse);
+        }
+        
+        public override List<Bid> GetBidsInStore(Guid storeID)
+        {
+            return bidsOffers[storeID];
         }
     }
 }

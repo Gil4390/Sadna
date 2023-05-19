@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using SadnaExpress.DomainLayer.Store;
 
@@ -12,20 +13,35 @@ namespace SadnaExpress.DomainLayer.User
         protected ShoppingCart shoppingCart;
         
         public ShoppingCart ShoppingCart {get => shoppingCart; set => shoppingCart=value;}
+        private List<Bid> bids;
+        public List<Bid> Bids {get=>bids; set=>bids=value;}
 
         public User()
         {
             userId = Guid.NewGuid();
             shoppingCart = new ShoppingCart();
+            bids = new List<Bid>();
         }
         public User(Member member)
         {
             userId = member.userId;
             shoppingCart = member.ShoppingCart;
+            bids = member.Bids;
         }
         public void AddItemToCart(Guid storeID, Guid itemID, int itemAmount)
         {
             shoppingCart.AddItemToCart(storeID, itemID, itemAmount);
+        }
+        
+        public void PlaceBid(Guid storeID, Guid itemID, string itemName, double price, List<PromotedMember> employees)
+        {
+            bids.Add(new Bid(this, storeID ,itemID, itemName, price, employees));
+        }
+
+        public void RemoveBids()
+        {
+            foreach (Bid bid in bids)
+                bid.CloseBid();
         }
 
         public void RemoveItemFromCart(Guid storeID, Guid itemID)
@@ -69,6 +85,26 @@ namespace SadnaExpress.DomainLayer.User
         public virtual Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             throw new Exception("The user unauthorised to remove store owner");
+        }
+
+        public virtual void ReactToBid(Guid storeID, string ItemName, string bidResponse)
+        {
+            throw new Exception("The user unauthorised to react to bid");
+        }
+        
+        public virtual List<Bid> GetBidsInStore(Guid storeID)
+        {
+            throw new Exception("The user unauthorised to get bids");
+        }
+
+        public void PurchaseCart()
+        {
+            foreach (var bid in from basket in shoppingCart.Baskets from itemID in basket.ItemsInBasket.Keys from bid in bids where bid.ItemID == itemID select bid)
+            {
+                bid.CloseBid();
+            }
+
+            shoppingCart = new ShoppingCart();
         }
     }
 }

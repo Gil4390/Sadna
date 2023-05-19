@@ -29,7 +29,10 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response EditItemCategory(Guid userID, Guid storeID, Guid itemID, string category);
         Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price); 
         Response EditItemName(Guid userID, Guid storeID, Guid itemID, string name); 
-        Response EditItemQuantity(Guid userID, Guid storeID, Guid itemID, int quantity); 
+        Response EditItemQuantity(Guid userID, Guid storeID, Guid itemID, int quantity);
+         //4.2
+        Response PlaceBid(Guid userID, Guid itemID, double price);
+        Response ReactToBid(Guid userID, Guid itemID, string bidResponse); 
         Response CloseStore(Guid userID, Guid storeID); //4.9
         Response DeleteStore(Guid userID, Guid storeID); 
         Response ReopenStore(Guid userID, Guid storeID);

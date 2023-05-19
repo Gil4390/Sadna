@@ -351,6 +351,36 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        {
+            try
+            {
+                Guid storeID = storeFacade.GetItemStoreId(itemID);
+                userFacade.PlaceBid(userID, storeID, itemID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, price);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(PlaceBid)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+        
+        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        {
+            try
+            {
+                Guid storeID = storeFacade.GetItemStoreId(itemID);
+                userFacade.ReactToBid(userID, storeID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, bidResponse);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(ReactToBid)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+        
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             try

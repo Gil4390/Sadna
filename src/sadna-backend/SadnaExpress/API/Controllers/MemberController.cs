@@ -387,7 +387,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetBidsInStore([FromBody] BidsInStoreRequest request)
         {
-            ResponseT<SBid> res = tradingSystem.GetBidsInStore(request.userID, request.storeID);
+            ResponseT<SBid[]> res = tradingSystem.GetBidsInStore(request.userID, request.storeID);
             return Ok(res);
         }
 
