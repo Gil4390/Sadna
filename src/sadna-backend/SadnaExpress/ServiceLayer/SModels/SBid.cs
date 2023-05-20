@@ -31,7 +31,7 @@ namespace SadnaExpress.ServiceLayer.SModels
         {
             itemID = bid.ItemID;
             ItemName = bid.ItemName;
-            if (bid.User.GetType() == typeof(Member))
+            if (bid.User.GetType() != typeof(User))
                 bidderEmail = ((Member)bid.User).Email;
             else
                 bidderEmail = "guest";
