@@ -10,7 +10,7 @@ export function BidItem(props) {
   const [counterOfferValue, setCounterOfferValue] = useState(0);
 
   const handleApprove = (bid: Bid) => {
-    handleReactToBid(props.id, bid.itemID, "approved").then(
+    handleReactToBid(props.id, props.bid.itemID, "approved").then(
       value => {
         props.setResponse(value as Response);
         if (value.errorOccured){
@@ -23,7 +23,7 @@ export function BidItem(props) {
   };
 
   const handleDeny = (bid: Bid) => {
-    handleReactToBid(props.id, bid.itemID, "denied").then(
+    handleReactToBid(props.id,  props.bid.itemID, "denied").then(
       value => {
         props.setResponse(value as Response);
         if (value.errorOccured){
@@ -39,9 +39,8 @@ export function BidItem(props) {
   };
 
   const handleCounterOfferSubmit = (bid: Bid) => {
-    console.log(`Counter offer submitted for bid: ${props.id}`);
     const price:string = counterOfferValue.toString();
-    handleReactToBid(props.id, props.id, price).then(
+    handleReactToBid(props.id, props.bid.itemID, price).then(
       value => {
         props.setResponse(value as Response);
         if (value.errorOccured){

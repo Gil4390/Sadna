@@ -244,9 +244,9 @@ namespace SadnaExpress.DomainLayer.User
             lock (internedKey)
             {
                 if (members.ContainsKey(userID))
-                    members[userID].PurchaseCart();
+                    members[userID].ShoppingCart = new ShoppingCart();
                 else
-                    current_Users[userID].PurchaseCart();
+                    current_Users[userID].ShoppingCart = new ShoppingCart();
             }
         }
 

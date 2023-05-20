@@ -52,7 +52,7 @@ namespace SadnaExpress.ServiceLayer
                     {
                         Dictionary<Guid, KeyValuePair<double, bool>> bids = userFacade.GetBidsOfUser(userID);
                         int quantity = storeFacade.GetItemByQuantity(storeID, item.ItemID);
-                        if (bids.Count == 0)
+                        if (!bids.ContainsKey(item.ItemID))
                             items.Add(new SItem(item, cartItems[storeID][item], storeID,
                                 quantity > 0, cart[storeID][item.ItemID]));
                         else

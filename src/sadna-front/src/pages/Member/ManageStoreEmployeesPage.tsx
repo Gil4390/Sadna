@@ -226,6 +226,7 @@ useEffect(() => {
             <option value="add new manager">add new manager</option>
             <option value="get employees info">get employees info</option>
             <option value="product management permissions">product management permissions</option>
+            <option value="policies permission">policies permission</option>
           </Form.Control>
         </Modal.Body>
         <Modal.Footer>

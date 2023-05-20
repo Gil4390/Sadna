@@ -162,7 +162,7 @@ namespace SadnaExpress.ServiceLayer
                 bool inStock = storeManager.GetStore(itemStoreid).Value.GetItemByQuantity(item.ItemID) > 0;
                 int countInCart = storeManager.GetItemQuantityInCart(userID,itemStoreid, item.ItemID).Value;
                 double priceDiscount = storeManager.GetItemAfterDiscount(itemStoreid, item);
-                if (userManager.GetBidsOfUser(userID).Count == 0)
+                if (!userManager.GetBidsOfUser(userID).ContainsKey(item.ItemID))
                     items.Add(new SItem(item, priceDiscount, itemStoreid, inStock, countInCart));
                 else
                     items.Add(new SItem(item, priceDiscount, userManager.GetBidsOfUser(userID)[item.ItemID], itemStoreid, inStock, countInCart));

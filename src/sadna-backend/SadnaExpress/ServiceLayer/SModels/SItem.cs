@@ -41,8 +41,8 @@ namespace SadnaExpress.ServiceLayer.Obj
             this.price = item.Price;
             this.rating = item.Rating;
             this.category = item.Category;
-            this.OfferPrice = bid.Key;
-            this.openBid = !bid.Value;
+            offerPrice = bid.Key;
+            openBid = !bid.Value;
             this.priceDiscount = priceDiscount;
             this.storeId = storeID.ToString();
             this.inStock = inStock;

@@ -23,14 +23,18 @@ namespace SadnaExpress.ServiceLayer.SModels
         
         private string[] approvers;
         public string[] Approvers { get => approvers; set => approvers = value; }
-        
+
+        private bool isActive; //NOGA DO
+        public bool IsActive { get => isActive; set => isActive = value; }
+
         public SBid(Bid bid)
         {
+            itemID = bid.ItemID;
             ItemName = bid.ItemName;
             if (bid.User.GetType() == typeof(Member))
                 bidderEmail = ((Member)bid.User).Email;
             else
-                bidderEmail = bid.User.UserId.ToString();
+                bidderEmail = "guest";
             offerPrice = bid.Price;
             List<string> decisions = new List<string>();
             foreach (PromotedMember promotedMember in bid.Decisions.Keys)

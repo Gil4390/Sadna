@@ -106,15 +106,5 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to get bids");
         }
-
-        public void PurchaseCart()
-        {
-            foreach (var bid in from basket in shoppingCart.Baskets from itemID in basket.ItemsInBasket.Keys from bid in bids where bid.ItemID == itemID select bid)
-            {
-                bid.CloseBid();
-            }
-
-            shoppingCart = new ShoppingCart();
-        }
     }
 }

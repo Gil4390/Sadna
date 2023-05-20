@@ -76,7 +76,7 @@ export function StoreInfo(props) {
       {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => handleNavigate ("/PurchasePoliciesPage",props.id , props.store)} style={{margin: "5px"}}>
         Purchase Policies
       </Button>}
-      {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => handleNavigate ("/ManageStoreBidsPage",props.id , props.store)} style={{margin: "5px"}}>
+      {(permission.policies_permission) && <Button variant="dark" onClick={() => handleNavigate ("/ManageStoreBidsPage",props.id , props.store)} style={{margin: "5px"}}>
         Bids
       </Button>}
       {(permission.owner || permission.founder) && <Button variant="dark" onClick={() => handleNavigate ("/StoreRevenuePage",props.id , props.store)} style={{margin: "5px"}}>

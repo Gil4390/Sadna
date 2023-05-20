@@ -36,7 +36,7 @@ namespace SadnaExpress.DomainLayer.User
                 promotedMember.AddBid(this.storeID, this);
                 toNodify.Add(promotedMember);
             }
-            NotificationSystem.Instance.NotifyObservers(toNodify, storeID, $"You get offer to change the price of {this.itemName} to {price}", this.user.UserId);
+            NotificationSystem.Instance.NotifyObservers(toNodify, storeID, $"You got an offer to change the price of {this.itemName} to {price}", this.user.UserId);
         }
 
         public bool Approved()
