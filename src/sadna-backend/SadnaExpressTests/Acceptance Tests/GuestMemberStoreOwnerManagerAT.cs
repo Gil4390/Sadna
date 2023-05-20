@@ -597,6 +597,88 @@ namespace SadnaExpressTests.Acceptance_Tests
             
             Assert.IsTrue(added);
         }
+        [TestMethod]
+        public void PlaceBidAndApprovedJustByOne_Success()
+        {
+            //Arrange
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(storeOwnerid, storeid1, "gil@gmail.com");
+            Guid tempid1 = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
+            proxyBridge.AddItemToCart(userid, storeid1, itemid1, 1);
+            proxyBridge.PlaceBid(userid, itemid1, 50);
+            //Act
+            Response t = proxyBridge.ReactToBid(storeOwnerid, itemid1, "approved");
+            //Assert
+            Assert.IsFalse(t.ErrorOccured);
+            Assert.AreEqual(-1,proxyBridge.GetCartItems(userid).Value[0].OfferPrice); // not approved yet
+            Assert.IsFalse(proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].IsActive);
+            Assert.AreEqual(1,proxyBridge.GetBidsInStore(memberId, storeid1).Value.Length);
+        }
+        [TestMethod]
+        public void PlaceBidAndApprovedJustByAll_Success()
+        {
+            //Arrange
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(storeOwnerid, storeid1, "gil@gmail.com");
+            Guid tempid1 = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
+            proxyBridge.AddItemToCart(userid, storeid1, itemid1, 1);
+            proxyBridge.PlaceBid(userid, itemid1, 50);
+            //Act
+            Response t1 = proxyBridge.ReactToBid(storeOwnerid, itemid1, "approved");
+            Response t2 = proxyBridge.ReactToBid(memberId, itemid1, "approved");
+
+            //Assert
+            Assert.IsFalse(t1.ErrorOccured && t2.ErrorOccured);
+            Assert.AreEqual(50,proxyBridge.GetCartItems(userid).Value[0].OfferPrice); // not approved yet
+            Assert.IsTrue(proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].IsActive);
+            Assert.IsTrue(proxyBridge.GetBidsInStore(memberId, storeid1).Value[0].IsActive);
+        }
+        [TestMethod]
+        public void PlaceBidAndDenied_Success()
+        {
+            //Arrange
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(storeOwnerid, storeid1, "gil@gmail.com");
+            Guid tempid1 = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
+            proxyBridge.AddItemToCart(userid, storeid1, itemid1, 1);
+            proxyBridge.PlaceBid(userid, itemid1, 50);
+            //Act
+            Response t = proxyBridge.ReactToBid(storeOwnerid, itemid1, "denied");
+            //Assert
+            Assert.IsFalse(t.ErrorOccured);
+            Assert.AreEqual(-1,proxyBridge.GetCartItems(userid).Value[0].OfferPrice); // not approved yet
+            Assert.AreEqual(0,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value.Length);
+            Assert.AreEqual(0,proxyBridge.GetBidsInStore(memberId, storeid1).Value.Length);
+        }
+        [TestMethod]
+        public void PlaceBidAndConterOffer_Success()
+        {
+            //Arrange
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            proxyBridge.AppointStoreOwner(storeOwnerid, storeid1, "gil@gmail.com");
+            Guid tempid1 = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
+            proxyBridge.AddItemToCart(userid, storeid1, itemid1, 1);
+            proxyBridge.PlaceBid(userid, itemid1, 50);
+            //Act
+            Response t1 = proxyBridge.ReactToBid(storeOwnerid, itemid1, "70");
+            Response t2 = proxyBridge.ReactToBid(memberId, itemid1, "approved");
+
+            //Assert
+            Assert.IsFalse(t1.ErrorOccured && t2.ErrorOccured);
+            Assert.IsTrue(proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].IsActive);
+            Assert.AreEqual(70,proxyBridge.GetCartItems(userid).Value[0].OfferPrice); // not approved yet
+            Assert.AreEqual(1,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value.Length);
+            Assert.AreEqual(1,proxyBridge.GetBidsInStore(memberId, storeid1).Value.Length);
+        }
+      
         #endregion
 
         #region Appointing a new store owner 4.4
