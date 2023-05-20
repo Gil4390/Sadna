@@ -7,7 +7,7 @@ import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPa
          AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage,
          AdminInitializeSystemPage, ManageItemsPage, ManageStoreEmployeesPage, PurchasePoliciesPage,
         DiscountPoliciesPage, PurchasedItemsPage, PurchasedStoreItemsPage, MessagesPage,
-        AdminRevenuePage, StoreRevenuePage } from "./pages";
+        AdminRevenuePage, StoreRevenuePage, ManageStoreBidsPage } from "./pages";
 
 import { useEffect, useState } from 'react';
 import React from 'react';
@@ -110,6 +110,7 @@ const App:React.FC=()=>{
         <Route path="/ManageItemsPage" element={<ManageItemsPage id={id}/>} />
         <Route path="/PurchasedStoreItemsPage" element={<PurchasedStoreItemsPage id={id}/>} />
         <Route path="/StoreRevenuePage" element={<StoreRevenuePage id={id}/>} />
+        <Route path="/ManageStoreBidsPage" element={<ManageStoreBidsPage id={id}/>} />
 
         <Route path="/AdminViewAllUsersPage" element={<AdminViewAllUsersPage id={id}/>} />
         <Route path="/AdminManageAllStoresPage" element={<AdminManageAllStoresPage id={id}/>} />

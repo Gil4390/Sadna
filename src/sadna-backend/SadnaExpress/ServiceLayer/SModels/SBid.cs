@@ -21,8 +21,8 @@ namespace SadnaExpress.ServiceLayer.SModels
         private double offerPrice;
         public double OfferPrice { get => offerPrice; set => offerPrice = value; }
         
-        private string[] aprovers;
-        public string[] Aprovers { get => aprovers; set => aprovers = value; }
+        private string[] approvers;
+        public string[] Approvers { get => approvers; set => approvers = value; }
         
         public SBid(Bid bid)
         {
@@ -37,11 +37,11 @@ namespace SadnaExpress.ServiceLayer.SModels
             {
                 double price;
                 if (double.TryParse(bid.Decisions[promotedMember], out price))
-                    decisions.Add($"{promotedMember}: give counter offer of {price}");
+                    decisions.Add($"{promotedMember}: given counter offer of {price}");
                 else
                     decisions.Add($"{promotedMember}: {bid.Decisions[promotedMember]}");
             }
-            aprovers = decisions.ToArray();
+            approvers = decisions.ToArray();
         }
 
     }

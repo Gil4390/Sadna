@@ -22,5 +22,6 @@ export { default as DiscountPoliciesPage } from "./Member/DiscountPoliciesPage.t
 export { default as ManageStoreEmployeesPage } from "./Member/ManageStoreEmployeesPage.tsx";
 export { default as ManageItemsPage } from "./Member/ManageItemsPage.tsx";
 export { default as StoreRevenuePage } from "./Member/StoreRevenuePage.tsx";
+export { default as ManageStoreBidsPage } from "./Member/ManageStoreBidsPage.tsx";
 
 
