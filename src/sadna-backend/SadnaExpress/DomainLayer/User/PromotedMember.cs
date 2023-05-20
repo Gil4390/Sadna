@@ -24,16 +24,17 @@ namespace SadnaExpress.DomainLayer.User
             set => appoint = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<PromotedMember>>>(value);
         }
 
-        private readonly ConcurrentDictionary<Guid, List<string>> permissions;
+        //private readonly ConcurrentDictionary<Guid, List<string>> permissions;
+        private ConcurrentDictionary<Guid, List<string>> permissions;
         [NotMapped]
         public ConcurrentDictionary<Guid, List<string>> Permission{ get => permissions; set => Permission = value; }
 
         // todo
-        private ConcurrentDictionary<Guid, List<string>> permissionsDB;
+        //private ConcurrentDictionary<Guid, List<string>> permissionsDB;
         public string PermissionDB
         {
             get => JsonConvert.SerializeObject(permissions);
-            set => permissionsDB = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(value);
+            set => permissions = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(value);
         }
 
         // todo

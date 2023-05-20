@@ -56,7 +56,7 @@
     <Compile Include="Integration Tests\PurchaseIT.cs" />
     <Compile Include="Integration Tests\StoreManagementIT.cs" />
     <Compile Include="Integration Tests\TradingSystemIT.cs" />
-	<Compile Include="Integration Tests\ValidCartContentIT.cs" />
+    <Compile Include="Integration Tests\ValidCartContentIT.cs" />
     <Compile Include="Unit Tests\DiscountPolicyUT.cs" />
     <Compile Include="Unit Tests\NotificationUT.cs" />
     <Compile Include="Unit Tests\OrderUT.cs" />

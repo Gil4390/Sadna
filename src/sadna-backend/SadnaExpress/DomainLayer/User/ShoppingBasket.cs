@@ -13,6 +13,9 @@ namespace SadnaExpress.DomainLayer.Store
         [Key]
         public Guid ShoppingBasketId { get; set; }
 
+        public Guid ShoppingCartId { get; set; }
+        //public ShoppingCart ShoppingCart { get; set; } // added for map 
+
         private Guid storeID;
         public Guid StoreID { get => storeID; set => storeID = value; }
 

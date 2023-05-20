@@ -57,7 +57,14 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Store()
         {
-
+            itemsInventory = new Inventory();
+            storeID = Guid.NewGuid();
+            purchasePolicyList = new List<Condition>();
+            allDiscountPolicies = new Dictionary<DiscountPolicy, bool>();
+            condDiscountPolicies = new Dictionary<Condition, bool>();
+            purchasePolicyCounter = 0;
+            discountPolicyCounter = 0;
+            itemsInventory.StoreID = storeID;
         }
         public Store(string name)
         {

@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace SadnaExpress.DomainLayer.Store
 {
-    public class Order
+    public class Order // todo in database 
     {
         [Key]
         public Guid OrderID { get; set; }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Web.UI;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
@@ -13,6 +14,8 @@ namespace SadnaExpress.DomainLayer.User
         public Guid UserId {get => userId; set => userId = value;}
         protected ShoppingCart shoppingCart;
         
+        public string Discriminator { get; set; }
+
         public ShoppingCart ShoppingCart {get => shoppingCart; set => shoppingCart=value;}
 
         public User()

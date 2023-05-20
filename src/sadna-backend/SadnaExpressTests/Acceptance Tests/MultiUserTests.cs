@@ -4,6 +4,7 @@ using System.Net.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
@@ -1410,7 +1411,12 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
         #endregion
 
-        
+
+        [TestCleanup]
+        public override void CleanUp()
+        {
+            DBHandler.Instance.TestMode();
+        }
     }
 
 }

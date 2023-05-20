@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SadnaExpress.DomainLayer.Store
 {
-    public class ItemForOrder
+    public class ItemForOrder // todo in database 
     {
         [Key]
         public Guid ItemForOrderId { get; set; }

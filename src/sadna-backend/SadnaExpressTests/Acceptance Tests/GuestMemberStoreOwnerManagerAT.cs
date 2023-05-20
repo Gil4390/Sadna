@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
@@ -1206,6 +1207,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public override void CleanUp()
         {
             base.CleanUp();
+            DBHandler.Instance.TestMode();
         }
     }
 }

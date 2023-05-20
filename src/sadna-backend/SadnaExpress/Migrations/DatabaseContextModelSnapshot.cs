@@ -14,7 +14,7 @@ namespace SadnaExpress.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.32");
+                .HasAnnotation("ProductVersion", "3.1.0");
 
             modelBuilder.Entity("SadnaExpress.DomainLayer.Notification", b =>
                 {
@@ -54,13 +54,20 @@ namespace SadnaExpress.Migrations
 
             modelBuilder.Entity("SadnaExpress.DomainLayer.Store.Inventory", b =>
                 {
-                    b.Property<Guid>("StoreID")
+                    b.Property<Guid>("InventoryID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Items_quantityDB")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("StoreID");
+                    b.Property<Guid>("StoreID")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("InventoryID");
+
+                    b.HasIndex("StoreID")
+                        .IsUnique();
 
                     b.ToTable("Inventories");
                 });
@@ -72,6 +79,9 @@ namespace SadnaExpress.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Category")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("InventoryID")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -175,7 +185,7 @@ namespace SadnaExpress.Migrations
                     b.Property<string>("ItemInBasketDB")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("ShoppingCartId")
+                    b.Property<Guid>("ShoppingCartId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("StoreID")
@@ -194,7 +204,13 @@ namespace SadnaExpress.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("ShoppingCartId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("shoppingCarts");
                 });
@@ -249,12 +265,7 @@ namespace SadnaExpress.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("ShoppingCartId")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("UserId");
-
-                    b.HasIndex("ShoppingCartId");
 
                     b.ToTable("users");
 
@@ -342,16 +353,20 @@ namespace SadnaExpress.Migrations
 
             modelBuilder.Entity("SadnaExpress.DomainLayer.Store.ShoppingBasket", b =>
                 {
-                    b.HasOne("SadnaExpress.DomainLayer.Store.ShoppingCart", null)
+                    b.HasOne("SadnaExpress.DomainLayer.Store.ShoppingCart", "ShoppingCart")
                         .WithMany("Baskets")
-                        .HasForeignKey("ShoppingCartId");
+                        .HasForeignKey("ShoppingCartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("SadnaExpress.DomainLayer.User.User", b =>
+            modelBuilder.Entity("SadnaExpress.DomainLayer.Store.ShoppingCart", b =>
                 {
-                    b.HasOne("SadnaExpress.DomainLayer.Store.ShoppingCart", "ShoppingCart")
-                        .WithMany()
-                        .HasForeignKey("ShoppingCartId");
+                    b.HasOne("SadnaExpress.DomainLayer.User.User", null)
+                        .WithOne("ShoppingCart")
+                        .HasForeignKey("SadnaExpress.DomainLayer.Store.ShoppingCart", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

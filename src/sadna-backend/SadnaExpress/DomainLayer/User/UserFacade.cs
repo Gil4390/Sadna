@@ -9,6 +9,8 @@ using System.Security.Cryptography.X509Certificates;
 using SadnaExpress.ServiceLayer;
 using System.Threading.Tasks;
 using NodaTime;
+using SadnaExpress.DataLayer;
+using SadnaExpress.ServiceLayer.Obj;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -83,12 +85,17 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             if (current_Users.ContainsKey(id) == false)
                 throw new Exception("User should enter the system before preforming this action");
+            if(DBHandler.Instance.memberExistsById(id))
+                throw new Exception("Member with this id already registered");
 
             if (members.ContainsKey(id))
                 throw new Exception("Member with this id already registered");
 
             if (!_reg.ValidateEmail(email))
                 throw new Exception("Email does not meet the system criteria");
+
+            if (DBHandler.Instance.memberExistsByEmail(email.ToLower()))
+                throw new Exception("Member with this email already exists");
 
             if (!_reg.ValidateStrongPassword(password))
                 throw new Exception("Password is not strong enough according to the system's criteria");
@@ -97,6 +104,7 @@ namespace SadnaExpress.DomainLayer.User
 
             lock (internedKey)
             {
+                
                 foreach (Member m in members.Values)
                 {
                     if (m.Email.ToLower().Equals(email.ToLower()))
@@ -112,12 +120,22 @@ namespace SadnaExpress.DomainLayer.User
                 Member newMember = new Member(newID, email, firstName, lastName, hashPassword);
 
                 members.TryAdd(newID, newMember);
+
+                // add member to database
+                DBHandler.Instance.AddMember(newMember, newMac);
+
                 Logger.Instance.Info(newMember.UserId, nameof(UserFacade) + ": " + nameof(Register) + ": registered with " + email +".");
             }
         }
 
         public Guid Login(Guid id, string email, string password)
         {
+            var memberFromDB = DBHandler.Instance.CheckMemberValidLogin(id, email, password, _ph);
+            if (memberFromDB != null)
+            {
+                members.TryAdd(memberFromDB.UserId, memberFromDB);
+                macs.TryAdd(memberFromDB.UserId, DBHandler.Instance.GetMacById(memberFromDB.UserId));
+            }
             if (members.ContainsKey(id) && members[id].LoggedIn)
                 throw new Exception($"Hi {members[id].FirstName} you are already logged in!");
 
@@ -148,6 +166,9 @@ namespace SadnaExpress.DomainLayer.User
                             User user;
                             current_Users.TryRemove(id, out user); 
                             member.ShoppingCart.AddUserShoppingCart(user.ShoppingCart);
+                            
+                            // add member ShoppingCart in DB
+                            DBHandler.Instance.UpdateMemberShoppingCart(member);
                         }
                         else
                         {
@@ -172,6 +193,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (member.LoggedIn == false)
                     throw new Exception("member is already logged out!");
                 member.LoggedIn = false;
+                DBHandler.Instance.MemberLogout(member);
                 Logger.Instance.Info(member.UserId, nameof(UserFacade) + ": " + nameof(Logout) + " logged out as member");
             }
             return Enter(); //member logs out and a regular user enters the system instead  
@@ -184,6 +206,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (!isLoggedIn(userID))
                         throw new Exception("the user is not logged in");
                 members[userID].AddItemToCart(storeID, itemID, itemAmount);
+                DBHandler.Instance.UpdateMemberShoppingCart(members[userID]);
             }
             else 
                 current_Users[userID].AddItemToCart(storeID, itemID, itemAmount);
@@ -199,6 +222,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (!isLoggedIn(userID))
                     throw new Exception("the user is not logged in");
                 members[userID].RemoveItemFromCart(storeID, itemID);
+                DBHandler.Instance.UpdateMemberShoppingCart(members[userID]);
             }
             else 
                 current_Users[userID].RemoveItemFromCart(storeID, itemID);
@@ -214,6 +238,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (!isLoggedIn(userID))
                     throw new Exception("the user is not logged in");
                 members[userID].EditItemFromCart(storeID, itemID, itemAmount);
+                DBHandler.Instance.UpdateMemberShoppingCart(members[userID]);
             }
             else 
                 current_Users[userID].EditItemFromCart(storeID, itemID, itemAmount);
@@ -247,10 +272,13 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userID);
             PromotedMember founder = members[userID].openNewStore(storeID);
-            if (founder != null) 
+            if (founder != null)
                 members[userID] = founder;
+            DBHandler.Instance.UpdatePromotedMember((PromotedMember)members[userID]);
 
             NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
+
+            // todo register observer in database
 
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
 
@@ -486,6 +514,8 @@ namespace SadnaExpress.DomainLayer.User
             members.Clear();
             paymentService = null;
             supplierService = null;
+
+            DBHandler.Instance.TestMode();
         }
 
         public bool InitializeTradingSystem(Guid userID)

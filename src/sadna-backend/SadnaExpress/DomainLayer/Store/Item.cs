@@ -23,6 +23,8 @@ namespace SadnaExpress.DomainLayer.Store
         private int quantity;
         public int Quantity {get => quantity; set => quantity = value;}
         
+        public Guid InventoryID { get; set; } // added for dbcontext
+
         public Item(string name, string category, double price)
         {
             this.name = name;

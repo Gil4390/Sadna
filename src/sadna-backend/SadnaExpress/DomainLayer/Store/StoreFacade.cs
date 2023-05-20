@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.ServiceLayer;
 
@@ -39,11 +40,14 @@ namespace SadnaExpress.DomainLayer.Store
 
             lock (internedKey)
             {
-                if (IsStoreNameExist(storeName))
+                if (IsStoreNameExist(storeName) || DBHandler.Instance.IsStoreNameExist(storeName))
                     throw new Exception("Store with this name already exist");
 
                 Store store = new Store(storeName);
                 stores.TryAdd(store.StoreID, store);
+
+                DBHandler.Instance.AddStore(store);
+
                 Logger.Instance.Info(store.StoreID, nameof(StoreFacade) + ": " + nameof(OpenNewStore) + "store " + storeName + " opened.");
                 return store.StoreID;
             }
@@ -109,12 +113,18 @@ namespace SadnaExpress.DomainLayer.Store
                         throw new Exception($"The store: {storeID} not active");
                     sum += stores[storeID].PurchaseCart(items[storeID], ref itemForOrders,email);
                     storeUpdated.Add(storeID, items[storeID]);
+
+                    //database update store // todo change this function name later
+                    DBHandler.Instance.AddItemToStore(stores[storeID]);
                 }
                 return sum;
             }
             catch (Exception e)
             {
                 AddItemToStores(storeUpdated);
+                //database update store // todo change this function name later
+                foreach (Guid storeID in storeUpdated.Keys)
+                    DBHandler.Instance.AddItemToStore(stores[storeID]);
                 throw e;
             }
         }
@@ -180,6 +190,8 @@ namespace SadnaExpress.DomainLayer.Store
                 foreach (Guid itemID in items[storeID].Keys)
                 {
                     stores[storeID].EditItemQuantity(itemID, items[storeID][itemID]);
+                    //database update store // todo change this function name later
+                    DBHandler.Instance.AddItemToStore(stores[storeID]);
                 }
             }
         }
@@ -188,10 +200,15 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsTsInitialized();
             IsStoreExist(storeID);
+
             String itemNameLock = String.Intern(itemName);
             lock (itemNameLock)
             {
                 var result = stores[storeID].AddItem(itemName, itemCategory, itemPrice, quantity);
+                // update store Item in DB
+                
+                DBHandler.Instance.AddItemToStore(stores[storeID]);
+                
                 Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(AddItemToStore)+" added to store "+ storeID + "- "+itemName +" form category "+itemCategory + ": "+itemPrice+"X"+quantity);
                 return result;
             }
@@ -218,6 +235,9 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].EditItemCategory(itemID, category);
+
+            //database update store // todo change this function name later
+            DBHandler.Instance.AddItemToStore(stores[storeID]);
             Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItemCategory)+" edited category from store "+ storeID + "- "+storeID + "- "+category);
 
         }
@@ -226,6 +246,9 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].EditItemPrice(itemID, price);
+
+            //database update store // todo change this function name later
+            DBHandler.Instance.EditItemPrice(itemID, price);
             Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItemPrice)+" edited price from store "+ storeID + "- "+storeID + "- "+price);
 
         }
@@ -234,6 +257,7 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             IsStoreExist(storeID);
             stores[storeID].EditItemQuantity(itemID, quantity);
+            DBHandler.Instance.AddItemToStore(stores[storeID]);
             Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItemQuantity)+" edited quantity from store "+ storeID + "- "+storeID + "- "+quantity);
 
         }
@@ -471,6 +495,22 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsStoreExist(storeid);
             return stores[storeid].GetItemByQuantity(itemid);
+        }
+
+        public void UpdateAllStoresFromDB()
+        {
+            ConcurrentDictionary<Guid, Store> allStoreFromDB = DBHandler.Instance.GetAllStores();
+            if (allStoreFromDB != null && allStoreFromDB.IsEmpty.Equals(false))
+            {
+                foreach(Store s in allStoreFromDB.Values)
+                {
+                    if (stores.ContainsKey(s.StoreID))
+                        stores[s.StoreID] = s;
+                    else
+                        stores.TryAdd(s.StoreID, s);
+                }
+            }
+
         }
 
     }

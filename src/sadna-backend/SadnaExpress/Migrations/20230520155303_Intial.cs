@@ -16,7 +16,8 @@ namespace SadnaExpress.Migrations
                     Category = table.Column<string>(nullable: true),
                     Price = table.Column<double>(nullable: false),
                     Rating = table.Column<int>(nullable: false),
-                    Quantity = table.Column<int>(nullable: false)
+                    Quantity = table.Column<int>(nullable: false),
+                    InventoryID = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,17 +48,6 @@ namespace SadnaExpress.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "shoppingCarts",
-                columns: table => new
-                {
-                    ShoppingCartId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_shoppingCarts", x => x.ShoppingCartId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Stores",
                 columns: table => new
                 {
@@ -71,6 +61,27 @@ namespace SadnaExpress.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Stores", x => x.StoreID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "users",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(nullable: false),
+                    Discriminator = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: true),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    Password = table.Column<string>(nullable: true),
+                    LoggedIn = table.Column<bool>(nullable: true),
+                    SecurityQuestionsDB = table.Column<string>(nullable: true),
+                    DirectSupervisor = table.Column<string>(nullable: true),
+                    Appoint = table.Column<string>(nullable: true),
+                    PermissionDB = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_users", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -100,63 +111,16 @@ namespace SadnaExpress.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "shoppingBaskets",
-                columns: table => new
-                {
-                    ShoppingBasketId = table.Column<Guid>(nullable: false),
-                    StoreID = table.Column<Guid>(nullable: false),
-                    ItemInBasketDB = table.Column<string>(nullable: true),
-                    ShoppingCartId = table.Column<Guid>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_shoppingBaskets", x => x.ShoppingBasketId);
-                    table.ForeignKey(
-                        name: "FK_shoppingBaskets_shoppingCarts_ShoppingCartId",
-                        column: x => x.ShoppingCartId,
-                        principalTable: "shoppingCarts",
-                        principalColumn: "ShoppingCartId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "users",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(nullable: false),
-                    ShoppingCartId = table.Column<Guid>(nullable: true),
-                    Discriminator = table.Column<string>(nullable: false),
-                    Email = table.Column<string>(nullable: true),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
-                    Password = table.Column<string>(nullable: true),
-                    LoggedIn = table.Column<bool>(nullable: true),
-                    SecurityQuestionsDB = table.Column<string>(nullable: true),
-                    DirectSupervisor = table.Column<string>(nullable: true),
-                    Appoint = table.Column<string>(nullable: true),
-                    PermissionDB = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_users", x => x.UserId);
-                    table.ForeignKey(
-                        name: "FK_users_shoppingCarts_ShoppingCartId",
-                        column: x => x.ShoppingCartId,
-                        principalTable: "shoppingCarts",
-                        principalColumn: "ShoppingCartId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Inventories",
                 columns: table => new
                 {
+                    InventoryID = table.Column<Guid>(nullable: false),
                     StoreID = table.Column<Guid>(nullable: false),
                     Items_quantityDB = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Inventories", x => x.StoreID);
+                    table.PrimaryKey("PK_Inventories", x => x.InventoryID);
                     table.ForeignKey(
                         name: "FK_Inventories_Stores_StoreID",
                         column: x => x.StoreID,
@@ -221,6 +185,50 @@ namespace SadnaExpress.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "shoppingCarts",
+                columns: table => new
+                {
+                    ShoppingCartId = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_shoppingCarts", x => x.ShoppingCartId);
+                    table.ForeignKey(
+                        name: "FK_shoppingCarts_users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "shoppingBaskets",
+                columns: table => new
+                {
+                    ShoppingBasketId = table.Column<Guid>(nullable: false),
+                    ShoppingCartId = table.Column<Guid>(nullable: false),
+                    StoreID = table.Column<Guid>(nullable: false),
+                    ItemInBasketDB = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_shoppingBaskets", x => x.ShoppingBasketId);
+                    table.ForeignKey(
+                        name: "FK_shoppingBaskets_shoppingCarts_ShoppingCartId",
+                        column: x => x.ShoppingCartId,
+                        principalTable: "shoppingCarts",
+                        principalColumn: "ShoppingCartId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Inventories_StoreID",
+                table: "Inventories",
+                column: "StoreID",
+                unique: true);
+
             migrationBuilder.CreateIndex(
                 name: "IX_ItemForOrders_OrderID",
                 table: "ItemForOrders",
@@ -252,9 +260,10 @@ namespace SadnaExpress.Migrations
                 column: "ShoppingCartId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_users_ShoppingCartId",
-                table: "users",
-                column: "ShoppingCartId");
+                name: "IX_shoppingCarts_UserId",
+                table: "shoppingCarts",
+                column: "UserId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -281,9 +290,6 @@ namespace SadnaExpress.Migrations
                 name: "orders");
 
             migrationBuilder.DropTable(
-                name: "users");
-
-            migrationBuilder.DropTable(
                 name: "Items");
 
             migrationBuilder.DropTable(
@@ -291,6 +297,9 @@ namespace SadnaExpress.Migrations
 
             migrationBuilder.DropTable(
                 name: "shoppingCarts");
+
+            migrationBuilder.DropTable(
+                name: "users");
         }
     }
 }
