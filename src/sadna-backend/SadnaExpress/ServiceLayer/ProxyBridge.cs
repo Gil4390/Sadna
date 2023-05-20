@@ -434,7 +434,7 @@ namespace SadnaExpress.ServiceLayer
 
         public Response Handshake()
         {
-            throw new NotImplementedException();
+            return _realBridge.Handshake();
         }
 
         public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)

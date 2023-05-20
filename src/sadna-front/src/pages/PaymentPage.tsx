@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import { useNavigate, useLocation } from "react-router-dom";
 import { Response } from '../models/Response.tsx';
-import { handlePurchaseCart } from '../actions/GuestActions.tsx';
+import { handleHandshake, handlePurchaseCart } from '../actions/GuestActions.tsx';
 import Exit from "./Exit.tsx";
 
 function PaymentPage(props) {
@@ -136,10 +136,7 @@ function PaymentPage(props) {
     }
  }, [response])
 
-  const handleSubmit = (event) => {
-
-    //handshake
-
+  const handleSubmit = (event) => {    
 
     event.preventDefault();
     console.log(`Card Number: ${cardNumber}, Card Holder Name: ${cardHolderName}  Expiration Date: ${expiryDate}  

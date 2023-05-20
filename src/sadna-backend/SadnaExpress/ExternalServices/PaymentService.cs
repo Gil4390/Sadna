@@ -31,17 +31,9 @@ namespace SadnaExpress.ExternalServices
 
         public object Send(Dictionary<string, string> content)
         {
-            
-            // Convert the dictionary to form URL-encoded content
             var formData = new FormUrlEncodedContent(content);
-
-            // Send the HTTP POST request
             var responseTask = client.PostAsync(address, formData);
-
-            // Wait for the response
             var response = responseTask.Result;
-
-            // Read the response content as a string
             var responseContentTask = response.Content.ReadAsStringAsync();
             return responseContentTask.Id;
             
@@ -53,7 +45,11 @@ namespace SadnaExpress.ExternalServices
             {
                 {"action_type","handshake"},
             };
-            return (string)Send(postContent);
+            var formData = new FormUrlEncodedContent(postContent);
+            var responseTask = client.PostAsync(address, formData);
+            var response = responseTask.Result;
+            var responseContentTask = response.Content.ReadAsStringAsync();
+            return responseContentTask.Result;
         }
 
         public int Pay(double amount, SPaymentDetails transactionDetails)
