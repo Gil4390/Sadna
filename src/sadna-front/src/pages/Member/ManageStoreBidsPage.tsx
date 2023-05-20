@@ -74,15 +74,19 @@ export function BidItem(props) {
         </div>
       </div>
       <div style={{display: "flex", margin: ""}}>
-        <Button variant="success" onClick={() => handleApprove(props.bid)} style={{margin: "0.3rem"}}>
-          Approve
-        </Button>
+        {!props.bid.isActive ? (
+          <Button variant="success" onClick={() => handleApprove(props.bid)} style={{margin: "0.3rem"}}>
+            Approve
+          </Button>
+        ) : (<div></div>)}
         <Button variant="danger" onClick={() => handleDeny(props.bid)} style={{margin: "0.3rem"}}>
           Deny
         </Button>
-        <Button onClick={() => handleCounterOffer(props.bid)} style={{margin: "0.3rem"}}>
-          Counter Offer
-        </Button>
+        {!props.bid.isActive ? (
+          <Button onClick={() => handleCounterOffer(props.bid)} style={{margin: "0.3rem"}}>
+            Counter Offer
+          </Button>
+        ) : (<div></div>)}
         {showCounterOffer && (
           <div>
             <input
@@ -102,25 +106,6 @@ export function BidItem(props) {
 }
 
 const ManageStoreBidsPage = (props) => {
-  // Sample data for active bids
-  const activeBids: Bid[] = [
-    {
-      itemName: 'Item 1',
-      itemID: "123",
-      bidderEmail: 'bidder1@example.com',
-      offerPrice: 100,
-      approvers: ['approver1@example.com', 'approver2@example.com'],
-    },
-    {
-      itemName: 'Item 2',
-      itemID: "111",
-      bidderEmail: 'bidder2@example.com',
-      offerPrice: 150,
-      approvers: ['approver3@example.com'],
-    },
-    // Add more active bids as needed
-  ];
-
   const location = useLocation();
   const { userId, storeId } = location.state;
   const [response, setResponse] = useState<Response>();

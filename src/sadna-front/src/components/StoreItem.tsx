@@ -37,6 +37,8 @@ export function StoreItem(props) {
   const [responseDecreaseCartQuantity, setResponseDecreaseCartQuantity] = useState<Response>();
   const [responseRemoveItemFromCart, setResponseRemoveItemFromCart] = useState<Response>();
   const [responsePlaceBid, setResponsePlaceBid] = useState<Response>();
+  const [modified, setModified] = useState(props.modified);
+
   const [price, setPrice] = useState(0);
   const handlePriceChange = (event) => {
     setPrice(event.target.value);
@@ -113,9 +115,6 @@ export function StoreItem(props) {
     setShowBidButton(!props.item.openBid)
   },[])
 
-  useEffect(() => {
-    setShowBidButton(!props.item.openBid)
-  },[props.modified])
 
 
   return (
