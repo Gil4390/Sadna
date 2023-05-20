@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
@@ -34,6 +35,7 @@ namespace SadnaExpress.DomainLayer.User
             appoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
             permissions = new ConcurrentDictionary<Guid, List<string>>();
             permissionsHolder = Permissions.Instance;
+            bidsOffers = new ConcurrentDictionary<Guid, List<Bid>>();
             LoggedIn = login;
             if (shoppingCart == null)
                 ShoppingCart = new ShoppingCart();
@@ -87,8 +89,15 @@ namespace SadnaExpress.DomainLayer.User
             List<string> removedValue2;
             PromotedMember removedValue3;
             appoint.TryRemove(storeID, out removedValue1);
-            foreach (string per in permissions[storeID])
-                removePermission(storeID, per);
+            if (permissions.ContainsKey(storeID))
+            {
+                while (permissions[storeID].Count != 0 )
+                {
+                    removePermission(storeID, permissions[storeID].First());
+                }
+                List<string> output = new List<string>();
+                permissions.TryRemove(storeID, out output);
+            }
             directSupervisor.TryRemove(storeID, out removedValue3);
         }
 
@@ -122,11 +131,6 @@ namespace SadnaExpress.DomainLayer.User
         {
             permissions[storeID].Remove(per);
             
-            if (permissions[storeID].Count == 0)
-            {
-                List<string> output = new List<string>();
-                permissions.TryRemove(storeID, out output);
-            }
             if (per.Equals("policies permission"))
                 foreach (Bid bid in bidsOffers[storeID])
                     bid.RemoveEmployee(this);

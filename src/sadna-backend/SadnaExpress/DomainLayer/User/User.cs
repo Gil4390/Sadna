@@ -32,6 +32,16 @@ namespace SadnaExpress.DomainLayer.User
         {
             shoppingCart.AddItemToCart(storeID, itemID, itemAmount);
         }
+
+        public Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser()
+        {
+            Dictionary<Guid, KeyValuePair<double, bool>> bidsDict = new Dictionary<Guid, KeyValuePair<double, bool>>();
+            foreach (Bid bid in bids)
+            {
+                bidsDict.Add(bid.ItemID, new KeyValuePair<double, bool>(bid.Price, bid.Approved()));
+            }
+            return bidsDict;
+        }
         
         public void PlaceBid(Guid storeID, Guid itemID, string itemName, double price, List<PromotedMember> employees)
         {

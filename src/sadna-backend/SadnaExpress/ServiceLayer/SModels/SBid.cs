@@ -9,6 +9,9 @@ namespace SadnaExpress.ServiceLayer.SModels
 {
     public class SBid
     {
+        private Guid itemID;
+        public Guid ItemID { get => itemID; set => itemID = value; }
+        
         private string itemName;
         public string ItemName { get => itemName; set => itemName = value; }
         

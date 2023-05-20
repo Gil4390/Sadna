@@ -385,6 +385,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID)
+        {
+            return userFacade.GetBidsOfUser(userID);
+        }
+
         public ResponseT<List<Member>> getAllStoreOwners(ConcurrentDictionary<Guid, Store> stores)
         {
             try

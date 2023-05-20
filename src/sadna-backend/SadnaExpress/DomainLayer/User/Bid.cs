@@ -37,6 +37,16 @@ namespace SadnaExpress.DomainLayer.User
             }
             NotificationSystem.Instance.NotifyObservers(toNodify, storeID, $"You get offer to change the price to {this.itemName} to {price}", this.user.UserId);
         }
+
+        public bool Approved()
+        {
+            foreach (string decision in decisions.Values)
+            {
+                if (!decision.Equals("approved"))
+                    return false;
+            }
+            return true;
+        }
         
         public void RemoveEmployee(PromotedMember promotedMember)
         {
@@ -74,12 +84,8 @@ namespace SadnaExpress.DomainLayer.User
 
         private void notify()
         {
-            foreach (string decision in decisions.Values)
-            {
-                if (!decision.Equals("approved"))
-                    return;
-            }
-            NotificationSystem.Instance.NotifyObserver(user, storeID, $"Your offer on {itemName} accepted! The price changed to {price}");
+            if (Approved())
+                NotificationSystem.Instance.NotifyObserver(user, storeID, $"Your offer on {itemName} accepted! The price changed to {price}");
         }
 
     }

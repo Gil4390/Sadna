@@ -35,6 +35,7 @@ namespace SadnaExpress.DomainLayer.User
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
+            founders = new ConcurrentDictionary<Guid, PromotedMember>();
             members = new ConcurrentDictionary<Guid, Member>();
             macs = new ConcurrentDictionary<Guid, string>();
             this.paymentService = paymentService;
@@ -42,9 +43,10 @@ namespace SadnaExpress.DomainLayer.User
             _isTSInitialized = false;
         }
 
-        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members,ConcurrentDictionary<Guid, string> macs, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
+        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members,ConcurrentDictionary<Guid, PromotedMember> founders, ConcurrentDictionary<Guid, string> macs, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
         {
             this.current_Users = current_Users;
+            this.founders = founders;
             this.members = members;
             this.macs = macs;
             _ph = ph;
@@ -260,7 +262,6 @@ namespace SadnaExpress.DomainLayer.User
             NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
 
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
-
         }
 
     
@@ -447,6 +448,18 @@ namespace SadnaExpress.DomainLayer.User
             Logger.Instance.Info(userID,
                 nameof(UserFacade) + ": " + nameof(ReactToBid) + "get bid in store " + storeID + " by user " + userID);
             return members[userID].GetBidsInStore(storeID);
+        }
+
+        public Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID)
+        {
+            IsTsInitialized();
+
+            if (members.ContainsKey(userID))
+            {
+                isLoggedIn(userID);
+                return members[userID].GetBidsOfUser();
+            }
+            return current_Users[userID].GetBidsOfUser();
         }
 
         public void RemoveUserMembership(Guid userID, string email)
