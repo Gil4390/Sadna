@@ -220,7 +220,6 @@ namespace SadnaExpress.DomainLayer.User
             {
                 return bidsOffers[storeID];
             }
-
             throw new Exception($"Store {storeID} not exist");
         }
     }

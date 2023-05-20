@@ -24,14 +24,14 @@ namespace SadnaExpress.ServiceLayer.SModels
         private string[] approvers;
         public string[] Approvers { get => approvers; set => approvers = value; }
 
-        private bool isActive; //NOGA DO
+        private bool isActive; 
         public bool IsActive { get => isActive; set => isActive = value; }
 
         public SBid(Bid bid)
         {
             itemID = bid.ItemID;
             ItemName = bid.ItemName;
-            if (bid.User.GetType() == typeof(Member))
+            if (bid.User.GetType() != typeof(User))
                 bidderEmail = ((Member)bid.User).Email;
             else
                 bidderEmail = "guest";
@@ -46,6 +46,7 @@ namespace SadnaExpress.ServiceLayer.SModels
                     decisions.Add($"{promotedMember.Email}: {bid.Decisions[promotedMember]}");
             }
             approvers = decisions.ToArray();
+            isActive = bid.Approved();
         }
 
     }

@@ -60,7 +60,10 @@ namespace SadnaExpress.DomainLayer.User
         {
             shoppingCart.AddUserShoppingCart(user.ShoppingCart);
             foreach (Bid bid in user.Bids)
+            {
+                bid.User = this;
                 Bids.Add(bid);
+            }
         }
         
         public PromotedMember promoteToMember() {
