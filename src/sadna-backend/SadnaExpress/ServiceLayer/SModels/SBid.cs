@@ -37,9 +37,9 @@ namespace SadnaExpress.ServiceLayer.SModels
             {
                 double price;
                 if (double.TryParse(bid.Decisions[promotedMember], out price))
-                    decisions.Add($"{promotedMember}: given counter offer of {price}");
+                    decisions.Add($"{promotedMember.Email}: given counter offer of {price}");
                 else
-                    decisions.Add($"{promotedMember}: {bid.Decisions[promotedMember]}");
+                    decisions.Add($"{promotedMember.Email}: {bid.Decisions[promotedMember]}");
             }
             approvers = decisions.ToArray();
         }

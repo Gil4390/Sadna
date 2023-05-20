@@ -153,7 +153,7 @@ const ManageStoreBidsPage = (props) => {
     <div>
       <h2>Active Bids</h2>
       <ul className="list-group">
-        {activeBids.map((bid, index) => (
+        {bids?.map((bid, index) => (
           <li key={index} className="list-group-item">
             <BidItem id={props.id} bid={bid} setResponse={setResponse}/>
           </li>

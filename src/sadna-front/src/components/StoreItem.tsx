@@ -121,12 +121,9 @@ export function StoreItem(props) {
           <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
             <div><div style={{display:"flex", justifyContent:"space-between"}}><div className="fs-2">{props.item.name} </div>
             <div className="ms-2 text-muted" style={{marginLeft:"0.5rem"}}>{props.item.price} $ </div></div>
-            {(props.item.priceDiscount > -1) && <div><span style={{fontSize:"12px", color:"blue"}}> Note! you have discount</span> <span style={{fontSize:"12px", color:"blue"}}>{ props.item.priceDiscount} $</span></div>}</div>
-
-            <div><div style={{display:"flex", justifyContent:"space-between"}}><div className="fs-2">{props.item.name} </div>
-            <div className="ms-2 text-muted" style={{marginLeft:"0.5rem"}}>{props.item.price} $ </div></div>
+            {(props.item.priceDiscount > -1) && <div><span style={{fontSize:"12px", color:"blue"}}> Note! you have discount</span> <span style={{fontSize:"12px", color:"blue"}}>{ props.item.priceDiscount} $</span></div>}
             {(props.item.offerPrice > -1) && <div><span style={{fontSize:"12px", color:"green"}}> Note! you have offer</span> <span style={{fontSize:"12px", color:"green"}}>{ props.item.offerPrice} $</span></div>}</div>
-            
+
             {/* <span className="ms-2 text-muted">{props.item.rating} ₪</span> */}
           </Card.Title>
           {props.item.inStock==0? (<Card.Text>

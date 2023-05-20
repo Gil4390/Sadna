@@ -190,6 +190,10 @@ namespace SadnaExpress.DomainLayer.User
 
         public void AddBid(Guid storeID, Bid bid)
         {
+            if (!bidsOffers.ContainsKey(storeID))
+            {
+                bidsOffers[storeID] = new List<Bid>();
+            }
             bidsOffers[storeID].Add(bid);
         }
         
@@ -200,14 +204,24 @@ namespace SadnaExpress.DomainLayer.User
         
         public override void ReactToBid(Guid storeID, string itemName, string bidResponse)
         {
+            Bid bidFounded = null;
             foreach (Bid bid in bidsOffers[storeID])
                 if (bid.ItemName.Equals(itemName))
-                    bid.ReactToBid(this, bidResponse);
+                    bidFounded = bid;
+            if (bidFounded == null)
+                throw new Exception($"bid on {itemName} not exist");
+            
+            bidFounded.ReactToBid(this, bidResponse);
         }
         
         public override List<Bid> GetBidsInStore(Guid storeID)
         {
-            return bidsOffers[storeID];
+            if (bidsOffers.ContainsKey(storeID))
+            {
+                return bidsOffers[storeID];
+            }
+
+            throw new Exception($"Store {storeID} not exist");
         }
     }
 }

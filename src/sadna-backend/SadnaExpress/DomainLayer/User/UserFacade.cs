@@ -878,6 +878,7 @@ namespace SadnaExpress.DomainLayer.User
             macs.TryAdd(storeOwnerid1, newMac);
             PromotedMember storeOwner1 = new PromotedMember(storeOwnerid1, "AsiAzar@gmail.com", "Asi", "Azar", _ph.Hash("A#!a12345678" + newMac));
             storeOwner1.createFounder(storeid1);
+            founders.TryAdd(storeid1, storeOwner1);
 
             newMac = _ph.Mac();
             macs.TryAdd(storeOwnerid3, newMac);

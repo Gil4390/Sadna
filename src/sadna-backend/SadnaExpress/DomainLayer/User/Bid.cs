@@ -29,13 +29,14 @@ namespace SadnaExpress.DomainLayer.User
             this.itemName = itemName;
             this.price = price;
             List<Member> toNodify = new List<Member>();
+            decisions = new Dictionary<PromotedMember, string>();
             foreach (PromotedMember promotedMember in decisionBids)
             {
                 decisions.Add(promotedMember, "undecided");
                 promotedMember.AddBid(this.storeID, this);
                 toNodify.Add(promotedMember);
             }
-            NotificationSystem.Instance.NotifyObservers(toNodify, storeID, $"You get offer to change the price to {this.itemName} to {price}", this.user.UserId);
+            NotificationSystem.Instance.NotifyObservers(toNodify, storeID, $"You get offer to change the price of {this.itemName} to {price}", this.user.UserId);
         }
 
         public bool Approved()
@@ -75,6 +76,7 @@ namespace SadnaExpress.DomainLayer.User
             }
             else
             {
+                decisions[promotedMember] = "approved";
                 NotificationSystem.Instance.NotifyObserver(user, storeID,
                     $"Your offer on {itemName} wasn't approved. You get counter offer of this amount {bidResponse}");
                 double.TryParse(bidResponse, out price);
