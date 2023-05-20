@@ -132,20 +132,17 @@ namespace SadnaExpress.ServiceLayer
                 // try to purchase the items. (the function update the quantity in the inventory in this function)
                 double amount = storeFacade.PurchaseCart(cart, ref itemForOrders, userFacade.GetUserEmail(userID));
                 int transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
-                if (transaction_payment_id == -1)
-                // discount according to biding
                 Dictionary<Guid, KeyValuePair<double,bool>> bids = userFacade.GetBidsOfUser(userID);
                 foreach (ItemForOrder item in itemForOrders)
                 {
                     if (bids.ContainsKey(item.ItemID) && bids[item.ItemID].Value && bids[item.ItemID].Key < item.Price)
                         item.Price = bids[item.ItemID].Key;
                 }
-                if (!userFacade.PlacePayment(amount, paymentDetails))
+                if (transaction_payment_id == -1)
                 {
                     storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
                     throw new Exception("Payment operation failed");
                 }
-                
                 int transaction_supply_id = userFacade.PlaceSupply(usersDetail);
                 if (transaction_supply_id == -1) 
                 {

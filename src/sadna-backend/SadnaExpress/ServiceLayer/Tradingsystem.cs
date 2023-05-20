@@ -601,6 +601,8 @@ namespace SadnaExpress.ServiceLayer
         public Response Handshake()
         {
             return userManager.Handshake();
+        }
+
         public Response PlaceBid(Guid userID, Guid itemID, double price)
         {
             return storeManager.PlaceBid(userID, itemID, price);
