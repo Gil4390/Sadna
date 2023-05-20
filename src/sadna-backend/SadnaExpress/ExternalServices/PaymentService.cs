@@ -2,33 +2,68 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.ExternalServices
 {
     public class PaymentService : IPaymentService
     {
-        bool isConnected = false;
+        private HttpClient client;
+        string address = "https://php-server-try.000webhostapp.com/";
 
         public PaymentService()
         {
-            isConnected = true;
+            client = new HttpClient();
         }
 
-        public bool cancel(double amount, string transactionDetails)
+        public bool Cancel_Pay(double amount, int transaction_id)
         {
-            return true;
+            var postContent = new Dictionary<string, string>
+            {
+                {"action_type","cancel_pay"},
+                {"transaction_id",transaction_id.ToString()}
+            };
+            return (int)Send(postContent)==1;
         }
 
-        public bool Connect()
+        public object Send(Dictionary<string, string> content)
         {
-            return isConnected;
+            var formData = new FormUrlEncodedContent(content);
+            var responseTask = client.PostAsync(address, formData);
+            var response = responseTask.Result;
+            var responseContentTask = response.Content.ReadAsStringAsync();
+            return responseContentTask.Id;
+            
         }
 
-        public bool Pay(double amount, string transactionDetails)
+        public string Handshake()
         {
-            return true;
+            var postContent = new Dictionary<string, string>
+            {
+                {"action_type","handshake"},
+            };
+            var formData = new FormUrlEncodedContent(postContent);
+            var responseTask = client.PostAsync(address, formData);
+            var response = responseTask.Result;
+            var responseContentTask = response.Content.ReadAsStringAsync();
+            return responseContentTask.Result;
+        }
+
+        public int Pay(double amount, SPaymentDetails transactionDetails)
+        {
+            var postContent = new Dictionary<string, string>
+            {
+                { "action_type", "pay" },
+                { "card_number", transactionDetails.CardNumber},
+                { "month", transactionDetails.Month},
+                { "year", transactionDetails.Year },
+                { "holder", transactionDetails.Holder },
+                { "ccv", transactionDetails.Cvv },
+            };
+            return (int)Send(postContent);
         }
     }
 }

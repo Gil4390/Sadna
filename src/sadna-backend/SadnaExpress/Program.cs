@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using Microsoft.Owin.Hosting;
 using SadnaExpress.API;
@@ -12,6 +15,7 @@ using SadnaExpress.Services;
 using SadnaExpress.API.SignalR;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
 
 namespace SadnaExpress
 {
@@ -31,7 +35,6 @@ namespace SadnaExpress
             //start the signalR server
             SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
             signalRServiceHost.Start();
-
             Console.ReadLine();
         }
 

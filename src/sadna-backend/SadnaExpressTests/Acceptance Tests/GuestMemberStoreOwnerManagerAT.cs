@@ -101,7 +101,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.Login(enterId, "gil@gmail.com", "asASD876!@");
             Item item = proxyBridge.GetItemsInStore(store5Owner, storeID5).Value[0];
             proxyBridge.AddItemToCart(memberId, storeID5, item.ItemID, 1);
-            proxyBridge.PurchaseCart(memberId, "5044222", "Rabbi Akiva 5");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
             //Assert
             Assert.AreEqual(unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count,pre + 1);
         }
@@ -114,7 +117,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.Login(enterId, "gil@gmail.com", "asASD876!@");
             Item item = proxyBridge.GetItemsInStore(store5Owner, storeID5).Value[0];
             proxyBridge.AddItemToCart(memberId, storeID5, item.ItemID, 1);
-            proxyBridge.PurchaseCart(memberId, "5044222", "Rabbi Akiva 5");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
             //Assert
             Assert.AreEqual(unreadMessages(proxyBridge.GetNotifications(store5Owner).Value).Count,pre + 1);
         }
@@ -216,7 +222,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.Login(enterId, "gil@gmail.com", "asASD876!@");
             Item item = proxyBridge.GetItemsInStore(store5Owner, storeID5).Value[0];
             proxyBridge.AddItemToCart(memberId, storeID5, item.ItemID, 1);
-            proxyBridge.PurchaseCart(memberId, "5044222", "Rabbi Akiva 5");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
             
             Assert.AreEqual(pre + 1, unreadMessages(proxyBridge.GetMember(store5Manager).Value.AwaitingNotification).Count);
             
@@ -1211,13 +1220,17 @@ namespace SadnaExpressTests.Acceptance_Tests
             
             Guid id = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
-            proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             
             Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
             
             Guid id2 = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id2, storeid1, itemid1, 3);
-            proxyBridge.PurchaseCart(id2, "5411556648", "Rabbi Akiva 5");
+            
+            proxyBridge.PurchaseCart(id2,  transactionDetails, transactionDetailsSupply);
             
             Assert.AreEqual(149.7, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
         }
@@ -1233,7 +1246,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid id = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
             proxyBridge.AddItemToCart(id, storeid1, itemid1, 3);
-            proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
 
             Assert.AreEqual(149.7, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
         }
@@ -1248,13 +1264,16 @@ namespace SadnaExpressTests.Acceptance_Tests
             
             Guid id = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
-            proxyBridge.PurchaseCart(id, "5411556648", "Rabbi Akiva 5");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             
             Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
             
             Guid id2 = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id2, storeid2, itemid2, 3);
-            proxyBridge.PurchaseCart(id2, "5411556648", "Rabbi Akiva 5");
+            proxyBridge.PurchaseCart(id2, transactionDetails, transactionDetailsSupply);
             
             Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
         }

@@ -10,6 +10,7 @@ using SadnaExpress.ServiceLayer;
 using System.Threading.Tasks;
 using NodaTime;
 using SadnaExpress.API.SignalR;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -572,7 +573,7 @@ namespace SadnaExpress.DomainLayer.User
             if (_isTSInitialized)
                 throw new Exception("Trading system is already initialized");
 
-            bool servicesConnected = paymentService.Connect() && supplierService.Connect();
+            bool servicesConnected = paymentService.Handshake()=="OK" && supplierService.Handshake();
 
             if(servicesConnected)
                 _isTSInitialized = true;
@@ -649,23 +650,27 @@ namespace SadnaExpress.DomainLayer.User
             this.supplierService = supplierService;
         }
 
-        public bool PlacePayment(double amount, string transactionDetails)
+        public int PlacePayment(double amount, SPaymentDetails transactionDetails)
         {
             try
             {
+                if (!transactionDetails.ValidationSettings())
+                    throw new TimeoutException("Details of payment isn't valid");
                 Logger.Instance.Info(nameof(paymentService)+": request to preform a payment with details : "+transactionDetails);
 
-                var task = Task.Run(() =>
-                {
-                    return paymentService.Pay(amount,transactionDetails);
-                });
-
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result;
-
-                if (isCompletedSuccessfully)
+                // var task = Task.Run(() =>
+                // {
+                //     return paymentService.Pay(amount,transactionDetails);
+                // });
+                //
+                // bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) &&
+                //                                task.Result != -1;
+                
+                int transaction_id = paymentService.Pay(amount,transactionDetails);
+                if (transaction_id != -1)
                 {
                     Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place payment completed with amount of "+amount+" and "+transactionDetails);
-                    return true;
+                    return transaction_id;
                 }
                 else
                 {
@@ -675,13 +680,13 @@ namespace SadnaExpress.DomainLayer.User
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return false;
+                return -1;
             }
         }
 
-        public bool CancelPayment(double amount, string transactionDetails)
+        public bool CancelPayment(double amount, int transaction_id)
         {
-            return paymentService.cancel(amount, transactionDetails);
+            return paymentService.Cancel_Pay(amount, transaction_id);
         }
 
         public List<Notification> GetNotifications(Guid userId)
@@ -727,23 +732,26 @@ namespace SadnaExpress.DomainLayer.User
             
         }
 
-        public bool PlaceSupply(string orderDetails, string userDetails)
+        public int PlaceSupply(SSupplyDetails userDetails)
         {
             try
             {
-                Logger.Instance.Info(nameof(supplierService) + ": user: " + userDetails + " request to preform a supply for order: " + orderDetails);
+                if (!userDetails.ValidationSettings())
+                    throw new TimeoutException("Details of payment isn't valid");
+                Logger.Instance.Info(nameof(supplierService) + ": user: " + userDetails + " request to preform a supply for order: " );//add SSupplyDetails.toString();
 
                 var task = Task.Run(() =>
                 {
-                    return supplierService.ShipOrder(orderDetails, userDetails);
+                    return supplierService.Supply(userDetails);
                 });
 
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime))&& task.Result;;
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime))&& task.Result != -1;;
 
                 if (isCompletedSuccessfully)
                 {
-                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place supply completed: "+ userDetails +" , "+orderDetails);
-                    return true;
+                    int transaction_id = task.Result;
+                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place supply completed: "+ userDetails +" , "); //add SSupplyDetails.toString();
+                    return transaction_id;
                 }
                 else
                 {
@@ -753,7 +761,7 @@ namespace SadnaExpress.DomainLayer.User
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return false;
+                return -1;
             }
         }
 
@@ -835,6 +843,10 @@ namespace SadnaExpress.DomainLayer.User
                 return new ConcurrentDictionary<Guid, List<string>>();
             }
 
+        }
+        public string Handshake()
+        {
+            return paymentService.Handshake();
         }
 
         public void NotifyBuyerPurchase(Guid userID)
@@ -932,6 +944,5 @@ namespace SadnaExpress.DomainLayer.User
             NotificationSystem.Instance.RegisterObserver(storeid1, storeOwner1);
             NotificationSystem.Instance.RegisterObserver(storeid2, storeOwner2);
         }
-
     }
 }

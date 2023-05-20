@@ -37,6 +37,8 @@ namespace SadnaExpress.API.Controllers
             public const string shoppingCart = "shopping-cart";
 
             public const string purchaseCart = "purchase-cart";
+            
+            public const string handshake = "handshake";
 
             public const string placeBid = "place-bid";
 

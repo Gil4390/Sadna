@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer.Store.Policy;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.API.ClientRequests
 {
@@ -53,8 +54,8 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class PurchaseRequest : ClientRequest
     {
-        public string PaymentDetails { get; set; }
-        public string UsersDetails { get; set; }
+        public SPaymentDetails PaymentDetails { get; set; }
+        public SSupplyDetails UsersDetails { get; set; }
     }
     public class WriteItemReviewRequest : ClientRequest
     {

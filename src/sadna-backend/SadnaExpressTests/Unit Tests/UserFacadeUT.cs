@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.SModels;
 using static SadnaExpressTests.Mocks;
 
 namespace SadnaExpressTests.Unit_Tests
@@ -129,14 +130,15 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetPaymentService(new Mock_PaymentService());
-            string transactionDetails = "visa card ShaY1787%$%45";
+            SPaymentDetails transactionDetails =
+                new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             double amount = 100;
 
             //Act
-            bool value = _userFacade.PlacePayment(amount, transactionDetails);
+            int value = _userFacade.PlacePayment(amount, transactionDetails);
 
             //Assert
-            Assert.IsTrue(value);
+            Assert.IsTrue(value != -1);
         }
 
         [TestMethod()]
@@ -144,13 +146,13 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetPaymentService(new Mock_5sec_PaymentService());
-            string transactionDetails = "visa card ShaY1787%$%45";
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             double amount = 500;
             //Act
-            bool value = _userFacade.PlacePayment(amount, transactionDetails);
+            int value = _userFacade.PlacePayment(amount, transactionDetails);
 
             //Assert
-            Assert.IsTrue(value);
+            Assert.IsTrue(value != -1);
         }
 
         [TestMethod()]
@@ -158,11 +160,11 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetPaymentService(new Mock_Bad_PaymentService());
-            string transactionDetails = "visa card ShaY1787%$%45";
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");            
             double amount = 300;
             //Act & Assert
             Assert.IsFalse(_userFacade.PlacePayment(amount,
-                transactionDetails)); //operation failes cause it takes to much time
+                transactionDetails)!=-1); //operation failes cause it takes to much time
         }
 
         #endregion
@@ -174,11 +176,11 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetSupplierService(new Mock_SupplierService());
-            string orderDetails = "red dress";
-            string userDetails = "Dina Agapov";
+
 
             //Act
-            bool value = _userFacade.PlaceSupply(orderDetails, userDetails);
+            SSupplyDetails transactionDetails = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+            bool value = _userFacade.PlaceSupply(transactionDetails) != -1;
 
             //Assert
             Assert.IsTrue(value);
@@ -189,11 +191,10 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetSupplierService(new Mock_5sec_SupplierService());
-            string orderDetails = "red dress";
-            string userDetails = "Dina Agapov";
 
             //Act
-            bool value = _userFacade.PlaceSupply(orderDetails, userDetails);
+            SSupplyDetails transactionDetails = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+            bool value = _userFacade.PlaceSupply(transactionDetails) != -1;
 
             //Assert
             Assert.IsTrue(value);
@@ -204,11 +205,10 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetSupplierService(new Mock_Bad_SupplierService());
-            string orderDetails = "red dress";
-            string userDetails = "Dina Agapov";
-
+            
             //Act
-            bool value = _userFacade.PlaceSupply(orderDetails, userDetails);
+            SSupplyDetails transactionDetails = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+            bool value = _userFacade.PlaceSupply(transactionDetails) != -1;
             //operation failes cause it takes to much time- returns false
 
             //Assert
