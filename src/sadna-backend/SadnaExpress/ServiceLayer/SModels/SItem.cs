@@ -41,7 +41,10 @@ namespace SadnaExpress.ServiceLayer.Obj
             this.price = item.Price;
             this.rating = item.Rating;
             this.category = item.Category;
-            offerPrice = bid.Key;
+            if (bid.Value)
+                offerPrice = bid.Key;
+            else
+                offerPrice = -1;
             openBid = !bid.Value;
             this.priceDiscount = priceDiscount;
             this.storeId = storeID.ToString();
