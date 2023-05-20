@@ -18,6 +18,7 @@ namespace SadnaExpressTests.Unit_Tests
         private Guid userId2;
         private Guid storeID = Guid.NewGuid();
         private ConcurrentDictionary<Guid, Member> members;
+        private ConcurrentDictionary<Guid, PromotedMember> founders;
         private Member member;
         private Guid memberid = Guid.NewGuid();
         private Guid systemManagerid = Guid.NewGuid();
@@ -37,13 +38,15 @@ namespace SadnaExpressTests.Unit_Tests
                 "schwartz", "ShaY1787%$%");
             founder.createFounder(storeID);
             founder.LoggedIn = true;
+            founders = new ConcurrentDictionary<Guid, PromotedMember>();
+            founders.TryAdd(storeID, founder);
             members.TryAdd(founderid, founder);
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga",
                 "schwartz", "ShaY1787%$%");
             systemManager.createSystemManager();
             systemManager.LoggedIn = true;
             members.TryAdd(systemManagerid, systemManager);
-            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,
+            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,founders,
                 new ConcurrentDictionary<Guid, string>(), new PasswordHash(), new Mock_PaymentService(),
                 new Mock_SupplierService());
             _userFacade.SetIsSystemInitialize(true);

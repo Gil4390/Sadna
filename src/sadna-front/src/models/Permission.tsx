@@ -13,5 +13,6 @@ export interface Permission {
   add_new_manager : boolean,
   get_employees_info : boolean,
   product_management : boolean,
+  policies_permission : boolean,
 };
 

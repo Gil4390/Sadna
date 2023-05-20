@@ -30,12 +30,15 @@ export function StoreItem(props) {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showBidModal, setShowBidModal] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [showBidButton, setShowBidButton] = useState(props.item.bidOpen);
     
   const [amountInCart, setAmountInCart] = useState(props.item.count);
   const [responseAddItemCart, setResponseAddItemCart] = useState<Response>();
   const [responseDecreaseCartQuantity, setResponseDecreaseCartQuantity] = useState<Response>();
   const [responseRemoveItemFromCart, setResponseRemoveItemFromCart] = useState<Response>();
   const [responsePlaceBid, setResponsePlaceBid] = useState<Response>();
+  const [modified, setModified] = useState(props.modified);
+
   const [price, setPrice] = useState(0);
   const handlePriceChange = (event) => {
     setPrice(event.target.value);
@@ -87,6 +90,7 @@ export function StoreItem(props) {
     handlePlaceBid(props.id, props.item.itemId, price).then(
       value => {
         setResponsePlaceBid(value as Response);
+        props.setModified(props.item.itemId);
       }
     ).catch(error => alert(error));
 
@@ -107,6 +111,10 @@ export function StoreItem(props) {
     responseRemoveItemFromCart?.errorOccured ? alert(responseRemoveItemFromCart.errorMessage) : setAmountInCart(0);
   }, [responseRemoveItemFromCart])
 
+  useEffect(() => {
+    setShowBidButton(!props.item.openBid)
+  },[])
+
 
 
   return (
@@ -117,7 +125,9 @@ export function StoreItem(props) {
           <Card.Title className="d-flex justify-content-between align-items-baseline mb-4">
             <div><div style={{display:"flex", justifyContent:"space-between"}}><div className="fs-2">{props.item.name} </div>
             <div className="ms-2 text-muted" style={{marginLeft:"0.5rem"}}>{props.item.price} $ </div></div>
-            {(props.item.priceDiscount > -1) && <div><span style={{fontSize:"12px", color:"blue"}}> Note! you have discount</span> <span style={{fontSize:"12px", color:"blue"}}>{ props.item.priceDiscount} $</span></div>}</div>
+            {(props.item.priceDiscount > -1) && <div><span style={{fontSize:"12px", color:"blue"}}> Note! you have discount</span> <span style={{fontSize:"12px", color:"blue"}}>{ props.item.priceDiscount} $</span></div>}
+            {(props.item.offerPrice > -1) && <div><span style={{fontSize:"12px", color:"green"}}> Note! you have offer</span> <span style={{fontSize:"12px", color:"green"}}>{ props.item.offerPrice} $</span></div>}</div>
+
             {/* <span className="ms-2 text-muted">{props.item.rating} ₪</span> */}
           </Card.Title>
           {props.item.inStock==0? (<Card.Text>
@@ -140,10 +150,14 @@ export function StoreItem(props) {
                 </div>)):(<div></div>)}
 
           </div>
-
-          <Button onClick={() => handleClickBid()} style={{margin: "0.5rem"}}>
-            Place Bid
-          </Button>
+          {showBidButton ? (
+            <div>
+            <Button onClick={() => handleClickBid()} style={{margin: "0.5rem"}}>
+              Place Bid
+            </Button>
+            </div>
+          ): (<div></div>)}
+          
           
           <Button onClick={() => handleClickReviews(props.item)} style={{margin: "0.5rem"}}>
             Reviews

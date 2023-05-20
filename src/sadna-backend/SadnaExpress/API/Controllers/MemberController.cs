@@ -106,7 +106,9 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult AddStoreManagerPermissions([FromBody] StoreManagerPerRequest request)
         {
-            return Ok(tradingSystem.AddStoreManagerPermissions(request.userID, request.storeID, request.userEmail,request.permission));
+            Response res = tradingSystem.AddStoreManagerPermissions(request.userID, request.storeID, request.userEmail,
+                request.permission);
+            return Ok(res);
         }
         
         [Route(APIConstants.MemberData.appointStoreOwner)]
@@ -387,7 +389,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetBidsInStore([FromBody] BidsInStoreRequest request)
         {
-            ResponseT<SBid> res = tradingSystem.GetBidsInStore(request.userID, request.storeID);
+            ResponseT<SBid[]> res = tradingSystem.GetBidsInStore(request.userID, request.storeID);
             return Ok(res);
         }
 
