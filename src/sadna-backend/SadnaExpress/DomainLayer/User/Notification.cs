@@ -21,8 +21,15 @@ namespace SadnaExpress.DomainLayer
             this.Read = false;
         }
 
-
-
+        public Notification(DateTime time, string message, Guid sentTo)
+        {
+            this.notificationID = Guid.NewGuid();
+            this.time = time;
+            this.sentFrom = default;
+            this.message = message;
+            this.sentTo = sentTo;
+            this.Read = false;
+        }
 
         public Guid SentTo
         {

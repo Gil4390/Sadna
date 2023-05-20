@@ -50,8 +50,14 @@ namespace SadnaExpress.ServiceLayer
                 {
                     foreach (Item item in cartItems[storeID].Keys)
                     {
+                        Dictionary<Guid, KeyValuePair<double, bool>> bids = userFacade.GetBidsOfUser(userID);
                         int quantity = storeFacade.GetItemByQuantity(storeID, item.ItemID);
-                        items.Add(new SItem(item, cartItems[storeID][item], storeID, quantity>0, cart[storeID][item.ItemID]));
+                        if (!bids.ContainsKey(item.ItemID))
+                            items.Add(new SItem(item, cartItems[storeID][item], storeID,
+                                quantity > 0, cart[storeID][item.ItemID]));
+                        else
+                            items.Add(new SItem(item, cartItems[storeID][item], bids[item.ItemID], storeID,
+                                quantity > 0, cart[storeID][item.ItemID]));
                     }
                 }
 
@@ -127,6 +133,14 @@ namespace SadnaExpress.ServiceLayer
                 double amount = storeFacade.PurchaseCart(cart, ref itemForOrders, userFacade.GetUserEmail(userID));
                 int transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
                 if (transaction_payment_id == -1)
+                // discount according to biding
+                Dictionary<Guid, KeyValuePair<double,bool>> bids = userFacade.GetBidsOfUser(userID);
+                foreach (ItemForOrder item in itemForOrders)
+                {
+                    if (bids.ContainsKey(item.ItemID) && bids[item.ItemID].Value && bids[item.ItemID].Key < item.Price)
+                        item.Price = bids[item.ItemID].Key;
+                }
+                if (!userFacade.PlacePayment(amount, paymentDetails))
                 {
                     storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
                     throw new Exception("Payment operation failed");
@@ -354,6 +368,36 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        {
+            try
+            {
+                Guid storeID = storeFacade.GetItemStoreId(itemID);
+                userFacade.PlaceBid(userID, storeID, itemID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, price);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(PlaceBid)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+        
+        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        {
+            try
+            {
+                Guid storeID = storeFacade.GetItemStoreId(itemID);
+                userFacade.ReactToBid(userID, storeID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, bidResponse);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(ReactToBid)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+        
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             try

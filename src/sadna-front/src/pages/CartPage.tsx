@@ -15,7 +15,7 @@ function CartPage(props) {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const calculatePrice=()=>{
-    const sum = cartItems.reduce((acc, item) => acc + (item.priceDiscount > -1 ? item.priceDiscount*item.count : item.price*item.count), 0);
+    const sum = cartItems.reduce((acc, item) => acc + (item.offerPrice > -1 ? item.offerPrice*item.count : (item.priceDiscount > -1 ? item.priceDiscount*item.count : item.price*item.count)), 0);
     const ReducedSum= Math.floor(sum*100)/100;
     setTotalPrice(ReducedSum);
   }

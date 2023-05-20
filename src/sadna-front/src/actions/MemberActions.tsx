@@ -867,3 +867,43 @@ export function handleGetStoreRevenue(userID, storeID, date) {
         return Promise.resolve(data)
     })
 }
+
+export function handleGetBidsInStore(userID, storeID) {
+    let url = "http://localhost:8080/api/member/get-bids-in-store";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            storeID: storeID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data.value)
+    })
+}
+export function handleReactToBid(userID, itemID, bidResponse) {
+    let url = "http://localhost:8080/api/member/react-to-bid";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            itemID: itemID,
+            bidResponse: bidResponse,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}

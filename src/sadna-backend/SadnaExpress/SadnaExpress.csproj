@@ -59,6 +59,7 @@
     <Compile Include="API\SignalR\NotificationNotifier.cs" />
     <Compile Include="API\SignalR\SignalRServerConfig.cs" />
     <Compile Include="API\SignalR\SignalRServiceHost.cs" />
+    <Compile Include="DomainLayer\User\Bid.cs" />
     <Compile Include="DomainLayer\User\Notification.cs" />
     <Compile Include="DomainLayer\User\IObserver.cs" />
     <Compile Include="DomainLayer\Store\Policy\Condition.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />
     <Compile Include="ServiceLayer\IUserManager.cs" />
+    <Compile Include="ServiceLayer\SModels\SBid.cs" />
     <Compile Include="ServiceLayer\SModels\SItem.cs" />
     <Compile Include="ServiceLayer\Response.cs" />
     <Compile Include="ServiceLayer\ResponseT.cs" />

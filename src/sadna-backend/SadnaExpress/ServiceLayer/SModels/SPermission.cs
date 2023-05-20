@@ -35,6 +35,7 @@ namespace SadnaExpress.ServiceLayer.SModels
         private bool add_new_manager = false;
         private bool get_employees_info = false;
         private bool product_management = false;
+        private bool policies_permission = false;
 
         public SPermission(List<string> permissions)
         {
@@ -71,6 +72,9 @@ namespace SadnaExpress.ServiceLayer.SModels
                     case "product management permissions":
                         product_management = true;
                         break;
+                    case "policies permission":
+                        policies_permission = true;
+                        break;
                 }
 
                 if (founder || owner)
@@ -82,6 +86,7 @@ namespace SadnaExpress.ServiceLayer.SModels
                     add_new_manager = true;
                     get_employees_info = true;
                     product_management = true;
+                    policies_permission = true;
                 }
             }
         }
@@ -96,5 +101,7 @@ namespace SadnaExpress.ServiceLayer.SModels
         public bool Get_employees_info { get => get_employees_info; set => get_employees_info = value; }
         public bool Product_management { get => product_management; set => product_management = value; }
         public bool System_manager { get => system_manager; set => system_manager = value; }
+        public bool Policies_permission { get => policies_permission; set => policies_permission = value; }
+
     }
 }

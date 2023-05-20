@@ -366,6 +366,30 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            try
+            {
+                List<Bid> bids=  userFacade.GetBidsInStore(userID, storeID);
+                List<SBid> sbids = new List<SBid>();
+                foreach (Bid bid in bids)
+                {
+                    sbids.Add(new SBid(bid));
+                }
+                return new ResponseT<SBid[]>(sbids.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID , nameof(UserManager)+": "+nameof(GetNotifications)+": "+ex.Message);
+                return new ResponseT<SBid[]>(ex.Message);
+            }
+        }
+
+        public Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID)
+        {
+            return userFacade.GetBidsOfUser(userID);
+        }
+
         public ResponseT<List<Member>> getAllStoreOwners(ConcurrentDictionary<Guid, Store> stores)
         {
             try

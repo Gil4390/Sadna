@@ -13,7 +13,7 @@ namespace SadnaExpress.DomainLayer.Store
         private string category;
         public string Category {get => category;}
         private double price;
-        public double Price {get => price;}
+        public double Price {get => price; set => price = value;}
         private int rating;
         public int Rating {get => rating;}
         

@@ -162,7 +162,10 @@ namespace SadnaExpress.ServiceLayer
                 bool inStock = storeManager.GetStore(itemStoreid).Value.GetItemByQuantity(item.ItemID) > 0;
                 int countInCart = storeManager.GetItemQuantityInCart(userID,itemStoreid, item.ItemID).Value;
                 double priceDiscount = storeManager.GetItemAfterDiscount(itemStoreid, item);
-                items.Add(new SItem(item, priceDiscount, itemStoreid, inStock, countInCart));
+                if (!userManager.GetBidsOfUser(userID).ContainsKey(item.ItemID))
+                    items.Add(new SItem(item, priceDiscount, itemStoreid, inStock, countInCart));
+                else
+                    items.Add(new SItem(item, priceDiscount, userManager.GetBidsOfUser(userID)[item.ItemID], itemStoreid, inStock, countInCart));
             }
 
             return new ResponseT<List<SItem>>(items);
@@ -598,6 +601,19 @@ namespace SadnaExpress.ServiceLayer
         public Response Handshake()
         {
             return userManager.Handshake();
+        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        {
+            return storeManager.PlaceBid(userID, itemID, price);
+        }
+
+        public ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            return userManager.GetBidsInStore(userID, storeID);
+        }
+
+        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        {
+            return storeManager.ReactToBid(userID, itemID, bidResponse);
         }
     }
 }

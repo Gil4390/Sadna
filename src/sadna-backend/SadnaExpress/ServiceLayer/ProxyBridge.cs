@@ -446,6 +446,21 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.GetSystemRevenue(userID, date);
         }
+
+        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        {
+            return _realBridge.PlaceBid(userID, itemID, price);
+        }
+
+        public ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            return _realBridge.GetBidsInStore(userID, storeID);
+        }
+
+        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        {
+            return _realBridge.ReactToBid(userID, itemID, bidResponse);
+        }
     }
 
 

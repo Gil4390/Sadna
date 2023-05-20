@@ -39,7 +39,7 @@ namespace SadnaExpress.DomainLayer.User
             securityQuestions = new Dictionary<string, string>();
             awaitingNotification = new List<Notification>();
         }
-
+        
         public Member(PromotedMember promotedMember)
         {
             userId = promotedMember.userId;
@@ -55,7 +55,16 @@ namespace SadnaExpress.DomainLayer.User
         public void addToAwaitingNotification(Notification notification) {
             this.awaitingNotification.Add(notification);
         }
-        
+
+        public void deepCopy(User user)
+        {
+            shoppingCart.AddUserShoppingCart(user.ShoppingCart);
+            foreach (Bid bid in user.Bids)
+            {
+                bid.User = this;
+                Bids.Add(bid);
+            }
+        }
         
         public PromotedMember promoteToMember() {
             return new PromotedMember(UserId, email, firstName, lastName, password, shoppingCart, loggedIn);
