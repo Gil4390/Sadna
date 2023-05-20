@@ -46,8 +46,6 @@ function CartPage(props) {
   };
 
   const handleCheckout=(id)=>{
-
-    //handshake
     handleHandshake().then(
       value => {
         if (value.errorMessage=="OK")
