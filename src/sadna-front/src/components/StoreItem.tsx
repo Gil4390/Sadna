@@ -88,6 +88,7 @@ export function StoreItem(props) {
     handlePlaceBid(props.id, props.item.itemId, price).then(
       value => {
         setResponsePlaceBid(value as Response);
+        props.setModified(props.item.itemId);
       }
     ).catch(error => alert(error));
 
@@ -111,6 +112,10 @@ export function StoreItem(props) {
   useEffect(() => {
     setShowBidButton(!props.item.openBid)
   },[])
+
+  useEffect(() => {
+    setShowBidButton(!props.item.openBid)
+  },[props.modified])
 
 
   return (

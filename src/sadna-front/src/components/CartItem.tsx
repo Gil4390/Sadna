@@ -64,8 +64,7 @@ export function CartItem(props) {
         <Col xs={8}>
           <h5>{props.item.name}</h5>
           <p>Price: ${props.item.price}</p>
-          {props.item.priceDiscount > -1 && (<div><p> Note! you have discount </p>
-          <p>DiscountPrice: ${props.item.priceDiscount}</p></div>)}
+          {props.item.priceDiscount > -1 && (<div style={{fontSize:"12px", color:"blue"}}><p> Note! you have discount ${props.item.priceDiscount}</p></div>)}
           {(props.item.offerPrice > -1) && <div><span style={{fontSize:"12px", color:"green"}}> Note! you have offer</span> <span style={{fontSize:"12px", color:"green"}}>{ props.item.offerPrice} $</span></div>}
           <div className="d-flex align-items-center flex-column" style={{gap:".5rem"}}>
                 <div className="d-flex align-items-center justify-content-center" style={{ gap: ".5rem" }}> 

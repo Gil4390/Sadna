@@ -12,6 +12,7 @@ import Exit from "./Exit.tsx";
 function ShoppingPage(props) {
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [response, setResponse] = useState<ResponseT>();
+  const [modified, setModified] = useState();
 
   const getAllItems =()=>{
     handleSearchItems(props.id).then(
@@ -26,7 +27,13 @@ function ShoppingPage(props) {
     if (props.isInit){
       getAllItems()
     } 
- }, [])
+  }, [])
+
+  useEffect(() => {
+    if (props.isInit){
+      getAllItems()
+    } 
+  }, [modified])
 
 
   const [keyWord, setkeyWord] = useState<string>('');
@@ -173,7 +180,7 @@ function ShoppingPage(props) {
           {allItems.length===0? (<div>  No Items </div>): (allItems.map((item) => (
             // <div key={item.name}>{item.name} </div>
             <Col sm={8} md={5} lg={4} xl={3} key={item.itemID} className="mt-3">
-              <StoreItem id={props.id} item={item} />
+              <StoreItem id={props.id} item={item} modified={modified} setModified={setModified}/>
             </Col>
             )))}
         </Row>
