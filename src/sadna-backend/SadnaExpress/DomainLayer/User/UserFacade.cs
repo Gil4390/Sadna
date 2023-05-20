@@ -447,7 +447,14 @@ namespace SadnaExpress.DomainLayer.User
             
             Logger.Instance.Info(userID,
                 nameof(UserFacade) + ": " + nameof(ReactToBid) + "get bid in store " + storeID + " by user " + userID);
-            return members[userID].GetBidsInStore(storeID);
+            List<Bid> bidsWithoutNotExistsGuest = new List<Bid>();
+            foreach (Bid bid in members[userID].GetBidsInStore(storeID))
+            {
+                if (bid.User.GetType() != typeof(User) || current_Users.ContainsKey(bid.User.UserId)) 
+                    bidsWithoutNotExistsGuest.Add(bid);
+            }
+
+            return bidsWithoutNotExistsGuest;
         }
 
         public Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID)

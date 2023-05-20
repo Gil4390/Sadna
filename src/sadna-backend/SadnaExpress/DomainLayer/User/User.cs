@@ -45,6 +45,21 @@ namespace SadnaExpress.DomainLayer.User
         
         public void PlaceBid(Guid storeID, Guid itemID, string itemName, double price, List<PromotedMember> employees)
         {
+            Bid oldBid = null;
+            foreach (Bid bid in bids)
+            {
+                if (itemID == bid.ItemID)
+                {
+                    oldBid = bid;
+                    break;
+                }
+            }
+            if (oldBid != null)
+            {
+                if (oldBid.Price <= price) 
+                    throw new Exception("You already have better offer...");
+                oldBid.CloseBid();
+            }
             bids.Add(new Bid(this, storeID ,itemID, itemName, price, employees));
         }
 
