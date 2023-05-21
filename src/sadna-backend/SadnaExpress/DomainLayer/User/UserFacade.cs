@@ -41,7 +41,7 @@ namespace SadnaExpress.DomainLayer.User
             macs = new ConcurrentDictionary<Guid, string>();
             this.paymentService = paymentService;
             this.supplierService = supplierService;
-            _isTSInitialized = false;
+            _isTSInitialized = ApplicationOptions.InitTradingSystem;
         }
 
         public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members,ConcurrentDictionary<Guid, PromotedMember> founders, ConcurrentDictionary<Guid, string> macs, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
@@ -890,7 +890,7 @@ namespace SadnaExpress.DomainLayer.User
 
             newMac = _ph.Mac();
             macs.TryAdd(systemManagerid, newMac);
-            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "Rotem", "Sela", _ph.Hash("AS87654askj" + newMac));
+            PromotedMember systemManager = new PromotedMember(systemManagerid, ApplicationOptions.SystemManagerEmail, ApplicationOptions.SystemManagerFirstName, ApplicationOptions.SystemManagerLastName, _ph.Hash(ApplicationOptions.SystemManagerPass + newMac));
             systemManager.createSystemManager();
 
             newMac = _ph.Mac();

@@ -12,7 +12,7 @@ namespace SadnaExpress.ExternalServices
     public class PaymentService : IPaymentService
     {
         private HttpClient client;
-        string address = "https://php-server-try.000webhostapp.com/";
+        string address = ApplicationOptions.PaymentServiceURL;
 
         public PaymentService()
         {

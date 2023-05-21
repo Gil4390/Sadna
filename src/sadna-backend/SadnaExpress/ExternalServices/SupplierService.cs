@@ -12,7 +12,7 @@ namespace SadnaExpress.ExternalServices
     public class SupplierService : ISupplierService
     {
         private HttpClient client;
-        string address = "https://php-server-try.000webhostapp.com/";
+        string address = ApplicationOptions.SupplierServiceURL;
 
         public SupplierService()
         {

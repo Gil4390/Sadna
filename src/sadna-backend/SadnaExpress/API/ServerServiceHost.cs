@@ -28,7 +28,7 @@ namespace SadnaExpress.API
                 Console.WriteLine("Date Server started");
                 Logger.Instance.Info($"{nameof(ServerServiceHost)} - Date Server started.");
 
-                int port = 8080;
+                int port = ApplicationOptions.ApiPort;
 
                 var baseAddress = $"http://localhost:{port}/";
 
