@@ -32,7 +32,7 @@ namespace SadnaExpress.API.SignalR
 
             //IApplicationService appService = ServiceLocator.Current.GetInstance<IApplicationService>();
             // appService.SignalRServerUrlPort = appService.GetFreeTcpPort();
-            int port = 8081;
+            int port = ApplicationOptions.SignalRPort;
 
             var baseAddress = $"http://localhost:{port}/";
 
