@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SadnaExpress.DomainLayer
 {
@@ -54,6 +55,7 @@ namespace SadnaExpress.DomainLayer
             get => time;
             set => time = value;
         }
+        [Key]
         public Guid NotificationID { get => notificationID; set => notificationID = value; }
         public bool Read { get => read; set => read = value; }
     }

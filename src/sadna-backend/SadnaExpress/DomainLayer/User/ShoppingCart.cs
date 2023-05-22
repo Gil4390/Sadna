@@ -1,20 +1,30 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class ShoppingCart
     {
+        [Key]
+        public Guid ShoppingCartId {get; set;}
+
+        public Guid UserId { get; set; }
+
         private HashSet<ShoppingBasket> baskets;
 
         public HashSet<ShoppingBasket> Baskets
         {
             get => baskets;
+            set => baskets = value;
         }
 
         public ShoppingCart()
         {
             baskets = new HashSet<ShoppingBasket>();
+            ShoppingCartId = Guid.NewGuid();
         }
 
         public override string ToString()
@@ -66,7 +76,7 @@ namespace SadnaExpress.DomainLayer.Store
             bool exist = baskets.TryGetValue(shoppingBasket, out shoppingBasket);
             if (!exist)
                 return 0;
-            return shoppingBasket.GetItemQuantity(itemID);  
+            return shoppingBasket.GetItemQuantity(itemID);
         }
 
         public void AddUserShoppingCart(ShoppingCart userShoppingCart)

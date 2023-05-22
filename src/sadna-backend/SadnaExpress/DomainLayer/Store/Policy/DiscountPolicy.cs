@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.Remoting.Activation;
 
 namespace SadnaExpress.DomainLayer.Store.Policy
 {
+    [NotMapped]
     public abstract class DiscountPolicy
     {
         public int ID;
@@ -16,6 +18,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public abstract override int GetHashCode();
 
         public abstract override bool Equals(object obj);
+
     }
 
     public class SimpleDiscount<T> : DiscountPolicy

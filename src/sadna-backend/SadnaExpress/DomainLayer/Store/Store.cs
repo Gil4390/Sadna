@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
 using SadnaExpress.DomainLayer.Store.Policy;
@@ -12,23 +14,39 @@ namespace SadnaExpress.DomainLayer.Store
     {
         private string storeName;
         public string StoreName { get => storeName; set => storeName = value; }
-        public Inventory itemsInventory;
+        public Inventory itemsInventory { get; set; }
+
         private Guid storeID;
-        public Guid StoreID { get => storeID; }
+        [Key]
+        public Guid StoreID { get => storeID; set => storeID = value; }
+        
         private bool active;
+        
         public bool Active { get => active; set => active = value; }
+        
         private int storeRating;
+
+        
         private DiscountPolicyTree discountPolicyTree;
+
+        [NotMapped] // todo
         public DiscountPolicyTree DiscountPolicyTree { get => discountPolicyTree; set => discountPolicyTree = value; }
         private Dictionary<DiscountPolicy, bool> allDiscountPolicies;
+        [NotMapped] // todo
         public Dictionary<DiscountPolicy, bool> AllDiscountPolicies {get => allDiscountPolicies;set => allDiscountPolicies = value;}
         private Dictionary<Condition, bool> condDiscountPolicies;
+        [NotMapped] // todo
         public Dictionary<Condition, bool> CondDiscountPolicies {get => condDiscountPolicies;set => condDiscountPolicies = value;}
         private int purchasePolicyCounter;
+        
+        
         public int PurchasePolicyCounter { get => purchasePolicyCounter; set => purchasePolicyCounter = value; }
         private int discountPolicyCounter;
+        
         public int DiscountPolicyCounter { get => discountPolicyCounter; set => discountPolicyCounter = value; }
         private List<Condition> purchasePolicyList;
+        
+        [NotMapped] // todo
         public List<Condition> PurchasePolicyList { get => purchasePolicyList; set => purchasePolicyList = value;}
 
         public int StoreRating
@@ -37,6 +55,17 @@ namespace SadnaExpress.DomainLayer.Store
             set => StoreRating = value;
         }
 
+        public Store()
+        {
+            itemsInventory = new Inventory();
+            storeID = Guid.NewGuid();
+            purchasePolicyList = new List<Condition>();
+            allDiscountPolicies = new Dictionary<DiscountPolicy, bool>();
+            condDiscountPolicies = new Dictionary<Condition, bool>();
+            purchasePolicyCounter = 0;
+            discountPolicyCounter = 0;
+            itemsInventory.StoreID = storeID;
+        }
         public Store(string name)
         {
             storeName = name;
@@ -51,6 +80,7 @@ namespace SadnaExpress.DomainLayer.Store
             purchasePolicyCounter = 0;
             discountPolicyCounter = 0;
 
+            itemsInventory.StoreID = storeID;
         }
         
         public bool Equals(Store store)

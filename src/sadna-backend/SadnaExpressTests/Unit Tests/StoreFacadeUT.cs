@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Unit_Tests
 {
@@ -162,6 +163,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestCleanup]
         public void CleanUp()
         {
+            DBHandler.Instance.TestMode();
             storeFacade.CleanUp();
         }
         #endregion

@@ -1,21 +1,45 @@
+using Newtonsoft.Json;
 using SadnaExpress.ServiceLayer;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SadnaExpress.DomainLayer.Store
 {
     public class ShoppingBasket
     {
+        [Key]
+        public Guid ShoppingBasketId { get; set; }
+
+        public Guid ShoppingCartId { get; set; }
+        //public ShoppingCart ShoppingCart { get; set; } // added for map 
+
         private Guid storeID;
-        public Guid StoreID { get => storeID; }
+        public Guid StoreID { get => storeID; set => storeID = value; }
+
         private Dictionary<Guid, int> itemsInBasket;
-        public Dictionary<Guid, int> ItemsInBasket { get=>itemsInBasket; }
+        [NotMapped]
+        public Dictionary<Guid, int> ItemsInBasket { get=>itemsInBasket; set => itemsInBasket = value; }
+
+        public string ItemInBasketDB
+        {
+            get => JsonConvert.SerializeObject(itemsInBasket);
+            set => itemsInBasket = JsonConvert.DeserializeObject<Dictionary<Guid, int>>(value);
+        }
+
+        public ShoppingBasket()
+        {
+            ShoppingBasketId = Guid.NewGuid();
+        }
 
         public ShoppingBasket(Guid storeId)
         {
             storeID = storeId;
             itemsInBasket = new Dictionary<Guid, int>();
+
+            ShoppingBasketId = Guid.NewGuid();
         }
         
         public override bool Equals(object obj)
