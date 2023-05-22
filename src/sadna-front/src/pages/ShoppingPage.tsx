@@ -7,19 +7,23 @@ import {Item} from '../models/Shop.tsx';
 import { ResponseT } from '../models/Response.tsx';
 import Exit from "./Exit.tsx";
 
-
-
 function ShoppingPage(props) {
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [response, setResponse] = useState<ResponseT>();
-  const [modified, setModified] = useState();
+  const [modified, setModified] = useState("");
 
-  const getAllItems =()=>{
+
+  const getAllItems = () => {
     handleSearchItems(props.id).then(
       value => {
+        setAllItems([]);
         setAllItems(value as Item[]);
       })
       .catch(error => alert(error));
+  }
+
+  const handleItemModified = (val) => {
+    setModified(val);
   }
 
 
@@ -32,7 +36,7 @@ function ShoppingPage(props) {
   useEffect(() => {
     if (props.isInit){
       getAllItems()
-    } 
+    }
   }, [modified])
 
 
@@ -180,7 +184,7 @@ function ShoppingPage(props) {
           {allItems.length===0? (<div>  No Items </div>): (allItems.map((item) => (
             // <div key={item.name}>{item.name} </div>
             <Col sm={8} md={5} lg={4} xl={3} key={item.itemID} className="mt-3">
-              <StoreItem id={props.id} item={item} modified={modified} setModified={setModified}/>
+              <StoreItem id={props.id} item={item} modified={modified} setModified={handleItemModified}/>
             </Col>
             )))}
         </Row>
