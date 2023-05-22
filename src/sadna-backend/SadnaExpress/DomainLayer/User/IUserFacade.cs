@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
 
 namespace SadnaExpress.DomainLayer.User
@@ -39,9 +40,9 @@ namespace SadnaExpress.DomainLayer.User
         void RemoveUserMembership(Guid userID, string email);
         void SetSecurityQA(Guid userID,string q, string a);
         void SetPaymentService(IPaymentService paymentService);
-        bool PlacePayment(double amount, string transactionDetails);
+        int PlacePayment(double amount, SPaymentDetails transactionDetails);
         void SetSupplierService(ISupplierService supplierService);
-        bool PlaceSupply(string orderDetails, string userDetails);
+        int PlaceSupply(SSupplyDetails userDetails);
         bool isLoggedIn(Guid userID);
         void SetIsSystemInitialize(bool isInitialize);
         User GetUser(Guid userID);
@@ -49,11 +50,14 @@ namespace SadnaExpress.DomainLayer.User
         void GetStorePurchases(Guid userId, Guid storeId);
         void GetAllStorePurchases(Guid userId);
         void PurchaseCart(Guid userID);
-        bool CancelPayment(double amount, string transactionDetails);
+        bool CancelPayment(double amount, int transaction_id);
         List<Notification> GetNotifications(Guid userId);
         List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores);
         List<Member> GetStoreOwnerOfStores(List<Guid> stores);
-
+        void PlaceBid(Guid userID, Guid storeID, Guid itemID, string itemName, double price);
+        Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID);
+        List<Bid> GetBidsInStore(Guid userID, Guid storeID);
+        void ReactToBid(Guid userID, Guid storeID, string itemName, string bidResponse);
         bool IsSystemInitialize();
         void LoadData(Guid storeid1,Guid storeid2);
         int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
@@ -62,5 +66,7 @@ namespace SadnaExpress.DomainLayer.User
 
         ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID);
         void MarkNotificationAsRead(Guid userID, Guid notificationID);
+        string Handshake();
+        void NotifyBuyerPurchase(Guid userID);
     }
 }

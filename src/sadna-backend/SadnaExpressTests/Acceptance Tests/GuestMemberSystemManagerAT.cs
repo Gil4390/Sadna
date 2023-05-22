@@ -114,6 +114,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         #endregion
         
         #region Remove membership
+        [TestCategory("Concurrency")]
         [TestMethod]
         public void SystemManagerRemoveMembershipDuringHisPurchase_HappyTest()
         {
@@ -135,7 +136,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             });
             Task<ResponseT<List<ItemForOrder>>> task2 = Task.Run(() =>
             {
-                return proxyBridge.PurchaseCart(memberId, "5044222", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
             });
             Task.WaitAll();
 
@@ -151,7 +155,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.AreEqual(itemid2, task2.Result.Value[1].ItemID);
             Logger.Instance.Info("*****************************************************************************");
         }
-
+        
+        [TestCategory("Concurrency")]
         [TestMethod]
         public void SystemManagerRemoveMembershipDuringLogin_HappyTest()
         {
@@ -184,7 +189,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.IsTrue(proxyBridge.GetMember(memberId).ErrorOccured); // the member should erase
             Logger.Instance.Info("*****************************************************************************");
         }
-
+        [TestCategory("Concurrency")]
         [TestMethod]
         public void SystemManagerRemoveMembershipDuringAddPermissions_HappyTest()
         {
@@ -222,8 +227,8 @@ namespace SadnaExpressTests.Acceptance_Tests
                Assert.IsTrue(proxyBridge.GetMember(memberId).Value.hasPermissions(storeid1, new List<string>{"get store history"})); // the member should erase
                Assert.IsNotNull(proxyBridge.GetMember(memberId).Value); //the member still need to be in the system 
             }
-            Logger.Instance.Info("*****************************************************************************");
         }
+        [TestCategory("Concurrency")]
         [TestMethod]
         public void SystemManagerRemoveMembershipDuringRemovePermissions_HappyTest()
         {
@@ -265,6 +270,77 @@ namespace SadnaExpressTests.Acceptance_Tests
             Logger.Instance.Info("*****************************************************************************");
         }
         #endregion
+        
+        #region Get system revenue
+
+        [TestMethod]
+        public void SystemManagerGet2StoreAnd2UsersRevenue_HappyTest()
+        {
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
+            
+            Assert.AreEqual(0, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
+            
+            Assert.AreEqual(150, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id2 = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id2, storeid1, itemid1, 3);
+            proxyBridge.PurchaseCart(id2, transactionDetails, transactionDetailsSupply);
+            
+            Assert.AreEqual(299.7, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+        }
+        
+        [TestMethod]
+        public void SystemManagerGet1UserAnd2StoreInSamePurchaseRevenue_HappyTest()
+        {
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
+            
+            Assert.AreEqual(0, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+            proxyBridge.AddItemToCart(id, storeid1, itemid1, 3);
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
+
+            Assert.AreEqual(299.7, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+        }
+
+        [TestMethod]
+        public void SystemManagerGet2UsersAnd1StoreRevenue_HappyTest()
+        {
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
+            
+            Assert.AreEqual(0, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
+            
+            Assert.AreEqual(150, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            
+            Guid id2 = proxyBridge.Enter().Value;
+            proxyBridge.AddItemToCart(id2, storeid2, itemid2, 3);
+            proxyBridge.PurchaseCart(id2, transactionDetails, transactionDetailsSupply);
+            
+            Assert.AreEqual(600, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+        }
+        #endregion
+        
         [TestCleanup]
         public override void CleanUp()
         {

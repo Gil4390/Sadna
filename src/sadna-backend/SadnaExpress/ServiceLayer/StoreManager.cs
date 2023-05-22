@@ -50,8 +50,14 @@ namespace SadnaExpress.ServiceLayer
                 {
                     foreach (Item item in cartItems[storeID].Keys)
                     {
+                        Dictionary<Guid, KeyValuePair<double, bool>> bids = userFacade.GetBidsOfUser(userID);
                         int quantity = storeFacade.GetItemByQuantity(storeID, item.ItemID);
-                        items.Add(new SItem(item, cartItems[storeID][item], storeID, quantity>0, cart[storeID][item.ItemID]));
+                        if (!bids.ContainsKey(item.ItemID))
+                            items.Add(new SItem(item, cartItems[storeID][item], storeID,
+                                quantity > 0, cart[storeID][item.ItemID]));
+                        else
+                            items.Add(new SItem(item, cartItems[storeID][item], bids[item.ItemID], storeID,
+                                quantity > 0, cart[storeID][item.ItemID]));
                     }
                 }
 
@@ -109,7 +115,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid userID, SPaymentDetails paymentDetails, SSupplyDetails usersDetail)
         {
             Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
             try
@@ -125,15 +131,23 @@ namespace SadnaExpress.ServiceLayer
                     cart.Add(basket.StoreID, basket.ItemsInBasket);
                 // try to purchase the items. (the function update the quantity in the inventory in this function)
                 double amount = storeFacade.PurchaseCart(cart, ref itemForOrders, userFacade.GetUserEmail(userID));
-                if (!userFacade.PlacePayment(amount, paymentDetails))
+                int transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
+                Dictionary<Guid, KeyValuePair<double,bool>> bids = userFacade.GetBidsOfUser(userID);
+                foreach (ItemForOrder item in itemForOrders)
+                {
+                    if (bids.ContainsKey(item.ItemID) && bids[item.ItemID].Value && bids[item.ItemID].Key < item.Price)
+                        item.Price = bids[item.ItemID].Key;
+                }
+                if (transaction_payment_id == -1)
                 {
                     storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
                     throw new Exception("Payment operation failed");
                 }
-                if (!userFacade.PlaceSupply(shoppingCart.ToString(), usersDetail))
+                int transaction_supply_id = userFacade.PlaceSupply(usersDetail);
+                if (transaction_supply_id == -1) 
                 {
                     storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
-                    userFacade.CancelPayment(amount, paymentDetails); // because we need to refund the user
+                    userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
                     throw new Exception("Supply operation failed");
                 }
                 Orders.Instance.AddOrder(userID, itemForOrders);
@@ -141,7 +155,10 @@ namespace SadnaExpress.ServiceLayer
                 // Notify to store owners
                 foreach (ShoppingBasket basket in shoppingCart.Baskets)
                     NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store "+storeFacade.GetStore(basket.StoreID).StoreName+" !", userID);
-             
+
+                //for bar - notify a user that his purchase completed succssefully by notification
+                userFacade.NotifyBuyerPurchase(userID);
+
                 // delete the exist shopping cart
                 userFacade.PurchaseCart(userID);
                 return new ResponseT<List<ItemForOrder>>(itemForOrders);
@@ -348,6 +365,36 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        {
+            try
+            {
+                Guid storeID = storeFacade.GetItemStoreId(itemID);
+                userFacade.PlaceBid(userID, storeID, itemID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, price);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(PlaceBid)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+        
+        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        {
+            try
+            {
+                Guid storeID = storeFacade.GetItemStoreId(itemID);
+                userFacade.ReactToBid(userID, storeID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, bidResponse);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(ReactToBid)+": "+ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+        
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             try
@@ -410,7 +457,7 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        public Response AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             try
@@ -538,6 +585,34 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, storeID, new List<string> { "owner permissions", "founder permissions", });
+                return new ResponseT<double>(Orders.Instance.GetStoreRevenue(storeID, date));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStoreRevenue) + ": " + ex.Message);
+                return new ResponseT<double>(ex.Message);
+            }
+        }
+
+        public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, Guid.Empty, new List<string> { "system manager permissions" });
+                return new ResponseT<double>(Orders.Instance.GetSystemRevenue(date));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetSystemRevenue) + ": " + ex.Message);
+                return new ResponseT<double>(ex.Message);
+            }
+        }
+        
         public void LoadData()
         {
             Store store1 = new Store("Zara");

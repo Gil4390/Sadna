@@ -20,6 +20,7 @@ namespace SadnaExpress.DomainLayer.Store
             stores = new ConcurrentDictionary<Guid, Store>();
             reviews = new ConcurrentBag<Review>();
             _orders = Orders.Instance;
+            _isTSInitialized = ApplicationOptions.InitTradingSystem;
         }
 
         public StoreFacade(ConcurrentDictionary<Guid, Store> stores)
@@ -27,6 +28,7 @@ namespace SadnaExpress.DomainLayer.Store
             this.stores = stores;
             reviews = new ConcurrentBag<Review>();
             _orders = Orders.Instance;
+            _isTSInitialized = ApplicationOptions.InitTradingSystem;
         }
 
         public Guid OpenNewStore(string storeName)
@@ -426,7 +428,7 @@ namespace SadnaExpress.DomainLayer.Store
             return items;
         }
 
-        public Condition AddCondition(Guid store, string entity, string entityName, string type, double value,
+        public Condition AddCondition(Guid store, string entity, string entityName, string type, object value,
             DateTime dt = default, string op = default, int opCond = default)
         {
             IsTsInitialized();

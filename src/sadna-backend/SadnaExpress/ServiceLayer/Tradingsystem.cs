@@ -162,7 +162,10 @@ namespace SadnaExpress.ServiceLayer
                 bool inStock = storeManager.GetStore(itemStoreid).Value.GetItemByQuantity(item.ItemID) > 0;
                 int countInCart = storeManager.GetItemQuantityInCart(userID,itemStoreid, item.ItemID).Value;
                 double priceDiscount = storeManager.GetItemAfterDiscount(itemStoreid, item);
-                items.Add(new SItem(item, priceDiscount, itemStoreid, inStock, countInCart));
+                if (!userManager.GetBidsOfUser(userID).ContainsKey(item.ItemID))
+                    items.Add(new SItem(item, priceDiscount, itemStoreid, inStock, countInCart));
+                else
+                    items.Add(new SItem(item, priceDiscount, userManager.GetBidsOfUser(userID)[item.ItemID], itemStoreid, inStock, countInCart));
             }
 
             return new ResponseT<List<SItem>>(items);
@@ -193,7 +196,7 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetCartItems(userID);
         }
 
-        public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, SPaymentDetails paymentDetails, SSupplyDetails usersDetail)
         {
             ResponseT<List<ItemForOrder>>  response = storeManager.PurchaseCart(userID, paymentDetails, usersDetail);
             return response;
@@ -512,7 +515,7 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetAllConditions(store);
         }
 
-        public Response AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        public Response AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             return storeManager.AddCondition(store , entity,entityName,type,value,dt,entityRes , entityResName, typeRes , valueRes  ,op , opCond);
@@ -583,6 +586,36 @@ namespace SadnaExpress.ServiceLayer
             var res = new ResponseT<String>();
             res.Value = name;
             return res;
+        }
+
+        public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
+        {
+            return storeManager.GetStoreRevenue(userID, storeID, date);
+        }
+
+        public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
+        {
+            return storeManager.GetSystemRevenue(userID,date);
+        }
+
+        public Response Handshake()
+        {
+            return userManager.Handshake();
+        }
+
+        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        {
+            return storeManager.PlaceBid(userID, itemID, price);
+        }
+
+        public ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            return userManager.GetBidsInStore(userID, storeID);
+        }
+
+        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        {
+            return storeManager.ReactToBid(userID, itemID, bidResponse);
         }
     }
 }

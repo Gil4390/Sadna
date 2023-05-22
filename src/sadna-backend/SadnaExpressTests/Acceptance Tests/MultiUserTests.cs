@@ -218,7 +218,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId3, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId3, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId3, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(210);
@@ -231,7 +234,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId4, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId4, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId4, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(220);
@@ -246,7 +252,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId5, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId5, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId5, transactionDetails, transactionDetailsSupply);
 
                 }),
                 Task.Run( () => {
@@ -268,7 +277,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId7, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId7, transactionDetails, transactionDetailsSupply);
 
                 }),
                 Task.Run( () => {
@@ -279,7 +291,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId8, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId8, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -289,7 +304,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId9, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId9, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -299,7 +317,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId10, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId10, transactionDetails, transactionDetailsSupply);
 
                 })
             };
@@ -392,7 +413,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 proxyBridge.AddItemToCart(id1, storeid1, itemid1, 39);
                 Thread.Sleep(10000);
                 proxyBridge.AddItemToCart(id1, storeid1, itemid1, 1);
-                return proxyBridge.PurchaseCart(id1, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(id1, transactionDetails, transactionDetailsSupply);
             });
             Task<ResponseT<List<ItemForOrder>>> task2 = Task.Run(() =>
             {
@@ -404,7 +428,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 proxyBridge.AddItemToCart(id2, storeid1, itemid1, 9);
                 Thread.Sleep(1000);
                 proxyBridge.AddItemToCart(id2, storeid1, itemid1, 9);
-                return proxyBridge.PurchaseCart(id2, "5411566648", "Rabbi Akiva 6");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(id2, transactionDetails, transactionDetailsSupply);
             });
             Task<Response> task3 = Task.Run(() =>
             {
@@ -469,7 +496,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 id8 = proxyBridge.Login(id8, "oMAHA1@amazon.io", "123AaC!@#").Value;
                 Store s = proxyBridge.GetStore(storeID).Value;
                 proxyBridge.AddItemToCart(id8, storeID, newitemID, 1);
-                proxyBridge.PurchaseCart(id8, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                proxyBridge.PurchaseCart(id8, transactionDetails, transactionDetailsSupply);
                 return proxyBridge.Exit(id8);
             });
             Task<Response> task9 = Task.Run(() =>
@@ -481,7 +511,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 id9 = proxyBridge.Login(id9, "oMAHA2@amazon.io", "123AaC!@#").Value;
                 Store s = proxyBridge.GetStore(storeID).Value;
                 proxyBridge.AddItemToCart(id9, storeID, newitemID, 1);
-                proxyBridge.PurchaseCart(id9, "5411556638", "Rabbi Akiva 6");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                proxyBridge.PurchaseCart(id9, transactionDetails, transactionDetailsSupply);
                 return proxyBridge.Exit(id9);
             });
 
@@ -539,7 +572,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 proxyBridge.AddItemToCart(id1, storeid1, itemid1, 39);
                 Thread.Sleep(10000);
                 proxyBridge.AddItemToCart(id1, storeid1, itemid1, 1);
-                return proxyBridge.PurchaseCart(id1, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(id1, transactionDetails, transactionDetailsSupply);
             });
             
             Task<ResponseT<List<ItemForOrder>>> task2 = Task.Run(() =>
@@ -552,7 +588,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 proxyBridge.AddItemToCart(id2, storeid1, itemid1, 9);
                 Thread.Sleep(1000);
                 proxyBridge.AddItemToCart(id2, storeid1, itemid1, 9);
-                return proxyBridge.PurchaseCart(id2, "5411566648", "Rabbi Akiva 6");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(id2, transactionDetails, transactionDetailsSupply);
             });
             Task<Response> task3 = Task.Run(() =>
             {
@@ -613,7 +652,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Thread.Sleep(200);
                 id8 = proxyBridge.Login(id8, "oMAHA1@amazon.io", "123AaC!@#").Value;
                 proxyBridge.AddItemToCart(id8, storeid1, itemid22, 1);
-                proxyBridge.PurchaseCart(id8, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                proxyBridge.PurchaseCart(id8, transactionDetails, transactionDetailsSupply);
                 return proxyBridge.Exit(id8);
             });
                 Task<Response> task9 = Task.Run(() =>
@@ -625,7 +667,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 id9 = proxyBridge.Login(id9, "oMAHA2@amazon.io", "123AaC!@#").Value;
                 Store s = proxyBridge.GetStore(storeID).Value;
                 proxyBridge.AddItemToCart(id9, storeid1, itemid22, 1);
-                proxyBridge.PurchaseCart(id9, "5411556638", "Rabbi Akiva 6");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                proxyBridge.PurchaseCart(id9, transactionDetails, transactionDetailsSupply);
                 return proxyBridge.Exit(id9);
             });
         
@@ -724,7 +769,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId3, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId3, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId3, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(2000);
@@ -737,7 +785,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId4, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId4, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId4, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(2000);
@@ -752,7 +803,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId5, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId5, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId5, transactionDetails, transactionDetailsSupply);
 
                 }),
                 Task.Run( () => {
@@ -775,7 +829,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                         return resp;
                     Assert.IsTrue(proxyBridge.GetItemByID(storeId2, itemId2).Value.Price.Equals(10));
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId7, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId7, transactionDetails, transactionDetailsSupply);
 
                 }),
                 Task.Run( () => {
@@ -787,7 +844,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                         return resp;
                     Assert.IsTrue(proxyBridge.GetItemByID(storeId2, itemId2).Value.Price.Equals(10));
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId8, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId8, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -798,7 +858,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                         return resp;
                     Assert.IsTrue(proxyBridge.GetItemByID(storeId2, itemId2).Value.Price.Equals(10));
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId9, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId9, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -809,7 +872,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                         return resp;
                     Assert.IsTrue(proxyBridge.GetItemByID(storeId2, itemId2).Value.Price.Equals(10));
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId10, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId10, transactionDetails, transactionDetailsSupply);
 
                 })
             };
@@ -1045,7 +1111,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId3, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId3, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId3, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(210);
@@ -1058,7 +1127,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp =proxyBridge.AddItemToCart(loggedId4, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId4, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId4, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(220);
@@ -1073,7 +1145,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId5, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId5, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId5, transactionDetails, transactionDetailsSupply);
 
                 }),
                 Task.Run( () => {
@@ -1096,7 +1171,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId7, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId7, transactionDetails, transactionDetailsSupply);
 
                 }),
                 Task.Run( () => {
@@ -1107,7 +1185,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId8, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId8, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -1118,7 +1199,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId9, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId9, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -1129,7 +1213,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId10, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId10, transactionDetails, transactionDetailsSupply);
 
                 })
             };
@@ -1264,7 +1351,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId3, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId3, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId3, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(2000);
@@ -1277,7 +1367,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId4, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId4, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId4, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(2000);
@@ -1292,7 +1385,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     Response resp = proxyBridge.AddItemToCart(loggedId5, storeId1, itemId1, 1);
                     if(resp.ErrorOccured)
                         return resp;
-                    return proxyBridge.PurchaseCart(loggedId5, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(loggedId5, transactionDetails, transactionDetailsSupply);
 
                 }),
                 Task.Run( () => {
@@ -1314,7 +1410,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId7, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId7, transactionDetails, transactionDetailsSupply);
 
                 }),
                 Task.Run( () => {
@@ -1325,7 +1424,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId8, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId8, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -1335,7 +1437,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId9, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId9, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -1345,7 +1450,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                     if(resp.ErrorOccured)
                         return resp;
                     Thread.Sleep(20);
-                    return proxyBridge.PurchaseCart(userId10, "Visa", "BGU University Building 90");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(userId10, transactionDetails, transactionDetailsSupply);
 
                 })
             };

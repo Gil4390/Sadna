@@ -50,9 +50,8 @@ namespace SadnaExpress.DomainLayer
             }
         }
 
-        public void NotifyObservers(List<Member> toNodify,Guid storeID, string message, Guid userId)
+        public void NotifyObservers(List<Member> toNodify, Guid storeID, string message, Guid userId)
         {
-           
             foreach (Member member in toNodify)
             {
                 Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
@@ -60,7 +59,21 @@ namespace SadnaExpress.DomainLayer
                     NotificationNotifier.GetInstance().SendNotification(member.UserId, message);
                 member.Update(notification);        
             }
-            
+        }
+
+        public void NotifyObserver(User.User toNodify, Guid storeID, string message)
+        {
+            if (toNodify.GetType() == typeof(Member))
+            {
+                Notification notification = new Notification(DateTime.Now, message, toNodify.UserId);
+                if (((Member)toNodify).LoggedIn)
+                    NotificationNotifier.GetInstance().SendNotification(toNodify.UserId, message);
+                ((Member)toNodify).Update(notification);        
+            }
+            else
+            {
+                NotificationNotifier.GetInstance().SendNotification(toNodify.UserId, message);
+            }
         }
 
         public void RegisterObserver(Guid storeID , Member observer)

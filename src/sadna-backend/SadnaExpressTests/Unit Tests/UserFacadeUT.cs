@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.SModels;
 using static SadnaExpressTests.Mocks;
 
 namespace SadnaExpressTests.Unit_Tests
@@ -18,6 +19,7 @@ namespace SadnaExpressTests.Unit_Tests
         private Guid userId2;
         private Guid storeID = Guid.NewGuid();
         private ConcurrentDictionary<Guid, Member> members;
+        private ConcurrentDictionary<Guid, PromotedMember> founders;
         private Member member;
         private Guid memberid = Guid.NewGuid();
         private Guid systemManagerid = Guid.NewGuid();
@@ -37,13 +39,15 @@ namespace SadnaExpressTests.Unit_Tests
                 "schwartz", "ShaY1787%$%");
             founder.createFounder(storeID);
             founder.LoggedIn = true;
+            founders = new ConcurrentDictionary<Guid, PromotedMember>();
+            founders.TryAdd(storeID, founder);
             members.TryAdd(founderid, founder);
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga",
                 "schwartz", "ShaY1787%$%");
             systemManager.createSystemManager();
             systemManager.LoggedIn = true;
             members.TryAdd(systemManagerid, systemManager);
-            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,
+            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,founders,
                 new ConcurrentDictionary<Guid, string>(), new PasswordHash(), new Mock_PaymentService(),
                 new Mock_SupplierService());
             _userFacade.SetIsSystemInitialize(true);
@@ -126,14 +130,15 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetPaymentService(new Mock_PaymentService());
-            string transactionDetails = "visa card ShaY1787%$%45";
+            SPaymentDetails transactionDetails =
+                new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             double amount = 100;
 
             //Act
-            bool value = _userFacade.PlacePayment(amount, transactionDetails);
+            int value = _userFacade.PlacePayment(amount, transactionDetails);
 
             //Assert
-            Assert.IsTrue(value);
+            Assert.IsTrue(value != -1);
         }
 
         [TestMethod()]
@@ -141,13 +146,13 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetPaymentService(new Mock_5sec_PaymentService());
-            string transactionDetails = "visa card ShaY1787%$%45";
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             double amount = 500;
             //Act
-            bool value = _userFacade.PlacePayment(amount, transactionDetails);
+            int value = _userFacade.PlacePayment(amount, transactionDetails);
 
             //Assert
-            Assert.IsTrue(value);
+            Assert.IsTrue(value != -1);
         }
 
         [TestMethod()]
@@ -155,11 +160,11 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetPaymentService(new Mock_Bad_PaymentService());
-            string transactionDetails = "visa card ShaY1787%$%45";
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");            
             double amount = 300;
             //Act & Assert
             Assert.IsFalse(_userFacade.PlacePayment(amount,
-                transactionDetails)); //operation failes cause it takes to much time
+                transactionDetails)!=-1); //operation failes cause it takes to much time
         }
 
         #endregion
@@ -171,11 +176,11 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetSupplierService(new Mock_SupplierService());
-            string orderDetails = "red dress";
-            string userDetails = "Dina Agapov";
+
 
             //Act
-            bool value = _userFacade.PlaceSupply(orderDetails, userDetails);
+            SSupplyDetails transactionDetails = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+            bool value = _userFacade.PlaceSupply(transactionDetails) != -1;
 
             //Assert
             Assert.IsTrue(value);
@@ -186,11 +191,10 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetSupplierService(new Mock_5sec_SupplierService());
-            string orderDetails = "red dress";
-            string userDetails = "Dina Agapov";
 
             //Act
-            bool value = _userFacade.PlaceSupply(orderDetails, userDetails);
+            SSupplyDetails transactionDetails = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+            bool value = _userFacade.PlaceSupply(transactionDetails) != -1;
 
             //Assert
             Assert.IsTrue(value);
@@ -201,11 +205,10 @@ namespace SadnaExpressTests.Unit_Tests
         {
             //Arrange
             _userFacade.SetSupplierService(new Mock_Bad_SupplierService());
-            string orderDetails = "red dress";
-            string userDetails = "Dina Agapov";
-
+            
             //Act
-            bool value = _userFacade.PlaceSupply(orderDetails, userDetails);
+            SSupplyDetails transactionDetails = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+            bool value = _userFacade.PlaceSupply(transactionDetails) != -1;
             //operation failes cause it takes to much time- returns false
 
             //Assert

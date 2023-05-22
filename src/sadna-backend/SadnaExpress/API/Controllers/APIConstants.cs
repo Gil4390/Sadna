@@ -37,6 +37,11 @@ namespace SadnaExpress.API.Controllers
             public const string shoppingCart = "shopping-cart";
 
             public const string purchaseCart = "purchase-cart";
+            
+            public const string handshake = "handshake";
+
+            public const string placeBid = "place-bid";
+
 
         }
 
@@ -123,7 +128,15 @@ namespace SadnaExpress.API.Controllers
             public const string getAllPolicy = "get-all-policy";
 
             public const string getMemberName = "get-member-name";
-            
+
+            public const string getStoreRevenue = "get-store-revenue";
+
+            public const string getBidsInStore = "get-bids-in-store";
+
+            public const string reactToBid = "react-to-bid";
+
+
+
         }
 
         public static class AdminData
@@ -141,6 +154,8 @@ namespace SadnaExpress.API.Controllers
             public const string allpurchasesStore= "all-purchases-stores";
             
             public const string removeMember = "rm-member";
+
+            public const string getSystemRevenue = "get-system-revenue";
         }
     }
 }

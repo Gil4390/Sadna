@@ -135,6 +135,24 @@ namespace SadnaExpress.API.Controllers
             ResponseT<List<ItemForOrder>> res = tradingSystem.PurchaseCart(request.userID, request.PaymentDetails, request.UsersDetails);
             return Ok(new Response(res.ErrorMessage));
         }
+        
+        [Route(APIConstants.GuestData.handshake)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult Handshake([FromBody] ClientRequest request)
+        {
+            return Ok(tradingSystem.Handshake());
+        }
+
+
+        [Route(APIConstants.GuestData.placeBid)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult PlaceBid([FromBody] BidRequest request)
+        {
+            Response res = tradingSystem.PlaceBid(request.userID, request.itemID, request.price);
+            return Ok(res);
+        }
 
 
     }

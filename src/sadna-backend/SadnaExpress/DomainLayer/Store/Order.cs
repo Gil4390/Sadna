@@ -11,6 +11,7 @@ namespace SadnaExpress.DomainLayer.Store
         [Key]
         public Guid OrderID { get; set; }
         private List<ItemForOrder> listItems;
+
         public List<ItemForOrder> ListItems { get => listItems; set => listItems = value; }
 
         public Order()
@@ -18,10 +19,19 @@ namespace SadnaExpress.DomainLayer.Store
             OrderID = Guid.NewGuid();
         }
 
+        
+        private DateTime orderTime;
+        public DateTime OrderTime {get=>orderTime;}
+
+
         public Order(List<ItemForOrder> listItems)
         {
             this.listItems = listItems;
+
             OrderID = Guid.NewGuid();
+
+            orderTime = DateTime.Now;
+
         }
 
         public double CalculatorAmount()

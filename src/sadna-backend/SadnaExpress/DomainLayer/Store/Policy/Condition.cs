@@ -166,13 +166,13 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 case Store storeType:
                     type = $"store {storeType.StoreName}";
                     foreach (Item item in basket.Keys)
-                        sum += item.Price;
+                        sum += item.Price*basket[item];
                     break;
                 case string stringType:
                     type = $"category {stringType}";
                     foreach (Item item in basket.Keys)
                         if (item.Category.Equals(entity))
-                            sum += item.Price;
+                            sum += item.Price*basket[item];
                     break;
                 case ShoppingBasket shopping:
                     foreach (Item item in basket.Keys)
@@ -274,8 +274,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public T entity;
         public DateTime timing;
         public string beforeAfter;
-
-        // T can be store or item or category(string)
+        
         public TimeCondition(T entity, DateTime timing , string beforeAfter)
         {
             this.entity = entity;

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
+using System.Linq;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
@@ -18,6 +19,7 @@ namespace SadnaExpress.DomainLayer.User
         }
 
         private ConcurrentDictionary<Guid, List<PromotedMember>> appoint;
+
 
         public string Appoint { 
             get => JsonConvert.SerializeObject(appoint); 
@@ -44,6 +46,9 @@ namespace SadnaExpress.DomainLayer.User
             set => PermissionsHolder = value;
         }
 
+
+        private ConcurrentDictionary<Guid, List<Bid>> bidsOffers;
+
         private readonly Permissions permissionsHolder;
 
         public PromotedMember()
@@ -62,6 +67,7 @@ namespace SadnaExpress.DomainLayer.User
          * add new manager
          * get employees info
          * product management permissions
+         * policies permission
          */
         public PromotedMember(Guid id, string email, string firstName, string lastName, string password, ShoppingCart shoppingCart=null, bool login=false) : base(id,
             email, firstName, lastName, password)
@@ -70,6 +76,7 @@ namespace SadnaExpress.DomainLayer.User
             appoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
             permissions = new ConcurrentDictionary<Guid, List<string>>();
             permissionsHolder = Permissions.Instance;
+            bidsOffers = new ConcurrentDictionary<Guid, List<Bid>>();
             LoggedIn = login;
             if (shoppingCart == null)
                 ShoppingCart = new ShoppingCart();
@@ -123,7 +130,15 @@ namespace SadnaExpress.DomainLayer.User
             List<string> removedValue2;
             PromotedMember removedValue3;
             appoint.TryRemove(storeID, out removedValue1);
-            permissions.TryRemove(storeID, out removedValue2);
+            if (permissions.ContainsKey(storeID))
+            {
+                while (permissions[storeID].Count != 0 )
+                {
+                    removePermission(storeID, permissions[storeID].First());
+                }
+                List<string> output = new List<string>();
+                permissions.TryRemove(storeID, out output);
+            }
             directSupervisor.TryRemove(storeID, out removedValue3);
         }
 
@@ -156,11 +171,10 @@ namespace SadnaExpress.DomainLayer.User
         public void removePermission(Guid storeID, string per)
         {
             permissions[storeID].Remove(per);
-            if (permissions[storeID].Count == 0)
-            {
-                List<string> output = new List<string>();
-                permissions.TryRemove(storeID, out output);
-            }
+            
+            if (per.Equals("policies permission"))
+                foreach (Bid bid in bidsOffers[storeID])
+                    bid.RemoveEmployee(this);
         }
         public override PromotedMember AppointStoreOwner(Guid storeID, Member newOwner)
         {
@@ -213,6 +227,41 @@ namespace SadnaExpress.DomainLayer.User
             if (!hasPermissions(storeID,
                     new List<string> {"founder permissions"}))
             throw new Exception("The member doesn’t have permissions to close store");
+        }
+
+        public void AddBid(Guid storeID, Bid bid)
+        {
+            if (!bidsOffers.ContainsKey(storeID))
+            {
+                bidsOffers[storeID] = new List<Bid>();
+            }
+            bidsOffers[storeID].Add(bid);
+        }
+        
+        public void RemoveBid(Guid storeID, Bid bid)
+        {
+            bidsOffers[storeID].Remove(bid);
+        }
+        
+        public override void ReactToBid(Guid storeID, string itemName, string bidResponse)
+        {
+            Bid bidFounded = null;
+            foreach (Bid bid in bidsOffers[storeID])
+                if (bid.ItemName.Equals(itemName))
+                    bidFounded = bid;
+            if (bidFounded == null)
+                throw new Exception($"bid on {itemName} not exist");
+            
+            bidFounded.ReactToBid(this, bidResponse);
+        }
+        
+        public override List<Bid> GetBidsInStore(Guid storeID)
+        {
+            if (bidsOffers.ContainsKey(storeID))
+            {
+                return bidsOffers[storeID];
+            }
+            throw new Exception($"Store {storeID} not exist");
         }
     }
 }

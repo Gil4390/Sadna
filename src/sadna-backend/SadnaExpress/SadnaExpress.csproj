@@ -54,6 +54,7 @@
       <HintPath>..\packages\NodaTime.3.1.9\lib\netstandard2.0\NodaTime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -77,6 +78,8 @@
     <Compile Include="DataLayer\DatabaseContext.cs" />
     <Compile Include="DataLayer\DBHandler.cs" />
     <Compile Include="DomainLayer\User\Macs.cs" />
+    <Compile Include="ApplicationOptions.cs" />
+    <Compile Include="DomainLayer\User\Bid.cs" />
     <Compile Include="DomainLayer\User\Notification.cs" />
     <Compile Include="DomainLayer\User\IObserver.cs" />
     <Compile Include="DomainLayer\Store\Policy\Condition.cs" />
@@ -116,15 +119,18 @@
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />
     <Compile Include="ServiceLayer\IUserManager.cs" />
+    <Compile Include="ServiceLayer\SModels\SBid.cs" />
     <Compile Include="ServiceLayer\SModels\SItem.cs" />
     <Compile Include="ServiceLayer\Response.cs" />
     <Compile Include="ServiceLayer\ResponseT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceLayer\Server.cs" />
     <Compile Include="ServiceLayer\SModels\SMember.cs" />
+    <Compile Include="ServiceLayer\SModels\SPaymentDetails.cs" />
     <Compile Include="ServiceLayer\SModels\SPolicy.cs" />
     <Compile Include="ServiceLayer\SModels\SPermission.cs" />
     <Compile Include="ServiceLayer\SModels\SReview.cs" />
+    <Compile Include="ServiceLayer\SModels\SSupplyDetails.cs" />
     <Compile Include="ServiceLayer\StoreManager.cs" />
     <Compile Include="ServiceLayer\TradingSystem.cs" />
     <Compile Include="ServiceLayer\ITradingSystem.cs" />

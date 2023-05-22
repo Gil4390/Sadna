@@ -29,7 +29,7 @@ namespace SadnaExpress.ServiceLayer
         Response RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID);
         Response EditItemFromCart(Guid userID, Guid storeID, Guid itemID,  int itemAmount);
         ResponseT<ShoppingCart> GetDetailsOnCart(Guid userID);
-        ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, string paymentDetails, string usersDetail); //2.5
+        ResponseT<List<ItemForOrder>> PurchaseCart(Guid userID, SPaymentDetails paymentDetails, SSupplyDetails usersDetail); //2.5
         ResponseT<Guid> Logout(Guid userID); //3.1
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
         Response WriteItemReview(Guid userID, Guid itemID, string reviewText); //3.3
@@ -94,7 +94,7 @@ namespace SadnaExpress.ServiceLayer
 
         ResponseT<SPolicy[]> GetAllConditions(Guid store);
         
-        Response AddCondition(Guid store ,string entity, string entityName, string type, double value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        Response AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);
         Response RemoveCondition(Guid storeID ,int condID);
         
@@ -114,5 +114,11 @@ namespace SadnaExpress.ServiceLayer
         Response MarkNotificationAsRead(Guid userID, Guid notificationID);
         Response CheckPurchaseConditions(Guid userID);
         ResponseT<string> GetMemberName(Guid userID);
+        ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date);
+        ResponseT<double> GetSystemRevenue(Guid userID, DateTime date);
+        Response Handshake();
+        Response PlaceBid(Guid userID, Guid itemID, double price);
+        ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID);
+        Response ReactToBid(Guid userID, Guid itemID, string bidResponse);
     }
 }

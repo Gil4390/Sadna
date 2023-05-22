@@ -86,7 +86,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetDetailsOnCart(id);
         }
 
-        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid id, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid id, SPaymentDetails paymentDetails, SSupplyDetails usersDetail)
         {
             return _realBridge.PurchaseCart(id, paymentDetails, usersDetail);
         }
@@ -293,7 +293,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetAllConditions(store);
         }
 
-        public Response AddCondition(Guid store, string entity, string entityName, string type, double value, DateTime dt = default,
+        public Response AddCondition(Guid store, string entity, string entityName, string type, object value, DateTime dt = default,
             string entityRes = default, string entityResName = default, string typeRes = default, double valueRes = default,
             string op = default, int opCond = default)
         {
@@ -430,6 +430,36 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<string> GetMemberName(Guid userID)
         {
             return _realBridge.GetMemberName(userID);
+        }
+
+        public Response Handshake()
+        {
+            return _realBridge.Handshake();
+        }
+
+        public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
+        {
+            return _realBridge.GetStoreRevenue(userID, storeID, date);
+        }
+
+        public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
+        {
+            return _realBridge.GetSystemRevenue(userID, date);
+        }
+
+        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        {
+            return _realBridge.PlaceBid(userID, itemID, price);
+        }
+
+        public ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            return _realBridge.GetBidsInStore(userID, storeID);
+        }
+
+        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        {
+            return _realBridge.ReactToBid(userID, itemID, bidResponse);
         }
     }
 

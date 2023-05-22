@@ -4,7 +4,7 @@ import { CartItem } from '../components/CartItem.tsx';
 import { useNavigate } from "react-router-dom";
 import { ItemCart } from '../models/Shop.tsx';
 import SystemNotInit from './SystemNotInit.tsx';
-import { handleGetDetailsOnCart } from '../actions/GuestActions.tsx';
+import { handleGetDetailsOnCart, handleHandshake } from '../actions/GuestActions.tsx';
 import Exit from './Exit.tsx';
 import { handleCheckPurchaseConditions } from '../actions/MemberActions.tsx';
 
@@ -15,7 +15,7 @@ function CartPage(props) {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const calculatePrice=()=>{
-    const sum = cartItems.reduce((acc, item) => acc + (item.priceDiscount > -1 ? item.priceDiscount*item.count : item.price*item.count), 0);
+    const sum = cartItems.reduce((acc, item) => acc + (item.offerPrice > -1 ? item.offerPrice*item.count : (item.priceDiscount > -1 ? item.priceDiscount*item.count : item.price*item.count)), 0);
     const ReducedSum= Math.floor(sum*100)/100;
     setTotalPrice(ReducedSum);
   }
@@ -46,13 +46,26 @@ function CartPage(props) {
   };
 
   const handleCheckout=(id)=>{
-    handleCheckPurchaseConditions(id).then(
+    handleHandshake().then(
       value => {
-        value.errorOccured ?
-        alert(value.errorMessage) :  navigate('/PaymentPage', {state: {id}})
+        if (value.errorMessage=="OK")
+        {
+          handleCheckPurchaseConditions(id).then(
+            value => {
+              value.errorOccured ?
+              alert(value.errorMessage) :  navigate('/PaymentPage', {state: {id}})
+            })
+            .catch(error => alert(error));
+        }
+        else
+        {
+          alert(value.errorMessage)
+        }
       })
       .catch(error => alert(error));
+
   }
+
 
   
   return (

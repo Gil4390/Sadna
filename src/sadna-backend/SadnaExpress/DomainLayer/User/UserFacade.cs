@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using NodaTime;
 using SadnaExpress.DataLayer;
 using SadnaExpress.ServiceLayer.Obj;
+using SadnaExpress.API.SignalR;
+using SadnaExpress.ServiceLayer.SModels;
+
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -20,8 +23,10 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<Guid, User> current_Users; //users that are in the system and not login
         private ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private ConcurrentDictionary<Guid, string> macs;
+        private ConcurrentDictionary<Guid, PromotedMember> founders;
 
         private readonly string guestEmail = "guest";
+        private readonly string purchaseNotificationForBuyer = "Your purchase completed successfully, thank you for buying at Sadna Express!";
         private bool _isTSInitialized;
         private IPasswordHash _ph = new PasswordHash();
         private IRegistration _reg = new Registration();
@@ -34,16 +39,18 @@ namespace SadnaExpress.DomainLayer.User
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
+            founders = new ConcurrentDictionary<Guid, PromotedMember>();
             members = new ConcurrentDictionary<Guid, Member>();
             macs = new ConcurrentDictionary<Guid, string>();
             this.paymentService = paymentService;
             this.supplierService = supplierService;
-            _isTSInitialized = false;
+            _isTSInitialized = ApplicationOptions.InitTradingSystem;
         }
 
-        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members,ConcurrentDictionary<Guid, string> macs, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
+        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members,ConcurrentDictionary<Guid, PromotedMember> founders, ConcurrentDictionary<Guid, string> macs, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
         {
             this.current_Users = current_Users;
+            this.founders = founders;
             this.members = members;
             this.macs = macs;
             _ph = ph;
@@ -66,7 +73,10 @@ namespace SadnaExpress.DomainLayer.User
             User user;
             Member member;
             if (current_Users.TryRemove(id, out user))
+            {
                 Logger.Instance.Info(id, nameof(UserFacade) + ": " + nameof(Exit) + ": exited from the system.");
+                user.RemoveBids();
+            }
             else if (members.ContainsKey(id))
             {
                 lock (members[id])
@@ -165,10 +175,13 @@ namespace SadnaExpress.DomainLayer.User
                             member.LoggedIn = true;
                             User user;
                             current_Users.TryRemove(id, out user); 
-                            member.ShoppingCart.AddUserShoppingCart(user.ShoppingCart);
-                            
+
+                            member.ShoppingCart.AddUserShoppingCart(user.ShoppingCart);                            
+
+                            member.deepCopy(user);
                             // add member ShoppingCart in DB
                             DBHandler.Instance.UpdateMemberShoppingCart(member);
+
                         }
                         else
                         {
@@ -202,9 +215,9 @@ namespace SadnaExpress.DomainLayer.User
         public void AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
         {
             IsTsInitialized();
-            if (members.ContainsKey(userID)){
-                if (!isLoggedIn(userID))
-                        throw new Exception("the user is not logged in");
+            if (members.ContainsKey(userID))
+            {
+                isLoggedIn(userID);
                 members[userID].AddItemToCart(storeID, itemID, itemAmount);
                 DBHandler.Instance.UpdateMemberShoppingCart(members[userID]);
             }
@@ -253,7 +266,7 @@ namespace SadnaExpress.DomainLayer.User
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(GetDetailsOnCart)+" ask to displays his shopping cart");
             return current_Users[userID].ShoppingCart;
         }
-        
+
         public void PurchaseCart(Guid userID)
         {
             String internedKey = String.Intern(userID.ToString());
@@ -266,7 +279,7 @@ namespace SadnaExpress.DomainLayer.User
                     current_Users[userID].ShoppingCart = new ShoppingCart();
             }
         }
-        
+
         public void OpenNewStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
@@ -276,12 +289,12 @@ namespace SadnaExpress.DomainLayer.User
                 members[userID] = founder;
             DBHandler.Instance.UpdatePromotedMember((PromotedMember)members[userID]);
 
+            founders.TryAdd(storeID, founder);
             NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
 
             // todo register observer in database
 
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
-
         }
 
     
@@ -429,6 +442,66 @@ namespace SadnaExpress.DomainLayer.User
             return employees;
         }
 
+        public void PlaceBid(Guid userID, Guid storeID, Guid itemID, string itemName, double price)
+        {
+            IsTsInitialized();
+            List<PromotedMember> decisionBids = new List<PromotedMember>();
+            foreach (PromotedMember employee in founders[storeID].GetEmployeeInfoInStore(storeID))
+                if (employee.hasPermissions(storeID, new List<string>{"founder permissions", "owner permissions", "policies permission"}))
+                    decisionBids.Add(employee);
+
+            if (members.ContainsKey(userID))
+            {
+                isLoggedIn(userID);
+                members[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
+            }
+            else
+                current_Users[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
+            
+            Logger.Instance.Info(userID,
+                nameof(UserFacade) + ": " + nameof(PlaceBid) + "Item " + itemName + "asked for new price " + price + " by user " + userID);
+        }
+        
+        public void ReactToBid(Guid userID, Guid storeID,  string itemName, string bidResponse)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+            
+            members[userID].ReactToBid(storeID, itemName, bidResponse);
+            
+            Logger.Instance.Info(userID,
+                nameof(UserFacade) + ": " + nameof(ReactToBid) + "Item " + itemName + "get bid response " + bidResponse + " by user " + userID);
+        }
+        
+        public List<Bid> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+            
+            Logger.Instance.Info(userID,
+                nameof(UserFacade) + ": " + nameof(ReactToBid) + "get bid in store " + storeID + " by user " + userID);
+            List<Bid> bidsWithoutNotExistsGuest = new List<Bid>();
+            foreach (Bid bid in members[userID].GetBidsInStore(storeID))
+            {
+                if (bid.User.GetType() != typeof(User) || current_Users.ContainsKey(bid.User.UserId)) 
+                    bidsWithoutNotExistsGuest.Add(bid);
+            }
+
+            return bidsWithoutNotExistsGuest;
+        }
+
+        public Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID)
+        {
+            IsTsInitialized();
+
+            if (members.ContainsKey(userID))
+            {
+                isLoggedIn(userID);
+                return members[userID].GetBidsOfUser();
+            }
+            return current_Users[userID].GetBidsOfUser();
+        }
+
         public void RemoveUserMembership(Guid userID, string email)
         {
             IsTsInitialized();
@@ -534,7 +607,7 @@ namespace SadnaExpress.DomainLayer.User
             if (_isTSInitialized)
                 throw new Exception("Trading system is already initialized");
 
-            bool servicesConnected = paymentService.Connect() && supplierService.Connect();
+            bool servicesConnected = paymentService.Handshake()=="OK" && supplierService.Handshake();
 
             if(servicesConnected)
                 _isTSInitialized = true;
@@ -611,23 +684,27 @@ namespace SadnaExpress.DomainLayer.User
             this.supplierService = supplierService;
         }
 
-        public bool PlacePayment(double amount, string transactionDetails)
+        public int PlacePayment(double amount, SPaymentDetails transactionDetails)
         {
             try
             {
+                if (!transactionDetails.ValidationSettings())
+                    throw new TimeoutException("Details of payment isn't valid");
                 Logger.Instance.Info(nameof(paymentService)+": request to preform a payment with details : "+transactionDetails);
 
-                var task = Task.Run(() =>
-                {
-                    return paymentService.Pay(amount,transactionDetails);
-                });
-
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result;
-
-                if (isCompletedSuccessfully)
+                // var task = Task.Run(() =>
+                // {
+                //     return paymentService.Pay(amount,transactionDetails);
+                // });
+                //
+                // bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) &&
+                //                                task.Result != -1;
+                
+                int transaction_id = paymentService.Pay(amount,transactionDetails);
+                if (transaction_id != -1)
                 {
                     Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place payment completed with amount of "+amount+" and "+transactionDetails);
-                    return true;
+                    return transaction_id;
                 }
                 else
                 {
@@ -637,13 +714,13 @@ namespace SadnaExpress.DomainLayer.User
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return false;
+                return -1;
             }
         }
 
-        public bool CancelPayment(double amount, string transactionDetails)
+        public bool CancelPayment(double amount, int transaction_id)
         {
-            return paymentService.cancel(amount, transactionDetails);
+            return paymentService.Cancel_Pay(amount, transaction_id);
         }
 
         public List<Notification> GetNotifications(Guid userId)
@@ -689,23 +766,26 @@ namespace SadnaExpress.DomainLayer.User
             
         }
 
-        public bool PlaceSupply(string orderDetails, string userDetails)
+        public int PlaceSupply(SSupplyDetails userDetails)
         {
             try
             {
-                Logger.Instance.Info(nameof(supplierService) + ": user: " + userDetails + " request to preform a supply for order: " + orderDetails);
+                if (!userDetails.ValidationSettings())
+                    throw new TimeoutException("Details of payment isn't valid");
+                Logger.Instance.Info(nameof(supplierService) + ": user: " + userDetails + " request to preform a supply for order: " );//add SSupplyDetails.toString();
 
                 var task = Task.Run(() =>
                 {
-                    return supplierService.ShipOrder(orderDetails, userDetails);
+                    return supplierService.Supply(userDetails);
                 });
 
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime))&& task.Result;;
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime))&& task.Result != -1;;
 
                 if (isCompletedSuccessfully)
                 {
-                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place supply completed: "+ userDetails +" , "+orderDetails);
-                    return true;
+                    int transaction_id = task.Result;
+                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place supply completed: "+ userDetails +" , "); //add SSupplyDetails.toString();
+                    return transaction_id;
                 }
                 else
                 {
@@ -715,7 +795,7 @@ namespace SadnaExpress.DomainLayer.User
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return false;
+                return -1;
             }
         }
 
@@ -798,6 +878,17 @@ namespace SadnaExpress.DomainLayer.User
             }
 
         }
+        public string Handshake()
+        {
+            return paymentService.Handshake();
+        }
+
+        public void NotifyBuyerPurchase(Guid userID)
+        {
+            NotificationNotifier.GetInstance().SendNotification(userID, purchaseNotificationForBuyer);
+            if (members.ContainsKey(userID))
+                members[userID].Update(new Notification(DateTime.Now, userID, purchaseNotificationForBuyer, userID));
+        }
 
         public void LoadData(Guid storeid1, Guid storeid2)
         {
@@ -833,13 +924,14 @@ namespace SadnaExpress.DomainLayer.User
 
             newMac = _ph.Mac();
             macs.TryAdd(systemManagerid, newMac);
-            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "Rotem", "Sela", _ph.Hash("AS87654askj" + newMac));
+            PromotedMember systemManager = new PromotedMember(systemManagerid, ApplicationOptions.SystemManagerEmail, ApplicationOptions.SystemManagerFirstName, ApplicationOptions.SystemManagerLastName, _ph.Hash(ApplicationOptions.SystemManagerPass + newMac));
             systemManager.createSystemManager();
 
             newMac = _ph.Mac();
             macs.TryAdd(storeOwnerid1, newMac);
             PromotedMember storeOwner1 = new PromotedMember(storeOwnerid1, "AsiAzar@gmail.com", "Asi", "Azar", _ph.Hash("A#!a12345678" + newMac));
             storeOwner1.createFounder(storeid1);
+            founders.TryAdd(storeid1, storeOwner1);
 
             newMac = _ph.Mac();
             macs.TryAdd(storeOwnerid3, newMac);

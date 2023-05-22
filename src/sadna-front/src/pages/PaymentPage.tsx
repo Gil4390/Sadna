@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import { useNavigate, useLocation } from "react-router-dom";
 import { Response } from '../models/Response.tsx';
-import { handlePurchaseCart } from '../actions/GuestActions.tsx';
+import { handleHandshake, handlePurchaseCart } from '../actions/GuestActions.tsx';
 import Exit from "./Exit.tsx";
 
 function PaymentPage(props) {
@@ -15,8 +15,12 @@ function PaymentPage(props) {
   const [cardHolderName, setCardHolderName] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
-  const [city, setCity] = useState('');
+  const [idNumber, setIDNumber] = useState('');
   const [adress, setAdress] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
+  const [zip, setZip] = useState('');
+
   const [message, setMessage] = useState<string>('');
   const [response, setResponse] = useState<Response>();
 
@@ -36,12 +40,21 @@ function PaymentPage(props) {
     setCvv(event.target.value);
   };
 
-  const handleCityChange = (event) => {
-    setCity(event.target.value);
+  const handleIDNumberChange = (event) => {
+    setIDNumber(event.target.value);
   };
 
   const handleAdressChange = (event) => {
     setAdress(event.target.value);
+  };
+  const handleCityChange = (event) => {
+    setCity(event.target.value);
+  };
+  const handleCountryChange = (event) => {
+    setCountry(event.target.value);
+  };
+  const handleZipChange = (event) => {
+    setZip(event.target.value);
   };
 
   const PurchaseSuccess = () =>{
@@ -49,8 +62,11 @@ function PaymentPage(props) {
     setCardHolderName("");
     setExpiryDate("");
     setCvv("");
-    setCity("");
+    setIDNumber("");
     setAdress("");
+    setCity("");
+    setCountry("");
+    setZip("");
     setMessage("Purchase completed successfully!");
   }
 
@@ -89,10 +105,9 @@ function PaymentPage(props) {
     return cvvPattern.test(cvv);
   }
 
-  const isValidCity = (city) =>
+  const isValidIdNumber = (idNumber) =>
   {
-    const cityPattern = /^[A-Za-z ]+$/;
-    return cityPattern.test(city);
+    return idNumber.length ==9;
   }
 
   const isValidAddress = (address) =>
@@ -100,23 +115,54 @@ function PaymentPage(props) {
     const addressPattern = /^[a-zA-Z0-9\s,'-']*$/;
     return addressPattern.test(address);
   }
-
+  const isValidCity = (city) =>
+  {
+    const cityPattern = /^[A-Za-z ]+$/;
+    return cityPattern.test(city);
+  }
+  const isValidCountry = (city) =>
+  {
+    const cityPattern = /^[A-Za-z ]+$/;
+    return cityPattern.test(city);
+  }
+  const isValidZip = (zip) =>
+  {
+    const zipPattern = /^[0-9]{3}$/;
+    return zipPattern.test(zip);
+  }
   useEffect(() => {
     if(response !=undefined){
       response?.errorOccured ? setMessage(response?.errorMessage) : PurchaseSuccess();
     }
  }, [response])
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event) => {    
+
     event.preventDefault();
     console.log(`Card Number: ${cardNumber}, Card Holder Name: ${cardHolderName}  Expiration Date: ${expiryDate}  
-    cvv: ${cvv} City: ${city}  Adress: ${adress} `);
-    const paymentDetails = `${cardNumber} ${cardHolderName} ${expiryDate} ${cvv}`;
-    const usersDetails = `${city} ${adress}`;
+    cvv: ${cvv} idNumber: ${idNumber}  Adress: ${adress} `);
 
-    if(isCardNumberValid(cardNumber) && isValidCardHolderName(cardHolderName) && isValidExpiryDate(expiryDate) && isValidCVV(cvv) && isValidCity(city) && isValidAddress(adress))
+    if(isCardNumberValid(cardNumber) && isValidCardHolderName(cardHolderName) && isValidExpiryDate(expiryDate) && isValidCVV(cvv) && isValidIdNumber(idNumber) && isValidAddress(adress))
     {
-      handlePurchaseCart(id, paymentDetails, usersDetails).then(
+
+      const paymentDetails = {
+        cardNumber: cardNumber,
+        month: expiryDate.split('/')[0],
+        year:expiryDate.split('/')[1],
+        holder:cardHolderName,
+        cvv:cvv,
+        id:idNumber
+      };
+
+      const supplyDetails = {
+        name: cardHolderName,
+        address: adress,
+        city:city,
+        country:country,
+        zip:zip,
+      };
+
+      handlePurchaseCart(id, paymentDetails, supplyDetails).then(
         value => {
           setResponse(value as Response);
         })
@@ -183,6 +229,33 @@ function PaymentPage(props) {
 
         <Row>
           <Col>
+            <Form.Group controlId="idNumber">
+              <Form.Label>Card holder ID</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter ID"
+                value={idNumber}
+                onChange={handleIDNumberChange}
+                style={{borderColor: isValidIdNumber(idNumber) || idNumber.length === 0 ? '#28a745' : '#dc3534'}} />
+                {!isValidIdNumber(idNumber) && idNumber.length > 0 && <Form.Text className='text-danger'>Not Valid idNumber!</Form.Text>}
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+        <Col>
+            <Form.Group controlId="adress">
+              <Form.Label>Adress</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Adress"
+                value={adress}
+                onChange={handleAdressChange}
+                style={{borderColor: isValidAddress(adress) || adress.length === 0 ? '#28a745' : '#dc3534'}} />
+                {!isValidAddress(adress) && adress.length > 0 && <Form.Text className='text-danger'>Not Valid Address!</Form.Text>}
+            </Form.Group>
+          </Col>
+          <Col>
             <Form.Group controlId="city">
               <Form.Label>City</Form.Label>
               <Form.Control
@@ -194,16 +267,31 @@ function PaymentPage(props) {
                 {!isValidCity(city) && city.length > 0 && <Form.Text className='text-danger'>Not Valid City!</Form.Text>}
             </Form.Group>
           </Col>
+
+        </Row>
+        <Row>
           <Col>
-            <Form.Group controlId="adress">
-              <Form.Label>Adress</Form.Label>
+            <Form.Group controlId="country">
+              <Form.Label>Country</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter Adress"
-                value={adress}
-                onChange={handleAdressChange}
-                style={{borderColor: isValidAddress(adress) || adress.length === 0 ? '#28a745' : '#dc3534'}} />
-                {!isValidAddress(adress) && adress.length > 0 && <Form.Text className='text-danger'>Not Valid Address!</Form.Text>}
+                placeholder="Enter Country"
+                value={country}
+                onChange={handleCountryChange}
+                style={{borderColor: isValidCountry(country) || country.length === 0 ? '#28a745' : '#dc3534'}} />
+                {!isValidCountry(country) && country.length > 0 && <Form.Text className='text-danger'>Not Valid Country!</Form.Text>}
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="zip">
+              <Form.Label>Zip code</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Zip code"
+                value={zip}
+                onChange={handleZipChange}
+                style={{borderColor: isValidZip(zip) || zip.length === 0 ? '#28a745' : '#dc3534'}} />
+                {!isValidZip(zip) && zip.length > 0 && <Form.Text className='text-danger'>Not Valid zip!</Form.Text>}
             </Form.Group>
           </Col>
         </Row>

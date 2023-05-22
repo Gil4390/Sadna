@@ -2,7 +2,9 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
+using SadnaExpress.ExternalServices;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpressTests.Integration_Tests
 {
@@ -26,10 +28,12 @@ namespace SadnaExpressTests.Integration_Tests
         public void PurchaseItemsGuestSuccess()
         {
             //Arrange
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_SupplierService());
+            trading.SetPaymentService(new PaymentService());
+            trading.SetSupplierService(new SupplierService());
             // Act
-            trading.PurchaseCart(buyerID, "0502485415400", "Rabbi Akiva 5 Beer Sheva");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+            trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
             // Assert
             // check the order not created
             Assert.AreEqual(2, trading.GetStorePurchases(userID, storeID1).Value.Count);
@@ -52,10 +56,12 @@ namespace SadnaExpressTests.Integration_Tests
         public void PurchaseItemsGuestPaymentFail()
         {
             //Arrange
-            trading.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_SupplierService());
+            trading.SetPaymentService(new PaymentService());
+            trading.SetSupplierService(new SupplierService());
             // Act
-            Assert.IsTrue(trading.PurchaseCart(buyerID, "0502485415400", "Rabbi Akiva 5 Beer Sheva").ErrorOccured);
+            SPaymentDetails transactionDetails = new SPaymentDetails("-", "-", "-", "-", "-", "-");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("-", "-", "-", "-", "-");
+            Assert.IsTrue(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
             // Assert
             // check the order not created
             Assert.AreEqual(0, trading.GetStorePurchases(userID, storeID1).Value.Count);
@@ -74,10 +80,13 @@ namespace SadnaExpressTests.Integration_Tests
         public void PurchaseItemsGuestSupplierFail()
         {
             //Arrange
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_Bad_SupplierService());
+            trading.SetPaymentService(new PaymentService());
+            trading.SetSupplierService(new SupplierService());
             // Act
-            Assert.IsTrue(trading.PurchaseCart(buyerID, "0502485415400", "Rabbi Akiva 5 Beer Sheva").ErrorOccured);
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("-", "-", "-", "-", "-");
+
+            Assert.IsTrue(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
             // Assert
             // check the order created
             Assert.AreEqual(0, trading.GetStorePurchases(userID, storeID1).Value.Count);
@@ -96,11 +105,14 @@ namespace SadnaExpressTests.Integration_Tests
         public void PurchaseItemsGuestTheQuantitySmallerFail()
         {
             //Arrange
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetPaymentService(new PaymentService());
             trading.SetSupplierService(new Mocks.Mock_SupplierService());
             trading.EditItemQuantity(userID, storeID1, itemID1, -2);
             // Act
-            Assert.IsTrue(trading.PurchaseCart(buyerID, "0502485415400", "Rabbi Akiva 5 Beer Sheva").ErrorOccured);
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            Assert.IsTrue(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
             // Assert
             // check the order created
             Assert.AreEqual(0,trading.GetStorePurchases(userID, storeID1).Value.Count);
@@ -118,9 +130,12 @@ namespace SadnaExpressTests.Integration_Tests
         public void ItemPriceStayTheSameAfterEdit()
         {
             //Arrange
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetPaymentService(new PaymentService());
             trading.SetSupplierService(new Mocks.Mock_SupplierService());
-            trading.PurchaseCart(buyerID, "0502485415400", "Rabbi Akiva 5 Beer Sheva");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
             // Act
             trading.EditItemPrice(userID, storeID1, itemID1, 10000);
             // Assert
@@ -143,7 +158,10 @@ namespace SadnaExpressTests.Integration_Tests
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
             trading.AddPolicy(storeID1, policy1.ID);
             // Act
-            trading.PurchaseCart(buyerID, "0502485415400", "Rabbi Akiva 5 Beer Sheva");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
             // price after discount
             Assert.AreEqual(10200, Orders.Instance.GetOrdersByUserId(buyerID)[0].CalculatorAmount());
         }
@@ -161,7 +179,10 @@ namespace SadnaExpressTests.Integration_Tests
             DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1.ID, policy2.ID).Value;
             trading.AddPolicy(storeID1, addPolicy.ID);
             // Act
-            trading.PurchaseCart(buyerID, "0502485415400", "Rabbi Akiva 5 Beer Sheva");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
             // price after discount
             Assert.AreEqual(8600, Orders.Instance.GetOrdersByUserId(buyerID)[0].CalculatorAmount());
         }
@@ -176,9 +197,26 @@ namespace SadnaExpressTests.Integration_Tests
             DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1.ID, policy2.ID).Value;
             trading.AddPolicy(storeID1, addPolicy.ID);
             // Act
-            trading.PurchaseCart(buyerID, "0502485415400", "Rabbi Akiva 5 Beer Sheva");
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
             // price after discount
             Assert.AreEqual(9400, Orders.Instance.GetOrdersByUserId(buyerID)[0].CalculatorAmount());
+        }
+
+        [TestMethod]
+        public void MemberPurchaseGetNotificationSuccess()
+        {
+            // Act
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+            trading.PurchaseCart(buyerMemberID, transactionDetails, transactionDetailsSupply);
+
+            // Assert
+            Assert.AreEqual(1, trading.GetNotifications(buyerMemberID).Value.Count);
+            Assert.AreEqual("Your purchase completed successfully, thank you for buying at Sadna Express!", trading.GetNotifications(buyerMemberID).Value[0].Message);
         }
 
         [TestCleanup]

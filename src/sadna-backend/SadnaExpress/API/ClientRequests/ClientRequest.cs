@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.DomainLayer.Store.Policy;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.API.ClientRequests
 {
@@ -53,8 +54,8 @@ namespace SadnaExpress.API.ClientRequests
     }
     public class PurchaseRequest : ClientRequest
     {
-        public string PaymentDetails { get; set; }
-        public string UsersDetails { get; set; }
+        public SPaymentDetails PaymentDetails { get; set; }
+        public SSupplyDetails UsersDetails { get; set; }
     }
     public class WriteItemReviewRequest : ClientRequest
     {
@@ -119,7 +120,7 @@ namespace SadnaExpress.API.ClientRequests
         public string entity { get; set; }
         public string entityName { get; set; }
         public string type { get; set; }
-        public int value { get; set; }
+        public object value { get; set; }
         public string op { get; set; }
         public string entityRes { get; set; }
         public string entityNameRes { get; set; }
@@ -159,5 +160,32 @@ namespace SadnaExpress.API.ClientRequests
     {
         public Guid storeID{ get; set; }
         public int condID{ get; set; }
+    }
+
+    public class BidRequest : ClientRequest
+    {
+        public Guid itemID { get; set; }
+        public double price { get; set; }
+    }
+
+    public class BidsInStoreRequest : ClientRequest
+    {
+        public Guid storeID { get; set; }
+    }
+
+    public class ReactToBidRequest : ClientRequest
+    {
+        public Guid itemID { get; set; }
+        public string bidResponse { get; set; }
+    }
+
+    public class StoreRevenueRequest : ClientRequest
+    {
+        public Guid storeID { get; set; }
+        public DateTime date { get; set; }
+    }
+    public class SystemRevenueRequest : ClientRequest
+    {
+        public DateTime date { get; set; }
     }
 }

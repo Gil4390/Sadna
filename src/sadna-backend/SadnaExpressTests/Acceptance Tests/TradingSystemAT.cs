@@ -106,7 +106,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             members.TryAdd(memberId4, member4);
 
             members.TryAdd(storeOwnerid, storeOwner);
-            IUserFacade _userFacade = new UserFacade(current_users, members, macs,new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
+            ConcurrentDictionary<Guid, PromotedMember>  founders = new ConcurrentDictionary<Guid, PromotedMember>();
+            founders.TryAdd(storeid1, storeOwner);
+            IUserFacade _userFacade = new UserFacade(current_users, members, founders, macs,new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
             TradingSystem Ts = new TradingSystem(_userFacade, storeFacade);
             
             Ts.TestMode = true;
@@ -130,7 +132,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected class Mock_Bad_SupplierService : Mock_SupplierService
         {
             // bad connection
-            public override bool Connect()
+            public override bool Handshake()
             {
                 return false;
             }
@@ -140,9 +142,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected class Mock_Bad_PaymentService : Mock_PaymentService
         {
             // bad connection
-            public override bool Connect()
+            public override string Handshake()
             {
-                return false;
+                return "Not OK";
             }
 
         }

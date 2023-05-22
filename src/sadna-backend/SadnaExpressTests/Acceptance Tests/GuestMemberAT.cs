@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.Obj;
+using SadnaExpress.ServiceLayer.SModels;
 using static SadnaExpressTests.Mocks;
 
 namespace SadnaExpressTests.Acceptance_Tests
@@ -1092,12 +1093,16 @@ namespace SadnaExpressTests.Acceptance_Tests
                 id = proxyBridge.Enter().Value;
                 proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
-                return proxyBridge.PurchaseCart(memberId, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
             Assert.AreEqual(0,proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count); // the shopping basket get empty
             Assert.AreEqual(39, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid1)); //the quantity updated
+            Assert.AreEqual(1, proxyBridge.GetNotifications(memberId).Value.Count); //check that member got a notification for the succssess purchase
         }
         [TestMethod]
         public void invalidPaymentInformation_BadTest()
@@ -1108,12 +1113,16 @@ namespace SadnaExpressTests.Acceptance_Tests
                 proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 proxyBridge.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
-                return proxyBridge.PurchaseCart(memberId, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured);//error occurred
             Assert.AreEqual(1,proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count);// the shopping basket same
             Assert.AreEqual(40, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid1));//the quantity same
+            Assert.AreEqual(0, proxyBridge.GetNotifications(memberId).Value.Count); //purchase did not completed to check that member did not got a notification for succssess purchase
         }
         [TestMethod]
         public void PurchaseItemFromStoreNotActive_BadTest()
@@ -1124,7 +1133,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
                 proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
                 proxyBridge.GetStore(storeid1).Value.Active = false;
-                return proxyBridge.PurchaseCart(memberId, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured);//error occurred
@@ -1152,12 +1164,18 @@ namespace SadnaExpressTests.Acceptance_Tests
             AddItemToCart(memberId2,storeid1,itemid22,1);
             
             Task<ResponseT<List<ItemForOrder>>> task1 = Task.Run(() => {
-                    return proxyBridge.PurchaseCart(memberId,"5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(memberId,transactionDetails, transactionDetailsSupply);
                 });
 
             Task<ResponseT<List<ItemForOrder>>> task2 = Task.Run(() =>
             {
-                return proxyBridge.PurchaseCart(memberId2, "5411556648", "Rabbi Akiva 5");
+                SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                return proxyBridge.PurchaseCart(memberId2, transactionDetails, transactionDetailsSupply);
             });
             Task<Response> task3 =  Task.Run(() => {
                     return proxyBridge.EditItemQuantity(storeOwnerid,storeid1,itemid22,-1);
@@ -1189,10 +1207,16 @@ namespace SadnaExpressTests.Acceptance_Tests
             
             Task<ResponseT<List<ItemForOrder>>>[] clientTasks = new Task<ResponseT<List<ItemForOrder>>>[] {
                 Task.Run(() => {
-                    return proxyBridge.PurchaseCart(memberId,"5411556648", "Rabbi Akiva 5");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(memberId,transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run(() => {
-                    return proxyBridge.PurchaseCart(memberId2,"5411556648", "Rabbi Akiva 5");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(memberId2,transactionDetails, transactionDetailsSupply);
                 })
             };
             // Wait for all clients to complete
@@ -1217,7 +1241,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 {
                     AddItemToCart(memberId2, storeid1, itemid22, 1);
                     AddItemToCart(memberId2, storeid1, itemid1, 1);
-                    return proxyBridge.PurchaseCart(memberId2, "5411556648", "Rabbi Akiva 5");
+                    SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+                    SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
+
+                    return proxyBridge.PurchaseCart(memberId2, transactionDetails, transactionDetailsSupply);
                 });
             // Wait for all clients to complete
             Task.WaitAll();
@@ -1234,6 +1261,87 @@ namespace SadnaExpressTests.Acceptance_Tests
         }
         #endregion
 
+        #region Place bid to item
+  
+        [TestMethod]
+        public void PlaceBid_Success()
+        {
+            //Arrange
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            
+            Guid tempid1 = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
+            proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 2);
+            //Act
+            Response t = proxyBridge.PlaceBid(memberId, itemid1, 50);
+            //Assert
+            Assert.IsFalse(t.ErrorOccured);
+            Assert.AreEqual(1, proxyBridge.GetNotifications(storeOwnerid).Value.Count);
+            Assert.AreEqual(itemid1,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].ItemID);
+            Assert.AreEqual(50,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].OfferPrice);
+        }
+        [TestMethod]
+        public void PlaceBidAndApproved_Success()
+        {
+            //Arrange
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            Guid tempid1 = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
+            
+            proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+            proxyBridge.PlaceBid(memberId, itemid1, 50);
+            //Act
+            Response t = proxyBridge.ReactToBid(storeOwnerid, itemid1, "approved");
+            //Assert
+            Assert.IsFalse(t.ErrorOccured);
+            Assert.AreEqual(50,proxyBridge.GetItemsForClient(memberId, "Tshirt").Value[0].OfferPrice);
+            Assert.AreEqual(50,proxyBridge.GetCartItems(memberId).Value[0].OfferPrice);
+            Assert.AreEqual(1, proxyBridge.GetNotifications(storeOwnerid).Value.Count);
+        }
+        
+        [TestMethod]
+        public void PlaceBidAndThenPlaceBetter_Success()
+        {
+            //Arrange
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            
+            Guid tempid1 = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
+            proxyBridge.PlaceBid(memberId, itemid1, 60);
+            Assert.AreEqual(60,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].OfferPrice);
+            //Act
+            Response t = proxyBridge.PlaceBid(memberId, itemid1, 50);
+            //Assert
+            Assert.IsFalse(t.ErrorOccured);
+            Assert.AreEqual(itemid1,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].ItemID);
+            Assert.AreEqual(50,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].OfferPrice);
+            Assert.AreEqual(2, proxyBridge.GetNotifications(storeOwnerid).Value.Count);
+        }
+        [TestMethod]
+        public void PlaceBidAndThenPlaceWorse_Success()
+        {
+            //Arrange
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            Guid tempid1 = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
+            proxyBridge.PlaceBid(memberId, itemid1, 60);
+            Assert.AreEqual(60,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].OfferPrice);
+            //Act
+            Response t = proxyBridge.PlaceBid(memberId, itemid1, 70);
+            //Assert
+            Assert.IsTrue(t.ErrorOccured);
+            Assert.AreEqual(itemid1,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].ItemID);
+            Assert.AreEqual(60,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].OfferPrice);
+            Assert.AreEqual(1, proxyBridge.GetNotifications(storeOwnerid).Value.Count);
+        }
+        
+
+        #endregion
+        
         [TestCleanup]
         public override void CleanUp()
         {
