@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace SadnaExpress.DomainLayer.Store.Policy
 {
+    [NotMapped]
     public abstract class Condition
     {
         public int ID;
@@ -164,13 +166,13 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                 case Store storeType:
                     type = $"store {storeType.StoreName}";
                     foreach (Item item in basket.Keys)
-                        sum += item.Price;
+                        sum += item.Price*basket[item];
                     break;
                 case string stringType:
                     type = $"category {stringType}";
                     foreach (Item item in basket.Keys)
                         if (item.Category.Equals(entity))
-                            sum += item.Price;
+                            sum += item.Price*basket[item];
                     break;
                 case ShoppingBasket shopping:
                     foreach (Item item in basket.Keys)

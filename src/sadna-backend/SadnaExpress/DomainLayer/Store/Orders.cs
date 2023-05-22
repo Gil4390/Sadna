@@ -11,6 +11,9 @@ namespace SadnaExpress.DomainLayer.Store
         private static ConcurrentDictionary<Guid, List<Order>> userOrders;
         private static ConcurrentDictionary<Guid, List<Order>> storeOrders;
 
+        public ConcurrentDictionary<Guid, List<Order>> UserOrders { get => userOrders; set=>userOrders=value; }
+        public ConcurrentDictionary<Guid, List<Order>> StoreOrders { get => storeOrders; set => storeOrders = value; }
+
         private static Orders instance = null;
 
         private Orders()

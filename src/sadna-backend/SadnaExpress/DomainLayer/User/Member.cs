@@ -1,11 +1,16 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Net.Mime;
+using Newtonsoft.Json;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
 {
+    
     public class Member : User , IObserver
     {
         protected string email;
@@ -21,9 +26,17 @@ namespace SadnaExpress.DomainLayer.User
 
         private bool loggedIn;
         public bool LoggedIn { get => loggedIn; set => loggedIn = value; }
+        [NotMapped]
+        public Dictionary<string , string> securityQuestions { get; set; }
+        public string SecurityQuestionsDB
+        {
+            get => JsonConvert.SerializeObject(securityQuestions);
+            set => securityQuestions = JsonConvert.DeserializeObject<Dictionary<string, string>>(value);
+        }
 
-        private Dictionary<string , string> securityQuestions;
-        protected List<Notification> awaitingNotification;
+        public List<Notification> awaitingNotification { get; set; }
+
+        [NotMapped]
         protected NotificationSystem notificationSystem = NotificationSystem.Instance;
 
 
@@ -111,5 +124,13 @@ namespace SadnaExpress.DomainLayer.User
         {
             awaitingNotification.Add(notification);
         }
+
+
+        
+        public Member()
+        {
+
+        }
+
     }
 }

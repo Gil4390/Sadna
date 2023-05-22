@@ -55,5 +55,6 @@ namespace SadnaExpress.ServiceLayer
 
         ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID);
         Response MarkNotificationAsRead(Guid userID, Guid notificationID);
+        Response Handshake();
     }
 }

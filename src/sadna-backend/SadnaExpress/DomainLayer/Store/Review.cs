@@ -4,10 +4,12 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public class Review
     {
+        public Guid ReviewID { get; set; }
+
         private Store store;
-        public Store Store {get=>store;}
+        public Store Store { get => store; set => store = value; }
         private Item item;
-        public Item Item {get=>item;}
+        public Item Item { get => item; set => item = value; }
         private string reviewText;
         public string ReviewText {get=>reviewText; set => reviewText = value;}
         private Guid reviewerID;
@@ -15,10 +17,17 @@ namespace SadnaExpress.DomainLayer.Store
         
         public Review(Guid reviewerID, Store store, Item item, string reviewText)
         {
+            this.ReviewID = Guid.NewGuid();
             this.store = store;
             this.item = item;
             this.reviewText = reviewText;
             this.reviewerID = reviewerID;
         }
+
+        public Review()
+        {
+
+        }
+
     }
 }

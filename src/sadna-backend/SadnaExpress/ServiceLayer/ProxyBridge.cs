@@ -86,7 +86,7 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetDetailsOnCart(id);
         }
 
-        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid id, string paymentDetails, string usersDetail)
+        public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid id, SPaymentDetails paymentDetails, SSupplyDetails usersDetail)
         {
             return _realBridge.PurchaseCart(id, paymentDetails, usersDetail);
         }
@@ -430,6 +430,11 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<string> GetMemberName(Guid userID)
         {
             return _realBridge.GetMemberName(userID);
+        }
+
+        public Response Handshake()
+        {
+            return _realBridge.Handshake();
         }
 
         public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)

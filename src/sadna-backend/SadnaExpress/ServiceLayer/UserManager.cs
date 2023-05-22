@@ -477,5 +477,19 @@ namespace SadnaExpress.ServiceLayer
             }
             
         }
+        
+        public Response Handshake()
+        {
+            try
+            {
+                return new Response(userFacade.Handshake());
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(Handshake) + ": " + ex.Message);
+                return new Response(ex.Message);
+            }
+            
+        }
     }
 }

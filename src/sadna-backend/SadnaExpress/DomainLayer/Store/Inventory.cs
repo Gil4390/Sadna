@@ -1,18 +1,36 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json.Linq;
+using SadnaExpress.DataLayer;
+
 namespace SadnaExpress.DomainLayer.Store
 {
     public class Inventory
     {
-        public ConcurrentDictionary<Item, int> items_quantity;
+        [Key]
+        public Guid InventoryID { get; set; }
         
+        [NotMapped]
+        public ConcurrentDictionary<Item, int> items_quantity { get; set; }
+
+        public Guid StoreID { get; set; }
+
+        public string Items_quantityDB { get; set; }
+        
+
         public Inventory()
         {
             items_quantity = new ConcurrentDictionary<Item, int>();
+            InventoryID = Guid.NewGuid();
         }
 
         public bool Equals(ConcurrentDictionary<Item, int> newItems_quantity)
@@ -73,7 +91,12 @@ namespace SadnaExpress.DomainLayer.Store
                     throw new Exception("can't add item to the store with a name that belongs to another item");
                 }
                 Item newItem = new Item(name, category, price);
+                newItem.InventoryID = this.InventoryID;
                 items_quantity.TryAdd(newItem, quantity);
+
+                // DBhandler add item in database
+                DBHandler.Instance.AddItem(newItem);
+
                 return newItem.ItemID;
             }
         }
