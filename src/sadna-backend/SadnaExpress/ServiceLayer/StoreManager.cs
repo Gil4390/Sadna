@@ -122,76 +122,79 @@ namespace SadnaExpress.ServiceLayer
             // send list of objects as ref 
             List<ItemForOrder> itemForOrders = new List<ItemForOrder>();
             Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
-            try
+            lock (DBHandler.Instance)
             {
-                 using (var db = new DatabaseContext())
+                try
                 {
-                    using (var transaction = db.Database.BeginTransaction())
+                    using (var db = new DatabaseContext())
                     {
-                        try
+                        using (var transaction = db.Database.BeginTransaction())
                         {
-                            //get the user cart
-                            ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
-                            if (shoppingCart.Baskets.Count == 0)
-                                throw new Exception("Cart can't be empty");
-                            // cast from shopping cart to dictionary before sending to store component.
-                            foreach (ShoppingBasket basket in shoppingCart.Baskets)
-                                cart.Add(basket.StoreID, basket.ItemsInBasket);
-                            // try to purchase the items. (the function update the quantity in the inventory in this function)
-                            double amount = storeFacade.PurchaseCart(db, cart, ref itemForOrders, userFacade.GetUserEmail(userID));
-                            int transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
-                            Dictionary<Guid, KeyValuePair<double, bool>> bids = userFacade.GetBidsOfUser(userID);
-                            foreach (ItemForOrder item in itemForOrders)
+                            try
                             {
-                                if (bids.ContainsKey(item.ItemID) && bids[item.ItemID].Value && bids[item.ItemID].Key < item.Price)
-                                    item.Price = bids[item.ItemID].Key;
+                                //get the user cart
+                                ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
+                                if (shoppingCart.Baskets.Count == 0)
+                                    throw new Exception("Cart can't be empty");
+                                // cast from shopping cart to dictionary before sending to store component.
+                                foreach (ShoppingBasket basket in shoppingCart.Baskets)
+                                    cart.Add(basket.StoreID, basket.ItemsInBasket);
+                                // try to purchase the items. (the function update the quantity in the inventory in this function)
+                                double amount = storeFacade.PurchaseCart(db, cart, ref itemForOrders, userFacade.GetUserEmail(userID));
+                                int transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
+                                Dictionary<Guid, KeyValuePair<double, bool>> bids = userFacade.GetBidsOfUser(userID);
+                                foreach (ItemForOrder item in itemForOrders)
+                                {
+                                    if (bids.ContainsKey(item.ItemID) && bids[item.ItemID].Value && bids[item.ItemID].Key < item.Price)
+                                        item.Price = bids[item.ItemID].Key;
+                                }
+                                if (transaction_payment_id == -1)
+                                {
+                                    storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
+                                    throw new Exception("Payment operation failed");
+                                }
+                                int transaction_supply_id = userFacade.PlaceSupply(usersDetail);
+                                if (transaction_supply_id == -1)
+                                {
+                                    storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
+                                    userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
+                                    throw new Exception("Supply operation failed");
+                                }
+                                Orders.Instance.AddOrder(userID, itemForOrders);
+
+                                // Notify to store owners
+                                foreach (ShoppingBasket basket in shoppingCart.Baskets)
+                                    NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store " + storeFacade.GetStore(basket.StoreID).StoreName + " !", userID);
+
+                                //for bar - notify a user that his purchase completed succssefully by notification
+                                userFacade.NotifyBuyerPurchase(userID);
+
+                                // delete the exist shopping cart
+                                userFacade.PurchaseCart(db, userID);
+
+
+                                // here we know that the purchase was completed successfully
+                                // so now we commit the transaction to the database
+                                db.SaveChanges(true);
+                                transaction.Commit();
+
                             }
-                            if (transaction_payment_id == -1)
+                            catch (Exception ex)
                             {
-                                storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
-                                throw new Exception("Payment operation failed");
+                                // here we know that the purchase wasn't completed successfully
+                                // so now we disregard the transaction and any changes made in the database
+                                transaction.Rollback();
+                                Logger.Instance.Error(ex.Message);
+                                return new ResponseT<List<ItemForOrder>>(ex.Message);
                             }
-                            int transaction_supply_id = userFacade.PlaceSupply(usersDetail);
-                            if (transaction_supply_id == -1)
-                            {
-                                storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
-                                userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
-                                throw new Exception("Supply operation failed");
-                            }
-                            Orders.Instance.AddOrder(userID, itemForOrders);
 
-                            // Notify to store owners
-                            foreach (ShoppingBasket basket in shoppingCart.Baskets)
-                                NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store " + storeFacade.GetStore(basket.StoreID).StoreName + " !", userID);
-
-                            //for bar - notify a user that his purchase completed succssefully by notification
-                            userFacade.NotifyBuyerPurchase(userID);
-
-                            // delete the exist shopping cart
-                            userFacade.PurchaseCart(db, userID);
-
-
-                            // here we know that the purchase was completed successfully
-                            // so now we commit the transaction to the database
-                            db.SaveChanges(true);
-                            transaction.Commit();
-                            
                         }
-                        catch (Exception ex)
-                        {
-                            // here we know that the purchase wasn't completed successfully
-                            // so now we disregard the transaction and any changes made in the database
-                            transaction.Rollback();
-                            Logger.Instance.Error(ex.Message);
-                            return new ResponseT<List<ItemForOrder>>(ex.Message);
-                        }
-
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to Connect With Database");
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
             }
             return new ResponseT<List<ItemForOrder>>(itemForOrders);
         }
