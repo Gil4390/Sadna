@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SadnaExpress.DomainLayer.Store.Policy;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -18,7 +19,7 @@ namespace SadnaExpress.DomainLayer.Store
         Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
         void WriteItemReview(Guid userID, Guid itemID, string reviewText);
         List<Review> GetItemReviews(Guid itemID);
-        double PurchaseCart(Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemsForOrder, string email);
+        double PurchaseCart(DatabaseContext db,Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemsForOrder, string email);
         void RemoveItemFromStore(Guid storeID, Guid itemID);
         void EditItemName(Guid storeID, Guid itemID, string category);
         void EditItemCategory(Guid storeID, Guid itemID, string category);
@@ -27,7 +28,7 @@ namespace SadnaExpress.DomainLayer.Store
         List<Store> GetAllStoreInfo();
         List<Item> GetItemsByKeysWord(string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
         void AddItemToCart(Guid storeID, Guid itemID, int quantity);
-        void AddItemToStores(Dictionary<Guid, Dictionary<Guid, int>> items);
+        void AddItemToStores(DatabaseContext db, Dictionary<Guid, Dictionary<Guid, int>> items);
         void CleanUp();
         ConcurrentDictionary<Guid, Store> GetStores();
         void SetIsSystemInitialize(bool isInitialize);
@@ -51,6 +52,6 @@ namespace SadnaExpress.DomainLayer.Store
         Dictionary<Guid, Dictionary<Item, double>> GetCartItems(Dictionary<Guid, Dictionary<Guid, int>> cart);
         Store GetStoreInfo(Guid storeId);
         void CheckPurchaseConditions(Dictionary<Guid, Dictionary<Guid, int>> value);
-        void UpdateAllStoresFromDB();
+        void LoadStoresFromDB();
     }
 }

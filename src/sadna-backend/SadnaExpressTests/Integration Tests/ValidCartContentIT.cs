@@ -3,6 +3,7 @@ using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using System;
 using SadnaExpress.ServiceLayer.SModels;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Integration_Tests
 {
@@ -433,6 +434,7 @@ namespace SadnaExpressTests.Integration_Tests
         public override void CleanUp()
         {
             base.CleanUp();
+            DBHandler.Instance.TestMode();
         }
 
     }

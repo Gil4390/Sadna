@@ -1,4 +1,5 @@
-﻿using SadnaExpress.DomainLayer.Store;
+﻿using SadnaExpress.DataLayer;
+using SadnaExpress.DomainLayer.Store;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -50,8 +51,12 @@ namespace SadnaExpress.DomainLayer.User
             if (!member.hasPermissions(storeID, new List<string> {"owner permissions"}))
                 throw new Exception($"The member {member.Email} isn't owner");
             PromotedMember storeOwner = ((PromotedMember)member);
-            if(storeOwner.getDirectManager(storeID) != directOwner)
+            
+            if(!storeOwner.getDirectManager(storeID).Email.ToLower().Equals(directOwner.Email.ToLower()))
                 throw new Exception($"{directOwner.Email} isn't the direct owner of {storeOwner.Email}");
+            //if(storeOwner.getDirectManager(storeID) != directOwner) // check by email it is better with database
+            //    throw new Exception($"{directOwner.Email} isn't the direct owner of {storeOwner.Email}");
+
             // remove the appoints
             Stack<PromotedMember> stack = new Stack<PromotedMember>();
             List<Member> regMembers = new List<Member>();
@@ -71,7 +76,11 @@ namespace SadnaExpress.DomainLayer.User
                 NotOwners.Add(current);
                 current.removeAllDictOfStore(storeID);
                 if (current.Permission.Count == 0)
-                    regMembers.Add(new Member(current));
+                {
+                    var newMember = new Member(current);
+                    regMembers.Add(newMember);
+                    DBHandler.Instance.DowngradePromotedMemberToReg(newMember);
+                }
             }
             //remove the owner from appoint
             directOwner.removeAppoint(storeID, storeOwner);
@@ -133,19 +142,25 @@ namespace SadnaExpress.DomainLayer.User
             List<PromotedMember> employees = new List<PromotedMember>();
             Stack<PromotedMember> stack = new Stack<PromotedMember>();
             stack.Push(member);
-
-            while (stack.Count > 0)
+            try
             {
-                PromotedMember current = stack.Pop();
-                employees.Add(current);
+                while (stack.Count > 0)
+                {
+                    PromotedMember current = stack.Pop();
+                    employees.Add(current);
 
-                PromotedMember directManager = current.getDirectManager(storeID);
-                if (directManager != null && !employees.Contains(directManager))
-                    stack.Push(directManager);
+                    PromotedMember directManager = current.getDirectManager(storeID);
+                    if (directManager != null && !employees.Contains(directManager))
+                        stack.Push(directManager);
 
-                foreach (PromotedMember child in current.getAppoint(storeID))
-                    if (!employees.Contains(child))
-                        stack.Push(child);
+                    foreach (PromotedMember child in current.getAppoint(storeID))
+                        if (!employees.Contains(child))
+                            stack.Push(child);
+                }
+            }
+            catch(Exception ex)
+            {
+
             }
             return employees;
         }

@@ -1,12 +1,23 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using SadnaExpress.DataLayer;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SadnaExpress.DomainLayer.User
 {
     public class Bid
     {
         private User user;
+        [NotMapped]
         public User User {get => user; set => user = value;}
+
+        [Key]
+        public Guid BidId { get; set; }
+        public Guid UserID { get; set; }
+        
         private Guid storeID;
         public Guid StoreID {get => storeID; set => storeID = value;}
         private Guid itemID;
@@ -18,10 +29,33 @@ namespace SadnaExpress.DomainLayer.User
         private bool openBid;
         public bool OpenBid{get => openBid; set => openBid = value;}
         private Dictionary<PromotedMember, string> decisions;
+        [NotMapped]
         public Dictionary<PromotedMember, string> Decisions {get => decisions; set => decisions = value;}
+
+        [NotMapped]
+        public string DecisionJson
+        {
+            get
+            {
+                Dictionary<Guid, string> decisions = new Dictionary<Guid, string>();
+                if (Decisions != null)
+                {
+                    foreach (PromotedMember pm in Decisions.Keys)
+                        decisions.Add(pm.UserId, Decisions[pm]);
+                }
+                return JsonConvert.SerializeObject(decisions);
+            }
+            set
+            {
+
+            }
+        }
+
+        public string DecisionDB { get; set; }
 
         public Bid(User user, Guid storeID, Guid itemID, string itemName, double price, List<PromotedMember> decisionBids)
         {
+            BidId = Guid.NewGuid();
             openBid = true;
             this.user = user;
             this.storeID = storeID;
@@ -58,6 +92,7 @@ namespace SadnaExpress.DomainLayer.User
         public void CloseBid()
         {
             user.Bids.Remove(this);
+            DBHandler.Instance.RemoveBid(this);
             foreach (PromotedMember emp in decisions.Keys)
                 emp.RemoveBid(storeID, this);
         }
@@ -82,6 +117,8 @@ namespace SadnaExpress.DomainLayer.User
                 double.TryParse(bidResponse, out price);
             }
             openBid = false;
+
+            DBHandler.Instance.UpdateBidAndUser(this,user);
         }
 
         private void notify()
@@ -90,5 +127,9 @@ namespace SadnaExpress.DomainLayer.User
                 NotificationSystem.Instance.NotifyObserver(user, storeID, $"Your offer on {itemName} accepted! The price changed to {price}");
         }
 
+        public Bid()
+        {
+
+        }
     }
 }

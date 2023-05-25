@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.ServiceLayer.Obj;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Integration_Tests
 {
@@ -142,6 +143,7 @@ namespace SadnaExpressTests.Integration_Tests
         public override void CleanUp()
         {
             base.CleanUp();
+            DBHandler.Instance.TestMode();
         }
     }
 }

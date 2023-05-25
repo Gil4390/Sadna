@@ -3,10 +3,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SadnaExpress.Migrations
 {
-    public partial class Intial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "bids",
+                columns: table => new
+                {
+                    BidId = table.Column<Guid>(nullable: false),
+                    UserID = table.Column<Guid>(nullable: false),
+                    StoreID = table.Column<Guid>(nullable: false),
+                    ItemID = table.Column<Guid>(nullable: false),
+                    ItemName = table.Column<string>(nullable: true),
+                    Price = table.Column<double>(nullable: false),
+                    OpenBid = table.Column<bool>(nullable: false),
+                    DecisionDB = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_bids", x => x.BidId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Items",
                 columns: table => new
@@ -69,15 +87,17 @@ namespace SadnaExpress.Migrations
                 {
                     UserId = table.Column<Guid>(nullable: false),
                     Discriminator = table.Column<string>(nullable: false),
+                    BidsDB = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
                     LoggedIn = table.Column<bool>(nullable: true),
                     SecurityQuestionsDB = table.Column<string>(nullable: true),
-                    DirectSupervisor = table.Column<string>(nullable: true),
-                    Appoint = table.Column<string>(nullable: true),
-                    PermissionDB = table.Column<string>(nullable: true)
+                    DirectSupervisorDB = table.Column<string>(nullable: true),
+                    AppointDB = table.Column<string>(nullable: true),
+                    PermissionDB = table.Column<string>(nullable: true),
+                    BidsOffersDB = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -268,6 +288,9 @@ namespace SadnaExpress.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "bids");
+
             migrationBuilder.DropTable(
                 name: "Inventories");
 

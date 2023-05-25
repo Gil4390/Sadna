@@ -85,6 +85,8 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<Guid> Enter()
         {
+            // load stores and items from data base
+            storeManager.LoadStoresFromDB();
             return userManager.Enter();
         }
         public Response Exit(Guid userID)

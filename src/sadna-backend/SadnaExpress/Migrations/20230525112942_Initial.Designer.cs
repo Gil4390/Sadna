@@ -9,8 +9,8 @@ using SadnaExpress.DataLayer;
 namespace SadnaExpress.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230520155303_Intial")]
-    partial class Intial
+    [Migration("20230525112942_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -243,6 +243,38 @@ namespace SadnaExpress.Migrations
                     b.ToTable("Stores");
                 });
 
+            modelBuilder.Entity("SadnaExpress.DomainLayer.User.Bid", b =>
+                {
+                    b.Property<Guid>("BidId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DecisionDB")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ItemID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ItemName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("OpenBid")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("REAL");
+
+                    b.Property<Guid>("StoreID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("BidId");
+
+                    b.ToTable("bids");
+                });
+
             modelBuilder.Entity("SadnaExpress.DomainLayer.User.Macs", b =>
                 {
                     b.Property<Guid>("id")
@@ -261,6 +293,9 @@ namespace SadnaExpress.Migrations
                 {
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BidsDB")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Discriminator")
@@ -303,10 +338,13 @@ namespace SadnaExpress.Migrations
                 {
                     b.HasBaseType("SadnaExpress.DomainLayer.User.Member");
 
-                    b.Property<string>("Appoint")
+                    b.Property<string>("AppointDB")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("DirectSupervisor")
+                    b.Property<string>("BidsOffersDB")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DirectSupervisorDB")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PermissionDB")
@@ -355,7 +393,7 @@ namespace SadnaExpress.Migrations
 
             modelBuilder.Entity("SadnaExpress.DomainLayer.Store.ShoppingBasket", b =>
                 {
-                    b.HasOne("SadnaExpress.DomainLayer.Store.ShoppingCart", "ShoppingCart")
+                    b.HasOne("SadnaExpress.DomainLayer.Store.ShoppingCart", null)
                         .WithMany("Baskets")
                         .HasForeignKey("ShoppingCartId")
                         .OnDelete(DeleteBehavior.Cascade)

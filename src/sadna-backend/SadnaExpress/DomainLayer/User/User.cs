@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Net;
 using System.Web.UI;
+using Newtonsoft.Json;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
@@ -18,8 +21,29 @@ namespace SadnaExpress.DomainLayer.User
         public string Discriminator { get; set; }
 
         public ShoppingCart ShoppingCart {get => shoppingCart; set => shoppingCart=value;}
+        
         private List<Bid> bids;
+        
+        [NotMapped]
         public List<Bid> Bids {get=>bids; set=>bids=value;}
+
+        [NotMapped]
+        public string BidsJson
+        {
+            get
+            {
+                List<Guid> bidsJ = new List<Guid>();
+                foreach (Bid bid in Bids)
+                    bidsJ.Add(bid.BidId);
+                return JsonConvert.SerializeObject(bidsJ);
+            }
+            set
+            {
+
+            }
+        }
+
+        public string BidsDB { get; set; }
 
         public User()
         {
@@ -65,7 +89,10 @@ namespace SadnaExpress.DomainLayer.User
                     throw new Exception("You already have better offer...");
                 oldBid.CloseBid();
             }
-            bids.Add(new Bid(this, storeID ,itemID, itemName, price, employees));
+            Bid newBid = new Bid(this, storeID, itemID, itemName, price, employees);
+            bids.Add(newBid);
+
+            DBHandler.Instance.AddBidAndUpdateUserBids(newBid, this);
         }
 
         public void RemoveBids()
@@ -77,8 +104,9 @@ namespace SadnaExpress.DomainLayer.User
         public void RemoveItemFromCart(Guid storeID, Guid itemID)
         {
             shoppingCart.RemoveItemFromCart(storeID, itemID);
+
         }
-        
+
         public void EditItemFromCart(Guid storeID, Guid itemID, int itemAmount)
         {
             shoppingCart.EditItemFromCart(storeID, itemID, itemAmount);

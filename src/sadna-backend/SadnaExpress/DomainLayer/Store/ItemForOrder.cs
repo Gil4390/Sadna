@@ -38,6 +38,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public ItemForOrder(Item item, Guid storeID,  string userEmail, string storeName)
         {
+            ItemForOrderId = Guid.NewGuid();
             itemID = item.ItemID;
             name = item.Name;
             category = item.Category;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
@@ -117,57 +118,82 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid userID, SPaymentDetails paymentDetails, SSupplyDetails usersDetail)
         {
+            // Version3 transaction
+            // send list of objects as ref 
+            List<ItemForOrder> itemForOrders = new List<ItemForOrder>();
             Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
             try
             {
-                // send list of objects as ref 
-                List<ItemForOrder> itemForOrders = new List<ItemForOrder>();
-                //get the user cart
-                ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
-                if (shoppingCart.Baskets.Count == 0)
-                    throw new Exception("Cart can't be empty");
-                // cast from shopping cart to dictionary before sending to store component.
-                foreach (ShoppingBasket basket in shoppingCart.Baskets) 
-                    cart.Add(basket.StoreID, basket.ItemsInBasket);
-                // try to purchase the items. (the function update the quantity in the inventory in this function)
-                double amount = storeFacade.PurchaseCart(cart, ref itemForOrders, userFacade.GetUserEmail(userID));
-                int transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
-                Dictionary<Guid, KeyValuePair<double,bool>> bids = userFacade.GetBidsOfUser(userID);
-                foreach (ItemForOrder item in itemForOrders)
+                 using (var db = new DatabaseContext())
                 {
-                    if (bids.ContainsKey(item.ItemID) && bids[item.ItemID].Value && bids[item.ItemID].Key < item.Price)
-                        item.Price = bids[item.ItemID].Key;
-                }
-                if (transaction_payment_id == -1)
-                {
-                    storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
-                    throw new Exception("Payment operation failed");
-                }
-                int transaction_supply_id = userFacade.PlaceSupply(usersDetail);
-                if (transaction_supply_id == -1) 
-                {
-                    storeFacade.AddItemToStores(cart); // because we update the inventory we need to return them to inventory.
-                    userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
-                    throw new Exception("Supply operation failed");
-                }
-                Orders.Instance.AddOrder(userID, itemForOrders);
+                    using (var transaction = db.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            //get the user cart
+                            ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userID);
+                            if (shoppingCart.Baskets.Count == 0)
+                                throw new Exception("Cart can't be empty");
+                            // cast from shopping cart to dictionary before sending to store component.
+                            foreach (ShoppingBasket basket in shoppingCart.Baskets)
+                                cart.Add(basket.StoreID, basket.ItemsInBasket);
+                            // try to purchase the items. (the function update the quantity in the inventory in this function)
+                            double amount = storeFacade.PurchaseCart(db, cart, ref itemForOrders, userFacade.GetUserEmail(userID));
+                            int transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
+                            Dictionary<Guid, KeyValuePair<double, bool>> bids = userFacade.GetBidsOfUser(userID);
+                            foreach (ItemForOrder item in itemForOrders)
+                            {
+                                if (bids.ContainsKey(item.ItemID) && bids[item.ItemID].Value && bids[item.ItemID].Key < item.Price)
+                                    item.Price = bids[item.ItemID].Key;
+                            }
+                            if (transaction_payment_id == -1)
+                            {
+                                storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
+                                throw new Exception("Payment operation failed");
+                            }
+                            int transaction_supply_id = userFacade.PlaceSupply(usersDetail);
+                            if (transaction_supply_id == -1)
+                            {
+                                storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
+                                userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
+                                throw new Exception("Supply operation failed");
+                            }
+                            Orders.Instance.AddOrder(userID, itemForOrders);
 
-                // Notify to store owners
-                foreach (ShoppingBasket basket in shoppingCart.Baskets)
-                    NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store "+storeFacade.GetStore(basket.StoreID).StoreName+" !", userID);
+                            // Notify to store owners
+                            foreach (ShoppingBasket basket in shoppingCart.Baskets)
+                                NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store " + storeFacade.GetStore(basket.StoreID).StoreName + " !", userID);
 
-                //for bar - notify a user that his purchase completed succssefully by notification
-                userFacade.NotifyBuyerPurchase(userID);
+                            //for bar - notify a user that his purchase completed succssefully by notification
+                            userFacade.NotifyBuyerPurchase(userID);
 
-                // delete the exist shopping cart
-                userFacade.PurchaseCart(userID);
-                return new ResponseT<List<ItemForOrder>>(itemForOrders);
+                            // delete the exist shopping cart
+                            userFacade.PurchaseCart(db, userID);
+
+
+                            // here we know that the purchase was completed successfully
+                            // so now we commit the transaction to the database
+                            db.SaveChanges(true);
+                            transaction.Commit();
+                            
+                        }
+                        catch (Exception ex)
+                        {
+                            // here we know that the purchase wasn't completed successfully
+                            // so now we disregard the transaction and any changes made in the database
+                            transaction.Rollback();
+                            Logger.Instance.Error(ex.Message);
+                            return new ResponseT<List<ItemForOrder>>(ex.Message);
+                        }
+
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
-                return new ResponseT<List<ItemForOrder>>(ex.Message);
+                throw new Exception("Failed to Connect With Database");
             }
+            return new ResponseT<List<ItemForOrder>>(itemForOrders);
         }
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
@@ -617,12 +643,19 @@ namespace SadnaExpress.ServiceLayer
         {
             Store store1 = new Store("Zara");
             Guid storeid1 = store1.StoreID;
-
+            
             Store store2 = new Store("Fox");
             Guid storeid2 = store2.StoreID;
 
-            storeFacade.LoadData(store1, store2);
-            userFacade.LoadData(storeid1, storeid2);
+            if (!DBHandler.Instance.IsStoreNameExist("Zara"))
+            {
+                DBHandler.Instance.AddStore(store1);
+                DBHandler.Instance.AddStore(store2);
+
+
+                storeFacade.LoadData(store1, store2);
+                userFacade.LoadData(storeid1, storeid2);
+            }
         }
 
         public Guid GetItemStoreId(Guid itemid)
@@ -710,6 +743,11 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CheckPurchaseConditions) + ": " + ex.Message);
                 return new Response(ex.Message);
             }
+        }
+
+        public void LoadStoresFromDB()
+        {
+            storeFacade.LoadStoresFromDB();
         }
     }
 }
