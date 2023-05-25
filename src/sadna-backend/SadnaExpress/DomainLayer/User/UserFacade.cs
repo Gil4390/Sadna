@@ -61,6 +61,8 @@ namespace SadnaExpress.DomainLayer.User
 
         public Guid Enter()
         {
+            // load all store founders from DB
+
             User user = new User();
             current_Users.TryAdd(user.UserId, user);
             Logger.Instance.Info(user.UserId , nameof(UserFacade)+": "+nameof(Enter)+": enter the system as guest.");
@@ -143,6 +145,24 @@ namespace SadnaExpress.DomainLayer.User
             var memberFromDB = DBHandler.Instance.CheckMemberValidLogin(id, email, password, _ph);
             if (memberFromDB != null)
             {
+                //Member memberToRemove = null;
+                //members.TryRemove(memberFromDB.UserId, out memberToRemove);
+                memberFromDB.LoggedIn = false; // remove this later
+                // check if this member is store founder and add him to founders
+                if (memberFromDB.Discriminator.Equals("PromotedMember"))
+                {
+                    PromotedMember pm = (PromotedMember)memberFromDB;
+                    foreach (Guid storeId in pm.Permission.Keys)
+                    {
+                        if (pm.Permission[storeId].Contains("founder permissions"))
+                        {
+                            PromotedMember removed = null;
+                            founders.TryRemove(storeId, out removed);
+                            founders.TryAdd(storeId, pm);
+                        }
+                    }
+                }
+
                 members.TryAdd(memberFromDB.UserId, memberFromDB);
                 macs.TryAdd(memberFromDB.UserId, DBHandler.Instance.GetMacById(memberFromDB.UserId));
             }
@@ -164,6 +184,7 @@ namespace SadnaExpress.DomainLayer.User
                     //correct email & password:
                     if (member.LoggedIn == true)
                         throw new Exception($"Hi {member.FirstName} you are already logged in!");
+                    
                     String internedKey = String.Intern(member.UserId.ToString());
 
                     lock (internedKey)
@@ -176,10 +197,11 @@ namespace SadnaExpress.DomainLayer.User
                             User user;
                             current_Users.TryRemove(id, out user); 
 
-                            member.ShoppingCart.AddUserShoppingCart(user.ShoppingCart);                            
+                            //member.ShoppingCart.AddUserShoppingCart(user.ShoppingCart);                            
 
                             member.deepCopy(user);
-                            // add member ShoppingCart in DB
+                            
+                            // add member ShoppingCart and *todo add bids in DB
                             DBHandler.Instance.UpdateMemberShoppingCart(member);
 
                         }
@@ -267,14 +289,17 @@ namespace SadnaExpress.DomainLayer.User
             return current_Users[userID].ShoppingCart;
         }
 
-        public void PurchaseCart(Guid userID)
+        public void PurchaseCart(DatabaseContext db, Guid userID)
         {
             String internedKey = String.Intern(userID.ToString());
 
             lock (internedKey)
             {
                 if (members.ContainsKey(userID))
+                {
                     members[userID].ShoppingCart = new ShoppingCart();
+                    DBHandler.Instance.UpdateMemberShoppingCartInTransaction(db, members[userID]);
+                }
                 else
                     current_Users[userID].ShoppingCart = new ShoppingCart();
             }
@@ -287,11 +312,12 @@ namespace SadnaExpress.DomainLayer.User
             PromotedMember founder = members[userID].openNewStore(storeID);
             if (founder != null)
                 members[userID] = founder;
-            DBHandler.Instance.UpdatePromotedMember((PromotedMember)members[userID]);
+            DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[userID]);
 
             founders.TryAdd(storeID, founder);
             NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
-
+            
+            
             // todo register observer in database
 
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
@@ -348,6 +374,7 @@ namespace SadnaExpress.DomainLayer.User
                 IsMember(email);
                 PromotedMember owner = members[userID].AppointStoreOwner(storeID, members[newOwnerID]);
                 members[newOwnerID] = owner;
+                DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newOwnerID]);
                 NotificationSystem.Instance.RegisterObserver(storeID, owner);
             }
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
@@ -400,6 +427,7 @@ namespace SadnaExpress.DomainLayer.User
                 IsMember(email);
                 PromotedMember manager = members[userID].AppointStoreManager(storeID, members[newManagerID]);
                 members[newManagerID] = manager;
+                DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newManagerID]);
             }
 
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +newManagerID +" to new store manager");
@@ -641,10 +669,18 @@ namespace SadnaExpress.DomainLayer.User
 
         private Member IsMember(string email)
         {
+            Member memberFromDb = DBHandler.Instance.GetMemberFromDBByEmail(email);
+            if (memberFromDb != null)
+            {
+                //Member removed;
+                //members.TryRemove(memberFromDb.UserId, out removed);
+                //memberFromDb.LoggedIn = true;
+                members.TryAdd(memberFromDb.UserId, memberFromDb);
+            }
             foreach (Member member in members.Values)
                 if (member.Email.ToLower() == email.ToLower())     
                     return member;
-                  
+
             throw new Exception($"There isn't a member with the email: {email}");
         }
 
@@ -905,7 +941,7 @@ namespace SadnaExpress.DomainLayer.User
             Guid storeOwnerid3 = Guid.NewGuid();
 
             string newMac = _ph.Mac();
-            
+
             macs.TryAdd(memberId, newMac);
             Member member = new Member(memberId, "gil@gmail.com", "Gil", "Gil", _ph.Hash("asASD876!@" + newMac));
             newMac = _ph.Mac();
@@ -937,7 +973,7 @@ namespace SadnaExpress.DomainLayer.User
             macs.TryAdd(storeOwnerid3, newMac);
             PromotedMember storeOwner3 = new PromotedMember(storeOwnerid3, "nogaschw@post.bgu.ac.il", "Asi", "Azar", _ph.Hash("A#!a12345678" + newMac));
             storeOwner3.createFounder(storeid1);
-            
+
             newMac = _ph.Mac();
             macs.TryAdd(storeOwnerid2, newMac);
             PromotedMember storeOwner2 = new PromotedMember(storeOwnerid2, "dani@gmail.com", "dani", "dani", _ph.Hash("A#!a12345678" + newMac));
@@ -962,7 +998,7 @@ namespace SadnaExpress.DomainLayer.User
             members.TryAdd(storeOwnerid2, storeOwner2);
             members.TryAdd(storeManagerid1, storeManager1);
             members.TryAdd(storeManagerid2, storeManager2);
-            
+
             //add managers
             storeOwner1.LoggedIn = true;
             storeOwner2.LoggedIn = true;
@@ -971,12 +1007,31 @@ namespace SadnaExpress.DomainLayer.User
             storeOwner1.LoggedIn = false;
             storeOwner2.LoggedIn = false;
 
-
+            // add all values to database
+            DBHandler.Instance.AddMember(systemManager, macs[systemManagerid]);
+            DBHandler.Instance.AddMember(member, macs[memberId]);
+            DBHandler.Instance.AddMember(member2, macs[memberId2]);
+            DBHandler.Instance.AddMember(member3, macs[memberId3]);
+            DBHandler.Instance.AddMember(member4, macs[memberId4]);
+            DBHandler.Instance.AddMember(member5, macs[memberId5]);
+            DBHandler.Instance.AddMember(storeOwner1, macs[storeOwnerid1]);
+            DBHandler.Instance.AddMember(storeOwner2, macs[storeOwnerid2]);
+            DBHandler.Instance.AddMember(storeOwner3, macs[storeOwnerid3]);
+            DBHandler.Instance.AddMember(storeManager1, macs[storeManagerid1]);
+            DBHandler.Instance.AddMember(storeManager2, macs[storeManagerid2]);
 
             members[memberId].AwaitingNotification.Add(new Notification(DateTime.Now, Guid.Empty, "helooooo", memberId));
 
             NotificationSystem.Instance.RegisterObserver(storeid1, storeOwner1);
             NotificationSystem.Instance.RegisterObserver(storeid2, storeOwner2);
         }
+
+
+        public void UpdateCurrentMemberFromDb(Guid userID)
+        {
+            //members[userID] = DBHandler.Instance.GetMemberFromDBByEmail(members[userID].Email);
+            //members[userID].LoggedIn = true;
+        }
+
     }
 }

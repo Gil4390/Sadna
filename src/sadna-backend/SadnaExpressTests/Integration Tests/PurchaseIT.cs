@@ -1,5 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.ExternalServices;
@@ -223,6 +224,7 @@ namespace SadnaExpressTests.Integration_Tests
         public override void CleanUp()
         {
             base.CleanUp();
+            DBHandler.Instance.TestMode();
         }
     }
 }

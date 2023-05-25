@@ -33,7 +33,7 @@ namespace SadnaExpress.DomainLayer.User
             get => JsonConvert.SerializeObject(securityQuestions);
             set => securityQuestions = JsonConvert.DeserializeObject<Dictionary<string, string>>(value);
         }
-
+        // todo in database
         public List<Notification> awaitingNotification { get; set; }
 
         [NotMapped]

@@ -5,6 +5,7 @@ using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -49,7 +50,7 @@ namespace SadnaExpress.DomainLayer.User
         Member GetMember(Guid userID);
         void GetStorePurchases(Guid userId, Guid storeId);
         void GetAllStorePurchases(Guid userId);
-        void PurchaseCart(Guid userID);
+        void PurchaseCart(DatabaseContext db, Guid userID);
         bool CancelPayment(double amount, int transaction_id);
         List<Notification> GetNotifications(Guid userId);
         List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores);
@@ -68,5 +69,6 @@ namespace SadnaExpress.DomainLayer.User
         void MarkNotificationAsRead(Guid userID, Guid notificationID);
         string Handshake();
         void NotifyBuyerPurchase(Guid userID);
+        void UpdateCurrentMemberFromDb(Guid userID);
     }
 }

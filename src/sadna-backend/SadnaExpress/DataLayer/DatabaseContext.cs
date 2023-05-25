@@ -28,13 +28,14 @@ namespace SadnaExpress.DataLayer
         public DbSet<ShoppingCart> shoppingCarts { get; set; }
         public DbSet<ShoppingBasket> shoppingBaskets { get; set; }
 
+        public DbSet<Bid> bids { get; set; }
 
         //public DbSet<Condition> conditions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseMySql("Server=MYSQL5045.site4now.net;Database=db_a995b0_sadnadb;Uid=a995b0_sadnadb;Pwd=Sadna123");
-            //optionsBuilder.UseSqlServer("Server=SQL5110.site4now.net;Database=db_a995b0_sadnadbregister1;Uid=db_a995b0_sadnadbregister1_admin;Pwd=Sadna123");
+            //optionsBuilder.UseSqlServer("Server=SQL5110.site4now.net;Database=db_a995b0_demo2;Uid=db_a995b0_demo2_admin;Pwd=Sadna123");
 
             optionsBuilder.UseSqlite("Data Source=database.db");
         }
@@ -62,8 +63,6 @@ namespace SadnaExpress.DataLayer
             //    .HasOne(b => b.ShoppingCart)
             //    .WithMany(c => c.Baskets)
             //    .HasForeignKey(b => b.ShoppingCartId);
-
-
 
             base.OnModelCreating(modelBuilder);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.Obj;
@@ -1346,6 +1347,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public override void CleanUp()
         {
             base.CleanUp();
+            DBHandler.Instance.TestMode();
         }
     }
 }

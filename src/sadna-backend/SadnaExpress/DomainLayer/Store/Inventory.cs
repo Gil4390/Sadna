@@ -24,8 +24,32 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Guid StoreID { get; set; }
 
-        public string Items_quantityDB { get; set; }
-        
+        [NotMapped]
+        public ConcurrentDictionary<Guid, int> items_quantityHelper
+        {
+            get
+            {
+                ConcurrentDictionary<Guid, int> item_quantityH = new ConcurrentDictionary<Guid, int>();
+                foreach (Item it in items_quantity.Keys)
+                    item_quantityH.TryAdd(it.ItemID, items_quantity[it]);
+                return item_quantityH;
+            }
+            set
+            {
+
+            }
+        }
+        [NotMapped]
+        public string Items_quantityJson
+        {
+            get => JsonConvert.SerializeObject(items_quantityHelper);
+            set => items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(value);
+        }
+
+        public string Items_quantityDB
+        {
+            get; set;
+        }        
 
         public Inventory()
         {
@@ -105,6 +129,7 @@ namespace SadnaExpress.DomainLayer.Store
             int outItem;
             if (!items_quantity.TryRemove(GetItemById(itemID), out outItem))
                 throw new Exception("The item not exist");
+            DBHandler.Instance.RemoveItem(itemID);
         }
         
         public void EditItemQuantity(Guid itemID, int quantity)
@@ -133,6 +158,7 @@ namespace SadnaExpress.DomainLayer.Store
                         throw new Exception(
                             "Edit item failed, item name cant be edited to a name that belongs to another item in the store");
                     item.Name = name;
+                    //DBHandler.Instance.UpdateItem(item);
                 }
             }
         }
@@ -147,6 +173,7 @@ namespace SadnaExpress.DomainLayer.Store
                     if (category.Equals(""))
                         throw new Exception("Edit item failed, item category cant be empty");
                     item.Category = category;
+                    //DBHandler.Instance.UpdateItem(item);
                 }
             }
         }
@@ -160,6 +187,7 @@ namespace SadnaExpress.DomainLayer.Store
                     if (price < 0)
                         throw new Exception("Edit item failed, item price cant be negative");
                     item.Price = price;
+                    //DBHandler.Instance.UpdateItem(item);
                 }
             }
         }

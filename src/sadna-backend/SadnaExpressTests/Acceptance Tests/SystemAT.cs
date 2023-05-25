@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using SadnaExpress.ExternalServices;
 using SadnaExpress.ServiceLayer.SModels;
 using static SadnaExpressTests.Mocks;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Acceptance_Tests
 {
@@ -328,6 +329,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public override void CleanUp()
         {
             base.CleanUp();
+            DBHandler.Instance.TestMode();
         }
     }
 }

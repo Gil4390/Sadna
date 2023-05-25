@@ -110,9 +110,9 @@
     <Compile Include="DomainLayer\User\UserFacade.cs" />
     <Compile Include="ExternalServices\PaymentService.cs" />
     <Compile Include="ExternalServices\SupplierService.cs" />
-    <Compile Include="Migrations\20230520155303_Intial.cs" />
-    <Compile Include="Migrations\20230520155303_Intial.designer.cs">
-      <DependentUpon>20230520155303_Intial.cs</DependentUpon>
+    <Compile Include="Migrations\20230525112942_Initial.cs" />
+    <Compile Include="Migrations\20230525112942_Initial.designer.cs">
+      <DependentUpon>20230525112942_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DatabaseContextModelSnapshot.cs" />
     <Compile Include="Program.cs" />

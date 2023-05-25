@@ -15,6 +15,8 @@ using System.Web.Http.Results;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Item = SadnaExpress.DomainLayer.Store.Item;
 using SadnaExpress.ServiceLayer.SModels;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
+using System.Diagnostics;
 
 namespace SadnaExpress.DataLayer
 {
@@ -57,20 +59,21 @@ namespace SadnaExpress.DataLayer
                         try
                         {
                             // local databases test mode
-                            db.Database.EnsureDeleted();
-                            db.Database.EnsureCreated();
+                            //db.Database.EnsureDeleted();
+                            //db.Database.EnsureCreated();
 
                             // external database test mode
                             // cleaning all tables rows
-                            //db.shoppingBaskets.RemoveRange(db.shoppingBaskets);
-                            //db.shoppingCarts.RemoveRange(db.shoppingCarts);
-                            //db.users.RemoveRange(db.users);
-                            //db.members.RemoveRange(db.members);
-                            //db.promotedMembers.RemoveRange(db.promotedMembers);
-                            //db.macs.RemoveRange(db.macs);
-                            //db.Stores.RemoveRange(db.Stores);
-                            //db.Inventories.RemoveRange(db.Inventories);
-                            //db.Items.RemoveRange(db.Items);
+                            db.shoppingBaskets.RemoveRange(db.shoppingBaskets);
+                            db.shoppingCarts.RemoveRange(db.shoppingCarts);
+                            db.users.RemoveRange(db.users);
+                            db.members.RemoveRange(db.members);
+                            db.promotedMembers.RemoveRange(db.promotedMembers);
+                            db.macs.RemoveRange(db.macs);
+                            db.Stores.RemoveRange(db.Stores);
+                            db.Inventories.RemoveRange(db.Inventories);
+                            db.Items.RemoveRange(db.Items);
+                            db.bids.RemoveRange(db.bids);
 
 
                             db.SaveChanges(true);
@@ -165,12 +168,57 @@ namespace SadnaExpress.DataLayer
                             {
                                 sb.ShoppingCartId = newMember.ShoppingCart.ShoppingCartId;
                             }
+                            
+                            var macs = db.macs;
+                            macs.Add(new Macs { id = newMember.UserId, mac = newMac });
+                            db.SaveChanges(true);
+
+                            newMember.BidsDB = newMember.BidsJson;
+                            memberss.Add(newMember);
+
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+
+        public void LoadData(PromotedMember newMember, string newMac)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+
+                            var memberss = db.promotedMembers;
+                            newMember.ShoppingCart.UserId = newMember.UserId; // update shopping cart id
+                            foreach (ShoppingBasket sb in newMember.ShoppingCart.Baskets)
+                            {
+                                sb.ShoppingCartId = newMember.ShoppingCart.ShoppingCartId;
+                            }
                             memberss.Add(newMember);
                             var macs = db.macs;
                             macs.Add(new Macs { id = newMember.UserId, mac = newMac });
 
                             var shoppingCarts = db.shoppingCarts;
-                            
+
+                            newMember.AppointDB = newMember.AppointJson;
+                            newMember.DirectSupervisorDB = newMember.DirectSupervisorJson;
+
+
                             db.SaveChanges(true);
                         }
                         catch (Exception ex)
@@ -201,10 +249,104 @@ namespace SadnaExpress.DataLayer
                             if (memberExist != null)
                             {
                                 if (!memberExist.Discriminator.Equals("Member"))
-                                    memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
+                                {
+                                    // here it means that he is promotedMember
+                                    // *************** need to fix here
+                                    // error 1 when getting this DirectSupervisor Values *************************
+                                    var PromotedmemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
+
+                                    // todo: now load DirecrSupervisor from database
+                                    ConcurrentDictionary<Guid, PromotedMember> loadedDirect = new ConcurrentDictionary<Guid, PromotedMember>();
+                                    ConcurrentDictionary<Guid, string> directs = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, string>>(PromotedmemberExist.DirectSupervisorDB);
+                                    foreach (Guid storeId in directs.Keys)
+                                    {
+                                        foreach (Guid id1 in directs.Keys)
+                                        {
+                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(directs[id1].ToLower()));
+                                            if (promotedMemberInDictionary != null)
+                                                loadedDirect.TryAdd(storeId, promotedMemberInDictionary);
+                                            else
+                                                loadedDirect.TryAdd(storeId, null);
+                                        }
+                                    }
+                                    PromotedmemberExist.DirectSupervisor = loadedDirect;
+
+
+                                    /// end of error1 *******************************
+
+
+                                    // *************** need to fix here
+                                    // error 2 when getting this Appoint Values *************************
+                                    // todo: now load appoint from database
+                                    ConcurrentDictionary<Guid, List<PromotedMember>> loadedAppoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
+                                    ConcurrentDictionary<Guid, List<string>> loadeds = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(PromotedmemberExist.AppointDB);
+                                    foreach (Guid storeId in loadeds.Keys)
+                                    {
+                                        List<string> listOfProMembers = loadeds[storeId];
+                                        List<PromotedMember> list = new List<PromotedMember>();
+                                        foreach(string pmEmail in listOfProMembers)
+                                        {
+                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(pmEmail.ToLower()));
+                                            if (promotedMemberInDictionary != null)
+                                                list.Add(promotedMemberInDictionary);
+                                        }
+                                        loadedAppoint.TryAdd(storeId, list);
+                                    }
+                                    PromotedmemberExist.Appoint = loadedAppoint;
+
+                                    /// end of error2 ******************************* 
+
+
+
+                                    // todo: now load bidsOffers from database
+                                    ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
+                                    ConcurrentDictionary<Guid, List<Guid>> helper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.BidsOffersDB);
+                                    foreach (Guid storeId in helper.Keys)
+                                    {
+                                        List<Guid> listOfBids = helper[storeId];
+                                        List<Bid> list = new List<Bid>();
+                                        foreach (Guid BidId in listOfBids)
+                                        {
+                                            var bidFromDB = db.bids.FirstOrDefault(b => b.BidId.Equals(BidId));
+                                            if (bidFromDB != null)
+                                            {
+                                                // now get decision
+                                                Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
+                                                var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(bidFromDB.DecisionDB);
+                                                foreach(Guid userId in helperDecision.Keys)
+                                                {
+                                                    var pmInDecition = db.promotedMembers.FirstOrDefault(m=>m.UserId.Equals(userId));
+                                                    if(pmInDecition != null)
+                                                    {
+                                                        addDecetion.Add(pmInDecition, helperDecision[userId]);
+                                                    }
+                                                }
+                                                bidFromDB.Decisions = addDecetion;
+
+                                                var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
+                                                if (memberBid.Discriminator.Equals("Member"))
+                                                    bidFromDB.User = memberBid;
+                                                else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                                    bidFromDB.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
+                                                else
+                                                {
+                                                    bidFromDB.User = new User(); // bid was from guest
+                                                    bidFromDB.User.UserId = bidFromDB.UserID;
+                                                }
+
+
+                                                list.Add(bidFromDB);
+                                            }
+                                        }
+                                        loadedBids.TryAdd(storeId, list);
+                                    }
+                                    PromotedmemberExist.BidsOffers = loadedBids;
+
+                                    memberExist = PromotedmemberExist;
+                                }
                                 if (!memberExist.LoggedIn || true) // remove || true later
                                 {
-                                    memberExist.LoggedIn = false; // remove this line later 
+                                    memberExist.LoggedIn = true; // remove this line later 
                                     Guid id1 = memberExist.UserId;
                                     string mac1 = db.macs.Find(id1).mac;
 
@@ -221,6 +363,44 @@ namespace SadnaExpress.DataLayer
                                     {
                                         result.ShoppingCart.Baskets.Add(basket);
                                     }
+
+                                    // todo now get all bids
+                                    List<Guid> bidsIds = JsonConvert.DeserializeObject<List<Guid>>(memberExist.BidsDB);
+                                    List<Bid> bidsFromDB = db.bids.Where(b => bidsIds.Contains(b.BidId)).ToList();
+                                    // now update all Bids Decetions
+                                    foreach(Bid b in bidsFromDB)
+                                    {
+                                        Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
+                                        var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(b.DecisionDB);
+                                        foreach (Guid userId in helperDecision.Keys)
+                                        {
+                                            var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
+                                            if (pmInDecition != null)
+                                            {
+                                                addDecetion.Add(pmInDecition, helperDecision[userId]);
+                                            }
+                                        }
+                                        b.Decisions = addDecetion;
+
+
+                                        var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                        if (memberBid.Discriminator.Equals("Member"))
+                                            b.User = memberBid;
+                                        else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                            b.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                        else
+                                        {
+                                            b.User = new User(); // bid was from guest
+                                            b.User.UserId = b.UserID;
+                                        }
+                                    }
+
+                                    memberExist.Bids = bidsFromDB;
+
+                                    // ********************************
+                                    // need to implment this and get all member notfication from DB
+                                    // : todo get all notification from database and update them in the user
+                                    memberExist.AwaitingNotification = new List<DomainLayer.Notification>();
                                 }
                             }
                         }
@@ -328,7 +508,8 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void UpdatePromotedMember(PromotedMember pm)
+
+        public void UpgradeMemberToPromotedMember(PromotedMember pm)
         {
             lock (this)
             {
@@ -338,10 +519,22 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
-                            var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(pm.UserId));
-                            //memberExist = founder;
-                            db.promotedMembers.Remove(proMemberExist);
+                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                            if (memberExist != null)
+                                if (memberExist.Discriminator.Equals("Member"))
+                                    db.members.Remove(memberExist);
+                                else
+                                {
+                                    var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                                    //memberExist = founder;
+                                    db.promotedMembers.Remove(proMemberExist);
+                                }
                             db.SaveChanges(true);
+
+                            pm.DirectSupervisorDB = pm.DirectSupervisorJson;
+                            pm.AppointDB = pm.AppointJson;
+                            pm.BidsOffersDB = pm.BidsOffersJson;
+                            pm.BidsDB = pm.BidsJson;
 
                             db.promotedMembers.Add(pm);
                             //db.promotedMembers.Update(pm);
@@ -433,8 +626,10 @@ namespace SadnaExpress.DataLayer
                             foreach (Store s in allStores)
                             {
                                 // get store item_quantity
-                                string quanity_ItemsDB = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(s.StoreID)).Items_quantityDB;
-
+                                var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(s.StoreID));
+                                string quanity_ItemsDB = null;
+                                if (inv != null)
+                                    quanity_ItemsDB = inv.Items_quantityDB;
                                 if (quanity_ItemsDB != null) // add quantity item for store
                                 {
                                     ConcurrentDictionary<Guid, int> items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(quanity_ItemsDB);
@@ -462,7 +657,7 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void AddItemToStore(Store store)
+        public void UpdateStore(Store store)
         {
             lock (this)
             {
@@ -472,7 +667,6 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
-                            
                             var storeFound = db.Stores.FirstOrDefault(m => m.StoreID.Equals(store.StoreID));
 
                             var invetories = db.Inventories;
@@ -484,16 +678,7 @@ namespace SadnaExpress.DataLayer
                             stores.Remove(storeFound);
                             db.SaveChanges(true);
 
-
-                            ConcurrentDictionary<Guid, int> helper = new ConcurrentDictionary<Guid, int>();
-                            foreach (Item it in store.itemsInventory.items_quantity.Keys)
-                            {
-                                helper.TryAdd(it.ItemID, store.itemsInventory.items_quantity[it]);
-                            }
-
-                            string jsonItemQuantity = JsonConvert.SerializeObject(helper);
-
-                            store.itemsInventory.Items_quantityDB = jsonItemQuantity;
+                            store.itemsInventory.Items_quantityDB = store.itemsInventory.Items_quantityJson;
                             stores.Add(store);
                             db.SaveChanges(true);
 
@@ -510,6 +695,43 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
+
+
+        public void UpdateStoreInTransaction(DatabaseContext db, Store store)
+        {
+            lock (this)
+            {
+                try
+                {
+
+                    //var invetories = db.Inventories;
+                    //var inventoryFound = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(store.StoreID));
+                    //inventoryFound.Items_quantityDB = store.itemsInventory.Items_quantityJson;
+                    //invetories.Update(inventoryFound);
+                    //db.SaveChanges(true);
+
+                    var storeFound = db.Stores.FirstOrDefault(m => m.StoreID.Equals(store.StoreID));
+
+                    var invetories = db.Inventories;
+                    var inventoryFound = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(storeFound.StoreID));
+                    invetories.Remove(inventoryFound);
+                    db.SaveChanges(true);
+
+                    var stores = db.Stores;
+                    stores.Remove(storeFound);
+                    db.SaveChanges(true);
+
+                    store.itemsInventory.Items_quantityDB = store.itemsInventory.Items_quantityJson;
+                    stores.Add(store);
+                    db.SaveChanges(true);
+                }
+                catch (Exception ex)
+                {
+                    //throw new Exception("failed to interact with stores table");
+                }
+            }
+        }
+
 
         internal void AddItem(DomainLayer.Store.Item newItem)
         {
@@ -629,7 +851,7 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void EditItemPrice(Guid itemID, int price)
+        public void RemoveItem(Guid itemToRemove)
         {
             lock (this)
             {
@@ -639,11 +861,11 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
-                            var itemExist = db.Items.FirstOrDefault(m => m.ItemID.Equals(itemID));
-                            if (itemExist != null)
+                            var itemExist = db.Items.FirstOrDefault(m => m.ItemID.Equals(itemToRemove));
+                            if (itemExist!= null)
                             {
-                                itemExist.Price = price;
-                                db.SaveChanges();
+                                db.Items.Remove(itemExist);
+                                db.SaveChanges(true);
                             }
                         }
                         catch (Exception ex)
@@ -658,5 +880,579 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
+        public void UpdateItem(Item editedItem)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var itemExist = db.Items.FirstOrDefault(m => m.ItemID.Equals(editedItem.ItemID));
+                            if (itemExist != null)
+                            {
+                                db.Entry(itemExist).State = EntityState.Detached;
+                                db.Items.Update(editedItem);
+                                db.SaveChanges(true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+        internal void AddBidAndUpdateUserBids(Bid newBid, User user)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var bids = db.bids;
+                            newBid.UserID = newBid.User.UserId;
+                            newBid.DecisionDB = newBid.DecisionJson;
+                            bids.Add(newBid);
+                            db.SaveChanges(true);
+
+                            if(user.Discriminator.Equals("Member"))
+                            {
+                                var userFound = db.members.FirstOrDefault(u => u.UserId.Equals(user.UserId));
+                                if (userFound != null)
+                                {
+                                    //userFound.BidsDB = user.BidsJson;
+                                    db.Entry(userFound).State = EntityState.Detached;
+                                    userFound.BidsDB = user.BidsJson;
+                                    db.members.Update((Member)userFound);
+                                    db.SaveChanges(true);
+                                }
+                            }
+                            else
+                            {
+                                var userFound = db.promotedMembers.FirstOrDefault(u => u.UserId.Equals(user.UserId));
+                                if (userFound != null)
+                                {
+                                    //userFound.BidsDB = user.BidsDB;
+                                    db.Entry(userFound).State = EntityState.Detached;
+                                    userFound.BidsDB = user.BidsJson;
+                                    db.promotedMembers.Update((PromotedMember)userFound);
+                                    db.SaveChanges(true);
+                                }
+                            }
+                            
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+
+
+        public void UpdatePromotedMember(PromotedMember pm)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var promotedMembers = db.promotedMembers;
+                            pm.BidsDB = pm.BidsJson;
+                            pm.DirectSupervisorDB = pm.DirectSupervisorJson;
+                            pm.AppointDB = pm.AppointJson;
+                            pm.BidsOffersDB = pm.BidsOffersJson;
+                            promotedMembers.Update(pm);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+        public void UpdateMemberShoppingCartInTransaction(DatabaseContext db, Member member)
+        {
+            lock (this)
+            {
+                try
+                {
+                    var memberFound = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                    if(memberFound != null)
+                    {
+                        var userBasket = db.shoppingBaskets.Where(b => b.ShoppingCartId.Equals(memberFound.ShoppingCart.ShoppingCartId)).ToList();
+                        if (userBasket.Count > 0)
+                        {
+                            db.shoppingBaskets.RemoveRange(userBasket);
+                            db.SaveChanges(true);
+                        }
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    //throw new Exception("failed to interact with stores table");
+                }
+            }
+        }
+
+        public void UpdateItemAfterEdit(Store store, Guid itemID, string itemName, string itemCategory, double itemPrice)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(store.StoreID));
+                            try
+                            {
+                                if (inv != null)
+                                {
+                                    db.Entry(inv).State = EntityState.Detached;
+                                    store.itemsInventory.Items_quantityDB = store.itemsInventory.Items_quantityJson;
+                                    db.Inventories.Update(store.itemsInventory);
+                                    db.SaveChanges(true);
+                                }
+                            }
+                            catch(Exception ex)
+                            {
+                                // no change in inventory so continue
+                            }
+                            var itemFound = db.Items.FirstOrDefault(it => it.ItemID.Equals(itemID));
+                            if(itemFound!=null)
+                            {
+                                itemFound.Name = itemName;
+                                itemFound.Category = itemCategory;
+                                itemFound.Price = itemPrice;
+                                db.Items.Update(itemFound);
+                                db.SaveChanges(true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+        public void UpdateAfterRemovingItem(Store store, Guid itemId)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(store.StoreID));
+                            try
+                            {
+                                if (inv != null)
+                                {
+                                    db.Entry(inv).State = EntityState.Detached;
+                                    store.itemsInventory.Items_quantityDB = store.itemsInventory.Items_quantityJson;
+                                    db.Inventories.Update(store.itemsInventory);
+                                    db.SaveChanges(true);
+                                    // item removed automaticaly from this operation
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // no change in inventory so continue
+                            }
+                            var itemFound = db.Items.FirstOrDefault(it => it.ItemID.Equals(itemId));
+                            if (itemFound != null)
+                            {
+                                db.Items.Remove(itemFound);
+                                db.SaveChanges(true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+        public void UpdateStoreInventory(Store store)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(store.StoreID));
+                            try
+                            {
+                                if (inv != null)
+                                {
+                                    db.Entry(inv).State = EntityState.Detached;
+                                    store.itemsInventory.Items_quantityDB = store.itemsInventory.Items_quantityJson;
+                                    db.Inventories.Update(store.itemsInventory);
+                                    db.SaveChanges(true);
+                                    // item removed automaticaly from this operation
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // no change in inventory so continue
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+        public void UpdateBidAndUser(Bid bid, User user)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var bidFound = db.bids.FirstOrDefault(m => m.BidId.Equals(bid.BidId));
+                            try
+                            {
+                                if (bidFound != null)
+                                {
+                                    db.Entry(bidFound).State = EntityState.Detached;
+                                    db.bids.Update(bid);
+                                    db.SaveChanges(true);
+
+                                    if (user is Member)
+                                        db.members.Update((Member)user);
+                                    else
+                                        db.promotedMembers.Update((PromotedMember)user);
+                                    db.SaveChanges(true);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // no change in inventory so continue
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+        public void RemoveBid(Bid bid)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var bidFound = db.bids.FirstOrDefault(m => m.BidId.Equals(bid.BidId));
+                            try
+                            {
+                                if (bidFound != null)
+                                {
+                                    db.Entry(bidFound).State = EntityState.Detached;
+                                    db.bids.Remove(bid);
+                                    db.SaveChanges(true);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // no change in inventory so continue
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+        public Member GetMemberFromDBByEmail(string email) // same as getting member values when logging in
+        {
+            Member result = null;
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
+                            if (memberExist != null)
+                            {
+                                if (!memberExist.Discriminator.Equals("Member"))
+                                {
+                                    // here it means that he is promotedMember
+                                    var PromotedmemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
+
+                                    // todo: now load DirecrSupervisor from database
+                                    ConcurrentDictionary<Guid, PromotedMember> loadedDirect = new ConcurrentDictionary<Guid, PromotedMember>();
+                                    ConcurrentDictionary<Guid, string> directs = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, string>>(PromotedmemberExist.DirectSupervisorDB);
+                                    foreach (Guid storeId in directs.Keys)
+                                    {
+                                        foreach (Guid id1 in directs.Keys)
+                                        {
+                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(directs[id1].ToLower()));
+                                            if (promotedMemberInDictionary != null)
+                                                loadedDirect.TryAdd(storeId, promotedMemberInDictionary);
+                                            else
+                                                loadedDirect.TryAdd(storeId, null);
+                                        }
+                                    }
+                                    PromotedmemberExist.DirectSupervisor = loadedDirect;
+
+                                    // todo: now load appoint from database
+                                    ConcurrentDictionary<Guid, List<PromotedMember>> loadedAppoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
+                                    ConcurrentDictionary<Guid, List<string>> loadeds = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(PromotedmemberExist.AppointDB);
+                                    foreach (Guid storeId in loadeds.Keys)
+                                    {
+                                        List<string> listOfProMembers = loadeds[storeId];
+                                        List<PromotedMember> list = new List<PromotedMember>();
+                                        foreach (string pmEmail in listOfProMembers)
+                                        {
+                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(pmEmail.ToLower()));
+                                            if (promotedMemberInDictionary != null)
+                                                list.Add(promotedMemberInDictionary);
+                                        }
+                                        loadedAppoint.TryAdd(storeId, list);
+                                    }
+                                    PromotedmemberExist.Appoint = loadedAppoint;
+
+                                    // todo: now load bidsOffers from database
+                                    ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
+                                    ConcurrentDictionary<Guid, List<Guid>> helper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.BidsOffersDB);
+                                    foreach (Guid storeId in helper.Keys)
+                                    {
+                                        List<Guid> listOfBids = helper[storeId];
+                                        List<Bid> list = new List<Bid>();
+                                        foreach (Guid BidId in listOfBids)
+                                        {
+                                            var bidFromDB = db.bids.FirstOrDefault(b => b.BidId.Equals(BidId));
+                                            if (bidFromDB != null)
+                                            {
+                                                // now get decision
+                                                Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
+                                                var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(bidFromDB.DecisionDB);
+                                                foreach (Guid userId in helperDecision.Keys)
+                                                {
+                                                    var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
+                                                    if (pmInDecition != null)
+                                                    {
+                                                        addDecetion.Add(pmInDecition, helperDecision[userId]);
+                                                    }
+                                                }
+                                                bidFromDB.Decisions = addDecetion;
+
+                                                var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
+                                                if (memberBid.Discriminator.Equals("Member"))
+                                                    bidFromDB.User = memberBid;
+                                                else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                                    bidFromDB.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
+                                                else
+                                                {
+                                                    bidFromDB.User = new User(); // bid was from guest
+                                                    bidFromDB.User.UserId = bidFromDB.UserID;
+                                                }
+
+
+                                                list.Add(bidFromDB);
+                                            }
+                                        }
+                                        loadedBids.TryAdd(storeId, list);
+                                    }
+                                    PromotedmemberExist.BidsOffers = loadedBids;
+
+                                    memberExist = PromotedmemberExist;
+                                }
+                                if (!memberExist.LoggedIn || true) // remove || true later
+                                {
+                                    memberExist.LoggedIn = false; // remove this line later 
+                                    Guid id1 = memberExist.UserId;
+                                    string mac1 = db.macs.Find(id1).mac;
+
+                                    result = memberExist;
+                                    
+                                    // now get member cart from DB
+                                    result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
+                                    var userBaskets = db.shoppingBaskets.Where(basket => basket.ShoppingCartId.Equals(memberExist.ShoppingCart.ShoppingCartId)).ToList();
+                                    foreach (var basket in userBaskets)
+                                    {
+                                        result.ShoppingCart.Baskets.Add(basket);
+                                    }
+
+                                    // todo now get all bids
+                                    List<Guid> bidsIds = JsonConvert.DeserializeObject<List<Guid>>(memberExist.BidsDB);
+                                    List<Bid> bidsFromDB = db.bids.Where(b => bidsIds.Contains(b.BidId)).ToList();
+                                    // now update all Bids Decetions
+                                    foreach (Bid b in bidsFromDB)
+                                    {
+                                        Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
+                                        var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(b.DecisionDB);
+                                        foreach (Guid userId in helperDecision.Keys)
+                                        {
+                                            var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
+                                            if (pmInDecition != null)
+                                            {
+                                                addDecetion.Add(pmInDecition, helperDecision[userId]);
+                                            }
+                                        }
+                                        b.Decisions = addDecetion;
+
+
+                                        var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                        if (memberBid.Discriminator.Equals("Member"))
+                                            b.User = memberBid;
+                                        else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                            b.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                        else
+                                        {
+                                            b.User = new User(); // bid was from guest
+                                            b.User.UserId = b.UserID;
+                                        }
+                                    }
+
+                                    memberExist.Bids = bidsFromDB;
+                                    // todo get all notification from database and update them in the user
+                                    memberExist.AwaitingNotification = new List<DomainLayer.Notification>();
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+                return result;
+            }
+        }
+
+
+        public void DowngradePromotedMemberToReg(Member pm)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                            if (memberExist != null)
+                                if (memberExist.Discriminator.Equals("Member"))
+                                    db.members.Remove(memberExist);
+                                else
+                                {
+                                    var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                                    //memberExist = founder;
+                                    db.promotedMembers.Remove(proMemberExist);
+                                }
+                            db.SaveChanges(true);
+
+                            pm.BidsDB = pm.BidsJson;
+
+                            db.members.Add(pm);
+                            //db.promotedMembers.Update(pm);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+
+
+
+
+
+
     }
 }

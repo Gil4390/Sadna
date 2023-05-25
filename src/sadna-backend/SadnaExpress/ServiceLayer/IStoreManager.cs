@@ -66,5 +66,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<SStore> GetStoreInfo(Guid userID,Guid storeId);
         double GetItemAfterDiscount(Guid itemStoreid, Item item);
         Response CheckPurchaseConditions(Guid userId);
+        void LoadStoresFromDB();
     }
 }
