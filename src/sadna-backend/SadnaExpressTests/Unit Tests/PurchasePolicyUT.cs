@@ -152,6 +152,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Assert
             Assert.IsTrue(res);
         }
+        [TestMethod]
         public void Simple1Condition_Fail_time()
         {
             //Arrange
@@ -160,8 +161,19 @@ namespace SadnaExpressTests.Unit_Tests
             bool res = store.EvaluatePurchasePolicy(store, basket);
             Assert.IsFalse(res);
         }
-        #endregion
+        [TestMethod]
+        public void Simple1Condition_Fail_time2()
+        {
+            //Arrange
+            cond1 = store.AddCondition("Item","Bisli", "after time", 0 , DateTime.Today);
+            //Assert
+            bool res = store.EvaluatePurchasePolicy(store, basket);
+            Assert.IsFalse(res);
+        }
         
+        
+        #endregion
+
         #region Complex condition - 2 conditions
         [TestMethod]
         public void TwoConditions_Success_min_quantity_value()
