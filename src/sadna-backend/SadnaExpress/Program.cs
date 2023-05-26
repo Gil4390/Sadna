@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using System.Configuration;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
 using System.Data.SqlTypes;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpress
 {
@@ -28,6 +29,9 @@ namespace SadnaExpress
         {
             InitAppSettings();
            
+            if(ApplicationOptions.StartWithCleanDB)
+                DBHandler.Instance.CleanDB();
+
             TradingSystem.Instance.LoadData();
 
             //start the api server
@@ -135,6 +139,16 @@ namespace SadnaExpress
                     ApplicationOptions.InitTradingSystem = boolValue;
                 }
             }
+
+            string StartWithCleanDB = ConfigurationManager.AppSettings["StartWithCleanDB"];
+            if (string.IsNullOrEmpty(StartWithCleanDB) == false)
+            {
+                if (bool.TryParse(StartWithCleanDB, out bool boolValue))
+                {
+                    ApplicationOptions.StartWithCleanDB = boolValue;
+                }
+            }
+            
         }
     }
 }

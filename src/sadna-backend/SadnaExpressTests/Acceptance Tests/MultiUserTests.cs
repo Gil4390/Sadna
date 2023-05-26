@@ -1523,7 +1523,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCleanup]
         public override void CleanUp()
         {
-            DBHandler.Instance.TestMode(); 
+            DBHandler.Instance.CleanDB(); 
         }
     }
 

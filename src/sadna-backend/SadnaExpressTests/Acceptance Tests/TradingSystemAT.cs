@@ -10,6 +10,7 @@ using SadnaExpress.API.SignalR;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Acceptance_Tests
 {
@@ -40,6 +41,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestInitialize]
         public virtual void SetUp()
         {
+            DBHandler.Instance.CleanDB();
             proxyBridge = new ProxyBridge();
             passwordHash = new PasswordHash();
             NotificationNotifier.GetInstance().TestMood = true;

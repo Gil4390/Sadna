@@ -46,7 +46,7 @@ namespace SadnaExpress.DataLayer
 
         }
 
-        public void TestMode()
+        public void CleanDB()
         {
             
 
@@ -123,7 +123,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-
         public bool memberExistsById(Guid id)
         {
             bool result = false;
@@ -190,7 +189,6 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-
 
         public void LoadData(PromotedMember newMember, string newMac)
         {
@@ -508,7 +506,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-
         public void UpgradeMemberToPromotedMember(PromotedMember pm)
         {
             lock (this)
@@ -696,7 +693,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-
         public void UpdateStoreInTransaction(DatabaseContext db, Store store)
         {
             lock (this)
@@ -731,7 +727,6 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-
 
         internal void AddItem(DomainLayer.Store.Item newItem)
         {
@@ -880,6 +875,7 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
+
         public void UpdateItem(Item editedItem)
         {
             lock (this)
@@ -911,7 +907,7 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        internal void AddBidAndUpdateUserBids(Bid newBid, User user)
+        public void AddBidAndUpdateUserBids(Bid newBid, User user)
         {
             lock (this)
             {
@@ -965,8 +961,6 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-
-
 
         public void UpdatePromotedMember(PromotedMember pm)
         {
@@ -1405,7 +1399,6 @@ namespace SadnaExpress.DataLayer
                 return result;
             }
         }
-
 
         public void DowngradePromotedMemberToReg(Member pm)
         {

@@ -616,7 +616,7 @@ namespace SadnaExpress.DomainLayer.User
             paymentService = null;
             supplierService = null;
 
-            DBHandler.Instance.TestMode();
+            DBHandler.Instance.CleanDB();
         }
 
         public bool InitializeTradingSystem(Guid userID)
@@ -1014,13 +1014,11 @@ namespace SadnaExpress.DomainLayer.User
             DBHandler.Instance.AddMember(member3, macs[memberId3]);
             DBHandler.Instance.AddMember(member4, macs[memberId4]);
             DBHandler.Instance.AddMember(member5, macs[memberId5]);
-            DBHandler.Instance.AddMember(storeOwner1, macs[storeOwnerid1]);
-            DBHandler.Instance.AddMember(storeOwner2, macs[storeOwnerid2]);
-            DBHandler.Instance.AddMember(storeOwner3, macs[storeOwnerid3]);
-            DBHandler.Instance.AddMember(storeManager1, macs[storeManagerid1]);
-            DBHandler.Instance.AddMember(storeManager2, macs[storeManagerid2]);
-
-            members[memberId].AwaitingNotification.Add(new Notification(DateTime.Now, Guid.Empty, "helooooo", memberId));
+            //DBHandler.Instance.AddMember(storeOwner2, macs[storeOwnerid2]);
+            // DBHandler.Instance.AddMember(storeOwner3, macs[storeOwnerid3]);
+            //DBHandler.Instance.AddMember(storeManager1, macs[storeManagerid1]);
+            // DBHandler.Instance.AddMember(storeManager2, macs[storeManagerid2]);
+            //members[memberId].AwaitingNotification.Add(new Notification(DateTime.Now, Guid.Empty, "helooooo", memberId));
 
             NotificationSystem.Instance.RegisterObserver(storeid1, storeOwner1);
             NotificationSystem.Instance.RegisterObserver(storeid2, storeOwner2);

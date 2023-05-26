@@ -36,5 +36,7 @@ namespace SadnaExpress
 
         public static bool InitTradingSystem = false;
 
+        public static bool StartWithCleanDB = false;
+
     }
 }
