@@ -48,14 +48,14 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<Store> GetStore(Guid storeID);
         void SetTSOrders(IOrders orders);
         ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
-        Response AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        Response AddCondition(Guid userID , Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);  
-        Response RemoveCondition(Guid storeID ,int condID);
-        ResponseT<SPolicy[]> GetAllConditions(Guid store);
-        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate);
-        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, int[] policys);
-        Response AddPolicy(Guid store, int discountPolicy);
-        Response RemovePolicy(Guid store, int discountPolicy , string type);
+        Response RemoveCondition(Guid userID,Guid storeID ,int condID);
+        ResponseT<SPolicy[]> GetAllConditions(Guid userID,Guid store);
+        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid userID,Guid store, T level, int percent, DateTime startDate, DateTime endDate);
+        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid userID,Guid store, string op, int[] policys);
+        Response AddPolicy(Guid userID,Guid store, int discountPolicy);
+        Response RemovePolicy(Guid userID,Guid store, int discountPolicy , string type);
         ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID);
         void LoadData();
         Guid GetItemStoreId(Guid Itemid);

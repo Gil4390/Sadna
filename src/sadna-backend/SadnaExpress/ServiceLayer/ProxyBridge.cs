@@ -288,56 +288,45 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.IsSystemInitialize();
         }
 
-        public ResponseT<SPolicy[]> GetAllConditions(Guid store)
+        public ResponseT<SPolicy[]> GetAllConditions(Guid userID,Guid store)
         {
-            return _realBridge.GetAllConditions(store);
+            return _realBridge.GetAllConditions(userID,store);
         }
 
-        public Response AddCondition(Guid store, string entity, string entityName, string type, object value, DateTime dt = default,
+        public Response AddCondition(Guid userID,Guid store, string entity, string entityName, string type, object value, DateTime dt = default,
             string entityRes = default, string entityResName = default, string typeRes = default, double valueRes = default,
             string op = default, int opCond = default)
         {
-            return _realBridge.AddCondition(store, entity, entityName, type, value, dt, entityRes, entityName, typeRes,
+            return _realBridge.AddCondition(userID,store, entity, entityName, type, value, dt, entityRes, entityName, typeRes,
                 valueRes, op, opCond);
         }
 
 
-        public Response RemoveCondition(Guid storeID, int condID)
+        public Response RemoveCondition(Guid userID,Guid storeID, int condID)
         {
-            throw new NotImplementedException();
+            return _realBridge.RemoveCondition(userID, storeID, condID);
         }
 
-
-        public ResponseT<Condition> GetCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
-            M entityRes = default, string typeRes = default, double valueRes = default)
+        
+        
+        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid userID ,Guid store, T level, int percent, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            return _realBridge.CreateSimplePolicy(userID,store, level, percent, startDate, endDate);
         }
 
-        public void RemoveCondition<T, M>(Guid store, T entity, string type, double value, DateTime dt = default,
-            M entityRes = default, string typeRes = default, double valueRes = default)
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid userID ,Guid store, string op, params int[] policys)
         {
-            throw new NotImplementedException();
+            return _realBridge.CreateComplexPolicy(userID,store, op, policys);
         }
 
-        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
+        public Response AddPolicy(Guid userID ,Guid store, int discountPolicy)
         {
-            return _realBridge.CreateSimplePolicy(store, level, percent, startDate, endDate);
+            return _realBridge.AddPolicy(userID,store, discountPolicy);
         }
 
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys)
+        public Response RemovePolicy(Guid userID ,Guid store, int discountPolicy, string type)
         {
-            return _realBridge.CreateComplexPolicy(store, op, policys);
-        }
-
-        public Response AddPolicy(Guid store, int discountPolicy)
-        {
-            return _realBridge.AddPolicy(store, discountPolicy);
-        }
-
-        public Response RemovePolicy(Guid store, int discountPolicy, string type)
-        {
-            return _realBridge.RemovePolicy(store, discountPolicy , type);
+            return _realBridge.RemovePolicy(userID,store, discountPolicy , type);
         }
 
         public ResponseT<List<SItem>> GetCartItems(Guid userID)

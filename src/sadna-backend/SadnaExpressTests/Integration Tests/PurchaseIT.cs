@@ -155,9 +155,9 @@ namespace SadnaExpressTests.Integration_Tests
         public void PolicyDiscountOfItemsInCart()
         {
             // Arrange
-            DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, "Itemipad 32", 10,
+            DiscountPolicy policy1 =trading.CreateSimplePolicy(userID,storeID1, "Itemipad 32", 10,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
-            trading.AddPolicy(storeID1, policy1.ID);
+            trading.AddPolicy(userID,storeID1, policy1.ID);
             // Act
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
@@ -173,12 +173,12 @@ namespace SadnaExpressTests.Integration_Tests
         public void PolicyAddDiscountOfItemsInCart()
         {
             // Arrange
-            DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, "Itemipad 32", 10,
+            DiscountPolicy policy1 =trading.CreateSimplePolicy(userID,storeID1, "Itemipad 32", 10,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
-            DiscountPolicy policy2 =trading.CreateSimplePolicy(storeID1, "Store", 20,
+            DiscountPolicy policy2 =trading.CreateSimplePolicy(userID,storeID1, "Store", 20,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
-            DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1.ID, policy2.ID).Value;
-            trading.AddPolicy(storeID1, addPolicy.ID);
+            DiscountPolicy addPolicy = trading.CreateComplexPolicy(userID,storeID1, "add", policy1.ID, policy2.ID).Value;
+            trading.AddPolicy(userID,storeID1, addPolicy.ID);
             // Act
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
@@ -191,12 +191,12 @@ namespace SadnaExpressTests.Integration_Tests
         public void PolicyAddDiscountOfIllegalDate()
         {
             // Arrange
-            DiscountPolicy policy1 =trading.CreateSimplePolicy(storeID1, "Itemipad 32", 10,
+            DiscountPolicy policy1 =trading.CreateSimplePolicy(userID,storeID1, "Itemipad 32", 10,
                 new DateTime(2022, 05, 22), new DateTime(2022, 05, 22)).Value;
-            DiscountPolicy policy2 =trading.CreateSimplePolicy(storeID1, "Store", 20,
+            DiscountPolicy policy2 =trading.CreateSimplePolicy(userID,storeID1, "Store", 20,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
-            DiscountPolicy addPolicy = trading.CreateComplexPolicy(storeID1, "add", policy1.ID, policy2.ID).Value;
-            trading.AddPolicy(storeID1, addPolicy.ID);
+            DiscountPolicy addPolicy = trading.CreateComplexPolicy(userID,storeID1, "add", policy1.ID, policy2.ID).Value;
+            trading.AddPolicy(userID,storeID1, addPolicy.ID);
             // Act
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");

@@ -147,7 +147,7 @@ function DiscountPoliciesPage(props) {
 
   const Create_new_Simple_Discount_Policy = () => {
     setShowTable(!showTable);
-    handleCreateSimplePolicy(storeId ,EntityChoice+entity,condValue,startDate,endDate).then(
+    handleCreateSimplePolicy(userId,storeId ,EntityChoice+entity,condValue,startDate,endDate).then(
         value => {
           setSelectedDate('')
           setSelectedDate2('')
@@ -161,7 +161,7 @@ function DiscountPoliciesPage(props) {
 
   const Create_new_Condition_Policy_1 = () => {
     setShowTable2(!showTable);
-    handleCreateComplexPolicy(storeId ,op_1,[cond1_1,cond2_1,policy_1]).then(
+    handleCreateComplexPolicy(userId,storeId ,op_1,[cond1_1,cond2_1,policy_1]).then(
         value => {
           setPolicyResponse(value as ResponseT);
         })
@@ -170,7 +170,7 @@ function DiscountPoliciesPage(props) {
 
   const Create_new_Condition_Policy_2 = () => {
     setShowTable2(!showTable);
-    handleCreateComplexPolicy(storeId ,op_2,[cond2_2,policy_2]).then(
+    handleCreateComplexPolicy(userId,storeId ,op_2,[cond2_2,policy_2]).then(
         value => {
           setPolicyResponse(value as ResponseT);
         })
@@ -179,7 +179,7 @@ function DiscountPoliciesPage(props) {
 
   const Create_new_Condition_Policy_3 = () => {
     setShowTable2(!showTable);
-    handleCreateComplexPolicy(storeId ,op_3,[policy1_3,policy2_3]).then(
+    handleCreateComplexPolicy(userId,storeId ,op_3,[policy1_3,policy2_3]).then(
         value => {
           setPolicyResponse(value as ResponseT);
         })
@@ -210,7 +210,7 @@ function DiscountPoliciesPage(props) {
   };
 
   const handleSubmit = () => {
-    handleAddDiscountCondition(storeId ,entityCondInDiscount, EntityChoiceInDiscount,WhichCondInDiscount,condValueInDiscount,selectedOption,"","","","",otherCondInDiscount).then(
+    handleAddDiscountCondition(userId , storeId ,entityCondInDiscount, EntityChoiceInDiscount,WhichCondInDiscount,condValueInDiscount,selectedOption,"","","","",otherCondInDiscount).then(
       value => {
         setPolicyResponse(value as ResponseT);
         // setPolicyList(value as Policy[]);

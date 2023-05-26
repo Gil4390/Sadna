@@ -518,7 +518,7 @@ export function handleMarkNotificationAsRead(UserID, notificationID) {
     })
 }
 
-export function handleGetAllPurchaseConditions(storeID) {
+export function handleGetAllPurchaseConditions(userId,storeID) {
     let url = "http://localhost:8080/api/member/get-conds";
 
     return fetch(url, {
@@ -526,6 +526,7 @@ export function handleGetAllPurchaseConditions(storeID) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userId:userId,
             storeID:storeID,
         })
     }).then(async response => {
@@ -536,7 +537,7 @@ export function handleGetAllPurchaseConditions(storeID) {
         return Promise.resolve(data.value)
     })
 }
-export function handleAddPurchaseCondition(storeID , entity,entityName,type,value,op,opCond) {
+export function handleAddPurchaseCondition(userId,storeID , entity,entityName,type,value,op,opCond) {
     let url = "http://localhost:8080/api/member/add-cond";
 
     return fetch(url, {
@@ -544,6 +545,7 @@ export function handleAddPurchaseCondition(storeID , entity,entityName,type,valu
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userId:userId,
             storeID:storeID,
             entity:entity,
             entityName:entityName,
@@ -560,7 +562,7 @@ export function handleAddPurchaseCondition(storeID , entity,entityName,type,valu
         return Promise.resolve(data)
     })
 }
-export function handleAddDiscountCondition(storeID , entity,entityName,type,value,op,opCond) {
+export function handleAddDiscountCondition(userId,storeID , entity,entityName,type,value,op,opCond) {
     let url = "http://localhost:8080/api/member/add-cond-dic";
 
     return fetch(url, {
@@ -568,6 +570,7 @@ export function handleAddDiscountCondition(storeID , entity,entityName,type,valu
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userId:userId,
             storeID:storeID,
             entity:entity,
             entityName:entityName,
@@ -606,7 +609,7 @@ export function handleRemovePurchaseCondition(userID,storeID , condID) {
         return Promise.resolve(data)
     })
 }
-export function handleCreateSimplePolicy(storeID , level ,percent, startDate,endDate ) {
+export function handleCreateSimplePolicy(userId,storeID , level ,percent, startDate,endDate ) {
     let url = "http://localhost:8080/api/member/create-simple-policy";
 
     return fetch(url, {
@@ -614,6 +617,7 @@ export function handleCreateSimplePolicy(storeID , level ,percent, startDate,end
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userId:userId,
             storeID:storeID,
             level:level,
             percent:percent,
@@ -629,7 +633,7 @@ export function handleCreateSimplePolicy(storeID , level ,percent, startDate,end
     })
 }
 
-export function handleCreateComplexPolicy(storeID , op, policys) {
+export function handleCreateComplexPolicy(userId,storeID , op, policys) {
     let url = "http://localhost:8080/api/member/create-complex-policy";
 
     return fetch(url, {
@@ -637,6 +641,7 @@ export function handleCreateComplexPolicy(storeID , op, policys) {
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+            userId:userId,
             storeID:storeID,
             op:op,
             policys:policys,

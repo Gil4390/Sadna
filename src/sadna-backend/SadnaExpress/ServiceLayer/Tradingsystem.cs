@@ -512,40 +512,40 @@ namespace SadnaExpress.ServiceLayer
             return userManager.IsSystemInitialize();
         }
 
-        public ResponseT<SPolicy[]> GetAllConditions(Guid store)
+        public ResponseT<SPolicy[]> GetAllConditions(Guid userID,Guid store)
         {
-            return storeManager.GetAllConditions(store);
+            return storeManager.GetAllConditions(userID,store);
         }
 
-        public Response AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        public Response AddCondition(Guid userID,Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
-            return storeManager.AddCondition(store , entity,entityName,type,value,dt,entityRes , entityResName, typeRes , valueRes  ,op , opCond);
+            return storeManager.AddCondition(userID,store , entity,entityName,type,value,dt,entityRes , entityResName, typeRes , valueRes  ,op , opCond);
         }
 
-        public Response RemoveCondition(Guid storeID ,int condID)
+        public Response RemoveCondition(Guid userID,Guid storeID ,int condID)
         {
-            return storeManager.RemoveCondition(storeID,condID);
+            return storeManager.RemoveCondition(userID,storeID,condID);
         }
 
-        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
+        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid userID,Guid store, T level, int percent, DateTime startDate, DateTime endDate)
         {
-            return storeManager.CreateSimplePolicy(store, level, percent, startDate , endDate);
+            return storeManager.CreateSimplePolicy(userID,store, level, percent, startDate , endDate);
         }
 
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys)
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid userID,Guid store, string op, params int[] policys)
         {
-            return storeManager.CreateComplexPolicy(store, op, policys);
+            return storeManager.CreateComplexPolicy(userID,store, op, policys);
         }
 
-        public Response AddPolicy(Guid store, int discountPolicy)
+        public Response AddPolicy(Guid userID,Guid store, int discountPolicy)
         {
-            return storeManager.AddPolicy(store, discountPolicy);
+            return storeManager.AddPolicy(userID,store, discountPolicy);
         }
 
-        public Response RemovePolicy(Guid store, int discountPolicy , string type)
+        public Response RemovePolicy(Guid userID,Guid store, int discountPolicy , string type)
         {
-            return storeManager.RemovePolicy(store, discountPolicy , type);
+            return storeManager.RemovePolicy(userID,store, discountPolicy , type);
         }
         public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
         {

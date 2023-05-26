@@ -486,11 +486,12 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        public Response AddCondition(Guid userID ,Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             try
             {
+                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 storeFacade.AddCondition(store, entity, entityName, type, value, dt, op ,opCond);
                 return new Response();
             }
@@ -501,10 +502,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response RemoveCondition(Guid storeID , int condID)
+        public Response RemoveCondition(Guid userID,Guid storeID , int condID)
         {
             try
             {
+                userFacade.hasPermissions(userID, storeID,new List<string> {"founder permissions", "owner permissions"});
                 storeFacade.RemoveCondition(storeID ,condID);
                 return new Response();
             }
@@ -515,10 +517,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<SPolicy[]> GetAllConditions(Guid store)
+        public ResponseT<SPolicy[]> GetAllConditions(Guid userID,Guid store)
         {
             try
             {
+                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 List<SPolicy> cond = new List<SPolicy>();
                 foreach (Condition condition in storeFacade.GetAllConditions(store))
                 {
@@ -533,10 +536,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
         
-        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate, DateTime endDate)
+        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid userID,Guid store, T level, int percent, DateTime startDate, DateTime endDate)
         {
             try
             {
+                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 return new ResponseT<DiscountPolicy>(storeFacade.CreateSimplePolicy(store, level, percent, startDate , endDate));
             }
             catch (Exception ex)
@@ -546,10 +550,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, int[] policys)
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid userID,Guid store, string op, int[] policys)
         {
             try
             {
+                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 return new ResponseT<DiscountPolicy>(storeFacade.CreateComplexPolicy(store, op , policys));
             }
             catch (Exception ex)
@@ -586,10 +591,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AddPolicy(Guid store, int discountPolicy)
+        public Response AddPolicy(Guid userID,Guid store, int discountPolicy)
         {
             try
             {
+                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 storeFacade.AddPolicy(store, discountPolicy);
                 return new Response();
             }
@@ -600,10 +606,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response RemovePolicy(Guid store, int discountPolicy , string type)
+        public Response RemovePolicy(Guid userID,Guid store, int discountPolicy , string type)
         {
             try
             {
+                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 storeFacade.RemovePolicy(store, discountPolicy , type);
                 return new Response();
             }

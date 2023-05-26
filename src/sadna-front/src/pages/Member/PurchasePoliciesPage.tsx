@@ -61,7 +61,7 @@ function PurchasePoliciesPage(props) {
   }
 
   const GetPurcahsePolicys =()=>{
-    handleGetAllPurchaseConditions(storeId).then(
+    handleGetAllPurchaseConditions(userId,storeId).then(
       value => {
         console.log(value)
         setPolicyList(value as Policy[]);
@@ -74,7 +74,7 @@ function PurchasePoliciesPage(props) {
  }, [])
 
   const handleSubmit = () => {
-    handleAddPurchaseCondition(storeId ,EntityChoice, entity,WhichCond,condValue,selectedOption,otherCondition).then(
+    handleAddPurchaseCondition(userId,storeId ,EntityChoice, entity,WhichCond,condValue,selectedOption,otherCondition).then(
       value => {
         // setPolicyList(value as Policy[]);
         setWhichCond('');
