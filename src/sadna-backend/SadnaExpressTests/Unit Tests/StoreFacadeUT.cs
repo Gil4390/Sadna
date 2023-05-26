@@ -163,7 +163,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestCleanup]
         public void CleanUp()
         {
-            DBHandler.Instance.TestMode();
+            DBHandler.Instance.CleanDB();
             storeFacade.CleanUp();
         }
         #endregion

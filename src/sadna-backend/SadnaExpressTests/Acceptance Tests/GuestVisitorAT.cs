@@ -354,7 +354,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public override void CleanUp()
         {
             proxyBridge.GetMember(systemManagerid).Value.LoggedIn = false;
-            DBHandler.Instance.TestMode();
+            DBHandler.Instance.CleanDB();
         }
     }
 }

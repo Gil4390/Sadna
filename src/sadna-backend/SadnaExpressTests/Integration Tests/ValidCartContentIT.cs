@@ -434,7 +434,7 @@ namespace SadnaExpressTests.Integration_Tests
         public override void CleanUp()
         {
             base.CleanUp();
-            DBHandler.Instance.TestMode();
+            DBHandler.Instance.CleanDB();
         }
 
     }

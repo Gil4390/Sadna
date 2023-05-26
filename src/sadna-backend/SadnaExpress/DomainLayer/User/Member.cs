@@ -36,11 +36,6 @@ namespace SadnaExpress.DomainLayer.User
         // todo in database
         public List<Notification> awaitingNotification { get; set; }
 
-        [NotMapped]
-        protected NotificationSystem notificationSystem = NotificationSystem.Instance;
-
-
-
         public Member(Guid id, string memail, string mfirstName, string mlastLame, string mpassword): base ()
         {
             userId = id;
@@ -64,9 +59,6 @@ namespace SadnaExpress.DomainLayer.User
             shoppingCart = promotedMember.ShoppingCart;
             securityQuestions = promotedMember.SecurityQuestions;
             awaitingNotification = promotedMember.awaitingNotification;
-        }
-        public void addToAwaitingNotification(Notification notification) {
-            this.awaitingNotification.Add(notification);
         }
 
         public void deepCopy(User user)

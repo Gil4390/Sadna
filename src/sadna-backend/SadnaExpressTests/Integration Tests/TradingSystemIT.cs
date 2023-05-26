@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadnaExpress.API.SignalR;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Integration_Tests
 {
@@ -21,6 +22,7 @@ namespace SadnaExpressTests.Integration_Tests
 
         public virtual void Setup()
         {
+            DBHandler.Instance.CleanDB();
             NotificationNotifier.GetInstance().TestMood = true;
             trading = new TradingSystem();
             trading.SetIsSystemInitialize(true);
