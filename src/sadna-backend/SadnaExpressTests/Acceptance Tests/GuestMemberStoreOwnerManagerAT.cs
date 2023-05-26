@@ -510,9 +510,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void AddNewPolicy()
         {
             //Arrange
-            DiscountPolicy policy = proxyBridge.CreateSimplePolicy(storeid1, "ItemDress",50, DateTime.Now, new DateTime(2024,05,13)).Value;
+            DiscountPolicy policy = proxyBridge.CreateSimplePolicy(storeOwnerid,storeid1, "ItemDress",50, DateTime.Now, new DateTime(2024,05,13)).Value;
             //Act
-            proxyBridge.AddPolicy(storeid1, policy.ID);
+            proxyBridge.AddPolicy(storeOwnerid,storeid1, policy.ID);
             //Assert
             Assert.AreEqual(35, proxyBridge.GetItemsForClient(store4Founder, "Dress").Value[0].PriceDiscount);
         }
@@ -520,10 +520,10 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void AddNewComplexPolicy()
         {
             //Arrange
-            DiscountPolicy policy1 = proxyBridge.CreateSimplePolicy(storeid1, "ItemDress",50, DateTime.Now, new DateTime(2024,05,13)).Value;
-            DiscountPolicy policy2 = proxyBridge.CreateComplexPolicy(storeid1, "add", policy1.ID, policy3.ID).Value;
+            DiscountPolicy policy1 = proxyBridge.CreateSimplePolicy(storeOwnerid,storeid1, "ItemDress",50, DateTime.Now, new DateTime(2024,05,13)).Value;
+            DiscountPolicy policy2 = proxyBridge.CreateComplexPolicy(storeOwnerid,storeid1, "add", policy1.ID, policy3.ID).Value;
             //Act
-            proxyBridge.AddPolicy(storeid1, policy2.ID);
+            proxyBridge.AddPolicy(storeOwnerid,storeid1, policy2.ID);
             //Assert
             Assert.AreEqual(28, proxyBridge.GetItemsForClient(store4Founder, "Dress").Value[0].PriceDiscount);
         } 
@@ -531,10 +531,10 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void Add2Policy()
         {
             //Arrange
-            DiscountPolicy policy1 = proxyBridge.CreateSimplePolicy(storeid1, "ItemDress",50, DateTime.Now, new DateTime(2024,05,13)).Value;
+            DiscountPolicy policy1 = proxyBridge.CreateSimplePolicy(storeOwnerid,storeid1, "ItemDress",50, DateTime.Now, new DateTime(2024,05,13)).Value;
             //Act
-            proxyBridge.AddPolicy(storeid1, policy1.ID);
-            proxyBridge.AddPolicy(storeid1, policy3.ID);
+            proxyBridge.AddPolicy(storeOwnerid,storeid1, policy1.ID);
+            proxyBridge.AddPolicy(storeOwnerid,storeid1, policy3.ID);
 
             //Assert
             Assert.AreEqual(35, proxyBridge.GetItemsForClient(store4Founder, "Dress").Value[0].PriceDiscount);
@@ -545,7 +545,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Arrange
             proxyBridge.AddItemToCart(userid, storeid2, itemid2, 1);
             //Act
-            proxyBridge.AddCondition(storeid2, "Item","Pants", "min value", 200, dt: DateTime.MaxValue);
+            proxyBridge.AddCondition(userid,storeid2, "Item","Pants", "min value", 200, dt: DateTime.MaxValue);
             //Assert
             //try to purchase
             Response t = proxyBridge.CheckPurchaseConditions(userid);
@@ -559,7 +559,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void AddConditionWhilePurchaseHim_Good()
         {
-            SPolicy[] prePolicies= proxyBridge.GetAllConditions(storeid2).Value;
+            Guid tempid = proxyBridge.Enter().Value;
+            tempid = proxyBridge.Login(tempid, "AsiAzar@gmail.com", "Aa12345678").Value;
+            SPolicy[] prePolicies= proxyBridge.GetAllConditions(tempid,storeid2).Value;
             Random random = new Random();
             int randomSleep = random.Next(0, 2);
             //Arrange
@@ -570,7 +572,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             });
             Task<Response> task2 = Task.Run(() => {
                 Thread.Sleep(randomSleep);
-                return proxyBridge.AddCondition(storeid2, "Item", "Pants", "min value", 200, dt: DateTime.MaxValue);
+                return proxyBridge.AddCondition(tempid,storeid2, "Item", "Pants", "min value", 200, dt: DateTime.MaxValue);
             });
             // Wait for all clients to complete
             task1.Wait();
@@ -586,9 +588,10 @@ namespace SadnaExpressTests.Acceptance_Tests
                 Assert.AreEqual("The price of item Pants is 150 while the minimum price is 200",
                     task1.Result.ErrorMessage);
             }
-            Assert.AreEqual(prePolicies.Length + 1, proxyBridge.GetAllConditions(storeid2).Value.Length);
+            Assert.AreEqual(prePolicies.Length + 1, proxyBridge.GetAllConditions(tempid,storeid2).Value.Length);
             bool added = true;
-            foreach (SPolicy cond in proxyBridge.GetAllConditions(storeid2).Value)
+            
+            foreach (SPolicy cond in proxyBridge.GetAllConditions(tempid,storeid2).Value)
             {
                 if (!prePolicies.Contains(cond) && cond.PolicyRule.Equals("(minimum purchase for  Pants is 200$)"))
                 {

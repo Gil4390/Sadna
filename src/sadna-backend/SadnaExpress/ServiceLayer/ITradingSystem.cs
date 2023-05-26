@@ -52,11 +52,11 @@ namespace SadnaExpress.ServiceLayer
             int quantity);
         //4.2 Discount policy
         ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID);
-        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid store, T level, int percent, DateTime startDate,
+        ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid userID,Guid store, T level, int percent, DateTime startDate,
             DateTime endDate);
-        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid store, string op, params int[] policys);
-        Response AddPolicy(Guid store, int discountPolicy);
-        Response RemovePolicy(Guid store, int discountPolicy , string type);
+        ResponseT<DiscountPolicy> CreateComplexPolicy(Guid userID,Guid store, string op, params int[] policys);
+        Response AddPolicy(Guid userID,Guid store, int discountPolicy);
+        Response RemovePolicy(Guid userID,Guid store, int discountPolicy , string type);
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
         Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
@@ -92,11 +92,11 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<Notification>> GetNotifications(Guid userID);
         bool IsSystemInitialize();
 
-        ResponseT<SPolicy[]> GetAllConditions(Guid store);
+        ResponseT<SPolicy[]> GetAllConditions(Guid userID , Guid store);
         
-        Response AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        Response AddCondition(Guid userID , Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);
-        Response RemoveCondition(Guid storeID ,int condID);
+        Response RemoveCondition(Guid userID , Guid storeID ,int condID);
         
         // this functions needs to notify to offline members their notifications.
         public void getNotificationsForOfflineMembers();
