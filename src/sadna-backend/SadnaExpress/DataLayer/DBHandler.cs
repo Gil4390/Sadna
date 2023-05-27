@@ -1667,6 +1667,36 @@ namespace SadnaExpress.DataLayer
         }
 
 
+        public void AddOrder(Order newOrder)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            newOrder.ListItemsDB = newOrder.OrderIDsJson;
+                            db.orders.Add(newOrder);
+                            db.SaveChanges(true);
+                        }
+
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+
+
 
 
 

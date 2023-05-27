@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using System;
@@ -27,6 +28,7 @@ namespace SadnaExpress.DataLayer
         public DbSet<Bid> bids { get; set; }
         public DbSet<InitializeSystem> initializeSystems { get; set; }
 
+        public DbSet<Notification> notfications { get; set; }
         //public DbSet<Condition> conditions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

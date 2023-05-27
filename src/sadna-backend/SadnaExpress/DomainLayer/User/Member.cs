@@ -25,6 +25,7 @@ namespace SadnaExpress.DomainLayer.User
         protected string password;
         public string Password { get => password; set => password = value; }
 
+        [NotMapped]
         public List<Notification> AwaitingNotification { get => awaitingNotification; set => awaitingNotification = value; }
 
         private bool loggedIn;
@@ -39,6 +40,7 @@ namespace SadnaExpress.DomainLayer.User
         }
 
         // todo in database
+        [NotMapped]
         public List<Notification> awaitingNotification { get; set; }
 
         public Member(Guid id, string memail, string mfirstName, string mlastLame, string mpassword): base ()
