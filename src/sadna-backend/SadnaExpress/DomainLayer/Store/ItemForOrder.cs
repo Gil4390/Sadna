@@ -7,16 +7,22 @@ namespace SadnaExpress.DomainLayer.Store
     {
         [Key]
         public Guid ItemForOrderId { get; set; }
+
         private Guid itemID;
         public Guid ItemID { get => itemID; set => itemID = value; }
+
         private Guid storeID;
         public Guid StoreID {get=>storeID; set => storeID = value; }
+
         private string name;
         public string Name {get => name; set => name = value; }
+
         private string category;
         public string Category {get => category; set => category = value; }
+
         private double price;
         public double Price {get => price; set => price = value; }
+
         private int rating;
         public int Rating {get => rating; set => rating = value; }
         
@@ -30,11 +36,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         private string storeName;
 
-        public string StoreName
-        {
-            get => storeName;
-            set => storeName = value;
-        }
+        public string StoreName { get => storeName; set => storeName = value; }
 
         public ItemForOrder(Item item, Guid storeID,  string userEmail, string storeName)
         {

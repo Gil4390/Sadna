@@ -831,7 +831,6 @@ namespace SadnaExpress.DataLayer
                             var items = db.Items;
                             if (item == null)
                             {
-                                
                                 items.Add(newItem);
                             }
                             else
@@ -1666,7 +1665,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-
         public void AddOrder(Order newOrder)
         {
             lock (this)
@@ -1677,6 +1675,11 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
+                            foreach (ItemForOrder itemForOrder in newOrder.ListItems)
+                            {
+                                db.ItemForOrders.Add(itemForOrder);
+                            }
+
                             newOrder.ListItemsDB = newOrder.OrderIDsJson;
                             db.orders.Add(newOrder);
                             db.SaveChanges(true);
@@ -1692,6 +1695,47 @@ namespace SadnaExpress.DataLayer
                 {
                     throw new Exception("Failed to Connect With Database");
                 }
+            }
+        }
+
+        public List<Order> GetAllOrders()
+        {
+            List<Order> result = null;
+
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var allOrders = db.orders;
+                            result = new List<Order>();
+                            foreach (Order o in allOrders)
+                            {
+                                List<ItemForOrder> ItemsForOrder = new List<ItemForOrder>();
+                                List <Guid> ItemsForOrderIds = JsonConvert.DeserializeObject<List<Guid>>(o.ListItemsDB);
+                                foreach(Guid itemId in ItemsForOrderIds)
+                                {
+                                    var item = db.ItemForOrders.FirstOrDefault(i => i.ItemForOrderId.Equals(itemId));
+                                    if (item != null)
+                                        ItemsForOrder.Add(item);
+                                }
+                                result.Add(o);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+                return result;
             }
         }
 

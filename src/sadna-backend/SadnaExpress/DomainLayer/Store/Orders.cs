@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.Store
@@ -47,6 +48,7 @@ namespace SadnaExpress.DomainLayer.Store
         {
             Order userOrder = new Order(itemForOrders);
             AddOrderToUser(userID, userOrder);
+
             Dictionary<Guid, List<ItemForOrder>> ordersForStores = new Dictionary<Guid, List<ItemForOrder>>();
             foreach (ItemForOrder item in itemForOrders)
             {
@@ -60,6 +62,8 @@ namespace SadnaExpress.DomainLayer.Store
                 Order storeOrder = new Order(ordersForStores[storeID]);
                 AddOrderToStore(storeID, storeOrder);
             }
+
+            DBHandler.Instance.AddOrder(userOrder);
         }
         
         public void AddOrderToUser(Guid userID, Order order)
@@ -142,6 +146,16 @@ namespace SadnaExpress.DomainLayer.Store
         public void CleanUp()
         {
             instance = null;
+        }
+
+        public void LoadOrdersFromDB()
+        {
+            List<Order> allOrders=DBHandler.Instance.GetAllOrders();
+
+            //foreach(Order order in allOrders)
+            //{
+            //    if(userOrders.ContainsKey(order.)
+            //}
         }
     }
 }

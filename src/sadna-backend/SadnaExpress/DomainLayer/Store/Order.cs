@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace SadnaExpress.DomainLayer.Store
 {
-    public class Order // todo in database 
+    public class Order 
     {
         [Key]
         public Guid OrderID { get; set; }

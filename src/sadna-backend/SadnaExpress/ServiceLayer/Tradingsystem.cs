@@ -73,6 +73,7 @@ namespace SadnaExpress.ServiceLayer
             userManager.SetIsSystemInitialize(isInit);
 
             // load all orders from db
+            Orders.Instance.LoadOrdersFromDB();
 
             //load NotificationSystemList of store owners
 
@@ -640,7 +641,7 @@ namespace SadnaExpress.ServiceLayer
             Exit(storeOwnerid2);
             Exit(storeManagerid2);
 
-            SetIsSystemInitialize(false);
+            //SetIsSystemInitialize(false);
         }
 
         public ResponseT<bool> IsAdmin(Guid userID)
