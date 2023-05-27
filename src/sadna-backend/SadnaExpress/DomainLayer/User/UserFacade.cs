@@ -83,7 +83,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 lock (members[id])
                 {
-                    Logout(id);
+                    Logout(id,true);
                     Logger.Instance.Info(id, nameof(UserFacade) + ": " + nameof(Exit) + ": exited from the system.");
                 }
             }
@@ -97,7 +97,8 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             if (current_Users.ContainsKey(id) == false)
                 throw new Exception("User should enter the system before preforming this action");
-            if(DBHandler.Instance.memberExistsById(id))
+
+            if (DBHandler.Instance.memberExistsById(id))
                 throw new Exception("Member with this id already registered");
 
             if (members.ContainsKey(id))
@@ -142,34 +143,12 @@ namespace SadnaExpress.DomainLayer.User
 
         public Guid Login(Guid id, string email, string password)
         {
-            var memberFromDB = DBHandler.Instance.CheckMemberValidLogin(id, email, password, _ph);
-            if (memberFromDB != null)
-            {
-                //Member memberToRemove = null;
-                //members.TryRemove(memberFromDB.UserId, out memberToRemove);
-                memberFromDB.LoggedIn = false; // remove this later
-                // check if this member is store founder and add him to founders
-                if (memberFromDB.Discriminator.Equals("PromotedMember"))
-                {
-                    PromotedMember pm = (PromotedMember)memberFromDB;
-                    foreach (Guid storeId in pm.Permission.Keys)
-                    {
-                        if (pm.Permission[storeId].Contains("founder permissions"))
-                        {
-                            PromotedMember removed = null;
-                            founders.TryRemove(storeId, out removed);
-                            founders.TryAdd(storeId, pm);
-                        }
-                    }
-                }
+            bool foundInMembers = false;
 
-                members.TryAdd(memberFromDB.UserId, memberFromDB);
-                macs.TryAdd(memberFromDB.UserId, DBHandler.Instance.GetMacById(memberFromDB.UserId));
-            }
             if (members.ContainsKey(id) && members[id].LoggedIn)
                 throw new Exception($"Hi {members[id].FirstName} you are already logged in!");
 
-            if (current_Users.ContainsKey(id)==false)
+            if (current_Users.ContainsKey(id) == false)
                 throw new Exception("User should enter the system before logging in");
 
             email = email.ToLower();
@@ -177,14 +156,15 @@ namespace SadnaExpress.DomainLayer.User
             {
                 if (member.Email.ToLower().Equals(email.ToLower()))
                 {
-                    if (!_ph.Rehash(password+macs[member.UserId], member.Password))
+                    foundInMembers = true;
+                    if (!_ph.Rehash(password + macs[member.UserId], member.Password))
                     {
                         throw new Exception("Incorrect email or password");
                     }
                     //correct email & password:
                     if (member.LoggedIn == true)
                         throw new Exception($"Hi {member.FirstName} you are already logged in!");
-                    
+
                     String internedKey = String.Intern(member.UserId.ToString());
 
                     lock (internedKey)
@@ -195,12 +175,13 @@ namespace SadnaExpress.DomainLayer.User
                                 IsTSSystemManagerID(member.UserId);
                             member.LoggedIn = true;
                             User user;
-                            current_Users.TryRemove(id, out user); 
+                            current_Users.TryRemove(id, out user);
 
-                            //member.ShoppingCart.AddUserShoppingCart(user.ShoppingCart);                            
+                            member.deepCopy(user); //handle shopping cart and bids
 
-                            member.deepCopy(user);
-                            
+                            //members.TryAdd(member.UserId, member);
+
+                            DBHandler.Instance.MemberLogIn(member);
                             // add member ShoppingCart and *todo add bids in DB
                             DBHandler.Instance.UpdateMemberShoppingCart(member);
 
@@ -214,11 +195,56 @@ namespace SadnaExpress.DomainLayer.User
                     return member.UserId;
                 }
             }
+
+            if (foundInMembers == false) //user is not in members list - maybe user is in db
+            {
+                var memberFromDB = DBHandler.Instance.CheckMemberValidLogin(id, email, password, _ph);
+                if (memberFromDB != null)
+                {                                                
+                    if (_isTSInitialized == false) //if user id not system manager and system is not initialized user cannot login
+                        IsTSSystemManagerID(memberFromDB.UserId);
+
+                    memberFromDB.LoggedIn = true;
+                    User user;
+                    current_Users.TryRemove(id, out user);                         
+
+                    memberFromDB.deepCopy(user); //handle shopping cart and bids
+
+                    // add member ShoppingCart and *todo add bids in DB
+                    DBHandler.Instance.UpdateMemberShoppingCart(memberFromDB);
+
+                    if (memberFromDB.Discriminator.Equals("PromotedMember")) // check if this member is store founder and add him to founders
+                    {
+                        PromotedMember pm = (PromotedMember)memberFromDB;
+                        foreach (Guid storeId in pm.Permission.Keys)
+                        {
+                            if (pm.Permission[storeId].Contains("founder permissions"))
+                            {
+                                PromotedMember removed = null;
+                                founders.TryRemove(storeId, out removed);
+                                founders.TryAdd(storeId, pm);
+                            }
+                        }
+
+                        members.TryAdd(pm.UserId, pm);
+                        macs.TryAdd(pm.UserId, DBHandler.Instance.GetMacById(pm.UserId));
+                    }
+                    else
+                    {
+                        members.TryAdd(memberFromDB.UserId, memberFromDB);
+                        macs.TryAdd(memberFromDB.UserId, DBHandler.Instance.GetMacById(memberFromDB.UserId));
+                    }
+
+                    Logger.Instance.Info($"{memberFromDB} {memberFromDB.Email} logged in");
+                    return memberFromDB.UserId;
+                }
+            }
+      
             //email not found
             throw new Exception("Incorrect email or password");
         }
 
-        public Guid Logout(Guid id)
+        public Guid Logout(Guid id,bool exited=false)
         {
             if (!members.ContainsKey(id))
                 throw new Exception("member with id dosen't exist");
@@ -231,7 +257,10 @@ namespace SadnaExpress.DomainLayer.User
                 DBHandler.Instance.MemberLogout(member);
                 Logger.Instance.Info(member.UserId, nameof(UserFacade) + ": " + nameof(Logout) + " logged out as member");
             }
-            return Enter(); //member logs out and a regular user enters the system instead  
+            if(exited==false) //member logout but did not exited
+                return Enter(); //member logs out and a regular user enters the system instead  
+
+            return Guid.Empty; //if member exited we do not need to send new id
         }
 
         public void AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
@@ -931,7 +960,7 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             PromotedMember systemManager = members[userID].promoteToMember();
             systemManager.createSystemManager();
-            systemManager.LoggedIn = true;
+            //systemManager.LoggedIn = true;
         }
 
         public void LoadData(Guid storeid1, Guid storeid2)

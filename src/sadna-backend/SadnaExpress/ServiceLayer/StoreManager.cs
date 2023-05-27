@@ -486,14 +486,14 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response AddCondition(Guid userID ,Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        public ResponseT<Condition> AddCondition(Guid userID ,Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             try
             {
                 userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
-                storeFacade.AddCondition(store, entity, entityName, type, value, dt, op ,opCond);
-                return new Response();
+                return new ResponseT<Condition>(storeFacade.AddCondition(store, entity, entityName, type, value, dt, op, opCond)); 
+                
             }
             catch (Exception ex)
             {

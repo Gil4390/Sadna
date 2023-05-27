@@ -88,7 +88,7 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<Guid> Enter()
         {
             // load stores and items from data base
-            storeManager.LoadStoresFromDB();
+            //storeManager.LoadStoresFromDB();
             return userManager.Enter();
         }
         public Response Exit(Guid userID)
@@ -519,7 +519,7 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetAllConditions(userID,store);
         }
 
-        public Response AddCondition(Guid userID,Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        public ResponseT<Condition> AddCondition(Guid userID,Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default)
         {
             return storeManager.AddCondition(userID,store , entity,entityName,type,value,dt,entityRes , entityResName, typeRes , valueRes  ,op , opCond);
@@ -579,35 +579,48 @@ namespace SadnaExpress.ServiceLayer
             Register(storeManagerid1, "kobi@gmail.com", "kobi", "kobi", "A#!a12345678");
             Register(storeManagerid2, "Yael@gmail.com", "Yael", "Yael", "A#!a12345678");
 
-            storeOwnerid1=Login(storeOwnerid1, "AsiAzar@gmail.com", "A#!a12345678").Value;
+            systemManagerid = Login(systemManagerid, ApplicationOptions.SystemManagerEmail, ApplicationOptions.SystemManagerPass).Value;
+            userManager.CreateSystemManager(systemManagerid);
+
+            storeOwnerid1 =Login(storeOwnerid1, "AsiAzar@gmail.com", "A#!a12345678").Value;
             Guid storeZaraID = OpenNewStore(storeOwnerid1, "Zara").Value;
             AddItemToStore(storeOwnerid1, storeZaraID, "Tshirt", "clothes", 99.8, 40);
             AddItemToStore(storeOwnerid1, storeZaraID, "Ipad", "electronic", 99.8, 2);
             AddItemToStore(storeOwnerid1, storeZaraID, "Dress", "clothes", 70, 45);
 
-            storeOwnerid2 = Login(storeOwnerid2, "AsiAzar@gmail.com", "A#!a12345678").Value;
+            AddCondition(storeOwnerid1, storeZaraID, "Item", "Tshirt", "min quantity", 2, DateTime.MaxValue);
+            AddCondition(storeOwnerid1, storeZaraID, "Item", "Ipad", "min value", 1, DateTime.MaxValue);
+
+            DiscountPolicy policy1 = CreateSimplePolicy(storeOwnerid1, storeZaraID, "StoreZara", 50, DateTime.Now, new DateTime(2024, 5, 20)).Value;
+            Condition cond3 = AddCondition(storeOwnerid1, storeZaraID, "Item", "Tshirt", "min quantity", 2).Value;
+
+            CreateComplexPolicy(storeOwnerid1, storeZaraID, "if", cond3.ID, policy1.ID);
+
+            DiscountPolicy policy3 = CreateSimplePolicy(storeOwnerid1, storeZaraID, "StoreZara", 10, DateTime.Now, new DateTime(2024, 5, 20)).Value;
+
+            AddPolicy(storeOwnerid1, storeZaraID, policy3.ID);
+
+            AppointStoreManager(storeOwnerid1, storeZaraID, "kobi@gmail.com");
+
+            storeOwnerid2 = Login(storeOwnerid2, "dani@gmail.com", "A#!a12345678").Value;
             Guid storeFoxID = OpenNewStore(storeOwnerid2, "Fox").Value;
             AddItemToStore(storeOwnerid2, storeFoxID, "Pants", "clothes", 150, 200);
             AddItemToStore(storeOwnerid2, storeFoxID, "Towel", "Home", 40, 450);
             AddItemToStore(storeOwnerid2, storeFoxID, "Teddy bear toy", "children toys", 65, 120);
             AddItemToStore(storeOwnerid2, storeFoxID, "mouse", "animals", 65, 0);
 
-            //AddCondition()
+            AppointStoreManager(storeOwnerid2, storeFoxID, "Yael@gmail.com");
 
-            //Condition cond1 = store1.AddCondition("Item", "Tshirt", "min quantity", 2, DateTime.MaxValue);
-            //Condition cond2 = store1.AddCondition("Item", "Ipad", "min value", 1, DateTime.MaxValue);
-
-            //DiscountPolicy policy1 = store1.CreateSimplePolicy("StoreZara", 50, DateTime.Now, new DateTime(2024, 5, 20));
-            //Condition cond3 = store1.AddCondition("Item", "Tshirt", "min quantity", 2);
-            //DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
-
-            //DiscountPolicy policy3 = store1.CreateSimplePolicy("StoreZara", 10, DateTime.Now, new DateTime(2024, 5, 20));
-
-            //store1.AddPolicy(policy3.ID);
-
-
-
-
+            Exit(systemManagerid);
+            Exit(memberId);
+            Exit(memberId2);
+            Exit(memberId3);
+            Exit(memberId4);
+            Exit(memberId5);
+            Exit(storeOwnerid1);
+            Exit(storeManagerid1);
+            Exit(storeOwnerid2);
+            Exit(storeManagerid2);
         }
 
         public ResponseT<bool> IsAdmin(Guid userID)

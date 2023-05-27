@@ -570,7 +570,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task<Response> task1=Task.Run(() => {
                 return proxyBridge.CheckPurchaseConditions(userid);
             });
-            Task<Response> task2 = Task.Run(() => {
+            Task<ResponseT<Condition>> task2 = Task.Run(() => {
                 Thread.Sleep(randomSleep);
                 return proxyBridge.AddCondition(tempid,storeid2, "Item", "Pants", "min value", 200, dt: DateTime.MaxValue);
             });

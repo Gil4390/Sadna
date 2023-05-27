@@ -48,7 +48,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<Store> GetStore(Guid storeID);
         void SetTSOrders(IOrders orders);
         ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
-        Response AddCondition(Guid userID , Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
+        ResponseT<Condition> AddCondition(Guid userID , Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);  
         Response RemoveCondition(Guid userID,Guid storeID ,int condID);
         ResponseT<SPolicy[]> GetAllConditions(Guid userID,Guid store);

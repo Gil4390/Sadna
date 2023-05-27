@@ -246,9 +246,23 @@ namespace SadnaExpress.DataLayer
                             var memberExist = db.members.FirstOrDefault(m=>m.Email.ToLower().Equals(email.ToLower()));
                             if (memberExist != null)
                             {
-                                if (!memberExist.Discriminator.Equals("Member"))
+                                string mac1 = db.macs.Find(memberExist.UserId).mac;
+                                
+                                bool memberCorrectDetails = _ph.Rehash(password + mac1, memberExist.Password);
+
+                                if (memberCorrectDetails)
                                 {
-                                    // here it means that he is promotedMember
+                                    result = memberExist;
+                                    memberExist.LoggedIn = true;
+                                    db.SaveChanges();
+                                }
+                                else
+                                {
+                                    throw new Exception("Incorrect email or password");
+                                }
+
+                                if (memberExist.Discriminator.Equals("PromotedMember"))
+                                {
                                     // *************** need to fix here
                                     // error 1 when getting this DirectSupervisor Values *************************
                                     var PromotedmemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
@@ -269,12 +283,6 @@ namespace SadnaExpress.DataLayer
                                     }
                                     PromotedmemberExist.DirectSupervisor = loadedDirect;
 
-
-                                    /// end of error1 *******************************
-
-
-                                    // *************** need to fix here
-                                    // error 2 when getting this Appoint Values *************************
                                     // todo: now load appoint from database
                                     ConcurrentDictionary<Guid, List<PromotedMember>> loadedAppoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
                                     ConcurrentDictionary<Guid, List<string>> loadeds = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(PromotedmemberExist.AppointDB);
@@ -291,10 +299,6 @@ namespace SadnaExpress.DataLayer
                                         loadedAppoint.TryAdd(storeId, list);
                                     }
                                     PromotedmemberExist.Appoint = loadedAppoint;
-
-                                    /// end of error2 ******************************* 
-
-
 
                                     // todo: now load bidsOffers from database
                                     ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
@@ -342,64 +346,55 @@ namespace SadnaExpress.DataLayer
 
                                     memberExist = PromotedmemberExist;
                                 }
-                                if (!memberExist.LoggedIn || true) // remove || true later
+                               
+                            
+                               
+                                // now get member cart from DB
+                                result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
+                                var userBaskets = db.shoppingBaskets.Where(basket => basket.ShoppingCartId.Equals(memberExist.ShoppingCart.ShoppingCartId)).ToList();
+                                foreach(var basket in userBaskets)
                                 {
-                                    memberExist.LoggedIn = true; // remove this line later 
-                                    Guid id1 = memberExist.UserId;
-                                    string mac1 = db.macs.Find(id1).mac;
-
-                                    bool memberCorrectDetails = _ph.Rehash(password + mac1, memberExist.Password);
-
-                                    if (memberCorrectDetails)
-                                    {
-                                        result = memberExist;
-                                    }
-                                    // now get member cart from DB
-                                    result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
-                                    var userBaskets = db.shoppingBaskets.Where(basket => basket.ShoppingCartId.Equals(memberExist.ShoppingCart.ShoppingCartId)).ToList();
-                                    foreach(var basket in userBaskets)
-                                    {
-                                        result.ShoppingCart.Baskets.Add(basket);
-                                    }
-
-                                    // todo now get all bids
-                                    List<Guid> bidsIds = JsonConvert.DeserializeObject<List<Guid>>(memberExist.BidsDB);
-                                    List<Bid> bidsFromDB = db.bids.Where(b => bidsIds.Contains(b.BidId)).ToList();
-                                    // now update all Bids Decetions
-                                    foreach(Bid b in bidsFromDB)
-                                    {
-                                        Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
-                                        var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(b.DecisionDB);
-                                        foreach (Guid userId in helperDecision.Keys)
-                                        {
-                                            var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
-                                            if (pmInDecition != null)
-                                            {
-                                                addDecetion.Add(pmInDecition, helperDecision[userId]);
-                                            }
-                                        }
-                                        b.Decisions = addDecetion;
-
-
-                                        var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(b.UserID));
-                                        if (memberBid.Discriminator.Equals("Member"))
-                                            b.User = memberBid;
-                                        else if (memberBid.Discriminator.Equals("PromotedMember"))
-                                            b.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(b.UserID));
-                                        else
-                                        {
-                                            b.User = new User(); // bid was from guest
-                                            b.User.UserId = b.UserID;
-                                        }
-                                    }
-
-                                    memberExist.Bids = bidsFromDB;
-
-                                    // ********************************
-                                    // need to implment this and get all member notfication from DB
-                                    // : todo get all notification from database and update them in the user
-                                    memberExist.AwaitingNotification = new List<DomainLayer.Notification>();
+                                    result.ShoppingCart.Baskets.Add(basket);
                                 }
+
+                                // todo now get all bids
+                                List<Guid> bidsIds = JsonConvert.DeserializeObject<List<Guid>>(memberExist.BidsDB);
+                                List<Bid> bidsFromDB = db.bids.Where(b => bidsIds.Contains(b.BidId)).ToList();
+                                // now update all Bids Decetions
+                                foreach(Bid b in bidsFromDB)
+                                {
+                                    Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
+                                    var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(b.DecisionDB);
+                                    foreach (Guid userId in helperDecision.Keys)
+                                    {
+                                        var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
+                                        if (pmInDecition != null)
+                                        {
+                                            addDecetion.Add(pmInDecition, helperDecision[userId]);
+                                        }
+                                    }
+                                    b.Decisions = addDecetion;
+
+
+                                    var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                    if (memberBid.Discriminator.Equals("Member"))
+                                        b.User = memberBid;
+                                    else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                        b.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                    else
+                                    {
+                                        b.User = new User(); // bid was from guest
+                                        b.User.UserId = b.UserID;
+                                    }
+                                }
+
+                                memberExist.Bids = bidsFromDB;
+
+                                // ********************************
+                                // need to implment this and get all member notfication from DB
+                                // : todo get all notification from database and update them in the user
+                                memberExist.AwaitingNotification = new List<DomainLayer.Notification>();
+                               
                             }
                         }
                         catch (Exception ex)
@@ -846,6 +841,42 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public void MemberLogIn(Member member)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                            if (memberExist != null)
+                            {
+                                if (!memberExist.Discriminator.Equals("Member"))
+                                {
+                                    memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                                    memberExist.LoggedIn = true;
+                                    db.SaveChanges();
+                                }
+                                memberExist.LoggedIn = true;
+                                db.SaveChanges();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
         public void RemoveItem(Guid itemToRemove)
         {
             lock (this)
@@ -977,6 +1008,7 @@ namespace SadnaExpress.DataLayer
                             pm.DirectSupervisorDB = pm.DirectSupervisorJson;
                             pm.AppointDB = pm.AppointJson;
                             pm.BidsOffersDB = pm.BidsOffersJson;
+                            
                             promotedMembers.Update(pm);
                             db.SaveChanges(true);
                         }
