@@ -18,11 +18,11 @@ namespace SadnaExpress.DomainLayer.Store
         public string ReviewText {get=>reviewText; set => reviewText = value;}
 
         private Guid reviewerID;
-        public Guid ReviewerID {get=>reviewerID;}
+        public Guid ReviewerID {get=>reviewerID; set => reviewerID = value; }
         
         public Review(Guid reviewerID, Store store, Item item, string reviewText)
         {
-            this.ReviewID = Guid.NewGuid();
+            this.reviewerID = Guid.NewGuid();
             this.store = store;
             this.item = item;
             this.reviewText = reviewText;

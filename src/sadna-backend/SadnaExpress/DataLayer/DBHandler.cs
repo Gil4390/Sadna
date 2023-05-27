@@ -501,6 +501,34 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public void AddReview(Review review)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var reviews = db.Reviews;
+                            reviews.Add(review);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+
         public void UpgradeMemberToPromotedMember(PromotedMember pm)
         {
             lock (this)
@@ -621,6 +649,34 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public Review GetReviewById(Guid reviewID)
+        {
+            Review result = null;
+
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            result = db.Reviews.FirstOrDefault(m => m.ReviewID.Equals(reviewID));
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+                return result;
+            }
+        }
+
         public ConcurrentDictionary<Guid, Store> GetAllStores()
         {
             ConcurrentDictionary<Guid, Store> result = null;
@@ -686,6 +742,39 @@ namespace SadnaExpress.DataLayer
                             foreach (Store s in allStores)
                             {
                                 result.Add(s.StoreID);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+                return result;
+            }
+        }
+
+        public List<Guid> GetTSReviewsIds()
+        {
+            List<Guid> result = null;
+
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var allReviews = db.Reviews;
+                            result = new List<Guid>();
+                            foreach (Review review in allReviews)
+                            {
+                                result.Add(review.ReviewID);
                             }
                         }
                         catch (Exception ex)
