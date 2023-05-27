@@ -11,12 +11,12 @@ namespace SadnaExpress.DomainLayer.User
     public class InitializeSystem
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public bool IsInit { get; set; }
 
         public InitializeSystem()
         {
-            
+            Id = Guid.Empty;
         }
     }
 }
