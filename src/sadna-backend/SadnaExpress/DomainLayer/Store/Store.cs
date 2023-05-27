@@ -25,8 +25,13 @@ namespace SadnaExpress.DomainLayer.Store
         public bool Active { get => active; set => active = value; }
         
         private int storeRating;
+        public int StoreRating
+        {
+            get => storeRating;
+            set => storeRating = value;
+        }
 
-        
+
         private DiscountPolicyTree discountPolicyTree;
 
         [NotMapped] // todo
@@ -49,12 +54,7 @@ namespace SadnaExpress.DomainLayer.Store
         [NotMapped] // todo
         public List<Condition> PurchasePolicyList { get => purchasePolicyList; set => purchasePolicyList = value;}
 
-        public int StoreRating
-        {
-            get => storeRating;
-            set => StoreRating = value;
-        }
-
+       
         public Store()
         {
             itemsInventory = new Inventory();
