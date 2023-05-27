@@ -32,7 +32,8 @@ namespace SadnaExpress
             if(ApplicationOptions.StartWithCleanDB)
                 DBHandler.Instance.CleanDB();
 
-            TradingSystem.Instance.LoadData();
+            if (ApplicationOptions.RunLoadData)
+                TradingSystem.Instance.LoadData();
 
             //start the api server
             ServerServiceHost serverServiceHost = new ServerServiceHost();
@@ -149,6 +150,16 @@ namespace SadnaExpress
                 }
             }
             
+            string RunLoadData = ConfigurationManager.AppSettings["RunLoadData"];
+            if (string.IsNullOrEmpty(RunLoadData) == false)
+            {
+                if (bool.TryParse(RunLoadData, out bool boolValue))
+                {
+                    ApplicationOptions.RunLoadData = boolValue;
+                }
+            }
+
+
         }
     }
 }

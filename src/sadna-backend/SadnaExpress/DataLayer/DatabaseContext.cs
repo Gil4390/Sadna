@@ -19,15 +19,11 @@ namespace SadnaExpress.DataLayer
         public DbSet<Order> orders { get; set; }
         public DbSet<ItemForOrder> ItemForOrders { get; set; }
         public DbSet<Member> members { get; set; }
-
         public DbSet<User> users { get; set; }
-
         public DbSet<PromotedMember> promotedMembers { get; set; }
-
         public DbSet<Macs> macs { get; set; }
         public DbSet<ShoppingCart> shoppingCarts { get; set; }
         public DbSet<ShoppingBasket> shoppingBaskets { get; set; }
-
         public DbSet<Bid> bids { get; set; }
 
         //public DbSet<Condition> conditions { get; set; }

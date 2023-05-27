@@ -969,32 +969,31 @@ namespace SadnaExpress.DomainLayer.User
             newMac = _ph.Mac();
             macs.TryAdd(systemManagerid, newMac);
             PromotedMember systemManager = new PromotedMember(systemManagerid, ApplicationOptions.SystemManagerEmail, ApplicationOptions.SystemManagerFirstName, ApplicationOptions.SystemManagerLastName, _ph.Hash(ApplicationOptions.SystemManagerPass + newMac));
+            DBHandler.Instance.AddMember(systemManager, macs[systemManagerid]);
             systemManager.createSystemManager();
 
             newMac = _ph.Mac();
             macs.TryAdd(storeOwnerid1, newMac);
             PromotedMember storeOwner1 = new PromotedMember(storeOwnerid1, "AsiAzar@gmail.com", "Asi", "Azar", _ph.Hash("A#!a12345678" + newMac));
+            DBHandler.Instance.AddMember(storeOwner1, macs[storeOwnerid1]);
             storeOwner1.createFounder(storeid1);
             founders.TryAdd(storeid1, storeOwner1);
 
             newMac = _ph.Mac();
-            macs.TryAdd(storeOwnerid3, newMac);
-            PromotedMember storeOwner3 = new PromotedMember(storeOwnerid3, "nogaschw@post.bgu.ac.il", "Asi", "Azar", _ph.Hash("A#!a12345678" + newMac));
-            storeOwner3.createFounder(storeid1);
-
-            newMac = _ph.Mac();
             macs.TryAdd(storeOwnerid2, newMac);
             PromotedMember storeOwner2 = new PromotedMember(storeOwnerid2, "dani@gmail.com", "dani", "dani", _ph.Hash("A#!a12345678" + newMac));
+            DBHandler.Instance.AddMember(storeOwner2, macs[storeOwnerid2]);
             storeOwner2.createFounder(storeid2);
 
             newMac = _ph.Mac();
             macs.TryAdd(storeManagerid1, newMac);
             Member storeManager1 = new Member(storeManagerid1, "kobi@gmail.com", "kobi", "kobi", _ph.Hash("A#!a12345678" + newMac));
+            DBHandler.Instance.AddMember(storeManager1, macs[storeManagerid1]);
 
             newMac = _ph.Mac();
             macs.TryAdd(storeManagerid2, newMac);
             Member storeManager2 = new Member(storeManagerid2, "Yael@gmail.com", "Yael", "Yael", _ph.Hash("A#!a12345678" + newMac));
-
+            DBHandler.Instance.AddMember(storeManager2, macs[storeManagerid2]);
 
             members.TryAdd(systemManagerid, systemManager);
             members.TryAdd(memberId, member);
@@ -1016,16 +1015,12 @@ namespace SadnaExpress.DomainLayer.User
             storeOwner2.LoggedIn = false;
 
             // add all values to database
-            DBHandler.Instance.AddMember(systemManager, macs[systemManagerid]);
             DBHandler.Instance.AddMember(member, macs[memberId]);
             DBHandler.Instance.AddMember(member2, macs[memberId2]);
             DBHandler.Instance.AddMember(member3, macs[memberId3]);
             DBHandler.Instance.AddMember(member4, macs[memberId4]);
             DBHandler.Instance.AddMember(member5, macs[memberId5]);
-            //DBHandler.Instance.AddMember(storeOwner2, macs[storeOwnerid2]);
-            // DBHandler.Instance.AddMember(storeOwner3, macs[storeOwnerid3]);
-            //DBHandler.Instance.AddMember(storeManager1, macs[storeManagerid1]);
-            // DBHandler.Instance.AddMember(storeManager2, macs[storeManagerid2]);
+
             //members[memberId].AwaitingNotification.Add(new Notification(DateTime.Now, Guid.Empty, "helooooo", memberId));
 
             NotificationSystem.Instance.RegisterObserver(storeid1, storeOwner1);

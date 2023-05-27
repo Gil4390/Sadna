@@ -38,5 +38,7 @@ namespace SadnaExpress
 
         public static bool StartWithCleanDB = false;
 
+        public static bool RunLoadData = false;
+
     }
 }
