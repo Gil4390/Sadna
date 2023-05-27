@@ -15,7 +15,7 @@ namespace SadnaExpress.DomainLayer.User
         void Exit(Guid userID);
         void Register(Guid userID, string email, string firstName, string lastLame, string password);
         Guid Login(Guid userID, string email, string password);
-        Guid Logout(Guid userID);
+        Guid Logout(Guid userID, bool exited = false);
         void AddItemToCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount);
         void RemoveItemFromCart(Guid userID,Guid storeID, Guid itemID);
         void EditItemFromCart(Guid userID,Guid storeID, Guid itemID,  int itemAmount);

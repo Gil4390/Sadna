@@ -15,17 +15,21 @@ namespace SadnaExpress.DomainLayer.User
     {
         protected string email;
         public string Email {get => email; set => email = value;}
+
         protected string firstName;
         public string FirstName { get => firstName; set => firstName = value;}
             
         protected string lastName;
         public string LastName { get => lastName; set => lastName = value;}
+
         protected string password;
         public string Password { get => password; set => password = value; }
+
         public List<Notification> AwaitingNotification { get => awaitingNotification; set => awaitingNotification = value; }
 
         private bool loggedIn;
         public bool LoggedIn { get => loggedIn; set => loggedIn = value; }
+
         [NotMapped]
         public Dictionary<string , string> securityQuestions { get; set; }
         public string SecurityQuestionsDB
@@ -33,6 +37,7 @@ namespace SadnaExpress.DomainLayer.User
             get => JsonConvert.SerializeObject(securityQuestions);
             set => securityQuestions = JsonConvert.DeserializeObject<Dictionary<string, string>>(value);
         }
+
         // todo in database
         public List<Notification> awaitingNotification { get; set; }
 

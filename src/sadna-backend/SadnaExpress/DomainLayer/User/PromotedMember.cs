@@ -228,7 +228,7 @@ namespace SadnaExpress.DomainLayer.User
             permissionsList.Add("system manager permissions");
             permissions.TryAdd(Guid.Empty, new List<string> {"system manager permissions"});
             //here
-            DBHandler.Instance.UpdatePromotedMember(this);
+            DBHandler.Instance.UpgradeMemberToPromotedMember(this);
 
         }
         public void addAppoint(Guid storeID, PromotedMember member)
