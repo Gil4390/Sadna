@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using Microsoft.Win32;
 using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer;
@@ -52,12 +53,31 @@ namespace SadnaExpress.ServiceLayer
             IStoreFacade storeFacade = new StoreFacade();
             storeManager = new StoreManager(userFacade, storeFacade);
             userManager = new UserManager(userFacade);
+
+            Setup();
         }
         
         public TradingSystem(IUserFacade userFacade, IStoreFacade storeFacade)
         {
             storeManager = new StoreManager(userFacade, storeFacade);
             userManager = new UserManager(userFacade);
+
+            Setup();
+        }
+
+        public void Setup()
+        {
+            //load is system init
+            bool isInit = DBHandler.Instance.LoadSystemInit();
+            storeManager.SetIsSystemInitialize(isInit);
+            userManager.SetIsSystemInitialize(isInit);
+
+            // load all orders from db
+
+            //load NotificationSystemList of store owners
+
+            //load founder list in userfacade ??
+
         }
 
         public static TradingSystem Instance
@@ -79,6 +99,7 @@ namespace SadnaExpress.ServiceLayer
         {
             userManager.SetIsSystemInitialize(isInitialize);
             storeManager.SetIsSystemInitialize(isInitialize);
+            DBHandler.Instance.SetSystemInit(isInitialize);
         }
 
         public int GetMaximumWaitServiceTime()
@@ -115,7 +136,7 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Info("User id: " + userID + " requested to initialize trading system");
                 ResponseT<bool> responseT= userManager.InitializeTradingSystem(userID);
                 if (responseT.Value)
-                    storeManager.SetIsSystemInitialize(true);
+                    SetIsSystemInitialize(true);
                 return responseT;
             }
             catch (Exception ex)
@@ -552,6 +573,8 @@ namespace SadnaExpress.ServiceLayer
         
         public void LoadData()
         {
+            SetIsSystemInitialize(true);
+
             Guid systemManagerid = Enter().Value;
             Guid memberId = Enter().Value;
             Guid memberId2 = Enter().Value;
@@ -616,6 +639,8 @@ namespace SadnaExpress.ServiceLayer
             Exit(storeManagerid1);
             Exit(storeOwnerid2);
             Exit(storeManagerid2);
+
+            SetIsSystemInitialize(false);
         }
 
         public ResponseT<bool> IsAdmin(Guid userID)

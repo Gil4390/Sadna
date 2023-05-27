@@ -25,6 +25,7 @@ namespace SadnaExpress.DataLayer
         public DbSet<ShoppingCart> shoppingCarts { get; set; }
         public DbSet<ShoppingBasket> shoppingBaskets { get; set; }
         public DbSet<Bid> bids { get; set; }
+        public DbSet<InitializeSystem> initializeSystems { get; set; }
 
         //public DbSet<Condition> conditions { get; set; }
 
