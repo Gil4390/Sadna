@@ -6,6 +6,7 @@ using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -304,6 +305,21 @@ namespace SadnaExpress.DomainLayer.Store
             }
         }
 
+        public void updateReviewsFromDB()
+        {
+            List<Guid> reviewsIds = DBHandler.Instance.GetTSReviewsIds();
+
+            foreach (Guid reviewId in reviewsIds)
+            {
+                var review = reviews.FirstOrDefault(rev => rev.ReviewID.Equals(reviewId));
+                if(review == null)
+                {
+                    //pull from db
+                    reviews.Add(DBHandler.Instance.GetReviewById(reviewId));
+                }
+            }
+        }
+
         public void CleanUp()
         {
            stores.Clear();
@@ -353,7 +369,9 @@ namespace SadnaExpress.DomainLayer.Store
                         foundUserOrder = true;
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
-            reviews.Add(new Review(userID, stores[storeID], store.GetItemById(itemID), reviewText));
+            Review review = new Review(userID, stores[storeID], store.GetItemById(itemID), reviewText);
+            reviews.Add(review);
+            DBHandler.Instance.AddReview(review);
             NotificationSystem.Instance.NotifyObservers(storeID, "User just added a review on item "+ store.GetItemById(itemID).Name+" at store "+ store.StoreName, userID);
             Logger.Instance.Info(userID, nameof(StoreFacade)+": "+nameof(WriteItemReview) + userID +" write review to store "+storeID+" on "+itemID+"- "+ reviewText);
         }
@@ -362,6 +380,7 @@ namespace SadnaExpress.DomainLayer.Store
             Guid storeID = GetItemStoreId(itemID);
             Store store = stores[storeID];
             List<Review> reviewsOfItem = new List<Review>();
+            updateReviewsFromDB();
             foreach (Review review in reviews)
                 if (review.Store == store && review.Item == store.GetItemById(itemID))
                     reviewsOfItem.Add(review);
@@ -484,6 +503,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public Guid GetItemStoreId(Guid itemid)
         {
+            updateStoresFromDB();
             foreach (Store store in stores.Values)
             {
                 if (store.ItemExist(itemid))

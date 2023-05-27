@@ -5,12 +5,25 @@ namespace SadnaExpress.DomainLayer
 {
     public class Notification
     {
+        
         private Guid notificationID;
+        [Key]
+        public Guid NotificationID { get => notificationID; set => notificationID = value; }
+
         private DateTime time;
+        public DateTime Time { get => time; set => time = value; }
+
         private Guid sentFrom;
+        public Guid SentFrom { get => sentFrom; set => sentFrom = value; }
+
         private string message;
+        public string Message { get => message; set => message = value; }
+
         private Guid sentTo;
+        public Guid SentTo { get => sentTo; set => sentTo = value; }
+
         private bool read;
+        public bool Read { get => read; set => read = value; }
 
         public Notification(DateTime time, Guid sentFrom, string message, Guid sentTo)
         {
@@ -32,31 +45,8 @@ namespace SadnaExpress.DomainLayer
             this.Read = false;
         }
 
-        public Guid SentTo
+        public Notification()
         {
-            get => sentTo;
-            set => sentTo = value;
         }
-
-        public string Message
-        {
-            get => message;
-            set => message = value;
-        }
-
-        public Guid SentFrom
-        {
-            get => sentFrom;
-            set => sentFrom = value;
-        }
-
-        public DateTime Time
-        {
-            get => time;
-            set => time = value;
-        }
-        [Key]
-        public Guid NotificationID { get => notificationID; set => notificationID = value; }
-        public bool Read { get => read; set => read = value; }
     }
 }
