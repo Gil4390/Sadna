@@ -177,13 +177,13 @@ namespace SadnaExpress.API.Controllers
             return Ok(tradingSystem.SetSecurityQA(request.userID, request.field, request.field2));
         }
         
-        [Route(APIConstants.MemberData.getStores)]
-        [ResponseType(typeof(ResponseT<List<Store>>))]
-        [HttpPost]
-        public IHttpActionResult GetStores([FromBody] ClientRequest request)
-        {
-            return Ok(tradingSystem.GetStores());
-        }
+        //[Route(APIConstants.MemberData.getStores)]
+        //[ResponseType(typeof(ResponseT<List<Store>>))]
+        //[HttpPost]
+        //public IHttpActionResult GetStores([FromBody] ClientRequest request)
+        //{
+        //    return Ok(tradingSystem.GetStores());
+        //}
         
         [Route(APIConstants.MemberData.getStoreOwners)]
         [ResponseType(typeof(ResponseT<List<Member>>))]

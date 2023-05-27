@@ -586,10 +586,30 @@ namespace SadnaExpress.DataLayer
                         try
                         {
                             result = db.Stores.FirstOrDefault(m => m.StoreID.Equals(storeID));
+                            var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(result.StoreID));
+
+                            if (inv != null)
+                            {
+                                result.itemsInventory = inv;
+                                string quanity_ItemsDB = inv.Items_quantityDB;
+                                
+                                if (quanity_ItemsDB != null) // add quantity item for store
+                                {
+                                    ConcurrentDictionary<Guid, int> items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(quanity_ItemsDB);
+
+                                    foreach (Guid id in items_quantityHelper.Keys)
+                                    {
+                                        Item item = db.Items.FirstOrDefault(m => m.ItemID.Equals(id));
+                                        
+                                        result.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
+                                    }
+                                }
+                            }
+                           
                         }
                         catch (Exception ex)
                         {
-                            //throw new Exception("failed to interact with stores table");
+                           throw new Exception("failed to interact with stores table");
                         }
                     }
                 }
@@ -638,6 +658,39 @@ namespace SadnaExpress.DataLayer
                         catch (Exception ex)
                         {
                             //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+                return result;
+            }
+        }
+
+        public List<Guid> GetTSStoreIds()
+        {
+            List<Guid> result = null;
+
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var allStores = db.Stores;
+                            result = new List<Guid>();
+                            foreach (Store s in allStores)
+                            {
+                                result.Add(s.StoreID);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
                         }
                     }
                 }
@@ -794,7 +847,7 @@ namespace SadnaExpress.DataLayer
                         }
                         catch (Exception ex)
                         {
-                            //throw new Exception("failed to interact with stores table");
+                            throw new Exception("failed to interact with stores table");
                         }
                     }
                 }
@@ -1076,6 +1129,7 @@ namespace SadnaExpress.DataLayer
                             {
                                 // no change in inventory so continue
                             }
+
                             var itemFound = db.Items.FirstOrDefault(it => it.ItemID.Equals(itemID));
                             if(itemFound!=null)
                             {
