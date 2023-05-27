@@ -44,7 +44,7 @@ namespace SadnaExpress.DomainLayer.User
             macs = new ConcurrentDictionary<Guid, string>();
             this.paymentService = paymentService;
             this.supplierService = supplierService;
-            _isTSInitialized = ApplicationOptions.InitTradingSystem;
+            _isTSInitialized = false;
         }
 
         public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members,ConcurrentDictionary<Guid, PromotedMember> founders, ConcurrentDictionary<Guid, string> macs, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
@@ -663,13 +663,18 @@ namespace SadnaExpress.DomainLayer.User
 
             if (_isTSInitialized)
                 throw new Exception("Trading system is already initialized");
-
-            bool servicesConnected = paymentService.Handshake()=="OK" && supplierService.Handshake();
+            bool servicesConnected = false;
+            try //fort tal
+            {
+                servicesConnected = paymentService.Handshake() == "OK" && supplierService.Handshake();
+            }
+            catch(Exception e) { }
 
             if(servicesConnected)
                 _isTSInitialized = true;
             else
                 throw new Exception("Trading system cannot be initialized");
+
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(InitializeTradingSystem)+"System Initialized");
             return servicesConnected; 
         }
@@ -960,6 +965,7 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             PromotedMember systemManager = members[userID].promoteToMember();
             systemManager.createSystemManager();
+            members[userID] = systemManager;
             //systemManager.LoggedIn = true;
         }
 

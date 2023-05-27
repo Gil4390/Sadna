@@ -22,7 +22,7 @@ namespace SadnaExpress.DomainLayer.Store
             stores = new ConcurrentDictionary<Guid, Store>();
             reviews = new ConcurrentBag<Review>();
             _orders = Orders.Instance;
-            _isTSInitialized = ApplicationOptions.InitTradingSystem;
+            _isTSInitialized = false;
         }
 
         public StoreFacade(ConcurrentDictionary<Guid, Store> stores)
@@ -30,7 +30,7 @@ namespace SadnaExpress.DomainLayer.Store
             this.stores = stores;
             reviews = new ConcurrentBag<Review>();
             _orders = Orders.Instance;
-            _isTSInitialized = ApplicationOptions.InitTradingSystem;
+            _isTSInitialized = false;
         }
 
         public Guid OpenNewStore(string storeName)

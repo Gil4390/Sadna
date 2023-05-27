@@ -17,6 +17,7 @@ using Item = SadnaExpress.DomainLayer.Store.Item;
 using SadnaExpress.ServiceLayer.SModels;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
 using System.Diagnostics;
+using SadnaExpress.ServiceLayer.Obj;
 
 namespace SadnaExpress.DataLayer
 {
@@ -74,6 +75,7 @@ namespace SadnaExpress.DataLayer
                             db.Inventories.RemoveRange(db.Inventories);
                             db.Items.RemoveRange(db.Items);
                             db.bids.RemoveRange(db.bids);
+                            db.initializeSystems.RemoveRange(db.initializeSystems);
 
 
                             db.SaveChanges(true);
@@ -90,8 +92,6 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-
-        // user / member / promotedmember database functions
         
         public bool memberExistsByEmail(string email)
         {
@@ -174,48 +174,6 @@ namespace SadnaExpress.DataLayer
 
                             newMember.BidsDB = newMember.BidsJson;
                             memberss.Add(newMember);
-
-                            db.SaveChanges(true);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with members table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to Connect With Database");
-                }
-            }
-        }
-
-        public void LoadData(PromotedMember newMember, string newMac)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-
-                            var memberss = db.promotedMembers;
-                            newMember.ShoppingCart.UserId = newMember.UserId; // update shopping cart id
-                            foreach (ShoppingBasket sb in newMember.ShoppingCart.Baskets)
-                            {
-                                sb.ShoppingCartId = newMember.ShoppingCart.ShoppingCartId;
-                            }
-                            memberss.Add(newMember);
-                            var macs = db.macs;
-                            macs.Add(new Macs { id = newMember.UserId, mac = newMac });
-
-                            var shoppingCarts = db.shoppingCarts;
-
-                            newMember.AppointDB = newMember.AppointJson;
-                            newMember.DirectSupervisorDB = newMember.DirectSupervisorJson;
-
 
                             db.SaveChanges(true);
                         }
@@ -440,7 +398,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        // store Database Functions
         public bool IsStoreNameExist(string storeName)
         {
             bool result = false;
@@ -527,7 +484,6 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-
 
         public void UpgradeMemberToPromotedMember(PromotedMember pm)
         {
@@ -859,7 +815,7 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        internal void AddItem(DomainLayer.Store.Item newItem)
+        internal void AddItem(Item newItem)
         {
             lock (this)
             {
@@ -1600,6 +1556,79 @@ namespace SadnaExpress.DataLayer
                         catch (Exception ex)
                         {
                             //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+            }
+        }
+
+        public bool LoadSystemInit()
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var init = db.initializeSystems.ToList();
+                           
+                            if(init!=null && init.Count == 0)
+                            {
+                                InitializeSystem initializeSystem = new InitializeSystem();
+                                initializeSystem.IsInit = ApplicationOptions.InitTradingSystem;
+                                db.initializeSystems.Add(initializeSystem);
+                                db.SaveChanges(true);
+
+                                return initializeSystem.IsInit;
+                            }
+
+                            foreach (InitializeSystem initSys in init)
+                            {
+                                return initSys.IsInit;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+                return false;
+         
+            }
+
+        }
+
+        public void SetSystemInit(bool isInit)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            db.initializeSystems.RemoveRange(db.initializeSystems);
+                            InitializeSystem initializeSystem = new InitializeSystem();
+                            initializeSystem.IsInit = isInit;
+                            db.initializeSystems.Add(initializeSystem);
+                            db.SaveChanges(true);                           
+                        }
+
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
                         }
                     }
                 }
