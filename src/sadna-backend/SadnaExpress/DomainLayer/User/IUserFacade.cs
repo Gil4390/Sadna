@@ -70,5 +70,7 @@ namespace SadnaExpress.DomainLayer.User
         string Handshake();
         void NotifyBuyerPurchase(Guid userID);
         void UpdateCurrentMemberFromDb(Guid userID);
+        
+        void CreateSystemManager(Guid userID);
     }
 }

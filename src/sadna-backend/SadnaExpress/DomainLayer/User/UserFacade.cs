@@ -925,6 +925,14 @@ namespace SadnaExpress.DomainLayer.User
             if (members.ContainsKey(userID))
                 members[userID].Update(new Notification(DateTime.Now, userID, purchaseNotificationForBuyer, userID));
         }
+        
+        public void CreateSystemManager(Guid userID)
+        {
+            isLoggedIn(userID);
+            PromotedMember systemManager = members[userID].promoteToMember();
+            systemManager.createSystemManager();
+            systemManager.LoggedIn = true;
+        }
 
         public void LoadData(Guid storeid1, Guid storeid2)
         {

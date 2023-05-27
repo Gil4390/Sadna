@@ -493,5 +493,10 @@ namespace SadnaExpress.ServiceLayer
             }
             
         }
+
+        public void CreateSystemManager(Guid userID)
+        {
+            userFacade.CreateSystemManager(userID);
+        }
     }
 }
