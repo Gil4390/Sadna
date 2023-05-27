@@ -702,7 +702,7 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void UpdateStore(Store store)
+        public void UpdateStore(Store editedStore)
         {
             lock (this)
             {
@@ -712,21 +712,15 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
-                            var storeFound = db.Stores.FirstOrDefault(m => m.StoreID.Equals(store.StoreID));
-
-                            var invetories = db.Inventories;
-                            var inventoryFound = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(storeFound.StoreID));
-                            invetories.Remove(inventoryFound);
-                            db.SaveChanges(true);
-
-                            var stores = db.Stores;
-                            stores.Remove(storeFound);
-                            db.SaveChanges(true);
-
-                            store.itemsInventory.Items_quantityDB = store.itemsInventory.Items_quantityJson;
-                            stores.Add(store);
-                            db.SaveChanges(true);
-
+                            var storeExist = db.Stores.FirstOrDefault((m => m.StoreID.Equals(editedStore.StoreID)));
+                            if (storeExist != null)
+                            {
+                                storeExist.StoreName = editedStore.StoreName;
+                                storeExist.Active = editedStore.Active;
+                                storeExist.StoreRating = editedStore.StoreRating;
+                                db.Stores.Update(storeExist);
+                                db.SaveChanges(true);
+                            }
                         }
                         catch (Exception ex)
                         {

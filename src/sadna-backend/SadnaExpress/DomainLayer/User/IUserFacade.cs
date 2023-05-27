@@ -60,7 +60,6 @@ namespace SadnaExpress.DomainLayer.User
         List<Bid> GetBidsInStore(Guid userID, Guid storeID);
         void ReactToBid(Guid userID, Guid storeID, string itemName, string bidResponse);
         bool IsSystemInitialize();
-        void LoadData(Guid storeid1,Guid storeid2);
         int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
         public bool IsUserAdmin(Guid userID);
         string GetUserEmail(Guid userID);

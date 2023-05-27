@@ -57,7 +57,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response AddPolicy(Guid userID,Guid store, int discountPolicy);
         Response RemovePolicy(Guid userID,Guid store, int discountPolicy , string type);
         ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID);
-        void LoadData();
         Guid GetItemStoreId(Guid Itemid);
         ResponseT<List<SItem>> GetCartItems(Guid userID);
         ResponseT<int> GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
@@ -66,6 +65,5 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<SStore> GetStoreInfo(Guid userID,Guid storeId);
         double GetItemAfterDiscount(Guid itemStoreid, Item item);
         Response CheckPurchaseConditions(Guid userId);
-        void LoadStoresFromDB();
     }
 }

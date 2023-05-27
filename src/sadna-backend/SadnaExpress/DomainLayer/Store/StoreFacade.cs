@@ -65,6 +65,7 @@ namespace SadnaExpress.DomainLayer.Store
                 if (!stores[storeID].Active)
                     throw new Exception("Store already closed");
                 stores[storeID].Active = false;
+                DBHandler.Instance.UpdateStore(stores[storeID]);
             }
             
             Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(CloseStore)+"store " + stores[storeID].StoreName + " closed.");
@@ -479,35 +480,6 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsStoreExist(store);
             return GetStore(store).GetAllConditions();
-        }
-
-        public void LoadData(Store store1, Store store2)
-        {
-            Guid i1 = store1.AddItem("Tshirt", "clothes", 99.8, 40);
-            Guid i2 = store1.AddItem("Ipad", "electronic", 99.8, 2);
-            store1.AddItem("Dress", "clothes", 70, 45);
-
-            store2.AddItem("Pants", "clothes", 150, 200);
-            store2.AddItem("Towel", "Home", 40, 450);
-            store2.AddItem("Teddy bear toy", "children toys", 65, 120);
-            store2.AddItem("mouse", "animals", 65, 0);
-
-            stores.TryAdd(store1.StoreID, store1);
-            stores.TryAdd(store2.StoreID, store2);
-            
-            Condition cond1 = store1.AddCondition("Item", "Tshirt", "min quantity", 2,DateTime.MaxValue);
-            Condition cond2 = store1.AddCondition("Item", "Ipad", "min value", 1 ,DateTime.MaxValue);
- 
-            DiscountPolicy policy1 = store1.CreateSimplePolicy("StoreZara", 50, DateTime.Now, new DateTime(2024, 5, 20));
-            Condition cond3 = store1.AddCondition("Item", "Tshirt", "min quantity", 2);
-            DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
-
-            DiscountPolicy policy3 = store1.CreateSimplePolicy("StoreZara", 10, DateTime.Now, new DateTime(2024, 5, 20));
-
-            store1.AddPolicy(policy3.ID);
-
-            DBHandler.Instance.UpdateStore(store1);
-            DBHandler.Instance.UpdateStore(store2);
         }
 
         public Guid GetItemStoreId(Guid itemid)

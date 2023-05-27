@@ -648,25 +648,6 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<double>(ex.Message);
             }
         }
-        
-        public void LoadData()
-        {
-            Store store1 = new Store("Zara");
-            Guid storeid1 = store1.StoreID;
-            
-            Store store2 = new Store("Fox");
-            Guid storeid2 = store2.StoreID;
-
-            if (!DBHandler.Instance.IsStoreNameExist("Zara"))
-            {
-                DBHandler.Instance.AddStore(store1);
-                DBHandler.Instance.AddStore(store2);
-
-
-                storeFacade.LoadData(store1, store2);
-                userFacade.LoadData(storeid1, storeid2);
-            }
-        }
 
         public Guid GetItemStoreId(Guid itemid)
         {
@@ -753,11 +734,6 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CheckPurchaseConditions) + ": " + ex.Message);
                 return new Response(ex.Message);
             }
-        }
-
-        public void LoadStoresFromDB()
-        {
-            storeFacade.LoadStoresFromDB();
         }
     }
 }

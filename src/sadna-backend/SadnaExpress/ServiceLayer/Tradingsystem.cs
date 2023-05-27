@@ -556,7 +556,6 @@ namespace SadnaExpress.ServiceLayer
         
         public void LoadData()
         {
-            //storeManager.LoadData();
             Guid systemManagerid = Enter().Value;
             Guid memberId = Enter().Value;
             Guid memberId2 = Enter().Value;
