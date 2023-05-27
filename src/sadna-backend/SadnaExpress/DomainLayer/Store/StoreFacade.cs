@@ -272,7 +272,8 @@ namespace SadnaExpress.DomainLayer.Store
         public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
             IsTsInitialized();
-            List<Item> allItems = new List<Item>(); 
+            List<Item> allItems = new List<Item>();
+            updateStoresFromDB();
             foreach (Store store in stores.Values)
             {
                 lock (store)
@@ -287,6 +288,21 @@ namespace SadnaExpress.DomainLayer.Store
             Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByKeysWord));
             return allItems;
         }
+
+        public void updateStoresFromDB()
+        {
+            List<Guid> storeIds= DBHandler.Instance.GetTSStoreIds();
+
+            foreach(Guid storeId in storeIds)
+            {
+                if (stores.ContainsKey(storeId) == false)
+                {
+                    //pull from db
+                    stores.TryAdd(storeId,DBHandler.Instance.GetStoreById(storeId));
+                }
+            }
+        }
+
         public void CleanUp()
         {
            stores.Clear();
@@ -315,6 +331,8 @@ namespace SadnaExpress.DomainLayer.Store
 
         private void IsStoreExist(Guid storeID)
         {
+            if (!stores.ContainsKey(storeID))
+                updateStoresFromDB();
             if (!stores.ContainsKey(storeID))
                 throw new Exception("Store with this id does not exist");
         }
@@ -420,7 +438,6 @@ namespace SadnaExpress.DomainLayer.Store
             DBHandler.Instance.UpdateItemAfterEdit(stores[storeID], itemID, itemName, itemCategory, itemPrice);
             
             Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItem)+" edited item from store "+ storeID + "- "+storeID );
-
         }
 
         public List<Item> GetItemsInStore(Guid storeId)

@@ -424,60 +424,62 @@ export function handleGetUsers(userID, q , a ) {
         return Promise.resolve(data)
     })
 }
-export function handleGetStores( ) {
-    let url = "http://localhost:8080/api/member/get-stores";
+// export function handleGetStores( ) {
+//     let url = "http://localhost:8080/api/member/get-stores";
 
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
+//     return fetch(url, {
+//         method: 'POST',
+//         mode: 'cors',
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//         })
+//     }).then(async response => {
+//         const data = await response.json();
+//         if (!response.ok) {
+//             return Promise.reject(data.error);
+//         }
+//         return Promise.resolve(data)
+//     })
+// }
 //All employees that is store owners
-export function handleGetStoresOwners( ) {
-    let url = "http://localhost:8080/api/member/get-stores-owners";
 
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
+// export function handleGetStoresOwners( ) {
+//     let url = "http://localhost:8080/api/member/get-stores-owners";
+
+//     return fetch(url, {
+//         method: 'POST',
+//         mode: 'cors',
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//         })
+//     }).then(async response => {
+//         const data = await response.json();
+//         if (!response.ok) {
+//             return Promise.reject(data.error);
+//         }
+//         return Promise.resolve(data)
+//     })
+// }
+
 //All employees that is store owners in specific store
-export function handleGetStoresOwnersSpecificStore(storeID) {
-    let url = "http://localhost:8080/api/member/get-stores-owner";
+// export function handleGetStoresOwnersSpecificStore(storeID) {
+//     let url = "http://localhost:8080/api/member/get-stores-owner";
 
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            storeID:storeID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
+//     return fetch(url, {
+//         method: 'POST',
+//         mode: 'cors',
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//             storeID:storeID,
+//         })
+//     }).then(async response => {
+//         const data = await response.json();
+//         if (!response.ok) {
+//             return Promise.reject(data.error);
+//         }
+//         return Promise.resolve(data)
+//     })
+// }
 
 export function handleGetUserNotifications(UserID) {
     let url = "http://localhost:8080/api/member/get-notifications";
