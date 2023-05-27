@@ -373,10 +373,6 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.DeleteStore(userID, storeID);
         }
 
-        public Response DeleteMember(Guid userID1, Guid userID2)
-        {
-            throw new NotImplementedException();
-        }
         public ResponseT<Guid> UpdateFirst(Guid userID, string newFirst)
         {
             return userManager.UpdateFirst(userID, newFirst);

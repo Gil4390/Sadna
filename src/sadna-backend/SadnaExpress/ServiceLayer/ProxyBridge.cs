@@ -189,11 +189,6 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.DeleteStore(id, storeID);
         }
 
-        public Response DeleteMember(Guid id, Guid userID)
-        {
-            return _realBridge.DeleteMember(id, userID);
-        }
-
         public ResponseT<Guid> UpdateFirst(Guid id, string newFirst)
         {
             throw new NotImplementedException();
