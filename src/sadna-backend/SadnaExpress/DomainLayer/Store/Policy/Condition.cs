@@ -318,9 +318,16 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             switch (beforeAfter)
             {
                 case "before":
-                    return timing.Hour > DateTime.Now.Hour;
+                    if (timing.Hour > DateTime.Now.Hour)
+                        return true;
+                    message = $"The time of the purchase must be before {timing.Hour} , but it's {DateTime.Now.Hour}";
+                    return false;
+                
                 case "after":
-                    return timing.Hour <= DateTime.Now.Hour;
+                    if(timing.Hour <= DateTime.Now.Hour)
+                        return true;
+                    message = $"The time of the purchase must be after {timing.Hour} , but it's {DateTime.Now.Hour}";
+                    return false;
                 default:
                     throw new Exception("Need to be one of this operators");
             }
