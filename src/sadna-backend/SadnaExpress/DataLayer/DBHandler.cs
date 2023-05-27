@@ -1525,6 +1525,33 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public List<PromotedMember> GetAllEmployees()
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var allMembers = db.promotedMembers; 
+                            return allMembers.ToList();
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to Connect With Database");
+                }
+                return null;
+            }
+        }
+        
         public void DowngradePromotedMemberToReg(Member pm)
         {
             lock (this)

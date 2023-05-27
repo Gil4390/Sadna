@@ -76,7 +76,7 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
         
-        public PromotedMember promoteToMember() {
+        public virtual PromotedMember promoteToMember() {
             return new PromotedMember(UserId, email, firstName, lastName, password, shoppingCart, loggedIn);
         }
         public virtual PromotedMember openNewStore(Guid storeID)

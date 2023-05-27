@@ -54,8 +54,6 @@ namespace SadnaExpress.DomainLayer.User
             
             if(!storeOwner.getDirectManager(storeID).Email.ToLower().Equals(directOwner.Email.ToLower()))
                 throw new Exception($"{directOwner.Email} isn't the direct owner of {storeOwner.Email}");
-            //if(storeOwner.getDirectManager(storeID) != directOwner) // check by email it is better with database
-            //    throw new Exception($"{directOwner.Email} isn't the direct owner of {storeOwner.Email}");
 
             // remove the appoints
             Stack<PromotedMember> stack = new Stack<PromotedMember>();
@@ -80,6 +78,10 @@ namespace SadnaExpress.DomainLayer.User
                     var newMember = new Member(current);
                     regMembers.Add(newMember);
                     DBHandler.Instance.DowngradePromotedMemberToReg(newMember);
+                }
+                else
+                {
+                    DBHandler.Instance.UpdatePromotedMember(current);
                 }
             }
             //remove the owner from appoint
@@ -129,9 +131,21 @@ namespace SadnaExpress.DomainLayer.User
             }
             PromotedMember promanager = (PromotedMember)manager;
             promanager.removePermission(storeID, permission);
+            if (promanager.Permission[storeID].Count == 0)
+            {
+                List<string> output = new List<string>();
+                promanager.Permission.TryRemove(storeID, out output);
+                directManager.removeAppoint(storeID, promanager);
+                PromotedMember promotedMember;
+                List<PromotedMember> promotedMemberL;
+                promanager.DirectSupervisor.TryRemove(storeID, out promotedMember);
+                promanager.Appoint.TryRemove(storeID, out promotedMemberL);
+                DBHandler.Instance.UpdatePromotedMember(promanager);
+            }
             if (promanager.Permission.Count == 0)
             {
-                directManager.removeAppoint(storeID, promanager);
+                Member newMember = new Member(promanager);
+                DBHandler.Instance.DowngradePromotedMemberToReg(newMember);
                 return new Member(promanager);
             }
             return null;
