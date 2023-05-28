@@ -129,7 +129,7 @@ namespace SadnaExpressTests.Integration_Tests
         {
             //Arrange
             Mocks.Mock_Orders mock_Orders = new Mocks.Mock_Orders();
-            mock_Orders.AddOrderToUser(userID, new Order(new List<ItemForOrder> { new ItemForOrder(trading.GetItemByID(storeID1,itemID1).Value, storeID1, "RotemSela@gmail.com" ,"Zara") }));
+            mock_Orders.AddOrderToUser(userID, new Order(new List<ItemForOrder> { new ItemForOrder(trading.GetItemByID(storeID1,itemID1).Value, storeID1, "RotemSela@gmail.com" ,"Zara") }, userID));
             trading.SetTSOrders(mock_Orders);
 
             //Act
@@ -170,7 +170,7 @@ namespace SadnaExpressTests.Integration_Tests
         {
             //Arrange
             Mocks.Mock_Orders mock_Orders = new Mocks.Mock_Orders();
-            mock_Orders.AddOrderToUser(userID, new Order(new List<ItemForOrder> { new ItemForOrder(trading.GetItemByID(storeID1, itemID1).Value, storeID1, "RotemSela@gmail.com" ,"Zara") }));
+            mock_Orders.AddOrderToUser(userID, new Order(new List<ItemForOrder> { new ItemForOrder(trading.GetItemByID(storeID1, itemID1).Value, storeID1, "RotemSela@gmail.com" ,"Zara") }, userID));
             trading.SetTSOrders(mock_Orders);
 
             //Act

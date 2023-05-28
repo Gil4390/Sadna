@@ -13,6 +13,7 @@ namespace SadnaExpress.DomainLayer.Store
     {
         [Key]
         public Guid OrderID { get; set; }
+
         private List<ItemForOrder> listItems;
 
         [NotMapped]
@@ -35,6 +36,10 @@ namespace SadnaExpress.DomainLayer.Store
 
         public string ListItemsDB { get; set; }
 
+        private Guid userID;
+
+        public Guid UserID { get=> userID; set=> userID = value; }
+
 
         public Order()
         {
@@ -46,13 +51,15 @@ namespace SadnaExpress.DomainLayer.Store
         public DateTime OrderTime { get => orderTime; set => orderTime = value; }
 
 
-        public Order(List<ItemForOrder> listItems)
+        public Order(List<ItemForOrder> listItems, Guid userId)
         {
             this.listItems = listItems;
 
             OrderID = Guid.NewGuid();
 
             orderTime = DateTime.Now;
+
+            UserID = userId;
 
         }
 

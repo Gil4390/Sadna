@@ -333,7 +333,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Mock_Orders mock_Orders = new Mock_Orders();
-            mock_Orders.AddOrderToUser(memberId, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value,storeid1, "RotemSela@gmail.com" ,"Zara")}));
+            mock_Orders.AddOrderToUser(memberId, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value,storeid1, "RotemSela@gmail.com" ,"Zara")}, memberId));
             proxyBridge.SetTSOrders(mock_Orders);
 
             //Act
@@ -376,8 +376,8 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Mock_Orders mock_Orders = new Mock_Orders();
-            mock_Orders.AddOrderToUser(memberId, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1, "RotemSela@gmail.com" ,"Zara") }));
-            mock_Orders.AddOrderToUser(systemManagerid, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1, "RotemSela@gmail.com" ,"Zara") }));
+            mock_Orders.AddOrderToUser(memberId, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1, "RotemSela@gmail.com" ,"Zara") }, memberId));
+            mock_Orders.AddOrderToUser(systemManagerid, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1, "RotemSela@gmail.com" ,"Zara") },systemManagerid));
             proxyBridge.SetTSOrders(mock_Orders);
 
 

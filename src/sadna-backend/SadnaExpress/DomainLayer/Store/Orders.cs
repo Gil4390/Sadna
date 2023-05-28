@@ -44,9 +44,9 @@ namespace SadnaExpress.DomainLayer.Store
         }
         
          
-        public void AddOrder(Guid userID, List<ItemForOrder> itemForOrders)
+        public void AddOrder(Guid userID, List<ItemForOrder> itemForOrders, bool AddToDB=true)
         {
-            Order userOrder = new Order(itemForOrders);
+            Order userOrder = new Order(itemForOrders, userID);
             AddOrderToUser(userID, userOrder);
 
             Dictionary<Guid, List<ItemForOrder>> ordersForStores = new Dictionary<Guid, List<ItemForOrder>>();
@@ -59,11 +59,12 @@ namespace SadnaExpress.DomainLayer.Store
 
             foreach (Guid storeID in ordersForStores.Keys)
             {
-                Order storeOrder = new Order(ordersForStores[storeID]);
+                Order storeOrder = new Order(ordersForStores[storeID], userID);
                 AddOrderToStore(storeID, storeOrder);
             }
 
-            DBHandler.Instance.AddOrder(userOrder);
+            if(AddToDB)
+                 DBHandler.Instance.AddOrder(userOrder);
         }
         
         public void AddOrderToUser(Guid userID, Order order)
@@ -152,10 +153,10 @@ namespace SadnaExpress.DomainLayer.Store
         {
             List<Order> allOrders=DBHandler.Instance.GetAllOrders();
 
-            //foreach(Order order in allOrders)
-            //{
-            //    if(userOrders.ContainsKey(order.)
-            //}
+            foreach (Order order in allOrders)
+            {
+                AddOrder(order.UserID, order.ListItems,false);
+            }
         }
     }
 }

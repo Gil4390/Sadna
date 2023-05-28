@@ -143,7 +143,7 @@ namespace SadnaExpressTests
                 storeOrders = new ConcurrentDictionary<Guid, List<Order>>();
             }
 
-            public void AddOrder(Guid userID, List<ItemForOrder> itemForOrders)
+            public void AddOrder(Guid userID, List<ItemForOrder> itemForOrders, bool AddToDB = true)
             {
                 throw new NotImplementedException();
             }

@@ -8,7 +8,7 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public interface IOrders
     {
-        void AddOrder(Guid userID, List<ItemForOrder> itemForOrders);
+        void AddOrder(Guid userID, List<ItemForOrder> itemForOrders, bool AddToDB=false);
         void AddOrderToUser(Guid userID, Order order);
         void AddOrderToStore(Guid storeID, Order order);
         List<Order> GetOrdersByUserId(Guid userId);
