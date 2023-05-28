@@ -61,8 +61,8 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Mock_Orders mock_Orders = new Mock_Orders();
-            mock_Orders.AddOrderToStore(storeid1, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1, "RotemSela@gmail.com" ,"Zara") }));
-            mock_Orders.AddOrderToStore(storeid2, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid2, itemid2).Value, storeid2, "RotemSela@gmail.com","Fox") }));
+            mock_Orders.AddOrderToStore(storeid1, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid1, itemid1).Value, storeid1, "RotemSela@gmail.com" ,"Zara") }, Guid.Empty));
+            mock_Orders.AddOrderToStore(storeid2, new Order(new List<ItemForOrder> { new ItemForOrder(proxyBridge.GetItemByID(storeid2, itemid2).Value, storeid2, "RotemSela@gmail.com","Fox") }, Guid.Empty));
             proxyBridge.SetTSOrders(mock_Orders);
 
             Guid tempid = Guid.Empty;

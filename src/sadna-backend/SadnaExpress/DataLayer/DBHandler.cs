@@ -1675,10 +1675,10 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
-                            foreach (ItemForOrder itemForOrder in newOrder.ListItems)
-                            {
-                                db.ItemForOrders.Add(itemForOrder);
-                            }
+                            //foreach (ItemForOrder itemForOrder in newOrder.ListItems)
+                            //{
+                            //    db.ItemForOrders.Add(itemForOrder);
+                            //}
 
                             newOrder.ListItemsDB = newOrder.OrderIDsJson;
                             db.orders.Add(newOrder);
