@@ -10,7 +10,7 @@ export function BidItem(props) {
   const [counterOfferValue, setCounterOfferValue] = useState(0);
 
   const handleApprove = (bid: Bid) => {
-    handleReactToBid(props.id, props.bid.itemID, "approved").then(
+    handleReactToBid(props.id, props.bid.itemID, props.bid.bidID, "approved").then(
       value => {
         props.setResponse(value as Response);
         if (value.errorOccured){
@@ -23,7 +23,7 @@ export function BidItem(props) {
   };
 
   const handleDeny = (bid: Bid) => {
-    handleReactToBid(props.id,  props.bid.itemID, "denied").then(
+    handleReactToBid(props.id,  props.bid.itemID, props.bid.bidID, "denied").then(
       value => {
         props.setResponse(value as Response);
         if (value.errorOccured){
@@ -40,7 +40,7 @@ export function BidItem(props) {
 
   const handleCounterOfferSubmit = (bid: Bid) => {
     const price:string = counterOfferValue.toString();
-    handleReactToBid(props.id, props.bid.itemID, price).then(
+    handleReactToBid(props.id, props.bid.itemID, props.bid.bidID, price).then(
       value => {
         props.setResponse(value as Response);
         if (value.errorOccured){
@@ -137,8 +137,8 @@ const ManageStoreBidsPage = (props) => {
     <div>
       <h2>Active Bids</h2>
       <ul className="list-group">
-        {bids?.map((bid, index) => (
-          <li key={index} className="list-group-item">
+        {bids?.map((bid) => (
+          <li key={bid.bidID} className="list-group-item">
             <BidItem id={props.id} bid={bid} setResponse={setResponse}/>
           </li>
         ))}

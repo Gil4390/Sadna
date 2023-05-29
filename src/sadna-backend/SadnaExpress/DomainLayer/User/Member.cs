@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Net.Mime;
 using Newtonsoft.Json;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
@@ -75,6 +76,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 bid.User = this;
                 Bids.Add(bid);
+                bid.AddToDB();
             }
         }
         

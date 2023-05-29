@@ -894,7 +894,7 @@ export function handleGetBidsInStore(userID, storeID) {
         return Promise.resolve(data.value)
     })
 }
-export function handleReactToBid(userID, itemID, bidResponse) {
+export function handleReactToBid(userID, itemID, bidID, bidResponse) {
     let url = "http://localhost:8080/api/member/react-to-bid";
 
     return fetch(url, {
@@ -904,6 +904,7 @@ export function handleReactToBid(userID, itemID, bidResponse) {
         body: JSON.stringify({
             userID: userID,
             itemID: itemID,
+            bidID: bidID,
             bidResponse: bidResponse,
         })
     }).then(async response => {

@@ -832,9 +832,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid tempid = proxyBridge.Enter().Value;
             proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
             proxyBridge.AddItemToCart(userid, storeid1, itemid1, 1);
-            proxyBridge.PlaceBid(userid, itemid1, 50);
+            ResponseT<SBid> bid = proxyBridge.PlaceBid(userid, itemid1, 50);
             //Act
-            Response t = proxyBridge.ReactToBid(storeOwnerid, itemid1, "approved");
+            Response t = proxyBridge.ReactToBid(storeOwnerid, itemid1, bid.Value.BidID, "approved");
             //Assert
             Assert.IsFalse(t.ErrorOccured);
             Assert.AreEqual(50,proxyBridge.GetItemsForClient(userid, "Tshirt").Value[0].OfferPrice);

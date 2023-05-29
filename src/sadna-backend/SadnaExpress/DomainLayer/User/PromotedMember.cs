@@ -91,7 +91,7 @@ namespace SadnaExpress.DomainLayer.User
         public override PromotedMember openNewStore(Guid storeID)
         {
             createFounder(storeID);
-            return null;
+            return this;
         }
         
         public void createSystemManager()
@@ -176,23 +176,25 @@ namespace SadnaExpress.DomainLayer.User
             }
             bidsOffers[storeID].Add(bid);
 
-            DBHandler.Instance.UpdatePromotedMember(this);
+            if (bid.User.GetType() != typeof(User)) 
+                DBHandler.Instance.UpdatePromotedMember(this);
         }
-        
+
         public void RemoveBid(Guid storeID, Bid bid)
         {
             bidsOffers[storeID].Remove(bid);
-            DBHandler.Instance.UpdatePromotedMember(this);
+            if (bid.User.GetType() != typeof(User)) 
+                DBHandler.Instance.UpdatePromotedMember(this);
         }
         
-        public override void ReactToBid(Guid storeID, string itemName, string bidResponse)
+        public override void ReactToBid(Guid storeID,  Guid bid, string bidResponse)
         {
             Bid bidFounded = null;
-            foreach (Bid bid in bidsOffers[storeID])
-                if (bid.ItemName.Equals(itemName))
-                    bidFounded = bid;
+            foreach (Bid bidd in bidsOffers[storeID])
+                if (bidd.BidId.Equals(bid))
+                    bidFounded = bidd;
             if (bidFounded == null)
-                throw new Exception($"bid on {itemName} not exist");
+                throw new Exception($"bid not exist");
             
             bidFounded.ReactToBid(this, bidResponse);
 
@@ -251,7 +253,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             permissions[storeID].Remove(per);
             
-            if (per.Equals("policies permission"))
+            if (per.Equals("policies permission")||per.Equals("owner permissions"))
                 foreach (Bid bid in bidsOffers[storeID])
                     bid.RemoveEmployee(this);
         }
@@ -261,6 +263,7 @@ namespace SadnaExpress.DomainLayer.User
             List<PromotedMember> removedValue1;
             List<string> removedValue2;
             PromotedMember removedValue3;
+            List<Bid> removedValue4;
             appoint.TryRemove(storeID, out removedValue1);
             if (permissions.ContainsKey(storeID))
             {
@@ -272,6 +275,7 @@ namespace SadnaExpress.DomainLayer.User
                 permissions.TryRemove(storeID, out output);
             }
             directSupervisor.TryRemove(storeID, out removedValue3);
+            bidsOffers.TryRemove(storeID, out removedValue4);
         }
         
         #endregion

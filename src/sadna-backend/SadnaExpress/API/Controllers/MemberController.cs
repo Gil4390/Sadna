@@ -390,7 +390,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult ReactToBid([FromBody] ReactToBidRequest request)
         {
-            Response res = tradingSystem.ReactToBid(request.userID, request.itemID, request.bidResponse);
+            Response res = tradingSystem.ReactToBid(request.userID, request.itemID, request.bidID, request.bidResponse);
             return Ok(res);
         }
     }

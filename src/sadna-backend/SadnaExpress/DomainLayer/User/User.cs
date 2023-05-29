@@ -72,7 +72,7 @@ namespace SadnaExpress.DomainLayer.User
             return bidsDict;
         }
         
-        public void PlaceBid(Guid storeID, Guid itemID, string itemName, double price, List<PromotedMember> employees)
+        public Bid PlaceBid(Guid storeID, Guid itemID, string itemName, double price, List<PromotedMember> employees)
         {
             Bid oldBid = null;
             foreach (Bid bid in bids)
@@ -91,8 +91,9 @@ namespace SadnaExpress.DomainLayer.User
             }
             Bid newBid = new Bid(this, storeID, itemID, itemName, price, employees);
             bids.Add(newBid);
-
-            DBHandler.Instance.AddBidAndUpdateUserBids(newBid, this);
+            if (this.GetType() != typeof(User)) 
+                DBHandler.Instance.UpdateBidAndUser(newBid, this);
+            return newBid;
         }
 
         public void RemoveBids()
@@ -145,7 +146,7 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("The user unauthorised to remove store owner");
         }
 
-        public virtual void ReactToBid(Guid storeID, string ItemName, string bidResponse)
+        public virtual void ReactToBid(Guid storeID, Guid bid, string bidResponse)
         {
             throw new Exception("The user unauthorised to react to bid");
         }

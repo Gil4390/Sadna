@@ -1292,9 +1292,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
             
             proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
-            proxyBridge.PlaceBid(memberId, itemid1, 50);
+            ResponseT<SBid> bid = proxyBridge.PlaceBid(memberId, itemid1, 50);
             //Act
-            Response t = proxyBridge.ReactToBid(storeOwnerid, itemid1, "approved");
+            Response t = proxyBridge.ReactToBid(storeOwnerid, itemid1, bid.Value.BidID,"approved");
             //Assert
             Assert.IsFalse(t.ErrorOccured);
             Assert.AreEqual(50,proxyBridge.GetItemsForClient(memberId, "Tshirt").Value[0].OfferPrice);
