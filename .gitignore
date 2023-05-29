@@ -2,6 +2,7 @@
 *.vsidx
 *.wsuo
 *.dll
+*.db
 obj
 bin
 /src/Version 1/packages/MSTest.TestFramework.2.2.7
