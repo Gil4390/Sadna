@@ -44,7 +44,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         
          
-        public void AddOrder(Guid userID, List<ItemForOrder> itemForOrders, bool AddToDB=true)
+        public void AddOrder(Guid userID, List<ItemForOrder> itemForOrders, bool AddToDB=true, DatabaseContext db=null)
         {
             Order userOrder = new Order(itemForOrders, userID);
             AddOrderToUser(userID, userOrder);
@@ -64,7 +64,7 @@ namespace SadnaExpress.DomainLayer.Store
             }
 
             if(AddToDB)
-                 DBHandler.Instance.AddOrder(userOrder);
+                 DBHandler.Instance.AddOrder(db,userOrder);
         }
         
         public void AddOrderToUser(Guid userID, Order order)

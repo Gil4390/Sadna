@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
@@ -143,7 +144,7 @@ namespace SadnaExpressTests
                 storeOrders = new ConcurrentDictionary<Guid, List<Order>>();
             }
 
-            public void AddOrder(Guid userID, List<ItemForOrder> itemForOrders, bool AddToDB = true)
+            public void AddOrder(Guid userID, List<ItemForOrder> itemForOrders, bool AddToDB = true, DatabaseContext db=null)
             {
                 throw new NotImplementedException();
             }

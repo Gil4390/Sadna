@@ -1665,31 +1665,21 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void AddOrder(Order newOrder)
+        public void AddOrder(DatabaseContext db,Order newOrder)
         {
             lock (this)
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    foreach (ItemForOrder itemForOrder in newOrder.ListItems)
                     {
-                        try
-                        {
-                            //foreach (ItemForOrder itemForOrder in newOrder.ListItems)
-                            //{
-                            //    db.ItemForOrders.Add(itemForOrder);
-                            //}
-
-                            newOrder.ListItemsDB = newOrder.OrderIDsJson;
-                            db.orders.Add(newOrder);
-                            db.SaveChanges(true);
-                        }
-
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with stores table");
-                        }
+                        db.ItemForOrders.Add(itemForOrder);
                     }
+
+                    newOrder.ListItemsDB = newOrder.OrderIDsJson;
+                    db.orders.Add(newOrder);
+                    db.SaveChanges(true);
+                         
                 }
                 catch (Exception ex)
                 {
@@ -1722,6 +1712,7 @@ namespace SadnaExpress.DataLayer
                                     if (item != null)
                                         ItemsForOrder.Add(item);
                                 }
+                                o.ListItems = ItemsForOrder;
                                 result.Add(o);
                             }
                         }
