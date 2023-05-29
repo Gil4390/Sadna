@@ -32,7 +32,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void AddOrderSuccess()
         {
             //act
-            _orders.AddOrder(userID, orderList);
+            _orders.AddOrder(userID, orderList,false);
             //assert
             Assert.IsNotNull(_orders.GetOrdersByStoreId(storeID));
             Assert.IsNotNull(_orders.GetOrdersByUserId(userID));
@@ -45,8 +45,8 @@ namespace SadnaExpressTests.Unit_Tests
             ItemForOrder itemO = new ItemForOrder(item, Guid.NewGuid(), "","");
             List<ItemForOrder> orderList2 = new List<ItemForOrder>{itemO};
             //act
-            _orders.AddOrder(userID, orderList);
-            _orders.AddOrder(userID, orderList2);
+            _orders.AddOrder(userID, orderList,false);
+            _orders.AddOrder(userID, orderList2,false);
             //assert
             Assert.AreEqual(2,_orders.GetOrdersByUserId(userID).Count);
             Assert.AreEqual(1,_orders.GetOrdersByStoreId(storeID).Count);
@@ -57,8 +57,8 @@ namespace SadnaExpressTests.Unit_Tests
         {
             List<ItemForOrder> orderList2 = new List<ItemForOrder>{itemO2};
             //act
-            _orders.AddOrder(userID, orderList);
-            _orders.AddOrder(new Guid(), orderList2);
+            _orders.AddOrder(userID, orderList, false);
+            _orders.AddOrder(new Guid(), orderList2, false);
             //assert
             Assert.AreEqual(1,_orders.GetOrdersByUserId(userID).Count);
             Assert.AreEqual(2,_orders.GetOrdersByStoreId(storeID).Count);

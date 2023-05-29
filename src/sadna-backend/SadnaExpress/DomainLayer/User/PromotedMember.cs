@@ -383,10 +383,12 @@ namespace SadnaExpress.DomainLayer.User
         {
             List<PromotedMember> allDBEmployess = DBHandler.Instance.GetAllEmployees();
             List<Guid> employeesID = new List<Guid>();
+
             foreach (PromotedMember promotedMember in employees)
             {
                 employeesID.Add(promotedMember.userId);
             }
+
             foreach (var proMember in allDBEmployess)
             {
                 if (!employeesID.Contains(proMember.userId) && proMember.permissions.ContainsKey(storeId))
@@ -394,6 +396,7 @@ namespace SadnaExpress.DomainLayer.User
                     employees.Add((PromotedMember)DBHandler.Instance.GetMemberFromDBByEmail(proMember.email));
                 }
             }
+
             return employees;
         }
         #endregion
