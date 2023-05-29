@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store.Policy;
@@ -315,7 +316,13 @@ namespace SadnaExpress.DomainLayer.Store
                 if(review == null)
                 {
                     //pull from db
-                    reviews.Add(DBHandler.Instance.GetReviewById(reviewId));
+                    Review dbreview = DBHandler.Instance.GetReviewById(reviewId);
+                    if (stores.ContainsKey(dbreview.StoreID))
+                    {
+                        dbreview.Store = stores[dbreview.StoreID];
+                        dbreview.Item = stores[dbreview.StoreID].GetItemById(dbreview.ItemID);
+                    }
+                    reviews.Add(dbreview);
                 }
             }
         }
@@ -364,9 +371,17 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception("review text cannot be empty");
             bool foundUserOrder = false;
             foreach (Order order in _orders.GetOrdersByUserId(userID))
+            {
                 foreach (ItemForOrder item in order.ListItems)
+                {
                     if (item.ItemID == itemID)
+                    {
                         foundUserOrder = true;
+                        break;
+                    }
+                }
+            }
+
             if (!foundUserOrder)
                 throw new Exception("user with id:" + userID + "tried writing review to item: " + itemID + " which he did not purchase before");
             Review review = new Review(userID, stores[storeID], store.GetItemById(itemID), reviewText);

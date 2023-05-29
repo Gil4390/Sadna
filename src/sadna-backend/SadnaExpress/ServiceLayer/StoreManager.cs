@@ -160,7 +160,7 @@ namespace SadnaExpress.ServiceLayer
                                     userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
                                     throw new Exception("Supply operation failed");
                                 }
-                                Orders.Instance.AddOrder(userID, itemForOrders);
+                                Orders.Instance.AddOrder(userID, itemForOrders, true, db);
 
                                 // Notify to store owners
                                 foreach (ShoppingBasket basket in shoppingCart.Baskets)

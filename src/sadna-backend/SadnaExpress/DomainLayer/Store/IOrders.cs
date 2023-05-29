@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SadnaExpress.DataLayer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public interface IOrders
     {
-        void AddOrder(Guid userID, List<ItemForOrder> itemForOrders, bool AddToDB=false);
+        void AddOrder(Guid userID, List<ItemForOrder> itemForOrders, bool AddToDB=false, DatabaseContext db=null);
         void AddOrderToUser(Guid userID, Order order);
         void AddOrderToStore(Guid storeID, Order order);
         List<Order> GetOrdersByUserId(Guid userId);

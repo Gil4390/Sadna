@@ -120,7 +120,6 @@
     <Compile Include="ServiceLayer\Response.cs" />
     <Compile Include="ServiceLayer\ResponseT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceLayer\Server.cs" />
     <Compile Include="ServiceLayer\SModels\SMember.cs" />
     <Compile Include="ServiceLayer\SModels\SPaymentDetails.cs" />
     <Compile Include="ServiceLayer\SModels\SPolicy.cs" />
