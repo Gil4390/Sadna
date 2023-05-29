@@ -762,18 +762,17 @@ namespace SadnaExpress.DomainLayer.User
                     throw new TimeoutException("Details of payment isn't valid");
                 Logger.Instance.Info(nameof(paymentService)+": request to preform a payment with details : "+transactionDetails);
 
-                // var task = Task.Run(() =>
-                // {
-                //     return paymentService.Pay(amount,transactionDetails);
-                // });
-                //
-                // bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) &&
-                //                                task.Result != -1;
-                
-                int transaction_id = paymentService.Pay(amount,transactionDetails);
-                if (transaction_id != -1)
+                var task = Task.Run(() =>
                 {
-                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place payment completed with amount of "+amount+" and "+transactionDetails);
+                    return paymentService.Pay(amount, transactionDetails);
+                });
+
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result != -1;
+
+                if (isCompletedSuccessfully)
+                {
+                    int transaction_id = task.Result;
+                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(PlacePayment) +"Place payment completed with amount of "+amount+" and "+transactionDetails);
                     return transaction_id;
                 }
                 else
@@ -854,7 +853,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (isCompletedSuccessfully)
                 {
                     int transaction_id = task.Result;
-                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Place supply completed: "+ userDetails +" , "); //add SSupplyDetails.toString();
+                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(PlaceSupply) +"Place supply completed: "+ userDetails +" , "); //add SSupplyDetails.toString();
                     return transaction_id;
                 }
                 else
