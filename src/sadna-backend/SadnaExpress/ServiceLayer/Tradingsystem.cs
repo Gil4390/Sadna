@@ -693,7 +693,7 @@ namespace SadnaExpress.ServiceLayer
             return userManager.Handshake();
         }
 
-        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        public ResponseT<SBid> PlaceBid(Guid userID, Guid itemID, double price)
         {
             return storeManager.PlaceBid(userID, itemID, price);
         }
@@ -703,9 +703,9 @@ namespace SadnaExpress.ServiceLayer
             return userManager.GetBidsInStore(userID, storeID);
         }
 
-        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        public Response ReactToBid(Guid userID, Guid itemID, Guid bidID, string bidResponse)
         {
-            return storeManager.ReactToBid(userID, itemID, bidResponse);
+            return storeManager.ReactToBid(userID, itemID, bidID, bidResponse);
         }
     }
 }

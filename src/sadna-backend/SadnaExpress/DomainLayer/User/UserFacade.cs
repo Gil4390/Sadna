@@ -345,9 +345,7 @@ namespace SadnaExpress.DomainLayer.User
 
             founders.TryAdd(storeID, founder);
             NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
-            
-            
-            // todo register observer in database
+
 
             Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
         }
@@ -499,35 +497,37 @@ namespace SadnaExpress.DomainLayer.User
             return employees;
         }
 
-        public void PlaceBid(Guid userID, Guid storeID, Guid itemID, string itemName, double price)
+        public Bid PlaceBid(Guid userID, Guid storeID, Guid itemID, string itemName, double price)
         {
             IsTsInitialized();
             List<PromotedMember> decisionBids = new List<PromotedMember>();
             foreach (PromotedMember employee in founders[storeID].GetEmployeeInfoInStore(storeID))
                 if (employee.hasPermissions(storeID, new List<string>{"founder permissions", "owner permissions", "policies permission"}))
                     decisionBids.Add(employee);
-
+            
+            Bid bid = null;
             if (members.ContainsKey(userID))
             {
                 isLoggedIn(userID);
-                members[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
+                bid = members[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
             }
             else
-                current_Users[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
+                bid = current_Users[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
             
             Logger.Instance.Info(userID,
                 nameof(UserFacade) + ": " + nameof(PlaceBid) + "Item " + itemName + "asked for new price " + price + " by user " + userID);
+            return bid;
         }
         
-        public void ReactToBid(Guid userID, Guid storeID,  string itemName, string bidResponse)
+        public void ReactToBid(Guid userID, Guid storeID, Guid bid, string bidResponse)
         {
             IsTsInitialized();
             isLoggedIn(userID);
             
-            members[userID].ReactToBid(storeID, itemName, bidResponse);
+            members[userID].ReactToBid(storeID, bid, bidResponse);
             
             Logger.Instance.Info(userID,
-                nameof(UserFacade) + ": " + nameof(ReactToBid) + "Item " + itemName + "get bid response " + bidResponse + " by user " + userID);
+                nameof(UserFacade) + ": " + nameof(ReactToBid) + "Bid " + bid + "get bid response " + bidResponse + " by user " + userID);
         }
         
         public List<Bid> GetBidsInStore(Guid userID, Guid storeID)

@@ -176,6 +176,7 @@ namespace SadnaExpress.API.ClientRequests
     public class ReactToBidRequest : ClientRequest
     {
         public Guid itemID { get; set; }
+        public Guid bidID { get; set; }
         public string bidResponse { get; set; }
     }
 

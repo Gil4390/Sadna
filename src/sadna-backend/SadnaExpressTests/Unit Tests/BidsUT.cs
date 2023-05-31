@@ -1,14 +1,13 @@
-﻿using System;
+﻿using SadnaExpress.API.SignalR;
+using SadnaExpress.DomainLayer.User;
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SadnaExpress.API.SignalR;
-using SadnaExpress.DomainLayer.User;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
 
 namespace SadnaExpressTests.Unit_Tests
 {
-    
     [TestClass()]
     public class BidsUT
     {
@@ -35,7 +34,7 @@ namespace SadnaExpressTests.Unit_Tests
             founder = new PromotedMember(Guid.NewGuid(), "AsiAzar@gmail.com", "Asi", "Azar",
                 ("A#!a12345678"));
             founder.createFounder(Guid.NewGuid());
-            member.PlaceBid(store, item2, "Apple", 5, new List<PromotedMember> { founder });
+            bid = member.PlaceBid(store, item2, "Apple", 5, new List<PromotedMember> { founder });
         }
 
         #endregion
@@ -59,12 +58,12 @@ namespace SadnaExpressTests.Unit_Tests
         public void ReactToBidSuccess()
         {
             //Act
-            founder.ReactToBid(store, "Apple", "approved");
+            founder.ReactToBid(store, bid.BidId, "approved");
             //Assert
             Assert.AreEqual(1, member.GetBidsOfUser().Count);
             Assert.AreEqual(1, member.AwaitingNotification.Count);
         }
-            
+        
         [TestMethod]
         public void GetBidsInStoreSuccess()
         {
@@ -75,19 +74,19 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(5, bids[0].Price);
             Assert.AreEqual(false, bids[0].Approved());
         }
-            
+        
         [TestMethod]
         public void GetBidsInStoreFail()
         {
             //Act
             Assert.ThrowsException<Exception>(()=> founder.GetBidsInStore(Guid.NewGuid()));
         }
-            
+        
         [TestMethod]
         public void GetBidsAfterApprovedSuccess()
         {
             //Arrange
-            founder.ReactToBid(store, "Apple", "approved");
+            founder.ReactToBid(store, bid.BidId, "approved");
             //Act
             List<Bid> bids = founder.GetBidsInStore(store);
             //Assert
@@ -95,12 +94,12 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(1, member.AwaitingNotification.Count);
             Assert.AreEqual("Your offer on Apple accepted! The price changed to 5", member.AwaitingNotification[0].Message);
         }
-            
+        
         [TestMethod]
         public void GetBidsAfterOfferNewPriceSuccess()
         {
             //Arrange
-            founder.ReactToBid(store, "Apple", "6");
+            founder.ReactToBid(store, bid.BidId, "6");
             //Act
             List<Bid> bids = founder.GetBidsInStore(store);
             //Assert
@@ -108,12 +107,12 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(1, member.AwaitingNotification.Count);
             Assert.AreEqual("Your offer on Apple wasn't approved. You get counter offer of this amount 6", member.AwaitingNotification[0].Message);
         }
-            
+        
         [TestMethod]
         public void GetBidsAfterOfferNewDoublePriceSuccess()
         {
             //Arrange
-            founder.ReactToBid(store, "Apple", "6.5");
+            founder.ReactToBid(store, bid.BidId, "6.5");
             //Act
             List<Bid> bids = founder.GetBidsInStore(store);
             //Assert
@@ -121,12 +120,12 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.AreEqual(1, member.AwaitingNotification.Count);
             Assert.AreEqual("Your offer on Apple wasn't approved. You get counter offer of this amount 6.5", member.AwaitingNotification[0].Message);
         }
-            
+        
         [TestMethod]
         public void GetBidsAfterDenySuccess()
         {
             //Arrange
-            founder.ReactToBid(store, "Apple", "denied");
+            founder.ReactToBid(store, bid.BidId, "denied");
             //Act
             List<Bid> bids = founder.GetBidsInStore(store);
             //Assert
@@ -146,5 +145,4 @@ namespace SadnaExpressTests.Unit_Tests
         #endregion
 
     }
-    
 }

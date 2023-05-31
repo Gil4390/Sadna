@@ -55,10 +55,10 @@ namespace SadnaExpress.DomainLayer.User
         List<Notification> GetNotifications(Guid userId);
         List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores);
         List<Member> GetStoreOwnerOfStores(List<Guid> stores);
-        void PlaceBid(Guid userID, Guid storeID, Guid itemID, string itemName, double price);
+        Bid PlaceBid(Guid userID, Guid storeID, Guid itemID, string itemName, double price);
         Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID);
         List<Bid> GetBidsInStore(Guid userID, Guid storeID);
-        void ReactToBid(Guid userID, Guid storeID, string itemName, string bidResponse);
+        void ReactToBid(Guid userID, Guid storeID, Guid bid, string bidResponse);
         bool IsSystemInitialize();
         int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
         public bool IsUserAdmin(Guid userID);

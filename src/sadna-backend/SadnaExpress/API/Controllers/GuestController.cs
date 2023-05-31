@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.API.Controllers
 {
@@ -150,7 +151,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult PlaceBid([FromBody] BidRequest request)
         {
-            Response res = tradingSystem.PlaceBid(request.userID, request.itemID, request.price);
+            ResponseT<SBid> res = tradingSystem.PlaceBid(request.userID, request.itemID, request.price);
             return Ok(res);
         }
 

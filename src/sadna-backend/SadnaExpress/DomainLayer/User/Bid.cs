@@ -32,27 +32,6 @@ namespace SadnaExpress.DomainLayer.User
         [NotMapped]
         public Dictionary<PromotedMember, string> Decisions {get => decisions; set => decisions = value;}
 
-        [NotMapped]
-        public string DecisionJson
-        {
-            get
-            {
-                Dictionary<Guid, string> decisions = new Dictionary<Guid, string>();
-                if (Decisions != null)
-                {
-                    foreach (PromotedMember pm in Decisions.Keys)
-                        decisions.Add(pm.UserId, Decisions[pm]);
-                }
-                return JsonConvert.SerializeObject(decisions);
-            }
-            set
-            {
-
-            }
-        }
-
-        public string DecisionDB { get; set; }
-
         public Bid(User user, Guid storeID, Guid itemID, string itemName, double price, List<PromotedMember> decisionBids)
         {
             BidId = Guid.NewGuid();
@@ -87,14 +66,17 @@ namespace SadnaExpress.DomainLayer.User
         {
             decisions.Remove(promotedMember);
             notify();
+            if (user.GetType() != typeof(User))
+                DBHandler.Instance.UpdateBidAndUser(this,user);
         }
 
         public void CloseBid()
         {
             user.Bids.Remove(this);
-            DBHandler.Instance.RemoveBid(this);
             foreach (PromotedMember emp in decisions.Keys)
                 emp.RemoveBid(storeID, this);
+            if (user.GetType() != typeof(User))
+                DBHandler.Instance.RemoveBid(this);
         }
         
         public void ReactToBid(PromotedMember promotedMember, string bidResponse)
@@ -105,9 +87,8 @@ namespace SadnaExpress.DomainLayer.User
             else if (bidResponse.Equals("denied"))
             {
                 NotificationSystem.Instance.NotifyObserver(user, storeID, $"Your offer on {itemName} denied!");
-                user.Bids.Remove(this);
-                foreach (PromotedMember emp in decisions.Keys)
-                    emp.RemoveBid(storeID, this);
+                CloseBid();
+                return;
             }
             else
             {
@@ -118,13 +99,44 @@ namespace SadnaExpress.DomainLayer.User
             }
             openBid = false;
 
-            DBHandler.Instance.UpdateBidAndUser(this,user);
+            if (user.GetType() != typeof(User))
+                DBHandler.Instance.UpdateBidAndUser(this,user);
         }
 
         private void notify()
         {
             if (Approved())
                 NotificationSystem.Instance.NotifyObserver(user, storeID, $"Your offer on {itemName} accepted! The price changed to {price}");
+        }
+        
+        [NotMapped]
+        public string DecisionJson
+        {
+            get
+            {
+                Dictionary<Guid, string> decisions = new Dictionary<Guid, string>();
+                if (Decisions != null)
+                {
+                    foreach (PromotedMember pm in Decisions.Keys)
+                        decisions.Add(pm.UserId, Decisions[pm]);
+                }
+                return JsonConvert.SerializeObject(decisions);
+            }
+            set
+            {
+
+            }
+        }
+
+        public string DecisionDB { get; set; }
+
+        public void AddToDB()
+        {
+            DBHandler.Instance.UpdateBidAndUser(this, user);
+            foreach (PromotedMember promotedMember in decisions.Keys)
+            {
+                DBHandler.Instance.UpdatePromotedMember(promotedMember);
+            }
         }
 
         public Bid()

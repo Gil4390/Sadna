@@ -394,27 +394,27 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response PlaceBid(Guid userID, Guid itemID, double price)
+        public ResponseT<SBid> PlaceBid(Guid userID, Guid itemID, double price)
         {
             try
             {
                 Guid storeID = storeFacade.GetItemStoreId(itemID);
-                userFacade.PlaceBid(userID, storeID, itemID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, price);
-                return new Response();
+                Bid bid = userFacade.PlaceBid(userID, storeID, itemID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, price);
+                return new ResponseT<SBid>(new SBid(bid));
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(PlaceBid)+": "+ex.Message);
-                return new Response(ex.Message);
+                return new ResponseT<SBid>(ex.Message);
             }
         }
         
-        public Response ReactToBid(Guid userID, Guid itemID, string bidResponse)
+        public Response ReactToBid(Guid userID, Guid itemID, Guid bidID, string bidResponse)
         {
             try
             {
                 Guid storeID = storeFacade.GetItemStoreId(itemID);
-                userFacade.ReactToBid(userID, storeID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, bidResponse);
+                userFacade.ReactToBid(userID, storeID, bidID, bidResponse);
                 return new Response();
             }
             catch (Exception ex)

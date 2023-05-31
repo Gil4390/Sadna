@@ -9,6 +9,9 @@ namespace SadnaExpress.ServiceLayer.SModels
 {
     public class SBid
     {
+        private Guid bidID;
+        public Guid BidID { get => bidID; set => bidID = value; }
+        
         private Guid itemID;
         public Guid ItemID { get => itemID; set => itemID = value; }
         
@@ -29,6 +32,7 @@ namespace SadnaExpress.ServiceLayer.SModels
 
         public SBid(Bid bid)
         {
+            bidID = bid.BidId;
             itemID = bid.ItemID;
             ItemName = bid.ItemName;
             if (bid.User.GetType() != typeof(User))

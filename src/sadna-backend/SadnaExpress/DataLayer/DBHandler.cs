@@ -284,18 +284,15 @@ namespace SadnaExpress.DataLayer
                                                 bidFromDB.Decisions = addDecetion;
 
                                                 var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
-                                                if (memberBid.Discriminator.Equals("Member"))
-                                                    bidFromDB.User = memberBid;
-                                                else if (memberBid.Discriminator.Equals("PromotedMember"))
-                                                    bidFromDB.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
-                                                else
+                                                if (memberBid != null)
                                                 {
-                                                    bidFromDB.User = new User(); // bid was from guest
-                                                    bidFromDB.User.UserId = bidFromDB.UserID;
+                                                    if (memberBid.Discriminator.Equals("Member"))
+                                                        bidFromDB.User = memberBid;
+                                                    else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                                        bidFromDB.User = db.promotedMembers.FirstOrDefault(m =>
+                                                            m.UserId.Equals(bidFromDB.UserID));
+                                                    list.Add(bidFromDB);
                                                 }
-
-
-                                                list.Add(bidFromDB);
                                             }
                                         }
                                         loadedBids.TryAdd(storeId, list);
@@ -1029,61 +1026,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void AddBidAndUpdateUserBids(Bid newBid, User user)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var bids = db.bids;
-                            newBid.UserID = newBid.User.UserId;
-                            newBid.DecisionDB = newBid.DecisionJson;
-                            bids.Add(newBid);
-                            db.SaveChanges(true);
-
-                            if(user.Discriminator.Equals("Member"))
-                            {
-                                var userFound = db.members.FirstOrDefault(u => u.UserId.Equals(user.UserId));
-                                if (userFound != null)
-                                {
-                                    //userFound.BidsDB = user.BidsJson;
-                                    db.Entry(userFound).State = EntityState.Detached;
-                                    userFound.BidsDB = user.BidsJson;
-                                    db.members.Update((Member)userFound);
-                                    db.SaveChanges(true);
-                                }
-                            }
-                            else
-                            {
-                                var userFound = db.promotedMembers.FirstOrDefault(u => u.UserId.Equals(user.UserId));
-                                if (userFound != null)
-                                {
-                                    //userFound.BidsDB = user.BidsDB;
-                                    db.Entry(userFound).State = EntityState.Detached;
-                                    userFound.BidsDB = user.BidsJson;
-                                    db.promotedMembers.Update((PromotedMember)userFound);
-                                    db.SaveChanges(true);
-                                }
-                            }
-                            
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with stores table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to Connect With Database");
-                }
-            }
-        }
-
         public void UpdatePromotedMember(PromotedMember pm)
         {
             lock (this)
@@ -1290,18 +1232,26 @@ namespace SadnaExpress.DataLayer
                             var bidFound = db.bids.FirstOrDefault(m => m.BidId.Equals(bid.BidId));
                             try
                             {
+                                bid.UserID = bid.User.UserId;
+                                bid.DecisionDB = bid.DecisionJson;
                                 if (bidFound != null)
                                 {
                                     db.Entry(bidFound).State = EntityState.Detached;
                                     db.bids.Update(bid);
                                     db.SaveChanges(true);
+                                }
+                                else
+                                {
+                                    db.bids.Add(bid);
+                                    db.SaveChanges(true);
+                                }
 
-                                    if (user is Member)
+                                user.BidsDB = user.BidsJson;
+                                if (user is Member)
                                         db.members.Update((Member)user);
                                     else
                                         db.promotedMembers.Update((PromotedMember)user);
                                     db.SaveChanges(true);
-                                }
                             }
                             catch (Exception ex)
                             {
@@ -1332,18 +1282,11 @@ namespace SadnaExpress.DataLayer
                         try
                         {
                             var bidFound = db.bids.FirstOrDefault(m => m.BidId.Equals(bid.BidId));
-                            try
+                           
+                            if (bidFound != null)
                             {
-                                if (bidFound != null)
-                                {
-                                    db.Entry(bidFound).State = EntityState.Detached;
-                                    db.bids.Remove(bid);
-                                    db.SaveChanges(true);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                // no change in inventory so continue
+                                db.bids.Remove(bidFound);
+                                db.SaveChanges(true);
                             }
                         }
                         catch (Exception ex)
