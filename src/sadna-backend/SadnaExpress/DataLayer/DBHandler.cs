@@ -1026,61 +1026,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void AddBidAndUpdateUserBids(Bid newBid, User user)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var bids = db.bids;
-                            newBid.UserID = newBid.User.UserId;
-                            newBid.DecisionDB = newBid.DecisionJson;
-                            bids.Add(newBid);
-                            db.SaveChanges(true);
-
-                            if(user.Discriminator.Equals("Member"))
-                            {
-                                var userFound = db.members.FirstOrDefault(u => u.UserId.Equals(user.UserId));
-                                if (userFound != null)
-                                {
-                                    //userFound.BidsDB = user.BidsJson;
-                                    db.Entry(userFound).State = EntityState.Detached;
-                                    userFound.BidsDB = user.BidsJson;
-                                    db.members.Update((Member)userFound);
-                                    db.SaveChanges(true);
-                                }
-                            }
-                            else
-                            {
-                                var userFound = db.promotedMembers.FirstOrDefault(u => u.UserId.Equals(user.UserId));
-                                if (userFound != null)
-                                {
-                                    //userFound.BidsDB = user.BidsDB;
-                                    db.Entry(userFound).State = EntityState.Detached;
-                                    userFound.BidsDB = user.BidsJson;
-                                    db.promotedMembers.Update((PromotedMember)userFound);
-                                    db.SaveChanges(true);
-                                }
-                            }
-                            
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with stores table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to Connect With Database");
-                }
-            }
-        }
-
         public void UpdatePromotedMember(PromotedMember pm)
         {
             lock (this)
