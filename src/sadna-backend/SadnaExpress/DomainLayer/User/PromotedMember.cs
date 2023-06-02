@@ -11,27 +11,146 @@ namespace SadnaExpress.DomainLayer.User
 {
     public class PromotedMember : Member
     {
+        #region properties
+
+        #region directSupervisor
         private ConcurrentDictionary<Guid, PromotedMember> directSupervisor;
         [NotMapped]
         public ConcurrentDictionary<Guid, PromotedMember> DirectSupervisor { get => directSupervisor; set => directSupervisor = value; }
+
+        [NotMapped]
+        public ConcurrentDictionary<Guid, string> directSupervisorHelper
+        {
+            get
+            {
+                ConcurrentDictionary<Guid, string> directSupervisorH = new ConcurrentDictionary<Guid, string>();
+                if (directSupervisor != null)
+                    foreach (Guid id in directSupervisor.Keys)
+                    {
+                        if (directSupervisor[id] == null)
+                        {
+                            directSupervisorH.TryAdd(id, "");
+                        }
+                        else
+                            directSupervisorH.TryAdd(id, directSupervisor[id].Email);
+                    }
+                return directSupervisorH;
+            }
+            set
+            {
+
+            }
+        }
+
+        [NotMapped]
+        public string DirectSupervisorJson
+        {
+            get => JsonConvert.SerializeObject(directSupervisorHelper);
+            set => directSupervisorHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, string>>(value);
+        }
+
+        public string DirectSupervisorDB
+        {
+            get;
+            set;
+        }
+        #endregion
+
+        #region appoint
         private ConcurrentDictionary<Guid, List<PromotedMember>> appoint;
         [NotMapped]
         public ConcurrentDictionary<Guid, List<PromotedMember>> Appoint { get => appoint; set => appoint = value; }
-        //private readonly ConcurrentDictionary<Guid, List<string>> permissions;
+
+        [NotMapped]
+        public ConcurrentDictionary<Guid, List<string>> appointHelper
+        {
+            get
+            {
+                ConcurrentDictionary<Guid, List<string>> appointH = new ConcurrentDictionary<Guid, List<string>>();
+                if (appoint != null)
+                    foreach (Guid id in appoint.Keys)
+                    {
+                        List<string> listTostring = new List<string>();
+                        foreach (PromotedMember pm in appoint[id])
+                            listTostring.Add(pm.Email);
+                        appointH.TryAdd(id, listTostring);
+                    }
+                return appointH;
+            }
+            set
+            {
+
+            }
+        }
+        [NotMapped]
+        public string AppointJson
+        {
+            get => JsonConvert.SerializeObject(appointHelper);
+            set => appointHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(value);
+        }
+
+        public string AppointDB
+        {
+            get; set;
+        }
+        #endregion
+
+        #region permissions
         private ConcurrentDictionary<Guid, List<string>> permissions;
         [NotMapped]
         public ConcurrentDictionary<Guid, List<string>> Permission{ get => permissions; set => Permission = value; }
+
+        public string PermissionDB
+        {
+            get => JsonConvert.SerializeObject(permissions);
+            set => permissions = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(value);
+        }
+        #endregion
+
+        #region bidsOffers
         private ConcurrentDictionary<Guid, List<Bid>> bidsOffers;
         [NotMapped]
         public ConcurrentDictionary<Guid, List<Bid>> BidsOffers { get => bidsOffers; set => bidsOffers = value; }
-        
+
+        [NotMapped]
+        public string BidsOffersJson
+        {
+            get
+            {
+                ConcurrentDictionary<Guid, List<Guid>> helper = new ConcurrentDictionary<Guid, List<Guid>>();
+                if (BidsOffers != null)
+                    foreach (Guid id in BidsOffers.Keys)
+                    {
+                        List<Guid> bidsList = new List<Guid>();
+                        foreach (Bid bid in BidsOffers[id])
+                            bidsList.Add(bid.BidId);
+                        helper.TryAdd(id, bidsList);
+                    }
+                return JsonConvert.SerializeObject(helper);
+            }
+            set
+            {
+
+            }
+        }
+
+        public string BidsOffersDB
+        {
+            get; set;
+        }
+
+        #endregion
+
         private readonly Permissions permissionsHolder;
+
+        #endregion
 
         public PromotedMember()
         {
             permissionsHolder = Permissions.Instance;
         }
 
+        #region permissions kind
         /* permissions:
          * owner permissions
          * founder permissions
@@ -45,6 +164,9 @@ namespace SadnaExpress.DomainLayer.User
          * product management permissions
          * policies permission
          */
+        #endregion
+
+        #region constructor
         public PromotedMember(Guid id, string email, string firstName, string lastName, string password, ShoppingCart shoppingCart=null, bool login=false) : base(id,
             email, firstName, lastName, password)
         {
@@ -59,7 +181,9 @@ namespace SadnaExpress.DomainLayer.User
             else
                 ShoppingCart = shoppingCart;
         }
+        #endregion
 
+        #region PromotedMember actions
         public void createOwner(Guid storeID, PromotedMember directSupervisor)
         {
             this.directSupervisor.TryAdd(storeID, directSupervisor);
@@ -152,11 +276,13 @@ namespace SadnaExpress.DomainLayer.User
                 throw new Exception("The member doesn’t have permissions to edit manager's permissions");
             return permissionsHolder.RemoveStoreManagerPermissions(this, storeID, manager, permission);
         }
+
         public override List<PromotedMember> GetEmployeeInfoInStore(Guid storeID)
         {
             if (hasPermissions(storeID,
-                    new List<string> { "owner permissions", "founder permissions", "get employees info"})) 
-                return DBGetAllEmployees(permissionsHolder.GetEmployeeInfoInStore(storeID, this), storeID);
+                    new List<string> { "owner permissions", "founder permissions", "get employees info" }))
+                return permissionsHolder.GetEmployeeInfoInStore(storeID, this);
+                //return DBGetAllEmployees(permissionsHolder.GetEmployeeInfoInStore(storeID, this), storeID);
             
             throw new Exception("The member doesn’t have permissions to get employees info");
         }
@@ -211,9 +337,11 @@ namespace SadnaExpress.DomainLayer.User
         {
             return this;
         }
-        
+
+        #endregion
+
         #region HelpFunc
-        
+
         public List<PromotedMember> getAppoint(Guid storeID)
         {
             if (appoint.ContainsKey(storeID))
@@ -273,110 +401,16 @@ namespace SadnaExpress.DomainLayer.User
             }
             directSupervisor.TryRemove(storeID, out removedValue3);
         }
-        
+
         #endregion
-        
-        #region DB
-        [NotMapped]
-        public ConcurrentDictionary<Guid, string> directSupervisorHelper
+        public override bool Equals(object obj) 
         {
-            get
-            {
-                ConcurrentDictionary<Guid, string> directSupervisorH = new ConcurrentDictionary<Guid, string>();
-                if(directSupervisor != null)
-                    foreach (Guid id in directSupervisor.Keys)
-                    {
-                        if (directSupervisor[id] == null)
-                        {
-                            directSupervisorH.TryAdd(id, "");
-                        }
-                        else
-                            directSupervisorH.TryAdd(id, directSupervisor[id].Email);
-                    }
-                return directSupervisorH;
-            }
-            set
-            {
-                
-            }
-        }
-        
-        [NotMapped]
-        public string DirectSupervisorJson
-        {
-            get => JsonConvert.SerializeObject(directSupervisorHelper);
-            set => directSupervisorHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, string>>(value);
-        }
+            PromotedMember newPm = (PromotedMember)obj;
 
-        public string DirectSupervisorDB
-        {
-            get;
-            set;
-        }
-        
-        [NotMapped]
-        public ConcurrentDictionary<Guid, List<string>> appointHelper
-        {
-            get
-            {
-                ConcurrentDictionary<Guid, List<string>> appointH = new ConcurrentDictionary<Guid, List<string>>();
-                if(appoint!=null)
-                    foreach(Guid id in appoint.Keys)
-                    {
-                        List<string> listTostring = new List<string>();
-                        foreach (PromotedMember pm in appoint[id])
-                            listTostring.Add(pm.Email);
-                        appointH.TryAdd(id, listTostring);
-                    }
-                return appointH;
-            }
-            set
-            {
+            if (this.userId == newPm.userId && this.Email == newPm.Email)
+                return true;
 
-            }
-        }
-        [NotMapped]
-        public string AppointJson
-        {
-            get => JsonConvert.SerializeObject(appointHelper);
-            set => appointHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(value);
-        }
-        public string AppointDB
-        {
-            get; set;
-        }
-        
-        public string PermissionDB
-        {
-            get => JsonConvert.SerializeObject(permissions);
-            set => permissions = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(value);
-        }
-        
-        [NotMapped]
-        public string BidsOffersJson
-        {
-            get
-            {
-                ConcurrentDictionary<Guid, List<Guid>> helper = new ConcurrentDictionary<Guid, List<Guid>>();
-                if(BidsOffers!=null)
-                    foreach (Guid id in BidsOffers.Keys)
-                    {
-                        List<Guid> bidsList = new List<Guid>();
-                        foreach (Bid bid in BidsOffers[id])
-                            bidsList.Add(bid.BidId);
-                        helper.TryAdd(id, bidsList);
-                    }
-                return JsonConvert.SerializeObject(helper);
-            }
-            set
-            {
-
-            }
-        }
-
-        public string BidsOffersDB
-        {
-            get; set;
+            return false;
         }
 
         private List<PromotedMember> DBGetAllEmployees(List<PromotedMember> employees, Guid storeId)
@@ -393,12 +427,11 @@ namespace SadnaExpress.DomainLayer.User
             {
                 if (!employeesID.Contains(proMember.userId) && proMember.permissions.ContainsKey(storeId))
                 {
-                    employees.Add((PromotedMember)DBHandler.Instance.GetMemberFromDBByEmail(proMember.email));
+                    employees.Add((PromotedMember)DBHandler.Instance.GetMemberFromDBByEmail(proMember.Email));
                 }
             }
 
             return employees;
         }
-        #endregion
     }
 }

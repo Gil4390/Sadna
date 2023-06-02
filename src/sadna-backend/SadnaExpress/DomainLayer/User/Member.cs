@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Net.Mime;
 using Newtonsoft.Json;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpress.DomainLayer.User
@@ -119,9 +120,11 @@ namespace SadnaExpress.DomainLayer.User
         }
 
 
-        public void Update(Notification notification)
+        public void Update(Notification notification, DatabaseContext db=null)
         {
             awaitingNotification.Add(notification);
+
+            DBHandler.Instance.AddNotification(notification, db);
         }
 
 

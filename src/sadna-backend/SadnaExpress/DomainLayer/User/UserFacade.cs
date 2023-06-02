@@ -13,7 +13,7 @@ using SadnaExpress.DataLayer;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.API.SignalR;
 using SadnaExpress.ServiceLayer.SModels;
-
+using System.Linq;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -225,9 +225,9 @@ namespace SadnaExpress.DomainLayer.User
                                 founders.TryAdd(storeId, pm);
                             }
                         }
-
                         members.TryAdd(pm.UserId, pm);
                         macs.TryAdd(pm.UserId, DBHandler.Instance.GetMacById(pm.UserId));
+                        LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[pm.UserId]); //we need that each member will hold valid info on their superriors and appointers
                     }
                     else
                     {
@@ -703,17 +703,22 @@ namespace SadnaExpress.DomainLayer.User
 
         private Member IsMember(string email)
         {
+            foreach (Member member in members.Values) 
+                if (member.Email.ToLower() == email.ToLower())
+                    return member;
+
+            //members is not in members list so we should check in db
             Member memberFromDb = DBHandler.Instance.GetMemberFromDBByEmail(email);
+
             if (memberFromDb != null)
             {
-                //Member removed;
-                //members.TryRemove(memberFromDb.UserId, out removed);
-                //memberFromDb.LoggedIn = true;
-                members.TryAdd(memberFromDb.UserId, memberFromDb);
+                if(memberFromDb is PromotedMember)
+                    members.TryAdd(memberFromDb.UserId, (PromotedMember)memberFromDb);
+                else
+                   members.TryAdd(memberFromDb.UserId, memberFromDb);
+
+                return members[memberFromDb.UserId];
             }
-            foreach (Member member in members.Values)
-                if (member.Email.ToLower() == email.ToLower())     
-                    return member;
 
             throw new Exception($"There isn't a member with the email: {email}");
         }
@@ -965,13 +970,67 @@ namespace SadnaExpress.DomainLayer.User
             PromotedMember systemManager = members[userID].promoteToMember();
             systemManager.createSystemManager();
             members[userID] = systemManager;
-            //systemManager.LoggedIn = true;
         }
 
         public void UpdateCurrentMemberFromDb(Guid userID)
         {
             //members[userID] = DBHandler.Instance.GetMemberFromDBByEmail(members[userID].Email);
             //members[userID].LoggedIn = true;
+        }
+
+        private void LoadPromotedMemberCoWorkersFromDB(PromotedMember pm) //LOAD all the tree of directive/appoint for the promoted member
+        {
+           
+            foreach (Guid storeId in pm.DirectSupervisor.Keys)
+            {
+                PromotedMember directive = pm.DirectSupervisor[storeId];
+
+                if (directive != null)
+                {
+                    if(members.ContainsKey(directive.UserId) == false) 
+                    { //members list does not hold the member's directive
+                        PromotedMember newDirective = (PromotedMember)DBHandler.Instance.GetMemberFromDBByEmail(directive.Email);
+                        members.TryAdd(directive.UserId, newDirective);
+                        macs.TryAdd(directive.UserId, DBHandler.Instance.GetMacById(directive.UserId));
+                        PromotedMember toRemove;
+                        pm.DirectSupervisor.TryRemove(storeId, out toRemove);
+                        pm.DirectSupervisor.TryAdd(storeId, newDirective);
+                        LoadPromotedMemberCoWorkersFromDB(newDirective);
+                    }
+                    else //direvtive is in members - means that directive is updated
+                    {
+                        PromotedMember toRemove;
+                        pm.DirectSupervisor.TryRemove(storeId, out toRemove);
+                        pm.DirectSupervisor.TryAdd(storeId, (PromotedMember)members[directive.UserId]);
+                    }
+                }
+            }
+
+
+            foreach (Guid storeId in pm.Appoint.Keys)
+            {
+                foreach (PromotedMember appoint in pm.Appoint[storeId].ToList())
+                {
+                    if (appoint != null)
+                    {  
+                        if (members.ContainsKey(appoint.UserId) == false) 
+                        { //members list does not hold the member's appoint
+                            PromotedMember newAppoint = (PromotedMember)DBHandler.Instance.GetMemberFromDBByEmail(appoint.Email);
+                            members.TryAdd(appoint.UserId, newAppoint);
+                            macs.TryAdd(newAppoint.UserId, DBHandler.Instance.GetMacById(newAppoint.UserId));
+                            pm.Appoint[storeId].Remove(appoint);
+                            pm.Appoint[storeId].Add(newAppoint);
+                            LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[appoint.UserId]);
+                        }
+                        else ////appoint is in members - means that directive is updated
+                        {
+                            pm.Appoint[storeId].Remove(appoint);
+                            pm.Appoint[storeId].Add((PromotedMember)members[appoint.UserId]);
+                        }
+                    }
+                }
+            }
+            
         }
 
     }

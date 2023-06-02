@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SadnaExpress.API.SignalR;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer
@@ -8,17 +9,17 @@ namespace SadnaExpress.DomainLayer
     public class NotificationSystem : ISubject
     {
         private static NotificationSystem instance;
-        private Dictionary<Guid , List<Member>> storeOwners;
+        private Dictionary<Guid , List<Member>> notificationOfficials;
 
-        public Dictionary<Guid, List<Member>> StoreOwners
+        public Dictionary<Guid, List<Member>> NotificationOfficials
         {
-            get => storeOwners;
-            set => storeOwners = value;
+            get => notificationOfficials;
+            set => notificationOfficials = value;
         }
 
         private NotificationSystem()
         {
-            storeOwners = new Dictionary<Guid, List<Member>>();
+            notificationOfficials = new Dictionary<Guid, List<Member>>();
         }
 
         public static NotificationSystem Instance
@@ -33,18 +34,18 @@ namespace SadnaExpress.DomainLayer
             }
         }
 
-        public void NotifyObservers(Guid storeID , string message, Guid userId)
+        public void NotifyObservers(Guid storeID , string message, Guid userId, DatabaseContext db = null)
         {
-            if (storeOwners.ContainsKey(storeID))
+            if (notificationOfficials.ContainsKey(storeID))
             {
-                foreach (Member member in storeOwners[storeID])
+                foreach (Member member in notificationOfficials[storeID])
                 {
                     if (member.UserId != userId) //we do not want to update the user about an operation he preformed by himself
                     {
                         Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
                         if (member.LoggedIn)
                             NotificationNotifier.GetInstance().SendNotification(member.UserId, message);
-                        member.Update(notification);
+                        member.Update(notification, db);
                     }
                 }
             }
@@ -79,21 +80,21 @@ namespace SadnaExpress.DomainLayer
         public void RegisterObserver(Guid storeID , Member observer)
         {
             List<Member> members;
-            if (storeOwners.TryGetValue(storeID, out members))
+            if (notificationOfficials.TryGetValue(storeID, out members))
             {
                 members.Add(observer);
             }
             else
             {
                 members = new List<Member> { observer };
-                storeOwners.Add(storeID, members);
+                notificationOfficials.Add(storeID, members);
             }
             
         }
 
         public void RemoveObserver(Guid storeID, Member observer)
         {
-            if (storeOwners.TryGetValue(storeID, out List<Member> observers))
+            if (notificationOfficials.TryGetValue(storeID, out List<Member> observers))
             {
                  observers.Remove(observer);
             }
@@ -109,6 +110,11 @@ namespace SadnaExpress.DomainLayer
         {
             foreach (Guid storeID in stores)
                 NotifyObservers(storeID, message, userID);
+        }
+
+        public void LoadNotificationOfficialsFromDB()
+        {
+            NotificationOfficials = DBHandler.Instance.LoadNotificationOfficialsFromDB();
         }
     }
     

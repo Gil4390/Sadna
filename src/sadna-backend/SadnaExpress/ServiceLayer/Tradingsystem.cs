@@ -75,8 +75,8 @@ namespace SadnaExpress.ServiceLayer
             // load all orders from db
             Orders.Instance.LoadOrdersFromDB();
 
-            //load NotificationSystemList of store owners
-
+            //load NotificationSystemList of Officials employees
+            NotificationSystem.Instance.LoadNotificationOfficialsFromDB();
 
             //load founder list in userfacade ??
 
