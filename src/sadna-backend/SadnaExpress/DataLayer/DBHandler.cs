@@ -18,17 +18,21 @@ using SadnaExpress.ServiceLayer.SModels;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
 using System.Diagnostics;
 using SadnaExpress.ServiceLayer.Obj;
+using SadnaExpress.DomainLayer;
 
 namespace SadnaExpress.DataLayer
 {
     public class DBHandler
     {
+        #region properties
         private static readonly object databaseLock = new object();
 
         private readonly string DbErrorMessage="Unfortunatly connecting to the db faild, please try again in a get minutes";
 
         private static DBHandler instance = null;
+        #endregion
 
+        #region constructor
         public static DBHandler Instance
         {
             get
@@ -48,7 +52,11 @@ namespace SadnaExpress.DataLayer
         {
 
         }
+        #endregion
 
+        #region Methods
+
+        #region Clean DB
         public void CleanDB()
         {
             
@@ -78,6 +86,10 @@ namespace SadnaExpress.DataLayer
                             db.Items.RemoveRange(db.Items);
                             db.bids.RemoveRange(db.bids);
                             db.initializeSystems.RemoveRange(db.initializeSystems);
+                            db.Reviews.RemoveRange(db.Reviews);
+                            db.notfications.RemoveRange(db.notfications);
+                            db.orders.RemoveRange(db.orders);
+                            db.ItemForOrders.RemoveRange(db.ItemForOrders);
 
 
                             db.SaveChanges(true);
@@ -94,7 +106,9 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-        
+        #endregion
+
+        #region Members managment
         public bool memberExistsByEmail(string email)
         {
             bool result = false;
@@ -560,6 +574,186 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public Member GetMemberFromDBById(Guid id) // same as getting member values when logging in
+        {
+            Member result = null;
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var memberExist = db.members.FirstOrDefault(m => m.UserId.Equals(id));
+
+                            if (memberExist != null)
+                            {
+                                if (memberExist.Discriminator.Equals("PromotedMember"))
+                                {
+                                    var PromotedmemberExist = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(id));
+
+                                    #region load direcetive
+                                    ConcurrentDictionary<Guid, PromotedMember> loadedDirect = new ConcurrentDictionary<Guid, PromotedMember>();
+                                    ConcurrentDictionary<Guid, string> directs = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, string>>(PromotedmemberExist.DirectSupervisorDB);
+                                    foreach (Guid storeId in directs.Keys)
+                                    {
+                                        foreach (Guid id1 in directs.Keys)
+                                        {
+                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(directs[id1].ToLower()));
+                                            if (promotedMemberInDictionary != null)
+                                                loadedDirect.TryAdd(storeId, promotedMemberInDictionary);
+                                            else
+                                                loadedDirect.TryAdd(storeId, null);
+                                        }
+                                    }
+                                    PromotedmemberExist.DirectSupervisor = loadedDirect;
+                                    #endregion
+
+                                    #region load appoint
+                                    ConcurrentDictionary<Guid, List<PromotedMember>> loadedAppoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
+                                    ConcurrentDictionary<Guid, List<string>> loadeds = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(PromotedmemberExist.AppointDB);
+                                    foreach (Guid storeId in loadeds.Keys)
+                                    {
+                                        List<string> listOfProMembers = loadeds[storeId];
+                                        List<PromotedMember> list = new List<PromotedMember>();
+                                        foreach (string pmEmail in listOfProMembers)
+                                        {
+                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(pmEmail.ToLower()));
+                                            if (promotedMemberInDictionary != null)
+                                                list.Add(promotedMemberInDictionary);
+                                        }
+                                        loadedAppoint.TryAdd(storeId, list);
+                                    }
+                                    PromotedmemberExist.Appoint = loadedAppoint;
+                                    #endregion
+
+                                    #region load bids offers
+                                    ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
+                                    ConcurrentDictionary<Guid, List<Guid>> helper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.BidsOffersDB);
+                                    foreach (Guid storeId in helper.Keys)
+                                    {
+                                        List<Guid> listOfBids = helper[storeId];
+                                        List<Bid> list = new List<Bid>();
+                                        foreach (Guid BidId in listOfBids)
+                                        {
+                                            var bidFromDB = db.bids.FirstOrDefault(b => b.BidId.Equals(BidId));
+                                            if (bidFromDB != null)
+                                            {
+                                                // now get decision
+                                                Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
+                                                var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(bidFromDB.DecisionDB);
+                                                foreach (Guid userId in helperDecision.Keys)
+                                                {
+                                                    var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
+                                                    if (pmInDecition != null)
+                                                    {
+                                                        addDecetion.Add(pmInDecition, helperDecision[userId]);
+                                                    }
+                                                }
+                                                bidFromDB.Decisions = addDecetion;
+
+                                                var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
+                                                if (memberBid.Discriminator.Equals("Member"))
+                                                    bidFromDB.User = memberBid;
+                                                else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                                    bidFromDB.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
+                                                else
+                                                {
+                                                    bidFromDB.User = new User(); // bid was from guest
+                                                    bidFromDB.User.UserId = bidFromDB.UserID;
+                                                }
+
+
+                                                list.Add(bidFromDB);
+                                            }
+                                        }
+                                        loadedBids.TryAdd(storeId, list);
+                                    }
+                                    PromotedmemberExist.BidsOffers = loadedBids;
+                                    #endregion 
+
+                                    memberExist = PromotedmemberExist;
+                                }
+
+                                result = memberExist;
+
+                                #region load shopping cart
+                                result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
+                                var userBaskets = db.shoppingBaskets.Where(basket => basket.ShoppingCartId.Equals(memberExist.ShoppingCart.ShoppingCartId)).ToList();
+                                foreach (var basket in userBaskets)
+                                {
+                                    result.ShoppingCart.Baskets.Add(basket);
+                                }
+                                #endregion
+
+                                #region load bids
+                                // todo now get all bids
+                                List<Guid> bidsIds = JsonConvert.DeserializeObject<List<Guid>>(memberExist.BidsDB);
+                                List<Bid> bidsFromDB = db.bids.Where(b => bidsIds.Contains(b.BidId)).ToList();
+                                // now update all Bids Decetions
+                                foreach (Bid b in bidsFromDB)
+                                {
+                                    Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
+                                    var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(b.DecisionDB);
+                                    foreach (Guid userId in helperDecision.Keys)
+                                    {
+                                        var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
+                                        if (pmInDecition != null)
+                                        {
+                                            addDecetion.Add(pmInDecition, helperDecision[userId]);
+                                        }
+                                    }
+                                    b.Decisions = addDecetion;
+
+
+                                    var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                    if (memberBid.Discriminator.Equals("Member"))
+                                        b.User = memberBid;
+                                    else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                        b.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                    else
+                                    {
+                                        b.User = new User(); // bid was from guest
+                                        b.User.UserId = b.UserID;
+                                    }
+                                }
+
+                                memberExist.Bids = bidsFromDB;
+                                #endregion
+
+                                #region load notifications
+
+                                var notifications = db.notfications.Where(notification => notification.SentTo.Equals(memberExist.UserId));
+                                // todo get all notification from database and update them in the user
+                                memberExist.AwaitingNotification = new List<DomainLayer.Notification>();
+
+                                if (notifications != null)
+                                {
+                                    foreach (DomainLayer.Notification n in notifications)
+                                    {
+                                        memberExist.AwaitingNotification.Add(n);
+                                    }
+                                }
+
+                                #endregion
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+                return result;
+            }
+        }
+
         public string GetMacById(Guid userId)
         {
             string result = null;
@@ -588,6 +782,226 @@ namespace SadnaExpress.DataLayer
                 return result;
             }
         }
+
+        public void MemberLogout(Member member)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                            if (memberExist != null)
+                            {
+                                if (!memberExist.Discriminator.Equals("Member"))
+                                {
+                                    memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                                    memberExist.LoggedIn = false;
+                                    db.SaveChanges();
+                                }
+                                memberExist.LoggedIn = false;
+                                db.SaveChanges();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public void MemberLogIn(Member member)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                            if (memberExist != null)
+                            {
+                                if (!memberExist.Discriminator.Equals("Member"))
+                                {
+                                    memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                                    memberExist.LoggedIn = true;
+                                    db.SaveChanges();
+                                }
+                                memberExist.LoggedIn = true;
+                                db.SaveChanges();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public void UpgradeMemberToPromotedMember(PromotedMember pm)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                            if (memberExist != null)
+                                if (memberExist.Discriminator.Equals("Member"))
+                                    db.members.Remove(memberExist);
+                                else
+                                {
+                                    var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                                    //memberExist = founder;
+                                    db.promotedMembers.Remove(proMemberExist);
+                                }
+                            db.SaveChanges(true);
+
+                            pm.DirectSupervisorDB = pm.DirectSupervisorJson;
+                            pm.AppointDB = pm.AppointJson;
+                            pm.BidsOffersDB = pm.BidsOffersJson;
+                            pm.BidsDB = pm.BidsJson;
+
+                            db.promotedMembers.Add(pm);
+                            //db.promotedMembers.Update(pm);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public void UpdatePromotedMember(PromotedMember pm)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var promotedMembers = db.promotedMembers;
+                            pm.BidsDB = pm.BidsJson;
+                            pm.DirectSupervisorDB = pm.DirectSupervisorJson;
+                            pm.AppointDB = pm.AppointJson;
+                            pm.BidsOffersDB = pm.BidsOffersJson;
+
+                            promotedMembers.Update(pm);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public List<PromotedMember> GetAllEmployees()
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var allMembers = db.promotedMembers;
+                            return allMembers.ToList();
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+                return null;
+            }
+        }
+
+        public void DowngradePromotedMemberToReg(Member pm)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                            if (memberExist != null)
+                                if (memberExist.Discriminator.Equals("Member"))
+                                    db.members.Remove(memberExist);
+                                else
+                                {
+                                    var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                                    //memberExist = founder;
+                                    db.promotedMembers.Remove(proMemberExist);
+                                }
+                            db.SaveChanges(true);
+
+                            pm.BidsDB = pm.BidsJson;
+
+                            db.members.Add(pm);
+                            //db.promotedMembers.Update(pm);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Stores managment
 
         public bool IsStoreNameExist(string storeName)
         {
@@ -649,114 +1063,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void AddReview(Review review)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var reviews = db.Reviews;
-                            reviews.Add(review);
-                            db.SaveChanges(true);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with stores table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-            }
-        }
-
-        public void AddNotification(DomainLayer.Notification notification, DatabaseContext db)
-        {
-            lock (this)
-            {
-                if (db != null)
-                {
-                    try
-                    {
-                        var notifications = db.notfications;
-                        notifications.Add(notification);
-                        db.SaveChanges(true);
-                    }
-                    catch (Exception ex1)
-                    {
-                        throw new Exception(DbErrorMessage);
-                    }
-                }
-                else
-                {
-                    using (var initdb = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var notifications = initdb.notfications;
-                            notifications.Add(notification);
-                            initdb.SaveChanges(true);
-                        }
-                        catch (Exception ex2)
-                        {
-                            throw new Exception(DbErrorMessage);
-                        }
-                    }
-                }
-              
-            }
-        }
-
-        public void UpgradeMemberToPromotedMember(PromotedMember pm)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
-                            if (memberExist != null)
-                                if (memberExist.Discriminator.Equals("Member"))
-                                    db.members.Remove(memberExist);
-                                else
-                                {
-                                    var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
-                                    //memberExist = founder;
-                                    db.promotedMembers.Remove(proMemberExist);
-                                }
-                            db.SaveChanges(true);
-
-                            pm.DirectSupervisorDB = pm.DirectSupervisorJson;
-                            pm.AppointDB = pm.AppointJson;
-                            pm.BidsOffersDB = pm.BidsOffersJson;
-                            pm.BidsDB = pm.BidsJson;
-
-                            db.promotedMembers.Add(pm);
-                            //db.promotedMembers.Update(pm);
-                            db.SaveChanges(true);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with members table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-            }
-        }
-
         public bool IsStoreExist(Guid storeID)
         {
             bool result = false;
@@ -804,7 +1110,7 @@ namespace SadnaExpress.DataLayer
                             {
                                 result.itemsInventory = inv;
                                 string quanity_ItemsDB = inv.Items_quantityDB;
-                                
+
                                 if (quanity_ItemsDB != null) // add quantity item for store
                                 {
                                     ConcurrentDictionary<Guid, int> items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(quanity_ItemsDB);
@@ -812,40 +1118,12 @@ namespace SadnaExpress.DataLayer
                                     foreach (Guid id in items_quantityHelper.Keys)
                                     {
                                         Item item = db.Items.FirstOrDefault(m => m.ItemID.Equals(id));
-                                        
+
                                         result.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
                                     }
                                 }
                             }
-                           
-                        }
-                        catch (Exception ex)
-                        {
-                           throw new Exception("failed to interact with stores table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-                return result;
-            }
-        }
 
-        public Review GetReviewById(Guid reviewID)
-        {
-            Review result = null;
-
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            result = db.Reviews.FirstOrDefault(m => m.ReviewID.Equals(reviewID));
                         }
                         catch (Exception ex)
                         {
@@ -942,39 +1220,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public List<Guid> GetTSReviewsIds()
-        {
-            List<Guid> result = null;
-
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var allReviews = db.Reviews;
-                            result = new List<Guid>();
-                            foreach (Review review in allReviews)
-                            {
-                                result.Add(review.ReviewID);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("failed to interact with stores table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-                return result;
-            }
-        }
-
         public void UpdateStore(Store editedStore)
         {
             lock (this)
@@ -1043,7 +1288,10 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        internal void AddItem(Item newItem)
+        #endregion
+
+        #region Reviews managment
+        public void AddReview(Review review)
         {
             lock (this)
             {
@@ -1053,21 +1301,8 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
-
-                            var item = db.Items.FirstOrDefault(m => m.ItemID.Equals(newItem.ItemID));
-
-                            var items = db.Items;
-                            if (item == null)
-                            {
-                                items.Add(newItem);
-                            }
-                            else
-                            {
-                                items.Remove(item);
-                                db.SaveChanges(true);
-                                items.Add(newItem);
-                            }
-
+                            var reviews = db.Reviews;
+                            reviews.Add(review);
                             db.SaveChanges(true);
                         }
                         catch (Exception ex)
@@ -1082,6 +1317,71 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
+
+        public Review GetReviewById(Guid reviewID)
+        {
+            Review result = null;
+
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            result = db.Reviews.FirstOrDefault(m => m.ReviewID.Equals(reviewID));
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+                return result;
+            }
+        }
+
+        public List<Guid> GetTSReviewsIds()
+        {
+            List<Guid> result = null;
+
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var allReviews = db.Reviews;
+                            result = new List<Guid>();
+                            foreach (Review review in allReviews)
+                            {
+                                result.Add(review.ReviewID);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+                return result;
+            }
+        }
+
+        #endregion
+
+        #region Shopping cart managment
 
         public void UpdateMemberShoppingCart(Member member)
         {
@@ -1124,43 +1424,37 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void MemberLogout(Member member)
+        public void UpdateMemberShoppingCartInTransaction(DatabaseContext db, Member member)
         {
             lock (this)
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    var memberFound = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                    if (memberFound != null)
                     {
-                        try
+                        var userBasket = db.shoppingBaskets.Where(b => b.ShoppingCartId.Equals(memberFound.ShoppingCart.ShoppingCartId)).ToList();
+                        if (userBasket.Count > 0)
                         {
-                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
-                            if (memberExist != null)
-                            {
-                                if (!memberExist.Discriminator.Equals("Member"))
-                                {
-                                    memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
-                                    memberExist.LoggedIn = false;
-                                    db.SaveChanges();
-                                }
-                                memberExist.LoggedIn = false;
-                                db.SaveChanges();
-                            }
+                            db.shoppingBaskets.RemoveRange(userBasket);
+                            db.SaveChanges(true);
                         }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with stores table");
-                        }
+
                     }
+
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(DbErrorMessage);
+                    //throw new Exception("failed to interact with stores table");
                 }
             }
         }
 
-        public void MemberLogIn(Member member)
+        #endregion
+
+        #region Items managment
+
+        internal void AddItem(Item newItem)
         {
             lock (this)
             {
@@ -1170,18 +1464,22 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
-                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
-                            if (memberExist != null)
+
+                            var item = db.Items.FirstOrDefault(m => m.ItemID.Equals(newItem.ItemID));
+
+                            var items = db.Items;
+                            if (item == null)
                             {
-                                if (!memberExist.Discriminator.Equals("Member"))
-                                {
-                                    memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
-                                    memberExist.LoggedIn = true;
-                                    db.SaveChanges();
-                                }
-                                memberExist.LoggedIn = true;
-                                db.SaveChanges();
+                                items.Add(newItem);
                             }
+                            else
+                            {
+                                items.Remove(item);
+                                db.SaveChanges(true);
+                                items.Add(newItem);
+                            }
+
+                            db.SaveChanges(true);
                         }
                         catch (Exception ex)
                         {
@@ -1253,64 +1551,6 @@ namespace SadnaExpress.DataLayer
                 catch (Exception ex)
                 {
                     throw new Exception(DbErrorMessage);
-                }
-            }
-        }
-
-        public void UpdatePromotedMember(PromotedMember pm)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var promotedMembers = db.promotedMembers;
-                            pm.BidsDB = pm.BidsJson;
-                            pm.DirectSupervisorDB = pm.DirectSupervisorJson;
-                            pm.AppointDB = pm.AppointJson;
-                            pm.BidsOffersDB = pm.BidsOffersJson;
-                            
-                            promotedMembers.Update(pm);
-                            db.SaveChanges(true);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with members table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-            }
-        }
-
-        public void UpdateMemberShoppingCartInTransaction(DatabaseContext db, Member member)
-        {
-            lock (this)
-            {
-                try
-                {
-                    var memberFound = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
-                    if(memberFound != null)
-                    {
-                        var userBasket = db.shoppingBaskets.Where(b => b.ShoppingCartId.Equals(memberFound.ShoppingCart.ShoppingCartId)).ToList();
-                        if (userBasket.Count > 0)
-                        {
-                            db.shoppingBaskets.RemoveRange(userBasket);
-                            db.SaveChanges(true);
-                        }
-
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    //throw new Exception("failed to interact with stores table");
                 }
             }
         }
@@ -1450,6 +1690,9 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        #endregion
+
+        #region Bids managment
         public void UpdateBidAndUser(Bid bid, User user)
         {
             lock (this)
@@ -1533,74 +1776,9 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public List<PromotedMember> GetAllEmployees()
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var allMembers = db.promotedMembers; 
-                            return allMembers.ToList();
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with stores table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-                return null;
-            }
-        }
-        
-        public void DowngradePromotedMemberToReg(Member pm)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
-                            if (memberExist != null)
-                                if (memberExist.Discriminator.Equals("Member"))
-                                    db.members.Remove(memberExist);
-                                else
-                                {
-                                    var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
-                                    //memberExist = founder;
-                                    db.promotedMembers.Remove(proMemberExist);
-                                }
-                            db.SaveChanges(true);
+        #endregion
 
-                            pm.BidsDB = pm.BidsJson;
-
-                            db.members.Add(pm);
-                            //db.promotedMembers.Update(pm);
-                            db.SaveChanges(true);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with members table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-            }
-        }
-
+        #region System init managment
         public bool LoadSystemInit()
         {
             lock (this)
@@ -1674,6 +1852,9 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        #endregion
+
+        #region Orders managment
         public void AddOrder(DatabaseContext db,Order newOrder)
         {
             lock (this)
@@ -1739,6 +1920,46 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        #endregion
+
+        #region Notification managment
+        public void AddNotification(DomainLayer.Notification notification, DatabaseContext db)
+        {
+            lock (this)
+            {
+                if (db != null)
+                {
+                    try
+                    {
+                        var notifications = db.notfications;
+                        notifications.Add(notification);
+                        db.SaveChanges(true);
+                    }
+                    catch (Exception ex1)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                }
+                else
+                {
+                    using (var initdb = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var notifications = initdb.notfications;
+                            notifications.Add(notification);
+                            initdb.SaveChanges(true);
+                        }
+                        catch (Exception ex2)
+                        {
+                            throw new Exception(DbErrorMessage);
+                        }
+                    }
+                }
+
+            }
+        }
+
         public Dictionary<Guid, List<Member>> LoadNotificationOfficialsFromDB()
         {
             Dictionary<Guid, List<Member>> result = new Dictionary<Guid, List<Member>>();
@@ -1780,6 +2001,75 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public void MarkNotificatinAsRead(DomainLayer.Notification notification)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var notificationExist = db.notfications.FirstOrDefault(n => n.NotificationID.Equals(notification.NotificationID));
+                            if (notificationExist != null)
+                            {
+                                db.Entry(notificationExist).State = EntityState.Detached;
+                                db.notfications.Update(notification);
+                                db.SaveChanges(true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with notification table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public List<DomainLayer.Notification> GetNotifications(Guid userId)
+        {
+            List<DomainLayer.Notification> result = new List<Notification>() ;
+
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var notifications = db.notfications.Where(notification => notification.SentTo.Equals(userId));
+
+                            if (notifications != null)
+                            {
+                                foreach (DomainLayer.Notification n in notifications)
+                                {
+                                    result.Add(n);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+                return result;
+            }
+        }
+        #endregion
+
+        #endregion
 
 
 

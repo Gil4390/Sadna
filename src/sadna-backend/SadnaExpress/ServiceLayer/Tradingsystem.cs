@@ -53,6 +53,7 @@ namespace SadnaExpress.ServiceLayer
             IStoreFacade storeFacade = new StoreFacade();
             storeManager = new StoreManager(userFacade, storeFacade);
             userManager = new UserManager(userFacade);
+            NotificationSystem.Instance.userFacade = userFacade;
 
             Setup();
         }
@@ -61,6 +62,7 @@ namespace SadnaExpress.ServiceLayer
         {
             storeManager = new StoreManager(userFacade, storeFacade);
             userManager = new UserManager(userFacade);
+            NotificationSystem.Instance.userFacade = userFacade;
 
             Setup();
         }
@@ -462,6 +464,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<List<SMember>>(ex.Message);
             }
         }
+
         public ResponseT<ConcurrentDictionary<Guid , Store>> GetStores()
         {
             return new ResponseT<ConcurrentDictionary<Guid, Store>>(storeManager.GetStores());
