@@ -25,6 +25,8 @@ namespace SadnaExpress.DataLayer
     {
         private static readonly object databaseLock = new object();
 
+        private readonly string DbErrorMessage="Unfortunatly connecting to the db faild, please try again in a get minutes";
+
         private static DBHandler instance = null;
 
         public static DBHandler Instance
@@ -88,7 +90,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -116,7 +118,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
 
                 return result;
@@ -145,7 +147,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -185,12 +187,12 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
 
-        public Member CheckMemberValidLogin(Guid id, string email, string password, IPasswordHash _ph)
+        public Member CheckMemberValidLogin(Guid id, string email, string password, IPasswordHash _ph) //load logged in member to logic layer
         {
             Member result = null;
             lock (this)
@@ -221,11 +223,9 @@ namespace SadnaExpress.DataLayer
 
                                 if (memberExist.Discriminator.Equals("PromotedMember"))
                                 {
-                                    // *************** need to fix here
-                                    // error 1 when getting this DirectSupervisor Values *************************
                                     var PromotedmemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
 
-                                    // todo: now load DirecrSupervisor from database
+                                    #region load direcetive
                                     ConcurrentDictionary<Guid, PromotedMember> loadedDirect = new ConcurrentDictionary<Guid, PromotedMember>();
                                     ConcurrentDictionary<Guid, string> directs = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, string>>(PromotedmemberExist.DirectSupervisorDB);
                                     foreach (Guid storeId in directs.Keys)
@@ -240,8 +240,9 @@ namespace SadnaExpress.DataLayer
                                         }
                                     }
                                     PromotedmemberExist.DirectSupervisor = loadedDirect;
+                                    #endregion
 
-                                    // todo: now load appoint from database
+                                    #region load appoint
                                     ConcurrentDictionary<Guid, List<PromotedMember>> loadedAppoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
                                     ConcurrentDictionary<Guid, List<string>> loadeds = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(PromotedmemberExist.AppointDB);
                                     foreach (Guid storeId in loadeds.Keys)
@@ -257,8 +258,9 @@ namespace SadnaExpress.DataLayer
                                         loadedAppoint.TryAdd(storeId, list);
                                     }
                                     PromotedmemberExist.Appoint = loadedAppoint;
+                                    #endregion
 
-                                    // todo: now load bidsOffers from database
+                                    #region load bids offers
                                     ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
                                     ConcurrentDictionary<Guid, List<Guid>> helper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.BidsOffersDB);
                                     foreach (Guid storeId in helper.Keys)
@@ -298,21 +300,21 @@ namespace SadnaExpress.DataLayer
                                         loadedBids.TryAdd(storeId, list);
                                     }
                                     PromotedmemberExist.BidsOffers = loadedBids;
+                                    #endregion
 
                                     memberExist = PromotedmemberExist;
                                 }
-                               
-                            
-                               
-                                // now get member cart from DB
+
+                                #region load shopping cart
                                 result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
                                 var userBaskets = db.shoppingBaskets.Where(basket => basket.ShoppingCartId.Equals(memberExist.ShoppingCart.ShoppingCartId)).ToList();
                                 foreach(var basket in userBaskets)
                                 {
                                     result.ShoppingCart.Baskets.Add(basket);
                                 }
+                                #endregion
 
-                                // todo now get all bids
+                                #region load bids
                                 List<Guid> bidsIds = JsonConvert.DeserializeObject<List<Guid>>(memberExist.BidsDB);
                                 List<Bid> bidsFromDB = db.bids.Where(b => bidsIds.Contains(b.BidId)).ToList();
                                 // now update all Bids Decetions
@@ -344,12 +346,24 @@ namespace SadnaExpress.DataLayer
                                 }
 
                                 memberExist.Bids = bidsFromDB;
+                                #endregion
 
-                                // ********************************
-                                // need to implment this and get all member notfication from DB
-                                // : todo get all notification from database and update them in the user
+                                #region load notifications
+
+                                var notifications = db.notfications.Where(notification => notification.SentTo.Equals(memberExist.UserId));
+                                // todo get all notification from database and update them in the user
                                 memberExist.AwaitingNotification = new List<DomainLayer.Notification>();
-                               
+
+                                if (notifications != null)
+                                {
+                                    foreach (DomainLayer.Notification n in notifications)
+                                    {
+                                        memberExist.AwaitingNotification.Add(n);
+                                    }
+                                }
+
+                                #endregion
+
                             }
                         }
                         catch (Exception ex)
@@ -360,7 +374,187 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
+                }
+                return result;
+            }
+        }
+
+        public Member GetMemberFromDBByEmail(string email) // same as getting member values when logging in
+        {
+            Member result = null;
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
+                            
+                            if (memberExist != null)
+                            {
+                                if (memberExist.Discriminator.Equals("PromotedMember"))
+                                {
+                                    var PromotedmemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
+
+                                    #region load direcetive
+                                    ConcurrentDictionary<Guid, PromotedMember> loadedDirect = new ConcurrentDictionary<Guid, PromotedMember>();
+                                    ConcurrentDictionary<Guid, string> directs = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, string>>(PromotedmemberExist.DirectSupervisorDB);
+                                    foreach (Guid storeId in directs.Keys)
+                                    {
+                                        foreach (Guid id1 in directs.Keys)
+                                        {
+                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(directs[id1].ToLower()));
+                                            if (promotedMemberInDictionary != null)
+                                                loadedDirect.TryAdd(storeId, promotedMemberInDictionary);
+                                            else
+                                                loadedDirect.TryAdd(storeId, null);
+                                        }
+                                    }
+                                    PromotedmemberExist.DirectSupervisor = loadedDirect;
+                                    #endregion
+
+                                    #region load appoint
+                                    ConcurrentDictionary<Guid, List<PromotedMember>> loadedAppoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
+                                    ConcurrentDictionary<Guid, List<string>> loadeds = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(PromotedmemberExist.AppointDB);
+                                    foreach (Guid storeId in loadeds.Keys)
+                                    {
+                                        List<string> listOfProMembers = loadeds[storeId];
+                                        List<PromotedMember> list = new List<PromotedMember>();
+                                        foreach (string pmEmail in listOfProMembers)
+                                        {
+                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(pmEmail.ToLower()));
+                                            if (promotedMemberInDictionary != null)
+                                                list.Add(promotedMemberInDictionary);
+                                        }
+                                        loadedAppoint.TryAdd(storeId, list);
+                                    }
+                                    PromotedmemberExist.Appoint = loadedAppoint;
+                                    #endregion
+
+                                    #region load bids offers
+                                    ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
+                                    ConcurrentDictionary<Guid, List<Guid>> helper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.BidsOffersDB);
+                                    foreach (Guid storeId in helper.Keys)
+                                    {
+                                        List<Guid> listOfBids = helper[storeId];
+                                        List<Bid> list = new List<Bid>();
+                                        foreach (Guid BidId in listOfBids)
+                                        {
+                                            var bidFromDB = db.bids.FirstOrDefault(b => b.BidId.Equals(BidId));
+                                            if (bidFromDB != null)
+                                            {
+                                                // now get decision
+                                                Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
+                                                var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(bidFromDB.DecisionDB);
+                                                foreach (Guid userId in helperDecision.Keys)
+                                                {
+                                                    var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
+                                                    if (pmInDecition != null)
+                                                    {
+                                                        addDecetion.Add(pmInDecition, helperDecision[userId]);
+                                                    }
+                                                }
+                                                bidFromDB.Decisions = addDecetion;
+
+                                                var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
+                                                if (memberBid.Discriminator.Equals("Member"))
+                                                    bidFromDB.User = memberBid;
+                                                else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                                    bidFromDB.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
+                                                else
+                                                {
+                                                    bidFromDB.User = new User(); // bid was from guest
+                                                    bidFromDB.User.UserId = bidFromDB.UserID;
+                                                }
+
+
+                                                list.Add(bidFromDB);
+                                            }
+                                        }
+                                        loadedBids.TryAdd(storeId, list);
+                                    }
+                                    PromotedmemberExist.BidsOffers = loadedBids;
+                                    #endregion 
+
+                                    memberExist = PromotedmemberExist;
+                                }
+
+                                result = memberExist;
+
+                                #region load shopping cart
+                                result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
+                                var userBaskets = db.shoppingBaskets.Where(basket => basket.ShoppingCartId.Equals(memberExist.ShoppingCart.ShoppingCartId)).ToList();
+                                foreach (var basket in userBaskets)
+                                {
+                                    result.ShoppingCart.Baskets.Add(basket);
+                                }
+                                #endregion
+
+                                #region load bids
+                                // todo now get all bids
+                                List<Guid> bidsIds = JsonConvert.DeserializeObject<List<Guid>>(memberExist.BidsDB);
+                                List<Bid> bidsFromDB = db.bids.Where(b => bidsIds.Contains(b.BidId)).ToList();
+                                // now update all Bids Decetions
+                                foreach (Bid b in bidsFromDB)
+                                {
+                                    Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
+                                    var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(b.DecisionDB);
+                                    foreach (Guid userId in helperDecision.Keys)
+                                    {
+                                        var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
+                                        if (pmInDecition != null)
+                                        {
+                                            addDecetion.Add(pmInDecition, helperDecision[userId]);
+                                        }
+                                    }
+                                    b.Decisions = addDecetion;
+
+
+                                    var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                    if (memberBid.Discriminator.Equals("Member"))
+                                        b.User = memberBid;
+                                    else if (memberBid.Discriminator.Equals("PromotedMember"))
+                                        b.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(b.UserID));
+                                    else
+                                    {
+                                        b.User = new User(); // bid was from guest
+                                        b.User.UserId = b.UserID;
+                                    }
+                                }
+
+                                memberExist.Bids = bidsFromDB;
+                                #endregion
+
+                                #region load notifications
+
+                                var notifications = db.notfications.Where(notification => notification.SentTo.Equals(memberExist.UserId));
+                                // todo get all notification from database and update them in the user
+                                memberExist.AwaitingNotification = new List<DomainLayer.Notification>();
+
+                                if (notifications != null)
+                                {
+                                    foreach(DomainLayer.Notification n in notifications)
+                                    {
+                                        memberExist.AwaitingNotification.Add(n);
+                                    }
+                                }
+
+                                #endregion
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -389,7 +583,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -417,7 +611,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -450,7 +644,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -477,8 +671,45 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
+            }
+        }
+
+        public void AddNotification(DomainLayer.Notification notification, DatabaseContext db)
+        {
+            lock (this)
+            {
+                if (db != null)
+                {
+                    try
+                    {
+                        var notifications = db.notfications;
+                        notifications.Add(notification);
+                        db.SaveChanges(true);
+                    }
+                    catch (Exception ex1)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                }
+                else
+                {
+                    using (var initdb = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var notifications = initdb.notfications;
+                            notifications.Add(notification);
+                            initdb.SaveChanges(true);
+                        }
+                        catch (Exception ex2)
+                        {
+                            throw new Exception(DbErrorMessage);
+                        }
+                    }
+                }
+              
             }
         }
 
@@ -521,7 +752,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -548,7 +779,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -596,7 +827,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -624,7 +855,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -672,7 +903,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -705,7 +936,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -738,7 +969,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
@@ -772,7 +1003,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -847,7 +1078,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -888,7 +1119,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -924,7 +1155,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -960,7 +1191,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -990,7 +1221,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1021,7 +1252,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1053,7 +1284,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1128,7 +1359,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1174,7 +1405,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1214,7 +1445,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1266,7 +1497,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1297,173 +1528,8 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
-            }
-        }
-
-        public Member GetMemberFromDBByEmail(string email) // same as getting member values when logging in
-        {
-            Member result = null;
-            lock (this)
-            {
-                try
-                {
-                    using (var db = new DatabaseContext())
-                    {
-                        try
-                        {
-                            var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
-                            if (memberExist != null)
-                            {
-                                if (!memberExist.Discriminator.Equals("Member"))
-                                {
-                                    // here it means that he is promotedMember
-                                    var PromotedmemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(email.ToLower()));
-
-                                    // todo: now load DirecrSupervisor from database
-                                    ConcurrentDictionary<Guid, PromotedMember> loadedDirect = new ConcurrentDictionary<Guid, PromotedMember>();
-                                    ConcurrentDictionary<Guid, string> directs = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, string>>(PromotedmemberExist.DirectSupervisorDB);
-                                    foreach (Guid storeId in directs.Keys)
-                                    {
-                                        foreach (Guid id1 in directs.Keys)
-                                        {
-                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(directs[id1].ToLower()));
-                                            if (promotedMemberInDictionary != null)
-                                                loadedDirect.TryAdd(storeId, promotedMemberInDictionary);
-                                            else
-                                                loadedDirect.TryAdd(storeId, null);
-                                        }
-                                    }
-                                    PromotedmemberExist.DirectSupervisor = loadedDirect;
-
-                                    // todo: now load appoint from database
-                                    ConcurrentDictionary<Guid, List<PromotedMember>> loadedAppoint = new ConcurrentDictionary<Guid, List<PromotedMember>>();
-                                    ConcurrentDictionary<Guid, List<string>> loadeds = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<string>>>(PromotedmemberExist.AppointDB);
-                                    foreach (Guid storeId in loadeds.Keys)
-                                    {
-                                        List<string> listOfProMembers = loadeds[storeId];
-                                        List<PromotedMember> list = new List<PromotedMember>();
-                                        foreach (string pmEmail in listOfProMembers)
-                                        {
-                                            var promotedMemberInDictionary = db.promotedMembers.FirstOrDefault(pm => pm.Email.ToLower().Equals(pmEmail.ToLower()));
-                                            if (promotedMemberInDictionary != null)
-                                                list.Add(promotedMemberInDictionary);
-                                        }
-                                        loadedAppoint.TryAdd(storeId, list);
-                                    }
-                                    PromotedmemberExist.Appoint = loadedAppoint;
-
-                                    // todo: now load bidsOffers from database
-                                    ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
-                                    ConcurrentDictionary<Guid, List<Guid>> helper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.BidsOffersDB);
-                                    foreach (Guid storeId in helper.Keys)
-                                    {
-                                        List<Guid> listOfBids = helper[storeId];
-                                        List<Bid> list = new List<Bid>();
-                                        foreach (Guid BidId in listOfBids)
-                                        {
-                                            var bidFromDB = db.bids.FirstOrDefault(b => b.BidId.Equals(BidId));
-                                            if (bidFromDB != null)
-                                            {
-                                                // now get decision
-                                                Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
-                                                var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(bidFromDB.DecisionDB);
-                                                foreach (Guid userId in helperDecision.Keys)
-                                                {
-                                                    var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
-                                                    if (pmInDecition != null)
-                                                    {
-                                                        addDecetion.Add(pmInDecition, helperDecision[userId]);
-                                                    }
-                                                }
-                                                bidFromDB.Decisions = addDecetion;
-
-                                                var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
-                                                if (memberBid.Discriminator.Equals("Member"))
-                                                    bidFromDB.User = memberBid;
-                                                else if (memberBid.Discriminator.Equals("PromotedMember"))
-                                                    bidFromDB.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(bidFromDB.UserID));
-                                                else
-                                                {
-                                                    bidFromDB.User = new User(); // bid was from guest
-                                                    bidFromDB.User.UserId = bidFromDB.UserID;
-                                                }
-
-
-                                                list.Add(bidFromDB);
-                                            }
-                                        }
-                                        loadedBids.TryAdd(storeId, list);
-                                    }
-                                    PromotedmemberExist.BidsOffers = loadedBids;
-
-                                    memberExist = PromotedmemberExist;
-                                }
-                                if (!memberExist.LoggedIn || true) // remove || true later
-                                {
-                                    memberExist.LoggedIn = false; // remove this line later 
-                                    Guid id1 = memberExist.UserId;
-                                    string mac1 = db.macs.Find(id1).mac;
-
-                                    result = memberExist;
-                                    
-                                    // now get member cart from DB
-                                    result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
-                                    var userBaskets = db.shoppingBaskets.Where(basket => basket.ShoppingCartId.Equals(memberExist.ShoppingCart.ShoppingCartId)).ToList();
-                                    foreach (var basket in userBaskets)
-                                    {
-                                        result.ShoppingCart.Baskets.Add(basket);
-                                    }
-
-                                    // todo now get all bids
-                                    List<Guid> bidsIds = JsonConvert.DeserializeObject<List<Guid>>(memberExist.BidsDB);
-                                    List<Bid> bidsFromDB = db.bids.Where(b => bidsIds.Contains(b.BidId)).ToList();
-                                    // now update all Bids Decetions
-                                    foreach (Bid b in bidsFromDB)
-                                    {
-                                        Dictionary<PromotedMember, string> addDecetion = new Dictionary<PromotedMember, string>();
-                                        var helperDecision = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(b.DecisionDB);
-                                        foreach (Guid userId in helperDecision.Keys)
-                                        {
-                                            var pmInDecition = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(userId));
-                                            if (pmInDecition != null)
-                                            {
-                                                addDecetion.Add(pmInDecition, helperDecision[userId]);
-                                            }
-                                        }
-                                        b.Decisions = addDecetion;
-
-
-                                        var memberBid = db.members.FirstOrDefault(m => m.UserId.Equals(b.UserID));
-                                        if (memberBid.Discriminator.Equals("Member"))
-                                            b.User = memberBid;
-                                        else if (memberBid.Discriminator.Equals("PromotedMember"))
-                                            b.User = db.promotedMembers.FirstOrDefault(m => m.UserId.Equals(b.UserID));
-                                        else
-                                        {
-                                            b.User = new User(); // bid was from guest
-                                            b.User.UserId = b.UserID;
-                                        }
-                                    }
-
-                                    memberExist.Bids = bidsFromDB;
-                                    // todo get all notification from database and update them in the user
-                                    memberExist.AwaitingNotification = new List<DomainLayer.Notification>();
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with members table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to Connect With Database");
-                }
-                return result;
             }
         }
 
@@ -1488,7 +1554,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return null;
             }
@@ -1530,7 +1596,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1570,7 +1636,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
                 return false;
          
@@ -1603,7 +1669,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1626,7 +1692,7 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
                 }
             }
         }
@@ -1667,7 +1733,48 @@ namespace SadnaExpress.DataLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    throw new Exception(DbErrorMessage);
+                }
+                return result;
+            }
+        }
+
+        public Dictionary<Guid, List<Member>> LoadNotificationOfficialsFromDB()
+        {
+            Dictionary<Guid, List<Member>> result = new Dictionary<Guid, List<Member>>();
+            lock (this)
+            {
+                try
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        try
+                        {
+                            var allPromotedMembers = db.promotedMembers;
+                            foreach(PromotedMember pm in allPromotedMembers)
+                            {
+                                foreach(Guid storeId in pm.Permission.Keys)
+                                {
+                                    if(pm.Permission[storeId].Contains("owner permissions")|| pm.Permission[storeId].Contains("founder permissions"))
+                                    {
+                                        if (result.ContainsKey(storeId) == false)
+                                            result.Add(storeId, new List<Member>());
+                                        pm.AwaitingNotification = new List<DomainLayer.Notification>(); //cause we update the notification list of the members that notificationSystemHolds
+                                        result[storeId].Add(pm);
+                                    }
+
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
                 }
                 return result;
             }
