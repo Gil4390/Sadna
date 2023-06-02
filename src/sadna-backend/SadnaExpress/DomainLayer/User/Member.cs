@@ -121,9 +121,11 @@ namespace SadnaExpress.DomainLayer.User
         }
 
 
-        public void Update(Notification notification)
+        public void Update(Notification notification, DatabaseContext db=null)
         {
             awaitingNotification.Add(notification);
+
+            DBHandler.Instance.AddNotification(notification, db);
         }
 
 

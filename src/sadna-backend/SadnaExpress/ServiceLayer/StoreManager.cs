@@ -164,7 +164,7 @@ namespace SadnaExpress.ServiceLayer
 
                                 // Notify to store owners
                                 foreach (ShoppingBasket basket in shoppingCart.Baskets)
-                                    NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store " + storeFacade.GetStore(basket.StoreID).StoreName + " !", userID);
+                                    NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store " + storeFacade.GetStore(basket.StoreID).StoreName + " !", userID, db);
 
                                 //for bar - notify a user that his purchase completed succssefully by notification
                                 userFacade.NotifyBuyerPurchase(userID);

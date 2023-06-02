@@ -1,4 +1,5 @@
 ﻿using System;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpress.DomainLayer
@@ -7,6 +8,6 @@ namespace SadnaExpress.DomainLayer
     {
         void RegisterObserver(Guid storeID ,Member observer);
         void RemoveObserver(Guid storeID ,Member observer);
-        void NotifyObservers(Guid storeID ,string message, Guid userId);
+        void NotifyObservers(Guid storeID ,string message, Guid userId, DatabaseContext db=null);
     }
 }

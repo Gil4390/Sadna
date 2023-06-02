@@ -45,9 +45,9 @@ namespace SadnaExpressTests.Unit_Tests
         public void RegisterObserverSuccess()
         {
             notificationSystem.RegisterObserver(storeID,member1);
-            int pre = notificationSystem.StoreOwners[storeID].Count;
+            int pre = notificationSystem.NotificationOfficials[storeID].Count;
             notificationSystem.RegisterObserver(storeID,member2);
-            Assert.IsTrue( notificationSystem.StoreOwners[storeID].Contains(member1));
+            Assert.IsTrue( notificationSystem.NotificationOfficials[storeID].Contains(member1));
         }
         
         
@@ -57,7 +57,7 @@ namespace SadnaExpressTests.Unit_Tests
             notificationSystem.RegisterObserver(storeID,member1);
             notificationSystem.RegisterObserver(storeID,member2);;
             notificationSystem.RemoveObserver(storeID,member1);
-            Assert.IsTrue(!notificationSystem.StoreOwners[storeID].Contains(member1));
+            Assert.IsTrue(!notificationSystem.NotificationOfficials[storeID].Contains(member1));
         }
         
         
@@ -140,11 +140,11 @@ namespace SadnaExpressTests.Unit_Tests
         [TestMethod]
         public void RegisterTwiceTheSameMember()
         {
-            int pre = notificationSystem.StoreOwners.Count;
+            int pre = notificationSystem.NotificationOfficials.Count;
             notificationSystem.RegisterObserver(storeID,member1);
             notificationSystem.RegisterObserver(storeID,member1);
 
-            Assert.AreEqual( notificationSystem.StoreOwners.Count , pre + 1)  ;
+            Assert.AreEqual( notificationSystem.NotificationOfficials.Count , pre + 1)  ;
         }
   
         public List<Notification> unreadMessages(List<Notification> notifications)
