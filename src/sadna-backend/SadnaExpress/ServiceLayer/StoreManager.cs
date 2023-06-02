@@ -126,7 +126,7 @@ namespace SadnaExpress.ServiceLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         using (var transaction = db.Database.BeginTransaction())
                         {

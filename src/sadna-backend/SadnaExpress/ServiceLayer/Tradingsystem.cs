@@ -33,6 +33,8 @@ namespace SadnaExpress.ServiceLayer
             {
                 if (testMode != value)
                     Logger.Instance.SwitchOutputFile();
+                if (testMode == true)
+                    DatabaseContextFactory.TestMode = true;
                 testMode = value;
             }
         }

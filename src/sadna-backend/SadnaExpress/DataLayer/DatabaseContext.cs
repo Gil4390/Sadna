@@ -70,6 +70,65 @@ namespace SadnaExpress.DataLayer
         {
             Database.EnsureCreated();
         }
+    }
 
+
+    public class DatabaseTestsContext : DatabaseContext
+    {
+
+        #region Copy of DatabaseContext fields
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            //optionsBuilder.UseMySql("Server=MYSQL5045.site4now.net;Database=db_a995b0_sadnadb;Uid=a995b0_sadnadb;Pwd=Sadna123");
+            //optionsBuilder.UseSqlServer("Server=SQL5110.site4now.net;Database=db_a995b0_demo2;Uid=db_a995b0_demo2_admin;Pwd=Sadna123");
+
+            optionsBuilder.UseSqlite("Data Source=databaseTests.db");
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // required to connect between user -> shoppingCart -> Basket
+            modelBuilder.Entity<ShoppingCart>(entity =>
+            {
+                entity.HasKey(e => e.ShoppingCartId);
+                entity.HasMany(e => e.Baskets)
+                    .WithOne()
+                    .HasForeignKey("ShoppingCartId")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // required to connect between store and inventory
+            modelBuilder.Entity<Store>(entity =>
+            {
+                entity.HasKey(e => e.StoreID);
+                entity.HasOne(e => e.itemsInventory);
+            });
+
+            //modelBuilder.Entity<ShoppingBasket>()
+            //    .HasOne(b => b.ShoppingCart)
+            //    .WithMany(c => c.Baskets)
+            //    .HasForeignKey(b => b.ShoppingCartId);
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+        #endregion
+        public DatabaseTestsContext()
+        {
+            Database.EnsureCreated();
+        }
+    }
+
+    public static class DatabaseContextFactory
+    {
+        public static bool TestMode = false;
+        public static DatabaseContext ConnectToDatabase()
+        {
+            if (!TestMode)
+                return new DatabaseContext();
+            else
+                return new DatabaseTestsContext();
+        }
     }
 }

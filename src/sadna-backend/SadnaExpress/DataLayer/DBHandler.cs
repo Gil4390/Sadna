@@ -51,36 +51,37 @@ namespace SadnaExpress.DataLayer
 
         public void CleanDB()
         {
-            
+
 
             lock (this)
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    DatabaseContextFactory.TestMode = true;
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
                             // local databases test mode
-                            //db.Database.EnsureDeleted();
-                            //db.Database.EnsureCreated();
+                            db.Database.EnsureDeleted();
+                            db.Database.EnsureCreated();
 
                             // external database test mode
                             // cleaning all tables rows
-                            db.shoppingBaskets.RemoveRange(db.shoppingBaskets);
-                            db.shoppingCarts.RemoveRange(db.shoppingCarts);
-                            db.users.RemoveRange(db.users);
-                            db.members.RemoveRange(db.members);
-                            db.promotedMembers.RemoveRange(db.promotedMembers);
-                            db.macs.RemoveRange(db.macs);
-                            db.Stores.RemoveRange(db.Stores);
-                            db.Inventories.RemoveRange(db.Inventories);
-                            db.Items.RemoveRange(db.Items);
-                            db.bids.RemoveRange(db.bids);
-                            db.initializeSystems.RemoveRange(db.initializeSystems);
+                            //db.shoppingBaskets.RemoveRange(db.shoppingBaskets);
+                            //db.shoppingCarts.RemoveRange(db.shoppingCarts);
+                            //db.users.RemoveRange(db.users);
+                            //db.members.RemoveRange(db.members);
+                            //db.promotedMembers.RemoveRange(db.promotedMembers);
+                            //db.macs.RemoveRange(db.macs);
+                            //db.Stores.RemoveRange(db.Stores);
+                            //db.Inventories.RemoveRange(db.Inventories);
+                            //db.Items.RemoveRange(db.Items);
+                            //db.bids.RemoveRange(db.bids);
+                            //db.initializeSystems.RemoveRange(db.initializeSystems);
 
 
-                            db.SaveChanges(true);
+                            //db.SaveChanges(true);
                         }
                         catch (Exception ex)
                         {
@@ -103,7 +104,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -133,7 +134,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -159,7 +160,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -199,7 +200,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -387,7 +388,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -567,7 +568,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -597,7 +598,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -623,7 +624,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -655,7 +656,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -695,7 +696,7 @@ namespace SadnaExpress.DataLayer
                 }
                 else
                 {
-                    using (var initdb = new DatabaseContext())
+                    using (var initdb = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -719,7 +720,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -765,7 +766,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -793,7 +794,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -841,7 +842,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -869,7 +870,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -917,7 +918,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -950,7 +951,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -981,7 +982,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1049,7 +1050,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1089,7 +1090,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1130,7 +1131,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1166,7 +1167,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1202,7 +1203,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1232,7 +1233,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1263,7 +1264,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1321,7 +1322,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1370,7 +1371,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1416,7 +1417,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1456,7 +1457,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1508,7 +1509,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1539,7 +1540,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1566,7 +1567,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1607,7 +1608,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1650,7 +1651,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1705,7 +1706,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1746,7 +1747,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
