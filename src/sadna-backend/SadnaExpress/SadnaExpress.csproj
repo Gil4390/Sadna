@@ -111,6 +111,11 @@
     <Compile Include="DomainLayer\User\UserFacade.cs" />
     <Compile Include="ExternalServices\PaymentService.cs" />
     <Compile Include="ExternalServices\SupplierService.cs" />
+    <Compile Include="Migrations\20230603120028_Initial.cs" />
+    <Compile Include="Migrations\20230603120028_Initial.designer.cs">
+      <DependentUpon>20230603120028_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\DatabaseTestsContextModelSnapshot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />
@@ -189,9 +194,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.

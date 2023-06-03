@@ -114,6 +114,7 @@ namespace SadnaExpress.DataLayer
         }
 
         #endregion
+
         public DatabaseTestsContext()
         {
             Database.EnsureCreated();
