@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using SadnaExpress.DomainLayer.Store;
@@ -59,40 +59,41 @@ namespace SadnaExpress.DataLayer
         #region Clean DB
         public void CleanDB()
         {
-            
+
 
             lock (this)
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    DatabaseContextFactory.TestMode = true;
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
                             // local databases test mode
-                            //db.Database.EnsureDeleted();
-                            //db.Database.EnsureCreated();
+                            db.Database.EnsureDeleted();
+                            db.Database.EnsureCreated();
 
                             // external database test mode
                             // cleaning all tables rows
-                            db.shoppingBaskets.RemoveRange(db.shoppingBaskets);
-                            db.shoppingCarts.RemoveRange(db.shoppingCarts);
-                            db.users.RemoveRange(db.users);
-                            db.members.RemoveRange(db.members);
-                            db.promotedMembers.RemoveRange(db.promotedMembers);
-                            db.macs.RemoveRange(db.macs);
-                            db.Stores.RemoveRange(db.Stores);
-                            db.Inventories.RemoveRange(db.Inventories);
-                            db.Items.RemoveRange(db.Items);
-                            db.bids.RemoveRange(db.bids);
-                            db.initializeSystems.RemoveRange(db.initializeSystems);
-                            db.Reviews.RemoveRange(db.Reviews);
-                            db.notfications.RemoveRange(db.notfications);
-                            db.orders.RemoveRange(db.orders);
-                            db.ItemForOrders.RemoveRange(db.ItemForOrders);
+                            //db.shoppingBaskets.RemoveRange(db.shoppingBaskets);
+                            //db.shoppingCarts.RemoveRange(db.shoppingCarts);
+                            //db.users.RemoveRange(db.users);
+                            //db.members.RemoveRange(db.members);
+                            //db.promotedMembers.RemoveRange(db.promotedMembers);
+                            //db.macs.RemoveRange(db.macs);
+                            //db.Stores.RemoveRange(db.Stores);
+                            //db.Inventories.RemoveRange(db.Inventories);
+                            //db.Items.RemoveRange(db.Items);
+                            //db.bids.RemoveRange(db.bids);
+                            //db.initializeSystems.RemoveRange(db.initializeSystems);
+                            //db.Reviews.RemoveRange(db.Reviews);
+                            //db.notfications.RemoveRange(db.notfications);
+                            //db.orders.RemoveRange(db.orders);
+                            //db.ItemForOrders.RemoveRange(db.ItemForOrders);
 
 
-                            db.SaveChanges(true);
+                            //db.SaveChanges(true);
                         }
                         catch (Exception ex)
                         {
@@ -117,7 +118,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -147,7 +148,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -173,7 +174,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -213,7 +214,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -401,7 +402,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -581,7 +582,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -761,7 +762,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -789,7 +790,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -825,7 +826,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -855,13 +856,51 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public void AddNotification(DomainLayer.Notification notification, DatabaseContext db)
+        {
+            lock (this)
+            {
+                if (db != null)
+                {
+                    try
+                    {
+                        var notifications = db.notfications;
+                        notifications.Add(notification);
+                        db.SaveChanges(true);
+                    }
+                    catch (Exception ex1)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                }
+                else
+                {
+                    using (var initdb = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var notifications = initdb.notfications;
+                            notifications.Add(notification);
+                            initdb.SaveChanges(true);
+                        }
+                        catch (Exception ex2)
+                        {
+                            throw new Exception(DbErrorMessage);
+                        }
+                    }
+                }
+              
+            }
+        }
+
+
         public void UpgradeMemberToPromotedMember(PromotedMember pm)
         {
             lock (this)
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -905,7 +944,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -937,7 +976,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1071,7 +1110,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1099,7 +1138,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1147,7 +1186,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1195,7 +1234,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1226,7 +1265,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1297,7 +1336,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1389,7 +1428,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1430,6 +1469,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
+
                     var memberFound = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
                     if (memberFound != null)
                     {
@@ -1460,7 +1500,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1500,7 +1540,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1530,7 +1570,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1555,13 +1595,71 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+
+        public void UpdatePromotedMember(PromotedMember pm)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var promotedMembers = db.promotedMembers;
+                            pm.BidsDB = pm.BidsJson;
+                            pm.DirectSupervisorDB = pm.DirectSupervisorJson;
+                            pm.AppointDB = pm.AppointJson;
+                            pm.BidsOffersDB = pm.BidsOffersJson;
+                            
+                            promotedMembers.Update(pm);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public void UpdateMemberShoppingCartInTransaction(DatabaseContext db, Member member)
+        {
+            lock (this)
+            {
+                try
+                {
+                    var memberFound = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                    if(memberFound != null)
+                    {
+                        var userBasket = db.shoppingBaskets.Where(b => b.ShoppingCartId.Equals(memberFound.ShoppingCart.ShoppingCartId)).ToList();
+                        if (userBasket.Count > 0)
+                        {
+                            db.shoppingBaskets.RemoveRange(userBasket);
+                            db.SaveChanges(true);
+                        }
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    //throw new Exception("failed to interact with stores table");
+                }
+            }
+        }
         public void UpdateItemAfterEdit(Store store, Guid itemID, string itemName, string itemCategory, double itemPrice)
         {
             lock (this)
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1610,7 +1708,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1656,7 +1754,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1699,7 +1797,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1751,7 +1849,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1776,6 +1874,74 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+
+        public List<PromotedMember> GetAllEmployees()
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var allMembers = db.promotedMembers; 
+                            return allMembers.ToList();
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+                return null;
+            }
+        }
+        
+        public void DowngradePromotedMemberToReg(Member pm)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                            if (memberExist != null)
+                                if (memberExist.Discriminator.Equals("Member"))
+                                    db.members.Remove(memberExist);
+                                else
+                                {
+                                    var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
+                                    //memberExist = founder;
+                                    db.promotedMembers.Remove(proMemberExist);
+                                }
+                            db.SaveChanges(true);
+
+                            pm.BidsDB = pm.BidsJson;
+
+                            db.members.Add(pm);
+                            //db.promotedMembers.Update(pm);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
         #endregion
 
         #region System init managment
@@ -1785,7 +1951,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1828,7 +1994,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1886,7 +2052,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1967,7 +2133,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
