@@ -110,6 +110,7 @@ namespace SadnaExpress.DataLayer
         #endregion
 
         #region Members managment
+
         public bool memberExistsByEmail(string email)
         {
             bool result = false;
@@ -856,44 +857,6 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void AddNotification(DomainLayer.Notification notification, DatabaseContext db)
-        {
-            lock (this)
-            {
-                if (db != null)
-                {
-                    try
-                    {
-                        var notifications = db.notfications;
-                        notifications.Add(notification);
-                        db.SaveChanges(true);
-                    }
-                    catch (Exception ex1)
-                    {
-                        throw new Exception(DbErrorMessage);
-                    }
-                }
-                else
-                {
-                    using (var initdb = DatabaseContextFactory.ConnectToDatabase())
-                    {
-                        try
-                        {
-                            var notifications = initdb.notfications;
-                            notifications.Add(notification);
-                            initdb.SaveChanges(true);
-                        }
-                        catch (Exception ex2)
-                        {
-                            throw new Exception(DbErrorMessage);
-                        }
-                    }
-                }
-              
-            }
-        }
-
-
         public void UpgradeMemberToPromotedMember(PromotedMember pm)
         {
             lock (this)
@@ -1003,7 +966,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1050,7 +1013,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1076,7 +1039,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1298,13 +1261,6 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-
-                    //var invetories = db.Inventories;
-                    //var inventoryFound = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(store.StoreID));
-                    //inventoryFound.Items_quantityDB = store.itemsInventory.Items_quantityJson;
-                    //invetories.Update(inventoryFound);
-                    //db.SaveChanges(true);
-
                     var storeFound = db.Stores.FirstOrDefault(m => m.StoreID.Equals(store.StoreID));
 
                     var invetories = db.Inventories;
@@ -1365,7 +1321,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1393,7 +1349,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -1594,65 +1550,7 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-
-
-        public void UpdatePromotedMember(PromotedMember pm)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
-                    {
-                        try
-                        {
-                            var promotedMembers = db.promotedMembers;
-                            pm.BidsDB = pm.BidsJson;
-                            pm.DirectSupervisorDB = pm.DirectSupervisorJson;
-                            pm.AppointDB = pm.AppointJson;
-                            pm.BidsOffersDB = pm.BidsOffersJson;
-                            
-                            promotedMembers.Update(pm);
-                            db.SaveChanges(true);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with members table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-            }
-        }
-
-        public void UpdateMemberShoppingCartInTransaction(DatabaseContext db, Member member)
-        {
-            lock (this)
-            {
-                try
-                {
-                    var memberFound = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
-                    if(memberFound != null)
-                    {
-                        var userBasket = db.shoppingBaskets.Where(b => b.ShoppingCartId.Equals(memberFound.ShoppingCart.ShoppingCartId)).ToList();
-                        if (userBasket.Count > 0)
-                        {
-                            db.shoppingBaskets.RemoveRange(userBasket);
-                            db.SaveChanges(true);
-                        }
-
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    //throw new Exception("failed to interact with stores table");
-                }
-            }
-        }
+       
         public void UpdateItemAfterEdit(Store store, Guid itemID, string itemName, string itemCategory, double itemPrice)
         {
             lock (this)
@@ -1873,75 +1771,6 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-
-
-        public List<PromotedMember> GetAllEmployees()
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
-                    {
-                        try
-                        {
-                            var allMembers = db.promotedMembers; 
-                            return allMembers.ToList();
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with stores table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-                return null;
-            }
-        }
-        
-        public void DowngradePromotedMemberToReg(Member pm)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
-                    {
-                        try
-                        {
-                            var memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
-                            if (memberExist != null)
-                                if (memberExist.Discriminator.Equals("Member"))
-                                    db.members.Remove(memberExist);
-                                else
-                                {
-                                    var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
-                                    //memberExist = founder;
-                                    db.promotedMembers.Remove(proMemberExist);
-                                }
-                            db.SaveChanges(true);
-
-                            pm.BidsDB = pm.BidsJson;
-
-                            db.members.Add(pm);
-                            //db.promotedMembers.Update(pm);
-                            db.SaveChanges(true);
-                        }
-                        catch (Exception ex)
-                        {
-                            //throw new Exception("failed to interact with members table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-            }
-        }
         #endregion
 
         #region System init managment
@@ -2108,7 +1937,7 @@ namespace SadnaExpress.DataLayer
                 }
                 else
                 {
-                    using (var initdb = new DatabaseContext())
+                    using (var initdb = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -2173,7 +2002,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
@@ -2206,7 +2035,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    using (var db = new DatabaseContext())
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
                         {
