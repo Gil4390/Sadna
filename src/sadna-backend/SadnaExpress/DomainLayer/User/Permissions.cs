@@ -7,7 +7,6 @@ using Exception = System.Exception;
 
 namespace SadnaExpress.DomainLayer.User
 {
-    // todo
     [NotMapped]
     public class Permissions
     {

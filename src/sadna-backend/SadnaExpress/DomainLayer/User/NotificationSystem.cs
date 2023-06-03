@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SadnaExpress.API.SignalR;
 using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.DomainLayer
 {
@@ -10,7 +11,8 @@ namespace SadnaExpress.DomainLayer
     {
         private static NotificationSystem instance;
         private Dictionary<Guid , List<Member>> notificationOfficials;
-
+        public IUserFacade userFacade { get; set; }
+       
         public Dictionary<Guid, List<Member>> NotificationOfficials
         {
             get => notificationOfficials;
@@ -43,9 +45,10 @@ namespace SadnaExpress.DomainLayer
                     if (member.UserId != userId) //we do not want to update the user about an operation he preformed by himself
                     {
                         Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
-                        if (member.LoggedIn)
+                        Member realMember = userFacade.GetMember(member.UserId);
+                        if (realMember.LoggedIn)
                             NotificationNotifier.GetInstance().SendNotification(member.UserId, message);
-                        member.Update(notification, db);
+                        realMember.Update(notification, db);
                     }
                 }
             }
@@ -56,9 +59,10 @@ namespace SadnaExpress.DomainLayer
             foreach (Member member in toNodify)
             {
                 Notification notification = new Notification(DateTime.Now, userId, message, member.UserId);
-                if (member.LoggedIn)
+                Member realMember = userFacade.GetMember(member.UserId);
+                if (realMember.LoggedIn)
                     NotificationNotifier.GetInstance().SendNotification(member.UserId, message);
-                member.Update(notification);        
+                realMember.Update(notification);        
             }
         }
 
@@ -67,9 +71,10 @@ namespace SadnaExpress.DomainLayer
             if (toNodify.GetType() == typeof(Member))
             {
                 Notification notification = new Notification(DateTime.Now, message, toNodify.UserId);
-                if (((Member)toNodify).LoggedIn)
+                Member realMember = userFacade.GetMember(toNodify.UserId);
+                if (realMember.LoggedIn)
                     NotificationNotifier.GetInstance().SendNotification(toNodify.UserId, message);
-                ((Member)toNodify).Update(notification);        
+                realMember.Update(notification);        
             }
             else
             {

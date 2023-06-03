@@ -35,7 +35,6 @@ namespace SadnaExpress.DomainLayer.User
         private ISupplierService supplierService;
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
 
-
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
@@ -61,13 +60,10 @@ namespace SadnaExpress.DomainLayer.User
 
         public Guid Enter()
         {
-            // load all store founders from DB
-
             User user = new User();
             current_Users.TryAdd(user.UserId, user);
             Logger.Instance.Info(user.UserId , nameof(UserFacade)+": "+nameof(Enter)+": enter the system as guest.");
-            return user.UserId;
-            
+            return user.UserId;   
         }
 
         public void Exit(Guid id)
@@ -712,10 +708,14 @@ namespace SadnaExpress.DomainLayer.User
 
             if (memberFromDb != null)
             {
-                if(memberFromDb is PromotedMember)
+                if (memberFromDb is PromotedMember)
+                {
                     members.TryAdd(memberFromDb.UserId, (PromotedMember)memberFromDb);
+                    LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[memberFromDb.UserId]); //we need that each member will hold valid info on their superriors and appointers
+                }
                 else
-                   members.TryAdd(memberFromDb.UserId, memberFromDb);
+                    members.TryAdd(memberFromDb.UserId, memberFromDb);
+                macs.TryAdd(memberFromDb.UserId, DBHandler.Instance.GetMacById(memberFromDb.UserId));
 
                 return members[memberFromDb.UserId];
             }
@@ -911,6 +911,24 @@ namespace SadnaExpress.DomainLayer.User
         {
             if (members.ContainsKey(userID))
                 return members[userID];
+
+            //members is not in members list so we should check in db
+            Member memberFromDb = DBHandler.Instance.GetMemberFromDBById(userID);
+
+            if (memberFromDb != null)
+            {
+                if (memberFromDb is PromotedMember)
+                {
+                    members.TryAdd(memberFromDb.UserId, (PromotedMember)memberFromDb);
+                    LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[memberFromDb.UserId]); //we need that each member will hold valid info on their superriors and appointers
+                }
+                else
+                    members.TryAdd(memberFromDb.UserId, memberFromDb);
+                macs.TryAdd(memberFromDb.UserId, DBHandler.Instance.GetMacById(memberFromDb.UserId));
+                
+                return members[memberFromDb.UserId];
+            }
+
             throw new Exception("Member with id " + userID + " does not exist");
         }
 

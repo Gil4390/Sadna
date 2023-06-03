@@ -116,6 +116,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (notification.NotificationID == notificationID)
                 {
                     notification.Read = true;
+                    DBHandler.Instance.MarkNotificatinAsRead(notification);
                 }
             }
         }
