@@ -41,6 +41,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestInitialize]
         public virtual void SetUp()
         {
+            DatabaseContextFactory.TestMode = true;
             DBHandler.Instance.CleanDB();
             proxyBridge = new ProxyBridge();
             passwordHash = new PasswordHash();

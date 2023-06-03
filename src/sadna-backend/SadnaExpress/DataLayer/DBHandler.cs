@@ -65,7 +65,7 @@ namespace SadnaExpress.DataLayer
             {
                 try
                 {
-                    DatabaseContextFactory.TestMode = true;
+                    //DatabaseContextFactory.TestMode = true;
                     using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
                         try
