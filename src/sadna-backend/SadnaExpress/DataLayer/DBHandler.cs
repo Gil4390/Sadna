@@ -19,6 +19,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
 using System.Diagnostics;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.DomainLayer;
+using System.Security.Cryptography;
 
 namespace SadnaExpress.DataLayer
 {
@@ -198,6 +199,37 @@ namespace SadnaExpress.DataLayer
                         catch (Exception ex)
                         {
                             //throw new Exception("failed to interact with members table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public void RemoveMember(Guid memberId)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var memberFound = db.members.FirstOrDefault(m => m.UserId.Equals(memberId));
+
+                            if (memberFound != null)
+                            {
+                                db.members.Remove(memberFound);
+                                db.SaveChanges(true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
                         }
                     }
                 }
@@ -997,6 +1029,41 @@ namespace SadnaExpress.DataLayer
                 {
                     throw new Exception(DbErrorMessage);
                 }
+            }
+        }
+
+        public ConcurrentDictionary<Guid, Member> GetAllMembers()
+        {
+            ConcurrentDictionary<Guid, Member> result = new ConcurrentDictionary<Guid, Member>();
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var allMembers = db.members;
+                            foreach (var member in allMembers)
+                            {
+                                if(member.Discriminator.Equals("PromotedMember"))
+                                {
+                                    result.TryAdd(member.UserId, (PromotedMember)member);
+                                }
+                                result.TryAdd(member.UserId, member);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+                return result;
             }
         }
 
