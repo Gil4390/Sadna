@@ -282,7 +282,6 @@ namespace SadnaExpress.DomainLayer.User
             if (hasPermissions(storeID,
                     new List<string> { "owner permissions", "founder permissions", "get employees info" }))
                 return permissionsHolder.GetEmployeeInfoInStore(storeID, this);
-                //return DBGetAllEmployees(permissionsHolder.GetEmployeeInfoInStore(storeID, this), storeID);
             
             throw new Exception("The member doesn’t have permissions to get employees info");
         }
@@ -415,27 +414,6 @@ namespace SadnaExpress.DomainLayer.User
                 return true;
 
             return false;
-        }
-
-        private List<PromotedMember> DBGetAllEmployees(List<PromotedMember> employees, Guid storeId)
-        {
-            List<PromotedMember> allDBEmployess = DBHandler.Instance.GetAllEmployees();
-            List<Guid> employeesID = new List<Guid>();
-
-            foreach (PromotedMember promotedMember in employees)
-            {
-                employeesID.Add(promotedMember.userId);
-            }
-
-            foreach (var proMember in allDBEmployess)
-            {
-                if (!employeesID.Contains(proMember.userId) && proMember.permissions.ContainsKey(storeId))
-                {
-                    employees.Add((PromotedMember)DBHandler.Instance.GetMemberFromDBByEmail(proMember.Email));
-                }
-            }
-
-            return employees;
         }
     }
 }

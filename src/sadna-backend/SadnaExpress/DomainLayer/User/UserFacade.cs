@@ -389,12 +389,12 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userID);
             Guid newOwnerID = IsMember(email).UserId;
+            //bring new owner member obj from members list or db (if from db new member is added to member's list)
 
             String internedKey = String.Intern(newOwnerID.ToString());
 
             lock (internedKey)
             {
-                IsMember(email);
                 PromotedMember owner = members[userID].AppointStoreOwner(storeID, members[newOwnerID]);
                 members[newOwnerID] = owner;
                 DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newOwnerID]);

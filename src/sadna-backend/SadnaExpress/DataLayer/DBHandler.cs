@@ -71,29 +71,29 @@ namespace SadnaExpress.DataLayer
                         try
                         {
                             // local databases test mode
-                            db.Database.EnsureDeleted();
-                            db.Database.EnsureCreated();
+                            //db.Database.EnsureDeleted();
+                            //db.Database.EnsureCreated();
 
-                            // external database test mode
+                           // external database test mode
                             // cleaning all tables rows
-                            //db.shoppingBaskets.RemoveRange(db.shoppingBaskets);
-                            //db.shoppingCarts.RemoveRange(db.shoppingCarts);
-                            //db.users.RemoveRange(db.users);
-                            //db.members.RemoveRange(db.members);
-                            //db.promotedMembers.RemoveRange(db.promotedMembers);
-                            //db.macs.RemoveRange(db.macs);
-                            //db.Stores.RemoveRange(db.Stores);
-                            //db.Inventories.RemoveRange(db.Inventories);
-                            //db.Items.RemoveRange(db.Items);
-                            //db.bids.RemoveRange(db.bids);
-                            //db.initializeSystems.RemoveRange(db.initializeSystems);
-                            //db.Reviews.RemoveRange(db.Reviews);
-                            //db.notfications.RemoveRange(db.notfications);
-                            //db.orders.RemoveRange(db.orders);
-                            //db.ItemForOrders.RemoveRange(db.ItemForOrders);
+                            db.shoppingBaskets.RemoveRange(db.shoppingBaskets);
+                            db.shoppingCarts.RemoveRange(db.shoppingCarts);
+                            db.users.RemoveRange(db.users);
+                            db.members.RemoveRange(db.members);
+                            db.promotedMembers.RemoveRange(db.promotedMembers);
+                            db.macs.RemoveRange(db.macs);
+                            db.Stores.RemoveRange(db.Stores);
+                            db.Inventories.RemoveRange(db.Inventories);
+                            db.Items.RemoveRange(db.Items);
+                            db.bids.RemoveRange(db.bids);
+                            db.initializeSystems.RemoveRange(db.initializeSystems);
+                            db.Reviews.RemoveRange(db.Reviews);
+                            db.notfications.RemoveRange(db.notfications);
+                            db.orders.RemoveRange(db.orders);
+                            db.ItemForOrders.RemoveRange(db.ItemForOrders);
 
 
-                            //db.SaveChanges(true);
+                            db.SaveChanges(true);
                         }
                         catch (Exception ex)
                         {
@@ -874,7 +874,6 @@ namespace SadnaExpress.DataLayer
                                 else
                                 {
                                     var proMemberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(pm.Email.ToLower()));
-                                    //memberExist = founder;
                                     db.promotedMembers.Remove(proMemberExist);
                                 }
                             db.SaveChanges(true);
