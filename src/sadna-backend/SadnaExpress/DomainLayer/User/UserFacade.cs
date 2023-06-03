@@ -566,12 +566,13 @@ namespace SadnaExpress.DomainLayer.User
 
                 lock (internedKey)
                 {
-                    if (IsMember(email).GetType() != typeof(Member))
+                    if (memberToRemove is PromotedMember)
                     {
                         throw new Exception($"The user {email} has permissions, its illegal to remove him");
                     }
 
                     members.TryRemove(memberToRemove.UserId, out memberToRemove);
+                    DBHandler.Instance.RemoveMember(memberToRemove.UserId);
                     if (memberToRemove.LoggedIn)
                         current_Users.TryAdd(memberToRemove.UserId, new User(memberToRemove));
                 }
@@ -733,7 +734,9 @@ namespace SadnaExpress.DomainLayer.User
             if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
             {
                 Logger.Instance.Info(userID, nameof(UserFacade)+": requested to display all members");
-                return members;
+
+                return DBHandler.Instance.GetAllMembers();
+                //return members;
             }
 
             throw new Exception("Don't have permissions");
