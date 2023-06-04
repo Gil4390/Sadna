@@ -1196,9 +1196,10 @@ namespace SadnaExpress.DataLayer
                                 }
                                 // todo get store condition from DB
                                 List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(result.StoreID)).ToList();
+                                result.DiscountPolicyCounter -= condsFromDB.Count;
                                 foreach (ConditionDB c in condsFromDB)
                                 {
-                                    result.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false);
+                                    result.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
                                 }
 
                             }
@@ -1252,9 +1253,10 @@ namespace SadnaExpress.DataLayer
 
                                 // todo: get all store condition from DB
                                 List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
+                                s.DiscountPolicyCounter -= condsFromDB.Count;
                                 foreach (ConditionDB c in condsFromDB)
                                 {
-                                    s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false);
+                                    s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
                                 }
 
 
@@ -2154,7 +2156,7 @@ namespace SadnaExpress.DataLayer
 
 
 
-        public void addCond( ConditionDB cond)
+        public void addCond( ConditionDB cond, Store store)
         {
             lock (this)
             {
@@ -2167,6 +2169,11 @@ namespace SadnaExpress.DataLayer
                         {
                             var condition = db.conditions;
                             condition.Add(cond);
+                            db.SaveChanges(true);
+
+                            // update store cond counter
+                            //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
+                            db.Stores.Update(store);
                             db.SaveChanges(true);
                         }
                         catch (Exception ex)
