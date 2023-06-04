@@ -392,6 +392,8 @@ namespace SadnaExpressTests.Integration_Tests
 
 
             // purchase cart as guest
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
 

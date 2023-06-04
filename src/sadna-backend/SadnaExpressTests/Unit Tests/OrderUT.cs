@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpressTests.Unit_Tests
@@ -18,6 +19,8 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.CleanDB();
             _orders = Orders.Instance;
             userID = Guid.NewGuid();
             storeID = Guid.NewGuid();

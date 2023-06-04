@@ -21,7 +21,7 @@ namespace SadnaExpress.DomainLayer.User
     {
         private const int MaxExternalServiceWaitTime = 10000; //10 seconds is 10,000 mili seconds
         private ConcurrentDictionary<Guid, User> current_Users; //users that are in the system and not login
-        private ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
+        public ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private ConcurrentDictionary<Guid, string> macs;
         private ConcurrentDictionary<Guid, PromotedMember> founders;
 

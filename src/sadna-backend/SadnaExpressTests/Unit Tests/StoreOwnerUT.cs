@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.API.SignalR;
+using SadnaExpress.DataLayer;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.User;
 
 namespace SadnaExpressTests.Unit_Tests
@@ -21,6 +24,8 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.CleanDB();
             founderID = Guid.NewGuid();
             storeID = Guid.NewGuid();
             founder =
@@ -31,6 +36,13 @@ namespace SadnaExpressTests.Unit_Tests
             storeOwnerDirect = founder.AppointStoreOwner(storeID, memberBeforeOwner);
             storeOwnerAppoint = new Member(storeOwnerAppointID, "Tal@gmail.com", "Tal", "Galmor",
                 "ShaY1787%$%");
+            UserFacade userFacade = new UserFacade();
+            userFacade.members.TryAdd(founder.UserId, founder);
+            userFacade.members.TryAdd(storeOwnerAppoint.UserId, storeOwnerAppoint);
+            userFacade.members.TryAdd(storeOwnerDirect.UserId, storeOwnerDirect);
+            userFacade.members.TryAdd(memberBeforeOwner.UserId, memberBeforeOwner);
+            NotificationNotifier.GetInstance().TestMood = true;
+            NotificationSystem.Instance.userFacade = userFacade;
         }
         #endregion
         #region appoint store owner    

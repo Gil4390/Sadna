@@ -633,11 +633,11 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<Response> task = Task.Run(() =>
             {
-                return proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                return proxyBridge.AddItemToCart(idDB, storeid1, itemid1, 1);
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count == 1);
+            Assert.AreEqual(1,proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count);
 
         }
 
@@ -646,12 +646,12 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<Response> task = Task.Run(() =>
             {
-                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
-                return proxyBridge.AddItemToCart(memberId, storeid2, itemid2, 1);
+                proxyBridge.AddItemToCart(idDB, storeid1, itemid1, 1);
+                return proxyBridge.AddItemToCart(idDB, storeid2, itemid2, 1);
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count == 2);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count == 2);
 
         }
 
@@ -660,12 +660,12 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             Task<Response> task = Task.Run(() =>
             {
-                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
-                return proxyBridge.AddItemToCart(memberId, storeid1, itemid11, 1);
+                proxyBridge.AddItemToCart(idDB, storeid1, itemid1, 1);
+                return proxyBridge.AddItemToCart(idDB, storeid1, itemid11, 1);
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count == 1);
         }
 
         [TestMethod]
@@ -701,24 +701,37 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void MultipleClientsAddSameItemToShoppingCart_HappyTest()
         {
+            //Arrange
+            //create member in db2
+            Guid idDB2 = proxyBridge.Enter().Value;
+            proxyBridge.Register(idDB2, "hello2@gmail.com", "hello", "hello", "123AaC!@#");
+            idDB2 = proxyBridge.Login(idDB2, "hello2@gmail.com", "123AaC!@#").Value;
+            //create member in db3
+            Guid idDB3 = proxyBridge.Enter().Value;
+            proxyBridge.Register(idDB3, "hello3@gmail.com", "hello", "hello", "123AaC!@#");
+            idDB3 = proxyBridge.Login(idDB3, "hello3@gmail.com", "123AaC!@#").Value;
+            //create member in db4
+            Guid idDB4 = proxyBridge.Enter().Value;
+            proxyBridge.Register(idDB4, "hello4@gmail.com", "hello", "hello", "123AaC!@#");
+            idDB4 = proxyBridge.Login(idDB4, "hello4@gmail.com", "123AaC!@#").Value;
 
             Task<Response>[] clientTasks = new Task<Response>[]
             {
                 Task.Run(() =>
                 {
-                    return AddItemToCart(memberId, storeid1, itemid1, 1);
+                    return AddItemToCart(idDB, storeid1, itemid1, 1);
                 }),
                 Task.Run(() =>
                 {
-                    return AddItemToCart(memberId2, storeid1, itemid1, 1);
+                    return AddItemToCart(idDB2, storeid1, itemid1, 1);
                 }),
                 Task.Run(() =>
                 {
-                    return AddItemToCart(memberId3, storeid1, itemid1, 1);
+                    return AddItemToCart(idDB3, storeid1, itemid1, 1);
                 }),
                 Task.Run(() =>
                 {
-                    return AddItemToCart(memberId4, storeid1, itemid1, 1);
+                    return AddItemToCart(idDB4, storeid1, itemid1, 1);
                 }),
             };
 
@@ -726,16 +739,16 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task.WaitAll(clientTasks);
 
             Assert.IsFalse(clientTasks[0].Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count == 1);
+            Assert.AreEqual(1, proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count);
 
             Assert.IsFalse(clientTasks[1].Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId2).Value.Baskets.Count == 1);
+            Assert.AreEqual(1, proxyBridge.GetDetailsOnCart(idDB2).Value.Baskets.Count);
 
             Assert.IsFalse(clientTasks[2].Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId3).Value.Baskets.Count == 1);
+            Assert.AreEqual(1, proxyBridge.GetDetailsOnCart(idDB3).Value.Baskets.Count);
 
             Assert.IsFalse(clientTasks[3].Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId4).Value.Baskets.Count == 1);
+            Assert.AreEqual(1, proxyBridge.GetDetailsOnCart(idDB4).Value.Baskets.Count);
         }
 
         [TestMethod]
@@ -786,40 +799,44 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void MultipleClientsAddSameItemToCartOneNotEnterAndOneChooseItemNotInStock_HappyTest()
         {
-            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
-
+            //Arrange
+            proxyBridge.Logout(idDB);
+            //create member in db2
+            Guid idDB2 = proxyBridge.Enter().Value;
+            proxyBridge.Register(idDB2, "hello2@gmail.com", "hello", "hello", "123AaC!@#");
+            idDB2 = proxyBridge.Login(idDB2, "hello2@gmail.com", "123AaC!@#").Value;
+            //create member in db3
+            Guid idDB3 = proxyBridge.Enter().Value;
+            proxyBridge.Register(idDB3, "hello3@gmail.com", "hello", "hello", "123AaC!@#");
+            idDB3 = proxyBridge.Login(idDB3, "hello3@gmail.com", "123AaC!@#").Value;
+            //create member in db4
+            Guid idDB4 = proxyBridge.Enter().Value;
+            proxyBridge.Register(idDB4, "hello4@gmail.com", "hello", "hello", "123AaC!@#");
+            idDB4 = proxyBridge.Login(idDB4, "hello4@gmail.com", "123AaC!@#").Value;
 
             Task<Response>[] clientTasks = new Task<Response>[]
             {
-                Task.Run(() => { return AddItemToCart(memberId, storeid1, itemid1, 1); }),
-                Task.Run(() =>
-                {
-                    return AddItemToCart(memberId2, storeid2, itemNoStock, 1);
-                }),
-                Task.Run(() =>
-                {
-                    return AddItemToCart(memberId3, storeid1, itemid1, 1);
-                }),
-                Task.Run(() =>
-                {
-                    return AddItemToCart(memberId4, storeid1, itemid1, 1);
-                }),
+                Task.Run(() => { return AddItemToCart(idDB, storeid1, itemid1, 1); }),
+                Task.Run(() => { return AddItemToCart(idDB2, storeid2, itemNoStock, 1);}),
+                
+                Task.Run(() => {return AddItemToCart(idDB3, storeid1, itemid1, 1);}),
+                Task.Run(() => {return AddItemToCart(idDB4, storeid1, itemid1, 1);}),
             };
 
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
 
             Assert.IsTrue(clientTasks[0].Result.ErrorOccured); //error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count == 0);
+            Assert.AreEqual(0, proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count);
 
             Assert.IsTrue(clientTasks[1].Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId2).Value.Baskets.Count == 0);
+            Assert.AreEqual(0, proxyBridge.GetDetailsOnCart(idDB2).Value.Baskets.Count);
 
             Assert.IsFalse(clientTasks[2].Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId3).Value.Baskets.Count == 1);
+            Assert.AreEqual(1, proxyBridge.GetDetailsOnCart(idDB3).Value.Baskets.Count);
 
             Assert.IsFalse(clientTasks[3].Result.ErrorOccured); //no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId4).Value.Baskets.Count == 1);
+            Assert.AreEqual(1, proxyBridge.GetDetailsOnCart(idDB4).Value.Baskets.Count);
         }
 
         /// <summary>
@@ -830,23 +847,22 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberShoppingCartSavedAfterLogOut_HappyTest()
         {
             //Arrange
-            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
+            proxyBridge.Logout(idDB);
 
             //Act
             Task<Response> task = Task.Run(() => {
                 Guid id = proxyBridge.Enter().Value;
-                Guid loggedin = proxyBridge.Login(id, "gil@gmail.com", "asASD876!@").Value;
+                Guid loggedin = proxyBridge.Login(id, "hello@gmail.com", "123AaC!@#").Value;
                 proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 2);
                 Guid id2 = proxyBridge.Logout(loggedin).Value;
-                loggedin = proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@").Value;
+                loggedin = proxyBridge.Login(id2, "hello@gmail.com", "123AaC!@#").Value;
                 return proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 1);
             });
             task.Wait();
 
             //Assert
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(
-                (proxyBridge.GetDetailsOnCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3));
+            Assert.AreEqual(3, proxyBridge.GetDetailsOnCart(idDB).Value.GetItemQuantityInCart(storeid1, itemid1));
         }
 
         /// <summary>
@@ -857,23 +873,23 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void GuestAddItemsAndThenLoggedInAsMember_HappyTest()
         {
             //Arrange
-            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
+            proxyBridge.Logout(idDB);
 
             //Act
             Task<Response> task = Task.Run(() => {
                 Guid id = proxyBridge.Enter().Value;
                 proxyBridge.AddItemToCart(id, storeid1, itemid1, 2);
                 proxyBridge.AddItemToCart(id, storeid2, itemid2, 5);
-                Guid loggedin = proxyBridge.Login(id, "gil@gmail.com", "asASD876!@").Value;
+                Guid loggedin = proxyBridge.Login(id, "hello@gmail.com", "123AaC!@#").Value;
                 return proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 1);
             });
             task.Wait();
 
             //Assert
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3);
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.GetItemQuantityInCart(storeid2, itemid2) == 5);
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count==2);
+            Assert.AreEqual(3, proxyBridge.GetDetailsOnCart(idDB).Value.GetItemQuantityInCart(storeid1, itemid1));
+            Assert.AreEqual(5, proxyBridge.GetDetailsOnCart(idDB).Value.GetItemQuantityInCart(storeid2, itemid2));
+            Assert.AreEqual(2, proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count);
         }
 
         /// <summary>
@@ -884,23 +900,23 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberShoppingCartSavedAfterExit_HappyTest()
         {
             //Arrange
-            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
+            proxyBridge.Logout(idDB);
 
             //Act
             Task<Response> task = Task.Run(() => {
                 Guid id = proxyBridge.Enter().Value;
-                Guid loggedin = proxyBridge.Login(id, "gil@gmail.com", "asASD876!@").Value;
+                Guid loggedin = proxyBridge.Login(id, "hello@gmail.com", "123AaC!@#").Value;
                 proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 2);
                 proxyBridge.Exit(loggedin);
                 Guid id2 = proxyBridge.Enter().Value;
-                Guid loggedin1= proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@").Value;
+                Guid loggedin1= proxyBridge.Login(id2, "hello@gmail.com", "123AaC!@#").Value;
                 return proxyBridge.AddItemToCart(loggedin1, storeid1, itemid1, 1);
             });
             task.Wait();
 
             //Assert
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3);
+            Assert.AreEqual(3, proxyBridge.GetDetailsOnCart(idDB).Value.GetItemQuantityInCart(storeid1, itemid1));
         }
 
         /// <summary>
@@ -911,24 +927,24 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberShoppingCartSavedAfterLogOutAndExit_HappyTest()
         {
             //Arrange
-            proxyBridge.GetMember(memberId).Value.LoggedIn = false;
+            proxyBridge.Logout(idDB);
 
             //Act
             Task<Response> task = Task.Run(() => {
                 Guid id = proxyBridge.Enter().Value;
-                Guid loggedin = proxyBridge.Login(id, "gil@gmail.com", "asASD876!@").Value;
+                Guid loggedin = proxyBridge.Login(id, "hello@gmail.com", "123AaC!@#").Value;
                 proxyBridge.AddItemToCart(loggedin, storeid1, itemid1, 2);
                 Guid idtoexit= proxyBridge.Logout(loggedin).Value;
                 proxyBridge.Exit(idtoexit);
                 Guid id2 = proxyBridge.Enter().Value;
-                Guid loggedin1 = proxyBridge.Login(id2, "gil@gmail.com", "asASD876!@").Value;
+                Guid loggedin1 = proxyBridge.Login(id2, "hello@gmail.com", "123AaC!@#").Value;
                 return proxyBridge.AddItemToCart(loggedin1, storeid1, itemid1, 1);
             });
             task.Wait();
 
             //Assert
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.GetItemQuantityInCart(storeid1, itemid1) == 3);
+            Assert.AreEqual(3, proxyBridge.GetDetailsOnCart(idDB).Value.GetItemQuantityInCart(storeid1, itemid1));
         }
 
         #endregion
@@ -951,25 +967,25 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void MemberEditShoppingCartAddAndEditQuantity_HappyTest()
         {
             Task<Response> task = Task.Run(() => {
-                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
-                return proxyBridge.EditItemFromCart(memberId, storeid1, itemid1, 3);
+                proxyBridge.AddItemToCart(idDB, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(idDB, storeid1, itemid1, 3);
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count == 1);
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.GetItemQuantityInCart(storeid1,itemid1)==3);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count == 1);
+            Assert.IsTrue(proxyBridge.GetDetailsOnCart(idDB).Value.GetItemQuantityInCart(storeid1,itemid1)==3);
         }
 
         [TestMethod]
         public void MemberEditShoppingCartAddAndEditQuantityNoChange_HappyTest()
         {
             Task<Response> task = Task.Run(() => {
-                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
-                return proxyBridge.EditItemFromCart(memberId, storeid1, itemid1, 1);
+                proxyBridge.AddItemToCart(idDB, storeid1, itemid1, 1);
+                return proxyBridge.EditItemFromCart(idDB, storeid1, itemid1, 1);
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count == 1);
+            Assert.AreEqual(1, proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count);
         }
 
         [TestMethod]
@@ -1052,22 +1068,32 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestCategory("Concurrency")]
         public void MultipleClientsEditShoppingCart_HappyTest()
         {
+            //Arrange
+            //create member in db2
+            Guid idDB2 = proxyBridge.Enter().Value;
+            proxyBridge.Register(idDB2, "hello2@gmail.com", "hello", "hello", "123AaC!@#");
+            idDB2 = proxyBridge.Login(idDB2, "hello2@gmail.com", "123AaC!@#").Value;
+            //create member in db3
+            Guid idDB3 = proxyBridge.Enter().Value;
+            proxyBridge.Register(idDB3, "hello3@gmail.com", "hello", "hello", "123AaC!@#");
+            idDB3 = proxyBridge.Login(idDB3, "hello3@gmail.com", "123AaC!@#").Value;
+
             Task<Response>[] clientTasks = new Task<Response>[] {
                 Task.Run(() => {
-                    AddItemToCart(memberId,storeid1,itemid1,1);
-                    AddItemToCart(memberId,storeid1,itemid1,1);
-                    return proxyBridge.RemoveItemFromCart(memberId,storeid1,itemid1);
+                    AddItemToCart(idDB,storeid1,itemid1,1);
+                    AddItemToCart(idDB,storeid1,itemid1,1);
+                    return proxyBridge.RemoveItemFromCart(idDB,storeid1,itemid1);
                 }),
                 Task.Run(() => {
-                    AddItemToCart(memberId2,storeid1,itemid1,1);
-                    AddItemToCart(memberId2,storeid2,itemid2,1);
-                    AddItemToCart(memberId2,storeid1,itemid1,1);
-                    return proxyBridge.EditItemFromCart(memberId2,storeid1,itemid1,0);
+                    AddItemToCart(idDB2,storeid1,itemid1,1);
+                    AddItemToCart(idDB2,storeid2,itemid2,1);
+                    AddItemToCart(idDB2,storeid1,itemid1,1);
+                    return proxyBridge.EditItemFromCart(idDB2,storeid1,itemid1,0);
                 }),
                 Task.Run(() => {
-                    AddItemToCart(memberId3,storeid1,itemid1,1);
-                    proxyBridge.EditItemFromCart(memberId3,storeid1,itemid2,0);
-                    return proxyBridge.EditItemFromCart(memberId3,storeid1,itemid1,0);
+                    AddItemToCart(idDB3,storeid1,itemid1,1);
+                    proxyBridge.EditItemFromCart(idDB3,storeid1,itemid2,0);
+                    return proxyBridge.EditItemFromCart(idDB3,storeid1,itemid1,0);
                 })
              };
 
@@ -1075,13 +1101,13 @@ namespace SadnaExpressTests.Acceptance_Tests
             Task.WaitAll(clientTasks);
 
             Assert.IsFalse(clientTasks[0].Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count == 0);
+            Assert.AreEqual(0, proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count);
 
             Assert.IsFalse(clientTasks[1].Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId2).Value.Baskets.Count == 1);
+            Assert.AreEqual(1, proxyBridge.GetDetailsOnCart(idDB2).Value.Baskets.Count);
 
             Assert.IsFalse(clientTasks[2].Result.ErrorOccured);//no error occurred
-            Assert.IsTrue(proxyBridge.GetDetailsOnCart(memberId3).Value.Baskets.Count == 0);
+            Assert.AreEqual(0, proxyBridge.GetDetailsOnCart(idDB3).Value.Baskets.Count);
         }
         #endregion
 
@@ -1089,21 +1115,26 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void Member1PurchaseShoppingCart_HappyTest()
         {
+            //Arrange
+            proxyBridge.Logout(idDB);
+            proxyBridge.SetPaymentService(new Mocks.Mock_PaymentService());
+            proxyBridge.SetSupplierService(new Mocks.Mock_SupplierService());
+
             Guid id = new Guid();
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
-                proxyBridge.Login(id, "gil@gmail.com", "asASD876!@");
-                proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+                proxyBridge.Login(id, "hello@gmail.com", "123AaC!@#");
+                proxyBridge.AddItemToCart(idDB, storeid1, itemid1, 1);
                 SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
                 SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
 
-                return proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
+                return proxyBridge.PurchaseCart(idDB, transactionDetails, transactionDetailsSupply);
             });
             task.Wait();
             Assert.IsFalse(task.Result.ErrorOccured);//no error occurred
-            Assert.AreEqual(0,proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count); // the shopping basket get empty
+            Assert.AreEqual(0,proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count); // the shopping basket get empty
             Assert.AreEqual(39, proxyBridge.GetStore(storeid1).Value.GetItemByQuantity(itemid1)); //the quantity updated
-            Assert.AreEqual(1, proxyBridge.GetNotifications(memberId).Value.Count); //check that member got a notification for the succssess purchase
+            Assert.AreEqual(1, proxyBridge.GetNotifications(idDB).Value.Count); //check that member got a notification for the succssess purchase
         }
         [TestMethod]
         public void invalidPaymentInformation_BadTest()

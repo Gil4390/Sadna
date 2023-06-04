@@ -381,8 +381,9 @@ namespace SadnaExpress.DomainLayer.User
             permissions[storeID].Remove(per);
             
             if (per.Equals("policies permission")||per.Equals("owner permissions"))
-                foreach (Bid bid in bidsOffers[storeID])
-                    bid.RemoveEmployee(this);
+                if (bidsOffers.ContainsKey(storeID))
+                    foreach (Bid bid in bidsOffers[storeID])
+                        bid.RemoveEmployee(this);
         }
         
         public void removeAllDictOfStore(Guid storeID)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Unit_Tests
 {
@@ -15,6 +16,8 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.CleanDB();
             itemID = Guid.NewGuid();
             storeID = Guid.NewGuid();
             shoppingCart = new ShoppingCart();
