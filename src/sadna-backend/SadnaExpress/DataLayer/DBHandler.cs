@@ -2167,13 +2167,20 @@ namespace SadnaExpress.DataLayer
 
                         try
                         {
-                            var condition = db.conditions;
-                            condition.Add(cond);
-                            db.SaveChanges(true);
-
                             // update store cond counter
                             //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
-                            db.Stores.Update(store);
+                            try
+                            {
+                                db.Stores.Update(store);
+                                db.SaveChanges(true);
+                            }
+                            catch (Exception ex)
+                            {
+                                // store was not add to db
+                                AddStore(store);
+                            }
+                            var condition = db.conditions;
+                            condition.Add(cond);
                             db.SaveChanges(true);
                         }
                         catch (Exception ex)
