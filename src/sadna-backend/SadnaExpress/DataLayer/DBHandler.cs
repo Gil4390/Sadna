@@ -20,6 +20,7 @@ using System.Diagnostics;
 using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.DomainLayer;
 using System.Security.Cryptography;
+using SadnaExpress.DomainLayer.Store.Policy;
 
 namespace SadnaExpress.DataLayer
 {
@@ -93,6 +94,7 @@ namespace SadnaExpress.DataLayer
                             db.orders.RemoveRange(db.orders);
                             db.ItemForOrders.RemoveRange(db.ItemForOrders);
 
+                            db.conditions.RemoveRange(db.conditions);
 
                             db.SaveChanges(true);
                         }
@@ -1173,23 +1175,32 @@ namespace SadnaExpress.DataLayer
                         {
                             result = db.Stores.FirstOrDefault(m => m.StoreID.Equals(storeID));
                             var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(result.StoreID));
-
-                            if (inv != null)
+                            if (result != null)
                             {
-                                result.itemsInventory = inv;
-                                string quanity_ItemsDB = inv.Items_quantityDB;
-
-                                if (quanity_ItemsDB != null) // add quantity item for store
+                                if (inv != null)
                                 {
-                                    ConcurrentDictionary<Guid, int> items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(quanity_ItemsDB);
+                                    result.itemsInventory = inv;
+                                    string quanity_ItemsDB = inv.Items_quantityDB;
 
-                                    foreach (Guid id in items_quantityHelper.Keys)
+                                    if (quanity_ItemsDB != null) // add quantity item for store
                                     {
-                                        Item item = db.Items.FirstOrDefault(m => m.ItemID.Equals(id));
+                                        ConcurrentDictionary<Guid, int> items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(quanity_ItemsDB);
 
-                                        result.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
+                                        foreach (Guid id in items_quantityHelper.Keys)
+                                        {
+                                            Item item = db.Items.FirstOrDefault(m => m.ItemID.Equals(id));
+
+                                            result.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
+                                        }
                                     }
                                 }
+                                // todo get store condition from DB
+                                List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(result.StoreID)).ToList();
+                                foreach (ConditionDB c in condsFromDB)
+                                {
+                                    result.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false);
+                                }
+
                             }
 
                         }
@@ -1238,6 +1249,15 @@ namespace SadnaExpress.DataLayer
                                         s.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
                                     }
                                 }
+
+                                // todo: get all store condition from DB
+                                List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
+                                foreach (ConditionDB c in condsFromDB)
+                                {
+                                    s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false);
+                                }
+
+
                                 result.TryAdd(s.StoreID, s);
                             }
                         }
@@ -2134,9 +2154,91 @@ namespace SadnaExpress.DataLayer
 
 
 
+        public void addCond( ConditionDB cond)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
 
+                        try
+                        {
+                            var condition = db.conditions;
+                            condition.Add(cond);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to add cond");
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
 
+        public void RemoveCond(int condID, Guid storeID)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var cond = db.conditions.FirstOrDefault(c => c.ID.Equals(condID) && c.StoreID.Equals(storeID));
+                            if (cond != null)
+                            {
+                                db.conditions.Remove(cond);
+                                db.SaveChanges(true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
 
-
+        public bool IsSystemInitialized()
+        {
+            bool result = false;
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var initialized = db.initializeSystems.FirstOrDefault();
+                            if (initialized != null)
+                                result = initialized.IsInit;
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with system initialized table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+            return result;
+        }
     }
 }
