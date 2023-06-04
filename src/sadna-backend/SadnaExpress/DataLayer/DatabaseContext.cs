@@ -92,28 +92,6 @@ namespace SadnaExpress.DataLayer
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // required to connect between user -> shoppingCart -> Basket
-            modelBuilder.Entity<ShoppingCart>(entity =>
-            {
-                entity.HasKey(e => e.ShoppingCartId);
-                entity.HasMany(e => e.Baskets)
-                    .WithOne()
-                    .HasForeignKey("ShoppingCartId")
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
-
-            // required to connect between store and inventory
-            modelBuilder.Entity<Store>(entity =>
-            {
-                entity.HasKey(e => e.StoreID);
-                entity.HasOne(e => e.itemsInventory);
-            });
-
-            //modelBuilder.Entity<ShoppingBasket>()
-            //    .HasOne(b => b.ShoppingCart)
-            //    .WithMany(c => c.Baskets)
-            //    .HasForeignKey(b => b.ShoppingCartId);
-
             base.OnModelCreating(modelBuilder);
         }
 
