@@ -321,7 +321,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         #region both policies
 
-        public Condition AddCondition(string entityStr, string entityName, string type, object value, DateTime dt = default, string op = default, int opCond = -1, bool addToDB = true)
+        public Condition AddCondition(string entityStr, string entityName, string type, object value, DateTime dt = default, string op = default, int opCond = -1, bool addToDB = true, int ID=-1)
         {
             try
             {
@@ -336,6 +336,8 @@ namespace SadnaExpress.DomainLayer.Store
                             ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
                             DBHandler.Instance.addCond(cond, this);
                         }
+                        if (!addToDB && !ID.Equals(-1))
+                            result.ID = ID;
                         return result;
                     case "Store":
                         result = AddConditionHelper(this, type, value, dt, op, opCond);
@@ -344,6 +346,8 @@ namespace SadnaExpress.DomainLayer.Store
                             ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
                             DBHandler.Instance.addCond(cond, this);
                         }
+                        if (!addToDB && !ID.Equals(-1))
+                            result.ID = ID;
                         return result;
                     case "Category":
                         foreach (Item i in itemsInventory.items_quantity.Keys)
@@ -355,6 +359,8 @@ namespace SadnaExpress.DomainLayer.Store
                                     ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
                                     DBHandler.Instance.addCond(cond, this);
                                 }
+                                if (!addToDB && !ID.Equals(-1))
+                                    result.ID = ID;
                                 return result;
                             }
                         throw new Exception("Category doesn't exists in store");

@@ -1198,7 +1198,7 @@ namespace SadnaExpress.DataLayer
                                 List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(result.StoreID)).ToList();
                                 foreach (ConditionDB c in condsFromDB)
                                 {
-                                    result.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false);
+                                    result.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
                                 }
 
                             }
@@ -1254,7 +1254,7 @@ namespace SadnaExpress.DataLayer
                                 List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
                                 foreach (ConditionDB c in condsFromDB)
                                 {
-                                    s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false);
+                                    s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
                                 }
 
 
