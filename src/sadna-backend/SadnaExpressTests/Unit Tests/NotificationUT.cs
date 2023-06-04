@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.API.SignalR;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Unit_Tests
 {
@@ -26,7 +27,11 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.CleanDB();
             NotificationNotifier.GetInstance().TestMood = true;
+            UserFacade userFacade = new UserFacade();
+            notificationSystem.userFacade = userFacade;
             storeID = Guid.NewGuid();
             userID1 = Guid.NewGuid();
             userID2 = Guid.NewGuid();
@@ -35,7 +40,9 @@ namespace SadnaExpressTests.Unit_Tests
             member1 = new Member(userID1, "Dina@gmail.com", "Dina", "Agapov", "dinY1787%$%");
             member2 = new Member(userID2, "Lili@gmail.com", "lili", "lili", "liliY1787%$%");
             member3 = new Member(userID3, "Ayelet@gmail.com", "ayelet", "koz", "liliY1787%$%");
-
+            userFacade.members.TryAdd(userID1, member1);
+            userFacade.members.TryAdd(userID2, member2);
+            userFacade.members.TryAdd(userID3, member3);
         }
         #endregion
         

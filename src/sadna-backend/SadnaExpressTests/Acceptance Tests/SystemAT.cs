@@ -208,7 +208,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Arrange
             Guid id = new Guid();
             proxyBridge.SetIsSystemInitialize(true);
-            proxyBridge.SetPaymentService(new PaymentService());
+            proxyBridge.SetPaymentService(new Mocks.Mock_PaymentService());
             //Act
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
@@ -227,7 +227,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Arrange
             Guid id = new Guid();
             proxyBridge.SetIsSystemInitialize(true);
-            proxyBridge.SetPaymentService(new PaymentService());
+            proxyBridge.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
             //Act
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;
@@ -289,7 +289,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             //Arrange
             Guid id = new Guid();
             proxyBridge.SetIsSystemInitialize(true);
-            proxyBridge.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
+            proxyBridge.SetSupplierService(new Mocks.Mock_Bad_SupplierService());
             //Act
             Task<ResponseT<List<ItemForOrder>>> task = Task.Run(() => {
                 id = proxyBridge.Enter().Value;

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
+using SadnaExpress.DomainLayer;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Unit_Tests
 {
@@ -24,15 +26,23 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.CleanDB();
             store = Guid.NewGuid();
             item1 = Guid.NewGuid();
             item2 = Guid.NewGuid();
             item3 = Guid.NewGuid();
-            member = new Member(Guid.NewGuid(), "tal@gmail.com", "Tal", "Galmor", "w3ka!Tal");
+            Guid userID = Guid.NewGuid();
+            member = new Member(userID, "tal@gmail.com", "Tal", "Galmor", "w3ka!Tal");
+            UserFacade userFacade = new UserFacade();
+            userFacade.members.TryAdd(userID, member);
 
             NotificationNotifier.GetInstance().TestMood = true;
+            NotificationSystem.Instance.userFacade = userFacade;
+
             founder = new PromotedMember(Guid.NewGuid(), "AsiAzar@gmail.com", "Asi", "Azar",
                 ("A#!a12345678"));
+            userFacade.members.TryAdd(founder.UserId, founder);
             founder.createFounder(Guid.NewGuid());
             bid = member.PlaceBid(store, item2, "Apple", 5, new List<PromotedMember> { founder });
         }

@@ -28,6 +28,8 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.CleanDB();
             storeFacade = new StoreFacade();
             storeFacade.SetIsSystemInitialize(true);
             storeID = Guid.NewGuid();
@@ -41,7 +43,7 @@ namespace SadnaExpressTests.Unit_Tests
             itemID1 = storeFacade.AddItemToStore(storeID1, "Bamba shosh limited edition", "food", 20.0, 2);
             itemO1 = new ItemForOrder(storeFacade.GetItemByID(storeID1, itemID1), storeID, "nomatter","Bamba store");
             orderList = new List<ItemForOrder> {itemO1};
-            _orders.AddOrder(userID1, orderList);
+            _orders.AddOrder(userID1, orderList, AddToDB:false);
             numOfOpenStores = 1;
             numOfTotalItemsInAllStores = 1;
         }

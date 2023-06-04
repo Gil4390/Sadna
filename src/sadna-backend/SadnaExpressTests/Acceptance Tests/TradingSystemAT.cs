@@ -23,7 +23,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected Guid memberId2;
         protected Guid memberId3;
         protected Guid memberId4;
-
+        protected Guid idDB;
         protected Guid systemManagerid;
         protected Guid storeOwnerid;
         protected Guid storeid1;
@@ -96,10 +96,10 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             newMac = passwordHash.Mac();
             macs.TryAdd(systemManagerid, newMac);
-            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "noga", "schwartz", passwordHash.Hash("AS87654askj"+newMac));
+            PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "Rotem", "Sela", passwordHash.Hash("AS87654askj"+newMac));
             newMac = passwordHash.Mac();
             macs.TryAdd(storeOwnerid, newMac);
-            storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "shay", "kres", passwordHash.Hash("A#!a12345678"+newMac));
+            storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "Asi", "Azar", passwordHash.Hash("A#!a12345678"+newMac));
             systemManager.createSystemManager();
             storeOwner.createFounder(storeid1);
             members.TryAdd(systemManagerid, systemManager);
@@ -115,12 +115,14 @@ namespace SadnaExpressTests.Acceptance_Tests
             TradingSystem Ts = new TradingSystem(_userFacade, storeFacade);
             
             Ts.TestMode = true;
-
+           
             proxyBridge.SetBridge(Ts);
             proxyBridge.SetPaymentService(new Mock_PaymentService());
             proxyBridge.SetSupplierService(new Mock_SupplierService());
             proxyBridge.SetIsSystemInitialize(true);
-            
+            idDB = proxyBridge.Enter().Value;
+            proxyBridge.Register(idDB, "hello@gmail.com", "hello", "hello", "123AaC!@#");
+            idDB = proxyBridge.Login(idDB, "hello@gmail.com", "123AaC!@#").Value;
             DiscountPolicy policy1 = store1.CreateSimplePolicy("Store", 50, DateTime.Now, new DateTime(2024, 5, 20));
             Condition cond3 = store1.AddCondition("Item","Tshirt", "min quantity", 1);
             DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);

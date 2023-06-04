@@ -29,12 +29,12 @@ namespace SadnaExpressTests.Integration_Tests
         public void PurchaseItemsGuestSuccess()
         {
             //Arrange
-            trading.SetPaymentService(new PaymentService());
-            trading.SetSupplierService(new SupplierService());
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             // Act
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
-            trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
+            Assert.IsFalse(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
             // Assert
             // check the order not created
             Assert.AreEqual(2, trading.GetStorePurchases(userID, storeID1).Value.Count);
@@ -57,8 +57,8 @@ namespace SadnaExpressTests.Integration_Tests
         public void PurchaseItemsGuestPaymentFail()
         {
             //Arrange
-            trading.SetPaymentService(new PaymentService());
-            trading.SetSupplierService(new SupplierService());
+            trading.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             // Act
             SPaymentDetails transactionDetails = new SPaymentDetails("-", "-", "-", "-", "-", "-");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("-", "-", "-", "-", "-");
@@ -81,8 +81,8 @@ namespace SadnaExpressTests.Integration_Tests
         public void PurchaseItemsGuestSupplierFail()
         {
             //Arrange
-            trading.SetPaymentService(new PaymentService());
-            trading.SetSupplierService(new SupplierService());
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_Bad_SupplierService());
             // Act
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("-", "-", "-", "-", "-");
@@ -131,7 +131,7 @@ namespace SadnaExpressTests.Integration_Tests
         public void ItemPriceStayTheSameAfterEdit()
         {
             //Arrange
-            trading.SetPaymentService(new PaymentService());
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
             trading.SetSupplierService(new Mocks.Mock_SupplierService());
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
@@ -155,13 +155,14 @@ namespace SadnaExpressTests.Integration_Tests
         public void PolicyDiscountOfItemsInCart()
         {
             // Arrange
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             DiscountPolicy policy1 =trading.CreateSimplePolicy(userID,storeID1, "Itemipad 32", 10,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
             trading.AddPolicy(userID,storeID1, policy1.ID);
             // Act
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
-
             trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
             // price after discount
             Assert.AreEqual(10200, Orders.Instance.GetOrdersByUserId(buyerID)[0].CalculatorAmount());
@@ -173,6 +174,8 @@ namespace SadnaExpressTests.Integration_Tests
         public void PolicyAddDiscountOfItemsInCart()
         {
             // Arrange
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             DiscountPolicy policy1 =trading.CreateSimplePolicy(userID,storeID1, "Itemipad 32", 10,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
             DiscountPolicy policy2 =trading.CreateSimplePolicy(userID,storeID1, "Store", 20,
@@ -191,11 +194,14 @@ namespace SadnaExpressTests.Integration_Tests
         public void PolicyAddDiscountOfIllegalDate()
         {
             // Arrange
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             DiscountPolicy policy1 =trading.CreateSimplePolicy(userID,storeID1, "Itemipad 32", 10,
                 new DateTime(2022, 05, 22), new DateTime(2022, 05, 22)).Value;
             DiscountPolicy policy2 =trading.CreateSimplePolicy(userID,storeID1, "Store", 20,
                 DateTime.Now, new DateTime(2024, 05, 22)).Value;
-            DiscountPolicy addPolicy = trading.CreateComplexPolicy(userID,storeID1, "add", policy1.ID, policy2.ID).Value;
+            DiscountPolicy addPolicy = trading.CreateComplexPolicy(userID,storeID1, "add", policy1.ID, policy2.ID).Value; 
+            
             trading.AddPolicy(userID,storeID1, addPolicy.ID);
             // Act
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
@@ -209,10 +215,12 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void MemberPurchaseGetNotificationSuccess()
         {
-            // Act
+            //Arrange
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
-
+            // Act
             trading.PurchaseCart(buyerMemberID, transactionDetails, transactionDetailsSupply);
 
             // Assert

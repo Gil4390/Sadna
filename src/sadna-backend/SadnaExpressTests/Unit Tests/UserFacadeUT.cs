@@ -3,9 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer.SModels;
 using static SadnaExpressTests.Mocks;
+using SadnaExpress.API.SignalR;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpressTests.Unit_Tests
 {
@@ -32,6 +35,8 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.CleanDB();
             members = new ConcurrentDictionary<Guid, Member>();
             member = new Member(memberid, "AssiAzar@gmail.com", "shay", "kresner", "ShaY1787%$%");
             members.TryAdd(memberid, member);
@@ -53,6 +58,8 @@ namespace SadnaExpressTests.Unit_Tests
             _userFacade.SetIsSystemInitialize(true);
             userId1 = _userFacade.Enter();
             userId2 = _userFacade.Enter();
+            NotificationSystem.Instance.userFacade = _userFacade;
+            NotificationNotifier.GetInstance().TestMood = true;
         }
 
         #endregion

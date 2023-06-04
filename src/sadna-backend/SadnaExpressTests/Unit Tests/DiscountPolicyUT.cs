@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
 
@@ -28,6 +29,8 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.CleanDB();
             store = new Store("Hello");
             item1 = store.AddItem("Bisli", "Food", 10.0, 2);
             item2 = store.AddItem("Bamba", "Food", 8.0, 2);
