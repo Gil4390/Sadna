@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
+using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace SadnaExpress.DataLayer
         public DbSet<InitializeSystem> initializeSystems { get; set; }
 
         public DbSet<Notification> notfications { get; set; }
-        //public DbSet<Condition> conditions { get; set; }
+        public DbSet<ConditionDB> conditions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -63,6 +64,9 @@ namespace SadnaExpress.DataLayer
             //    .WithMany(c => c.Baskets)
             //    .HasForeignKey(b => b.ShoppingCartId);
 
+            modelBuilder.Entity<ConditionDB>()
+                .Property(e => e.ID)
+                .ValueGeneratedNever();
             base.OnModelCreating(modelBuilder);
         }
 

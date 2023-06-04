@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 
@@ -19,11 +20,11 @@ namespace SadnaExpress.DomainLayer.Store
         private Guid storeID;
         [Key]
         public Guid StoreID { get => storeID; set => storeID = value; }
-        
+
         private bool active;
-        
+
         public bool Active { get => active; set => active = value; }
-        
+
         private int storeRating;
         public int StoreRating
         {
@@ -38,23 +39,24 @@ namespace SadnaExpress.DomainLayer.Store
         public DiscountPolicyTree DiscountPolicyTree { get => discountPolicyTree; set => discountPolicyTree = value; }
         private Dictionary<DiscountPolicy, bool> allDiscountPolicies;
         [NotMapped] // todo
-        public Dictionary<DiscountPolicy, bool> AllDiscountPolicies {get => allDiscountPolicies;set => allDiscountPolicies = value;}
+        public Dictionary<DiscountPolicy, bool> AllDiscountPolicies { get => allDiscountPolicies; set => allDiscountPolicies = value; }
         private Dictionary<Condition, bool> condDiscountPolicies;
         [NotMapped] // todo
-        public Dictionary<Condition, bool> CondDiscountPolicies {get => condDiscountPolicies;set => condDiscountPolicies = value;}
+        public Dictionary<Condition, bool> CondDiscountPolicies { get => condDiscountPolicies; set => condDiscountPolicies = value; }
         private int purchasePolicyCounter;
-        
-        
+
+        [NotMapped]
         public int PurchasePolicyCounter { get => purchasePolicyCounter; set => purchasePolicyCounter = value; }
         private int discountPolicyCounter;
-        
+
+        [NotMapped]
         public int DiscountPolicyCounter { get => discountPolicyCounter; set => discountPolicyCounter = value; }
         private List<Condition> purchasePolicyList;
-        
-        [NotMapped] // todo
-        public List<Condition> PurchasePolicyList { get => purchasePolicyList; set => purchasePolicyList = value;}
 
-       
+        [NotMapped] // todo
+        public List<Condition> PurchasePolicyList { get => purchasePolicyList; set => purchasePolicyList = value; }
+
+
         public Store()
         {
             itemsInventory = new Inventory();
@@ -82,7 +84,7 @@ namespace SadnaExpress.DomainLayer.Store
 
             itemsInventory.StoreID = storeID;
         }
-        
+
         public bool Equals(Store store)
         {
             return store.storeName == storeName && store.itemsInventory.Equals(itemsInventory)
@@ -95,7 +97,7 @@ namespace SadnaExpress.DomainLayer.Store
             //return error
             return itemsInventory.GetItemById(itemID);
         }
-        
+
         public bool ItemExist(Guid itemid)
         {
             //not return error
@@ -141,7 +143,7 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public double GetItemAfterDiscount(Item item)
         {
-            Dictionary<Item, int> itemsBeforeDiscount = new Dictionary<Item, int>{{item, 1}};
+            Dictionary<Item, int> itemsBeforeDiscount = new Dictionary<Item, int> { { item, 1 } };
             Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();
             if (discountPolicyTree != null)
@@ -151,7 +153,7 @@ namespace SadnaExpress.DomainLayer.Store
             return itemAfterDiscount[item].Key;
         }
         #endregion
-        
+
         #region purchase + before
         public Dictionary<Item, double> GetCartItems(Dictionary<Guid, int> items)
         {
@@ -175,7 +177,7 @@ namespace SadnaExpress.DomainLayer.Store
             }
             return basketItems;
         }
-        
+
         // purchase the check of the policy done earlier(when we click on check)
         public double PurchaseCart(Dictionary<Guid, int> items, ref List<ItemForOrder> itemForOrders, string email)
         {
@@ -189,7 +191,7 @@ namespace SadnaExpress.DomainLayer.Store
             if (discountPolicyTree != null)
                 itemAfterDiscount = discountPolicyTree.calculate(this, itemsBeforeDiscount);
             // remove the item from the store inventory
-            return itemsInventory.PurchaseCart(items, itemAfterDiscount, ref itemForOrders, storeID , storeName,email);
+            return itemsInventory.PurchaseCart(items, itemAfterDiscount, ref itemForOrders, storeID, storeName, email);
         }
         #endregion
 
@@ -204,7 +206,7 @@ namespace SadnaExpress.DomainLayer.Store
             allDiscountPolicies.Add(discountPolicy, false);
             return discountPolicy;
         }
-        
+
         public DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
         {
             if (percent < 0)
@@ -225,7 +227,7 @@ namespace SadnaExpress.DomainLayer.Store
 
             throw new Exception("Entity not valid");
         }
-        
+
         private DiscountPolicy HelperInCreateComplexPolicy(DiscountPolicy discountPolicy)
         {
             if (allDiscountPolicies.ContainsKey(discountPolicy))
@@ -235,7 +237,7 @@ namespace SadnaExpress.DomainLayer.Store
             allDiscountPolicies.Add(discountPolicy, false);
             return discountPolicy;
         }
- 
+
         public DiscountPolicy CreateComplexPolicy(string op, params int[] policys)
         {
             switch (op)
@@ -253,7 +255,7 @@ namespace SadnaExpress.DomainLayer.Store
                     RemovePolicy(policys[2], "Policy");
                     return HelperInCreateComplexPolicy(or);
                 case "if":
-                    ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]),GetPolicyByID(policys[1]));
+                    ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]), GetPolicyByID(policys[1]));
                     RemovePolicy(policys[1], "Policy");
                     return HelperInCreateComplexPolicy(ifCond);
                 case "max":
@@ -270,7 +272,7 @@ namespace SadnaExpress.DomainLayer.Store
                     throw new Exception("the op not exist");
             }
         }
-        
+
         public DiscountPolicyTree AddPolicy(int ID)
         {
             if (discountPolicyTree == null)
@@ -281,7 +283,7 @@ namespace SadnaExpress.DomainLayer.Store
             return discountPolicyTree;
         }
 
-        public void RemovePolicy(int ID , string type)
+        public void RemovePolicy(int ID, string type)
         {
             if (type == "Condition")
                 condDiscountPolicies.Remove(GetCondByID(ID));
@@ -294,12 +296,12 @@ namespace SadnaExpress.DomainLayer.Store
                     discountPolicyTree.RemovePolicy(toRemove);
                 }
                 allDiscountPolicies.Remove(toRemove);
-                
+
             }
             else
                 throw new Exception("Policy/Condition not found");
         }
-        
+
         private DiscountPolicy GetPolicyByID(int ID)
         {
             foreach (DiscountPolicy discountPolicy in allDiscountPolicies.Keys)
@@ -307,7 +309,7 @@ namespace SadnaExpress.DomainLayer.Store
                     return discountPolicy;
             throw new Exception($"The policy with {ID} not exist");
         }
-        
+
         private Condition GetCondByID(int ID)
         {
             foreach (Condition condPolicy in condDiscountPolicies.Keys)
@@ -319,25 +321,53 @@ namespace SadnaExpress.DomainLayer.Store
 
         #region both policies
 
-        public Condition AddCondition(string entityStr, string entityName, string type, object value, DateTime dt=default, string op=default , int opCond=-1)
+        public Condition AddCondition(string entityStr, string entityName, string type, object value, DateTime dt = default, string op = default, int opCond = -1, bool addToDB = true)
         {
-            switch (entityStr)
+            try
             {
-                case "Item":
-                    Item entityI = itemsInventory.GetItemByName(entityName);
-                    return AddConditionHelper(entityI, type, value, dt, op, opCond);
-                case "Store":
-                    return AddConditionHelper(this, type, value, dt, op, opCond);
-                case "Category":
-                    foreach (Item i in itemsInventory.items_quantity.Keys)
-                        if (i.Category == entityName)
-                            return AddConditionHelper(entityStr, type, value, dt, op, opCond);
-                    throw new Exception("Category doesn't exists in store");
-                default:
-                    throw new Exception("the entity not exist");
+                Condition result;
+                switch (entityStr)
+                {
+                    case "Item":
+                        Item entityI = itemsInventory.GetItemByName(entityName);
+                        result = AddConditionHelper(entityI, type, value, dt, op, opCond);
+                        if (result != null && addToDB)
+                        {
+                            ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
+                            DBHandler.Instance.addCond(cond);
+                        }
+                        return result;
+                    case "Store":
+                        result = AddConditionHelper(this, type, value, dt, op, opCond);
+                        if (result != null && addToDB)
+                        {
+                            ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
+                            DBHandler.Instance.addCond(cond);
+                        }
+                        return result;
+                    case "Category":
+                        foreach (Item i in itemsInventory.items_quantity.Keys)
+                            if (i.Category == entityName)
+                            {
+                                result = AddConditionHelper(entityStr, type, value, dt, op, opCond);
+                                if (result != null && addToDB)
+                                {
+                                    ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
+                                    DBHandler.Instance.addCond(cond);
+                                }
+                                return result;
+                            }
+                        throw new Exception("Category doesn't exists in store");
+                    default:
+                        throw new Exception("the entity not exist");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
-        
+
         public Condition AddConditionHelper<T>(T entity, string type, object val, DateTime dt=default, string op=default , int opCond=default)
         {
             if (entity == null)
@@ -351,16 +381,16 @@ namespace SadnaExpress.DomainLayer.Store
                 switch (type)
                 {
                     case "min value":
-                        cond = new ValueCondition<T>(entity, (int)val, "min");
+                        cond = new ValueCondition<T>(entity, intValue, "min");
                         return checkNotInList(cond,dt, op, opCond);
                     case "max value":
-                        cond = new ValueCondition<T>(entity, (int)val, "max");
+                        cond = new ValueCondition<T>(entity, intValue, "max");
                         return checkNotInList(cond,dt, op, opCond);
                     case "min quantity":
-                        cond = new QuantityCondition<T>(entity, (int)val, "min");
+                        cond = new QuantityCondition<T>(entity, intValue, "min");
                         return checkNotInList(cond,dt, op, opCond);
                     case "max quantity":
-                        cond = new QuantityCondition<T>(entity, (int)val, "max");
+                        cond = new QuantityCondition<T>(entity, intValue, "max");
                         return checkNotInList(cond,dt, op, opCond);
                 }
             }
@@ -447,6 +477,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception($"Condition {condID} not found");
             }
             purchasePolicyList.Remove(cond);
+            DBHandler.Instance.RemoveCond(condID, this.storeID);
         }
 
         public bool EvaluatePurchasePolicy(Store store, Dictionary<Item, int> basket)
