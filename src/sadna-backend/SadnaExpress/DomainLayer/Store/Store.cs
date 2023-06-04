@@ -45,11 +45,11 @@ namespace SadnaExpress.DomainLayer.Store
         public Dictionary<Condition, bool> CondDiscountPolicies { get => condDiscountPolicies; set => condDiscountPolicies = value; }
         private int purchasePolicyCounter;
 
-        [NotMapped]
+        
         public int PurchasePolicyCounter { get => purchasePolicyCounter; set => purchasePolicyCounter = value; }
         private int discountPolicyCounter;
 
-        [NotMapped]
+
         public int DiscountPolicyCounter { get => discountPolicyCounter; set => discountPolicyCounter = value; }
         private List<Condition> purchasePolicyList;
 
@@ -334,7 +334,7 @@ namespace SadnaExpress.DomainLayer.Store
                         if (result != null && addToDB)
                         {
                             ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
-                            DBHandler.Instance.addCond(cond);
+                            DBHandler.Instance.addCond(cond, this);
                         }
                         return result;
                     case "Store":
@@ -342,7 +342,7 @@ namespace SadnaExpress.DomainLayer.Store
                         if (result != null && addToDB)
                         {
                             ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
-                            DBHandler.Instance.addCond(cond);
+                            DBHandler.Instance.addCond(cond, this);
                         }
                         return result;
                     case "Category":
@@ -353,7 +353,7 @@ namespace SadnaExpress.DomainLayer.Store
                                 if (result != null && addToDB)
                                 {
                                     ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
-                                    DBHandler.Instance.addCond(cond);
+                                    DBHandler.Instance.addCond(cond, this);
                                 }
                                 return result;
                             }

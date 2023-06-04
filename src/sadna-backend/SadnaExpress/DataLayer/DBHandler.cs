@@ -2154,7 +2154,7 @@ namespace SadnaExpress.DataLayer
 
 
 
-        public void addCond( ConditionDB cond)
+        public void addCond( ConditionDB cond, Store store)
         {
             lock (this)
             {
@@ -2167,6 +2167,11 @@ namespace SadnaExpress.DataLayer
                         {
                             var condition = db.conditions;
                             condition.Add(cond);
+                            db.SaveChanges(true);
+
+                            // update store cond counter
+                            //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
+                            db.Stores.Update(store);
                             db.SaveChanges(true);
                         }
                         catch (Exception ex)
