@@ -1196,6 +1196,7 @@ namespace SadnaExpress.DataLayer
                                 }
                                 // todo get store condition from DB
                                 List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(result.StoreID)).ToList();
+                                result.DiscountPolicyCounter -= condsFromDB.Count;
                                 foreach (ConditionDB c in condsFromDB)
                                 {
                                     result.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
@@ -1252,6 +1253,7 @@ namespace SadnaExpress.DataLayer
 
                                 // todo: get all store condition from DB
                                 List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
+                                s.DiscountPolicyCounter -= condsFromDB.Count;
                                 foreach (ConditionDB c in condsFromDB)
                                 {
                                     s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
