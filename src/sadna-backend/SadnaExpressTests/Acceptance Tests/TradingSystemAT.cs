@@ -137,9 +137,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected class Mock_Bad_SupplierService : Mock_SupplierService
         {
             // bad connection
-            public override bool Handshake()
+            public override string Handshake()
             {
-                return false;
+                return "BAD";
             }
 
         }

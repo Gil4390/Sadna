@@ -653,7 +653,7 @@ namespace SadnaExpress.DomainLayer.User
             //3. check that member is system manager
             //4. check that there is connection to payment and supply services
             isLoggedIn(userID);
-
+            
             //impl of 3- throw error if not
             if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }) == false)
                 throw new Exception("Only the system manager can preform this action");
@@ -663,9 +663,13 @@ namespace SadnaExpress.DomainLayer.User
             bool servicesConnected = false;
             try //fort tal
             {
-                servicesConnected = paymentService.Handshake() == "OK" && supplierService.Handshake();
+                servicesConnected = paymentService.Handshake() == "OK" && supplierService.Handshake()== "OK";
             }
-            catch(Exception e) { }
+            catch (Exception e)
+            {
+                throw new Exception("Communication with the external services is temporarily down, please try again in a few minutes");
+
+            }
 
             if(servicesConnected)
                 _isTSInitialized = true;
@@ -772,6 +776,8 @@ namespace SadnaExpress.DomainLayer.User
 
                 var task = Task.Run(() =>
                 {
+                    if (paymentService.Handshake() != "OK")
+                        throw new Exception("Communication with the external services is temporarily down, please try again in a few minutes");
                     return paymentService.Pay(amount, transactionDetails);
                 });
 
@@ -853,6 +859,8 @@ namespace SadnaExpress.DomainLayer.User
 
                 var task = Task.Run(() =>
                 {
+                    if (supplierService.Handshake() != "OK")
+                        throw new Exception("Communication with the external services is temporarily down, please try again in a few minutes");
                     return supplierService.Supply(userDetails);
                 });
 
