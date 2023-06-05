@@ -2480,31 +2480,34 @@ namespace SadnaExpress.DataLayer
 
         public void AddPolicy(int id, Store store)
         {
-            lock (this)
+            if (!testMood)
             {
-                try
+                lock (this)
                 {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    try
                     {
-                        try
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
                         {
-                            var pol = db.policies.FirstOrDefault(c => c.ID.Equals(id) && c.StoreId.Equals(store.StoreID));
-                            if (pol != null)
+                            try
                             {
-                                pol.activated = true;
-                                db.policies.Update(pol);
-                                db.SaveChanges(true);
+                                var pol = db.policies.FirstOrDefault(c => c.ID.Equals(id) && c.StoreId.Equals(store.StoreID));
+                                if (pol != null)
+                                {
+                                    pol.activated = true;
+                                    db.policies.Update(pol);
+                                    db.SaveChanges(true);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception("failed to interact with policies table");
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("failed to interact with policies table");
-                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
                 }
             }
         }
