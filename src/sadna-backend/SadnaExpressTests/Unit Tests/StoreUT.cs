@@ -15,6 +15,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             store = new Store("Hello");
             item1 = store.AddItem("Apple iPad Air A1474 32GB Wi-Fi 9.7 inch Silver", "electronics", 5000.0, 2);

@@ -815,7 +815,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Guid tempid = proxyBridge.Enter().Value;
-            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            proxyBridge.Login(tempid, "dani@gmail.com", "A#!a12345678");
             proxyBridge.AddItemToCart(userid, storeid1, itemid1, 2);
             //Act
             Response t = proxyBridge.PlaceBid(userid, itemid1, 50);
@@ -830,7 +830,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Guid tempid = proxyBridge.Enter().Value;
-            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            proxyBridge.Login(tempid, "dani@gmail.com", "A#!a12345678");
             proxyBridge.AddItemToCart(userid, storeid1, itemid1, 1);
             ResponseT<SBid> bid = proxyBridge.PlaceBid(userid, itemid1, 50);
             //Act
@@ -847,7 +847,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Guid tempid = proxyBridge.Enter().Value;
-            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
+            proxyBridge.Login(tempid, "dani@gmail.com", "A#!a12345678");
             proxyBridge.PlaceBid(userid, itemid1, 60);
             Assert.AreEqual(60,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].OfferPrice);
             //Act
@@ -863,16 +863,16 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Guid tempid = proxyBridge.Enter().Value;
-            proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
-            proxyBridge.PlaceBid(userid, itemid1, 60);
-            Assert.AreEqual(60,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].OfferPrice);
+            proxyBridge.Login(tempid, "dani@gmail.com", "A#!a12345678");
+            proxyBridge.PlaceBid(userid, ItemHelloID, 60);
+            Assert.AreEqual(60, proxyBridge.GetBidsInStore(storeOwnerid2, storeHelloID).Value[0].OfferPrice);
             //Act
-            Response t = proxyBridge.PlaceBid(userid, itemid1, 70);
+            Response t = proxyBridge.PlaceBid(userid, ItemHelloID, 70);
             //Assert
             Assert.IsTrue(t.ErrorOccured);
-            Assert.AreEqual(itemid1,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].ItemID);
-            Assert.AreEqual(60,proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].OfferPrice);
-            Assert.AreEqual(1, proxyBridge.GetNotifications(storeOwnerid).Value.Count);
+            Assert.AreEqual(ItemHelloID, proxyBridge.GetBidsInStore(storeOwnerid2, storeHelloID).Value[0].ItemID);
+            Assert.AreEqual(60,proxyBridge.GetBidsInStore(storeOwnerid2, storeHelloID).Value[0].OfferPrice);
+            Assert.AreEqual(1, proxyBridge.GetNotifications(storeOwnerid2).Value.Count);
         }
         
 

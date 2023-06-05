@@ -32,7 +32,7 @@ namespace SadnaExpress.DomainLayer.User
         [NotMapped]
         public Dictionary<PromotedMember, string> Decisions {get => decisions; set => decisions = value;}
 
-        public Bid(User user, Guid storeID, Guid itemID, string itemName, double price, List<PromotedMember> decisionBids)
+        public Bid(User user, Guid storeID, Guid itemID, string itemName, double price)
         {
             BidId = Guid.NewGuid();
             openBid = true;
@@ -43,13 +43,13 @@ namespace SadnaExpress.DomainLayer.User
             this.price = price;
             List<Member> toNodify = new List<Member>();
             decisions = new Dictionary<PromotedMember, string>();
-            foreach (PromotedMember promotedMember in decisionBids)
+            foreach (PromotedMember promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
             {
                 decisions.Add(promotedMember, "undecided");
                 promotedMember.AddBid(this.storeID, this);
                 toNodify.Add(promotedMember);
             }
-            NotificationSystem.Instance.NotifyObservers(toNodify, storeID, $"You got an offer to change the price of {this.itemName} to {price}", this.user.UserId);
+            NotificationSystem.Instance.NotifyObservers(storeID, $"You got an offer to change the price of {this.itemName} to {price}", this.user.UserId);
         }
 
         public bool Approved()

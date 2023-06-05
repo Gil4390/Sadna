@@ -120,9 +120,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             //Arrange
             Guid enterId = proxyBridge.Enter().Value;
-            proxyBridge.Login(enterId, "hello@gmail.com", "123AaC!@#");
-            proxyBridge.AddItemToCart(idDB, storeid1, itemid1, 1);
-            proxyBridge.AddItemToCart(idDB, storeid2, itemid2, 1);
+            proxyBridge.Login(enterId,"gil@gmail.com", "asASD876!@");
+            proxyBridge.AddItemToCart(memberId, storeid1, itemid1, 1);
+            proxyBridge.AddItemToCart(memberId, storeid2, itemid2, 1);
             Guid tempid = proxyBridge.Enter().Value;
             proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
             Random random = new Random();
@@ -139,14 +139,14 @@ namespace SadnaExpressTests.Acceptance_Tests
                 SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
                 SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
 
-                return proxyBridge.PurchaseCart(idDB, transactionDetails, transactionDetailsSupply);
+                return proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
             });
             Task.WaitAll();
 
             Assert.IsFalse(task1.Result.ErrorOccured || task2.Result.ErrorOccured); //no error should happen
-            Assert.IsTrue(proxyBridge.GetMember(idDB).ErrorOccured); // the member should erase
-            Assert.IsNotNull(proxyBridge.GetUser(idDB)); //the user still need to be in the system
-            Assert.AreEqual(0, proxyBridge.GetDetailsOnCart(idDB).Value.Baskets.Count); // the shopping cart need to be empty because the user buy 
+            Assert.IsTrue(proxyBridge.GetMember(memberId).ErrorOccured); // the member should erase
+            Assert.IsNotNull(proxyBridge.GetUser(memberId)); //the user still need to be in the system
+            Assert.AreEqual(0, proxyBridge.GetDetailsOnCart(memberId).Value.Baskets.Count); // the shopping cart need to be empty because the user buy 
             // check order details
             Assert.AreEqual(2, proxyBridge.GetAllStorePurchases(systemManagerid).Value.Count);
             Assert.IsTrue(proxyBridge.GetAllStorePurchases(systemManagerid).Value.ContainsKey(storeid1));
