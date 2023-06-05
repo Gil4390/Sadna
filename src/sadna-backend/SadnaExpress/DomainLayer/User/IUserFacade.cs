@@ -48,6 +48,8 @@ namespace SadnaExpress.DomainLayer.User
         void SetIsSystemInitialize(bool isInitialize);
         User GetUser(Guid userID);
         Member GetMember(Guid userID);
+        Member GetMember(String email);
+
         void GetStorePurchases(Guid userId, Guid storeId);
         void GetAllStorePurchases(Guid userId);
         void PurchaseCart(DatabaseContext db, Guid userID);

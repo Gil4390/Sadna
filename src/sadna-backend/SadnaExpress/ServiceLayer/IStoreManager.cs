@@ -47,6 +47,8 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ConcurrentDictionary<Guid, Store> GetStores();
         void SetIsSystemInitialize(bool isInitialize);
         ResponseT<Store> GetStore(Guid storeID);
+        ResponseT<Store> GetStore(String name);
+
         void SetTSOrders(IOrders orders);
         ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
         ResponseT<Condition> AddCondition(Guid userID , Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,

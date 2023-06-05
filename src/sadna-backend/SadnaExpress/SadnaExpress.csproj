@@ -112,11 +112,6 @@
     <Compile Include="DomainLayer\User\UserFacade.cs" />
     <Compile Include="ExternalServices\PaymentService.cs" />
     <Compile Include="ExternalServices\SupplierService.cs" />
-    <Compile Include="Migrations\20230604160742_Initial.cs" />
-    <Compile Include="Migrations\20230604160742_Initial.designer.cs">
-      <DependentUpon>20230604160742_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\DatabaseContextModelSnapshot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />
@@ -139,6 +134,7 @@
     <Compile Include="ServiceLayer\UserManager.cs" />
     <Compile Include="ExternalServices\IPaymentService.cs" />
     <Compile Include="ExternalServices\ISupplierService.cs" />
+    <Compile Include="State.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.Cors" Version="5.0.0" />
@@ -181,6 +177,8 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data.json" />
+    <None Include="data2.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

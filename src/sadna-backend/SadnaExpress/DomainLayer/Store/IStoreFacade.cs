@@ -33,6 +33,8 @@ namespace SadnaExpress.DomainLayer.Store
         ConcurrentDictionary<Guid, Store> GetStores();
         void SetIsSystemInitialize(bool isInitialize);
         Store GetStore(Guid storeID);
+        Store GetStore(String name);
+
         Item GetItemByID(Guid storeID, Guid itemID); //for tests
         void SetTSOrders(IOrders orders);
         Condition AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string op= default, int opCond= default);

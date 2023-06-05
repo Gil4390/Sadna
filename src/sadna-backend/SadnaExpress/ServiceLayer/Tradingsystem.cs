@@ -507,12 +507,18 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetMember(userID);
         }
-
+        public ResponseT<Member> GetMember(String email)
+        {
+            return userManager.GetMember(email);
+        }
         public ResponseT<Store> GetStore(Guid storeID)
         {
             return storeManager.GetStore(storeID);
         }
-
+        public ResponseT<Store> GetStore(String name)
+        {
+            return storeManager.GetStore(name);
+        }
         public void SetTSOrders(IOrders orders)
         {
             storeManager.SetTSOrders(orders);

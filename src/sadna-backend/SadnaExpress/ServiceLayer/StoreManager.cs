@@ -466,6 +466,19 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Store>(ex.Message);
             }
         }
+        public ResponseT<Store> GetStore(String name)
+        {
+            try
+            {
+                Store store = storeFacade.GetStore(name);
+                return new ResponseT<Store>(store);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStore) + ": " + ex.Message);
+                return new ResponseT<Store>(ex.Message);
+            }
+        }
 
         public void SetTSOrders(IOrders orders)
         {
