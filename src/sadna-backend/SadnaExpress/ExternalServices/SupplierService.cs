@@ -47,13 +47,17 @@ namespace SadnaExpress.ExternalServices
             
         }
 
-        public bool Handshake()
+        public string Handshake()
         {
             var postContent = new Dictionary<string, string>
             {
                 {"action_type","handshake"},
             };
-            return (string)Send(postContent)=="OK";
+            var formData = new FormUrlEncodedContent(postContent);
+            var responseTask = client.PostAsync(address, formData);
+            var response = responseTask.Result;
+            var responseContentTask = response.Content.ReadAsStringAsync();
+            return responseContentTask.Result;
         }
 
         public int Supply(SSupplyDetails userDetails)

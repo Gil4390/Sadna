@@ -33,9 +33,9 @@ namespace SadnaExpressTests
                 throw new NotImplementedException();
             }
 
-            public virtual bool Handshake()
+            public virtual string Handshake()
             {
-                return isConnected;
+                return "OK";
             }
 
 
