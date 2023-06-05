@@ -277,7 +277,7 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 case "xor":
                     XorDiscount xor = new XorDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    RemovePolicy(policys[2], "Policy");
+                    RemovePolicy(policys[2], "Policy",false);
                     result = HelperInCreateComplexPolicy(xor);
                     if(result != null)
                     {
@@ -287,7 +287,7 @@ namespace SadnaExpress.DomainLayer.Store
                     return result;
                 case "and":
                     AndDiscount and = new AndDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    RemovePolicy(policys[2], "Policy");
+                    RemovePolicy(policys[2], "Policy", false);
                     result =  HelperInCreateComplexPolicy(and);
                     if (result != null)
                     {
@@ -297,7 +297,7 @@ namespace SadnaExpress.DomainLayer.Store
                     return result;
                 case "or":
                     OrDiscount or = new OrDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    RemovePolicy(policys[2], "Policy");
+                    RemovePolicy(policys[2], "Policy", false);
                     result = HelperInCreateComplexPolicy(or);
                     if (result != null)
                     {
@@ -307,7 +307,7 @@ namespace SadnaExpress.DomainLayer.Store
                     return result;
                 case "if":
                     ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]), GetPolicyByID(policys[1]));
-                    RemovePolicy(policys[1], "Policy");
+                    RemovePolicy(policys[1], "Policy", false);
                     result = HelperInCreateComplexPolicy(ifCond);
                     if (result != null)
                     {
@@ -317,8 +317,8 @@ namespace SadnaExpress.DomainLayer.Store
                     return result;
                 case "max":
                     MaxDiscount max = new MaxDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    RemovePolicy(policys[0], "Policy");
-                    RemovePolicy(policys[1], "Policy");
+                    RemovePolicy(policys[0], "Policy", false);
+                    RemovePolicy(policys[1], "Policy", false);
                     result = HelperInCreateComplexPolicy(max);
                     if (result != null)
                     {
@@ -328,8 +328,8 @@ namespace SadnaExpress.DomainLayer.Store
                     return result;
                 case "add":
                     AddDiscount add = new AddDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    RemovePolicy(policys[0], "Policy");
-                    RemovePolicy(policys[1], "Policy");
+                    RemovePolicy(policys[0], "Policy", false);
+                    RemovePolicy(policys[1], "Policy", false);
                     result = HelperInCreateComplexPolicy(add);
                     if (result != null)
                     {
@@ -349,41 +349,41 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 case "xor":
                     XorDiscount xor = new XorDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    RemovePolicy(policys[2], "Policy");
+                    RemovePolicy(policys[2], "Policy",false);
                     result = HelperInCreateComplexPolicy(xor);
                     if(result != null)
                         result.ID = ID;
                     return result;
                 case "and":
                     AndDiscount and = new AndDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    RemovePolicy(policys[2], "Policy");
+                    RemovePolicy(policys[2], "Policy", false);
                     result = HelperInCreateComplexPolicy(and);
                     if (result != null)
                         result.ID = ID;
                     return result;
                 case "or":
                     OrDiscount or = new OrDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
-                    RemovePolicy(policys[2], "Policy");
+                    RemovePolicy(policys[2], "Policy", false);
                     return HelperInCreateComplexPolicy(or);
                 case "if":
                     ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]), GetPolicyByID(policys[1]));
-                    RemovePolicy(policys[1], "Policy");
+                    RemovePolicy(policys[1], "Policy", false);
                     result = HelperInCreateComplexPolicy(ifCond);
                     if (result != null)
                         result.ID = ID;
                     return result;
                 case "max":
                     MaxDiscount max = new MaxDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    RemovePolicy(policys[0], "Policy");
-                    RemovePolicy(policys[1], "Policy");
+                    RemovePolicy(policys[0], "Policy", false);
+                    RemovePolicy(policys[1], "Policy", false);
                     result = HelperInCreateComplexPolicy(max);
                     if (result != null)
                         result.ID = ID;
                     return result;
                 case "add":
                     AddDiscount add = new AddDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
-                    RemovePolicy(policys[0], "Policy");
-                    RemovePolicy(policys[1], "Policy");
+                    RemovePolicy(policys[0], "Policy", false);
+                    RemovePolicy(policys[1], "Policy", false);
                     result = HelperInCreateComplexPolicy(add);
                     if (result != null)
                         result.ID = ID;
@@ -406,10 +406,14 @@ namespace SadnaExpress.DomainLayer.Store
             return discountPolicyTree;
         }
 
-        public void RemovePolicy(int ID, string type)
+        public void RemovePolicy(int ID, string type, bool ShouldRemoveFromDB=true)
         {
             if (type == "Condition")
+            {
                 condDiscountPolicies.Remove(GetCondByID(ID));
+                if (ShouldRemoveFromDB)
+                    DBHandler.Instance.RemoveCond(ID, this);
+            }
 
             else if (type == "Policy")
             {
@@ -419,7 +423,8 @@ namespace SadnaExpress.DomainLayer.Store
                     discountPolicyTree.RemovePolicy(toRemove);
                 }
                 allDiscountPolicies.Remove(toRemove);
-
+                if (ShouldRemoveFromDB)
+                    DBHandler.Instance.RemovePolicy(toRemove, this);
             }
             else
                 throw new Exception("Policy/Condition not found");
@@ -606,7 +611,7 @@ namespace SadnaExpress.DomainLayer.Store
                 throw new Exception($"Condition {condID} not found");
             }
             purchasePolicyList.Remove(cond);
-            DBHandler.Instance.RemoveCond(condID, this.storeID);
+            DBHandler.Instance.RemoveCond(condID, this);
         }
 
         public bool EvaluatePurchasePolicy(Store store, Dictionary<Item, int> basket)
