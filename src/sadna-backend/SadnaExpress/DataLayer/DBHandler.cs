@@ -93,8 +93,8 @@ namespace SadnaExpress.DataLayer
                             db.notfications.RemoveRange(db.notfications);
                             db.orders.RemoveRange(db.orders);
                             db.ItemForOrders.RemoveRange(db.ItemForOrders);
-
                             db.conditions.RemoveRange(db.conditions);
+                            db.policies.RemoveRange(db.policies);
 
                             db.SaveChanges(true);
                         }
@@ -1194,14 +1194,42 @@ namespace SadnaExpress.DataLayer
                                         }
                                     }
                                 }
+
+                                int saveStorePurchasePolicyCounter = result.PurchasePolicyCounter;
+                                int saveStoreDiscountPolicyCounter = result.DiscountPolicyCounter;
+
                                 // todo get store condition from DB
                                 List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(result.StoreID)).ToList();
-                                result.DiscountPolicyCounter -= condsFromDB.Count;
+                                result.PurchasePolicyCounter = 0;
                                 foreach (ConditionDB c in condsFromDB)
                                 {
                                     result.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
                                 }
 
+                                // todo get all policies from DB
+                                result.DiscountPolicyCounter = 0;
+                                List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(result.StoreID) && c.Discriminator.Equals("Simple")).ToList();
+                                foreach(PolicyDB pol in simplePolFromDB)
+                                {
+                                    result.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
+                                    if(pol.activated)
+                                    {
+                                        result.AddPolicy(pol.ID, false);
+                                    }
+                                }
+                                List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(result.StoreID) && c.Discriminator.Equals("Complex")).ToList();
+                                foreach (PolicyDB pol in complexPolFromDB)
+                                {
+                                    result.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);
+                                    if (pol.activated)
+                                    {
+                                        result.AddPolicy(pol.ID, false);
+                                    }
+                                }
+
+
+                                result.PurchasePolicyCounter = saveStorePurchasePolicyCounter;
+                                result.DiscountPolicyCounter = saveStoreDiscountPolicyCounter;
                             }
 
                         }
@@ -1251,13 +1279,42 @@ namespace SadnaExpress.DataLayer
                                     }
                                 }
 
-                                // todo: get all store condition from DB
+                                int saveStorePurchasePolicyCounter = s.PurchasePolicyCounter;
+                                int saveStoreDiscountPolicyCounter = s.DiscountPolicyCounter;
+
+                                // todo get store condition from DB
                                 List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
-                                s.DiscountPolicyCounter -= condsFromDB.Count;
+                                s.PurchasePolicyCounter = 0;
                                 foreach (ConditionDB c in condsFromDB)
                                 {
                                     s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
                                 }
+
+                                // todo get all policies from DB
+                                s.DiscountPolicyCounter = 0;
+                                List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Simple")).ToList();
+                                foreach (PolicyDB pol in simplePolFromDB)
+                                {
+                                    s.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
+                                    if (pol.activated)
+                                    {
+                                        s.AddPolicy(pol.ID, false);
+                                    }
+                                }
+                                List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Complex")).ToList();
+                                foreach (PolicyDB pol in complexPolFromDB)
+                                {
+                                    s.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);
+                                    if (pol.activated)
+                                    {
+                                        s.AddPolicy(pol.ID, false);
+                                    }
+                                }
+
+
+                                s.PurchasePolicyCounter = saveStorePurchasePolicyCounter;
+                                s.DiscountPolicyCounter = saveStoreDiscountPolicyCounter;
+
 
 
                                 result.TryAdd(s.StoreID, s);
@@ -2253,6 +2310,76 @@ namespace SadnaExpress.DataLayer
                 }
             }
             return result;
+        }
+
+        public void AddPolicy(int id, Store store)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var pol = db.policies.FirstOrDefault(c => c.ID.Equals(id) && c.StoreId.Equals(store.StoreID));
+                            if (pol != null)
+                            {
+                                pol.activated = true;
+                                db.policies.Update(pol);
+                                db.SaveChanges(true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with policies table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public void InsertNewPolicy(PolicyDB pol, Store store)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            // update store cond counter
+                            //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
+                            try
+                            {
+                                db.Stores.Update(store);
+                                db.SaveChanges(true);
+                            }
+                            catch (Exception ex)
+                            {
+                                // store was not add to db
+                                AddStore(store);
+                            }
+                            var policies = db.policies;
+                            policies.Add(pol);
+                            db.SaveChanges(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to add cond");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
         }
     }
 }

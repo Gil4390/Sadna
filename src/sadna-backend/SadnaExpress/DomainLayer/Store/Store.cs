@@ -8,6 +8,7 @@ using System.Linq;
 using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -207,21 +208,52 @@ namespace SadnaExpress.DomainLayer.Store
             return discountPolicy;
         }
 
-        public DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate)
+        public DiscountPolicy CreateSimplePolicy<T>(T level, int percent, DateTime startDate, DateTime endDate, bool addToDB=true, int ID=-1)
         {
             if (percent < 0)
                 throw new Exception("Invalid percent amount");
             if (level.GetType() == typeof(string))
             {
+                DiscountPolicy result;
                 switch (level.ToString())
                 {
                     case string s when s.StartsWith("Item"):
                         Item item = itemsInventory.GetItemByName(s.Substring(4));
-                        return HelperInCreateSimplePolicy(new SimpleDiscount<Item>(item, percent, startDate, endDate));
+                        result = HelperInCreateSimplePolicy(new SimpleDiscount<Item>(item, percent, startDate, endDate));
+                        if (result != null && addToDB)
+                        {
+                            PolicyDB pol = new PolicyDB { UniqueID = Guid.NewGuid(), ID = result.ID, StoreId = this.storeID, Discriminator = "Simple", simple_level = level.ToString(), simple_percent=percent, simple_startDate=startDate, simple_endDate=endDate };
+                            DBHandler.Instance.InsertNewPolicy(pol, this);
+                        }
+                        if(result != null && !ID.Equals(-1))
+                        {
+                            result.ID = ID;
+                        }
+                        return result;
                     case string s when s.StartsWith("Store"):
-                        return HelperInCreateSimplePolicy(new SimpleDiscount<Store>(this, percent, startDate, endDate));
+                        result = HelperInCreateSimplePolicy(new SimpleDiscount<Store>(this, percent, startDate, endDate));
+                        if (result != null && addToDB)
+                        {
+                            PolicyDB pol = new PolicyDB { UniqueID = Guid.NewGuid(), ID = result.ID, StoreId = this.storeID, Discriminator = "Simple", simple_level = level.ToString(), simple_percent = percent, simple_startDate = startDate, simple_endDate = endDate };
+                            DBHandler.Instance.InsertNewPolicy(pol, this);
+                        }
+                        if (result != null && !ID.Equals(-1))
+                        {
+                            result.ID = ID;
+                        }
+                        return result;
                     case string s when s.StartsWith("Category"):
-                        return HelperInCreateSimplePolicy(new SimpleDiscount<string>(s.Substring(8), percent, startDate, endDate));
+                        result = HelperInCreateSimplePolicy(new SimpleDiscount<string>(s.Substring(8), percent, startDate, endDate));
+                        if (result != null && addToDB)
+                        {
+                            PolicyDB pol = new PolicyDB { UniqueID = Guid.NewGuid(), ID = result.ID, StoreId = this.storeID, Discriminator = "Simple", simple_level = level.ToString(), simple_percent = percent, simple_startDate = startDate, simple_endDate = endDate };
+                            DBHandler.Instance.InsertNewPolicy(pol, this);
+                        }
+                        if (result != null && !ID.Equals(-1))
+                        {
+                            result.ID = ID;
+                        }
+                        return result;
                 }
             }
 
@@ -240,16 +272,95 @@ namespace SadnaExpress.DomainLayer.Store
 
         public DiscountPolicy CreateComplexPolicy(string op, params int[] policys)
         {
+            DiscountPolicy result;
             switch (op)
             {
                 case "xor":
                     XorDiscount xor = new XorDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
                     RemovePolicy(policys[2], "Policy");
-                    return HelperInCreateComplexPolicy(xor);
+                    result = HelperInCreateComplexPolicy(xor);
+                    if(result != null)
+                    {
+                        PolicyDB pol = new PolicyDB { UniqueID = Guid.NewGuid(), ID = result.ID, StoreId = this.storeID, complex_op = op, complex_policys = policys, Discriminator = "Complex" };
+                        DBHandler.Instance.InsertNewPolicy(pol, this);
+                    }
+                    return result;
                 case "and":
                     AndDiscount and = new AndDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
                     RemovePolicy(policys[2], "Policy");
-                    return HelperInCreateComplexPolicy(and);
+                    result =  HelperInCreateComplexPolicy(and);
+                    if (result != null)
+                    {
+                        PolicyDB pol = new PolicyDB { UniqueID = Guid.NewGuid(), ID = result.ID, StoreId = this.storeID, complex_op = op, complex_policys = policys, Discriminator = "Complex" };
+                        DBHandler.Instance.InsertNewPolicy(pol, this);
+                    }
+                    return result;
+                case "or":
+                    OrDiscount or = new OrDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
+                    RemovePolicy(policys[2], "Policy");
+                    result = HelperInCreateComplexPolicy(or);
+                    if (result != null)
+                    {
+                        PolicyDB pol = new PolicyDB { UniqueID = Guid.NewGuid(), ID = result.ID, StoreId = this.storeID, complex_op = op, complex_policys = policys, Discriminator = "Complex" };
+                        DBHandler.Instance.InsertNewPolicy(pol, this);
+                    }
+                    return result;
+                case "if":
+                    ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]), GetPolicyByID(policys[1]));
+                    RemovePolicy(policys[1], "Policy");
+                    result = HelperInCreateComplexPolicy(ifCond);
+                    if (result != null)
+                    {
+                        PolicyDB pol = new PolicyDB { UniqueID = Guid.NewGuid(), ID = result.ID, StoreId = this.storeID, complex_op = op, complex_policys = policys, Discriminator = "Complex" };
+                        DBHandler.Instance.InsertNewPolicy(pol, this);
+                    }
+                    return result;
+                case "max":
+                    MaxDiscount max = new MaxDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
+                    RemovePolicy(policys[0], "Policy");
+                    RemovePolicy(policys[1], "Policy");
+                    result = HelperInCreateComplexPolicy(max);
+                    if (result != null)
+                    {
+                        PolicyDB pol = new PolicyDB { UniqueID = Guid.NewGuid(), ID = result.ID, StoreId = this.storeID, complex_op = op, complex_policys = policys, Discriminator = "Complex" };
+                        DBHandler.Instance.InsertNewPolicy(pol, this);
+                    }
+                    return result;
+                case "add":
+                    AddDiscount add = new AddDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
+                    RemovePolicy(policys[0], "Policy");
+                    RemovePolicy(policys[1], "Policy");
+                    result = HelperInCreateComplexPolicy(add);
+                    if (result != null)
+                    {
+                        PolicyDB pol = new PolicyDB { UniqueID = Guid.NewGuid(), ID = result.ID, StoreId = this.storeID, complex_op = op, complex_policys = policys, Discriminator = "Complex" };
+                        DBHandler.Instance.InsertNewPolicy(pol, this);
+                    }
+                    return result;
+                default:
+                    throw new Exception("the op not exist");
+            }
+        }
+
+        public DiscountPolicy CreateComplexPolicyFromDB(string op, int ID, params int[] policys)
+        {
+            DiscountPolicy result;
+            switch (op)
+            {
+                case "xor":
+                    XorDiscount xor = new XorDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
+                    RemovePolicy(policys[2], "Policy");
+                    result = HelperInCreateComplexPolicy(xor);
+                    if(result != null)
+                        result.ID = ID;
+                    return result;
+                case "and":
+                    AndDiscount and = new AndDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
+                    RemovePolicy(policys[2], "Policy");
+                    result = HelperInCreateComplexPolicy(and);
+                    if (result != null)
+                        result.ID = ID;
+                    return result;
                 case "or":
                     OrDiscount or = new OrDiscount(GetCondByID(policys[0]), GetCondByID(policys[1]), GetPolicyByID(policys[2]));
                     RemovePolicy(policys[2], "Policy");
@@ -257,29 +368,41 @@ namespace SadnaExpress.DomainLayer.Store
                 case "if":
                     ConditionalDiscount ifCond = new ConditionalDiscount(GetCondByID(policys[0]), GetPolicyByID(policys[1]));
                     RemovePolicy(policys[1], "Policy");
-                    return HelperInCreateComplexPolicy(ifCond);
+                    result = HelperInCreateComplexPolicy(ifCond);
+                    if (result != null)
+                        result.ID = ID;
+                    return result;
                 case "max":
                     MaxDiscount max = new MaxDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
                     RemovePolicy(policys[0], "Policy");
                     RemovePolicy(policys[1], "Policy");
-                    return HelperInCreateComplexPolicy(max);
+                    result = HelperInCreateComplexPolicy(max);
+                    if (result != null)
+                        result.ID = ID;
+                    return result;
                 case "add":
                     AddDiscount add = new AddDiscount(GetPolicyByID(policys[0]), GetPolicyByID(policys[1]));
                     RemovePolicy(policys[0], "Policy");
                     RemovePolicy(policys[1], "Policy");
-                    return HelperInCreateComplexPolicy(add);
+                    result = HelperInCreateComplexPolicy(add);
+                    if (result != null)
+                        result.ID = ID;
+                    return result;
                 default:
                     throw new Exception("the op not exist");
             }
         }
 
-        public DiscountPolicyTree AddPolicy(int ID)
+
+        public DiscountPolicyTree AddPolicy(int ID, bool AddtoDB=true)
         {
             if (discountPolicyTree == null)
                 discountPolicyTree = new DiscountPolicyTree(GetPolicyByID(ID));
             else
                 discountPolicyTree.AddPolicy(GetPolicyByID(ID));
             allDiscountPolicies[GetPolicyByID(ID)] = true;
+            if (AddtoDB)
+                DBHandler.Instance.AddPolicy(ID, this);
             return discountPolicyTree;
         }
 
