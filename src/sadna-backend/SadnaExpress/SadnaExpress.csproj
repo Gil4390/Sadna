@@ -78,6 +78,7 @@
     <Compile Include="DataLayer\DatabaseContext.cs" />
     <Compile Include="DataLayer\DBHandler.cs" />
     <Compile Include="DomainLayer\Store\Policy\ConditionDB.cs" />
+    <Compile Include="DomainLayer\Store\Policy\PolicyDB.cs" />
     <Compile Include="DomainLayer\User\InitializeSystem.cs" />
     <Compile Include="DomainLayer\User\Macs.cs" />
     <Compile Include="ApplicationOptions.cs" />
@@ -112,11 +113,16 @@
     <Compile Include="DomainLayer\User\UserFacade.cs" />
     <Compile Include="ExternalServices\PaymentService.cs" />
     <Compile Include="ExternalServices\SupplierService.cs" />
-    <Compile Include="Migrations\20230604160742_Initial.cs" />
-    <Compile Include="Migrations\20230604160742_Initial.designer.cs">
-      <DependentUpon>20230604160742_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\20230605105207_Initial.cs" />
+    <Compile Include="Migrations\20230605105207_Initial.designer.cs">
+      <DependentUpon>20230605105207_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DatabaseContextModelSnapshot.cs" />
+    <Compile Include="Migrations\DatabaseTests\20230605105213_Initial.cs" />
+    <Compile Include="Migrations\DatabaseTests\20230605105213_Initial.designer.cs">
+      <DependentUpon>20230605105213_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\DatabaseTests\DatabaseTestsContextModelSnapshot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />

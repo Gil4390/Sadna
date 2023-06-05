@@ -32,6 +32,8 @@ namespace SadnaExpress.DataLayer
         public DbSet<Notification> notfications { get; set; }
         public DbSet<ConditionDB> conditions { get; set; }
 
+        public DbSet<PolicyDB> policies { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseMySql("Server=MYSQL5045.site4now.net;Database=db_a995b0_sadnadb;Uid=a995b0_sadnadb;Pwd=Sadna123");
@@ -59,14 +61,19 @@ namespace SadnaExpress.DataLayer
                 entity.HasOne(e => e.itemsInventory);
             });
 
-            //modelBuilder.Entity<ShoppingBasket>()
-            //    .HasOne(b => b.ShoppingCart)
-            //    .WithMany(c => c.Baskets)
-            //    .HasForeignKey(b => b.ShoppingCartId);
 
             modelBuilder.Entity<ConditionDB>()
                 .Property(e => e.ID)
                 .ValueGeneratedNever();
+
+            modelBuilder.Entity<PolicyDB>()
+                .Property(p => p.complex_policys)
+                .HasConversion(
+                v => string.Join(",", v),
+                v => v.Split(',', (char)StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse).ToArray());
+
+
             base.OnModelCreating(modelBuilder);
         }
 
