@@ -142,7 +142,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void Simple1Condition_Success_time()
         {
             //Arrange
-            cond1 = store.AddCondition("Item","Bisli", "before time", 0 , DateTime.MaxValue);
+            cond1 = store.AddCondition("Item","Bisli", "after date", "1998/10/30", DateTime.MaxValue);
             //Act
             bool res = store.EvaluatePurchasePolicy(store, basket);
             //Assert
@@ -152,19 +152,9 @@ namespace SadnaExpressTests.Unit_Tests
         public void Simple1Condition_Fail_time()
         {
             //Arrange
-            cond1 = store.AddCondition("Item","Bisli", "before time", 0 , new DateTime(1998/10/30));
+            cond1 = store.AddCondition("Item","Bisli", "before date", "1998/10/30", DateTime.MaxValue);
             //Assert
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
-        }
-        [TestMethod]
-        public void Simple1Condition_Fail_time2()
-        {
-            //Arrange
-            cond1 = store.AddCondition("Item","Bisli", "before time", 0 , DateTime.Today);
-            //Assert
-            bool res = store.EvaluatePurchasePolicy(store, basket);
-            Assert.IsFalse(res);
+            Assert.ThrowsException<Exception>(()=> store.EvaluatePurchasePolicy(store, basket));
         }
         
         

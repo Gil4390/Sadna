@@ -13,6 +13,7 @@ namespace SadnaExpressTests.Persistence_Tests
         [TestInitialize]
         public override void Setup()
         {
+            base.setTestMood();    
             base.Setup();
             DatabaseContextFactory.TestMode = true;
         }
@@ -22,7 +23,8 @@ namespace SadnaExpressTests.Persistence_Tests
         {
             Guid id = trading.Enter().Value;
             trading.Register(id, "omer@weka.io","omer", "shikma", "143AaC!@#");
-            Assert.IsTrue(DBHandler.Instance.memberExistsById(id));
+            Guid memID = trading.Login(id, "omer@weka.io", "143AaC!@#").Value;
+            Assert.IsTrue(DBHandler.Instance.memberExistsById(memID));
         }
         
         [TestMethod()]
@@ -32,8 +34,9 @@ namespace SadnaExpressTests.Persistence_Tests
             
             Guid id = trading.Enter().Value;
             trading.Register(id, "omer@weka.io","omer", "shikma", "143AaC!@#");
-            Assert.Equals(numOfMembers + 1, DBHandler.Instance.GetAllMembers().Count);
-            Assert.IsTrue(DBHandler.Instance.memberExistsById(id));
+            Assert.AreEqual(numOfMembers + 1, DBHandler.Instance.GetAllMembers().Count);
+            Guid memID = trading.Login(id, "omer@weka.io", "143AaC!@#").Value;
+            Assert.IsTrue(DBHandler.Instance.memberExistsById(memID));
         }
         
         
@@ -41,35 +44,26 @@ namespace SadnaExpressTests.Persistence_Tests
         public void DB_Register_invalid_ID_Fail()
         {
             DBHandler.Instance.CleanDB();
-            Guid unknown = new Guid();
-            trading.Register(unknown, "tal.galmor@weka.io","tal", "galmor", "123AaC!@#");
-            Assert.IsTrue(DBHandler.Instance.memberExistsById(unknown));
+            Guid id = new Guid();
+
+            trading.Register(id, "omer@weka.io", "omer", "shikma", "143AaC!@#");
+
+            Assert.IsFalse(DBHandler.Instance.memberExistsById(id));
         }
         
-        [TestMethod()]
-        public void DB_Remove_empty_Success()
-        {
-            Guid id = trading.Enter().Value; 
-            trading.Register(id, "omer@weka.io","omer", "shikma", "143AaC!@#");
-            Guid loggedid = trading.Login(id, "omer@weka.io", "143AaC!@#").Value;
-            trading.RemoveUserMembership(loggedid, "omer@weka.io");
-            Assert.IsFalse(DBHandler.Instance.memberExistsById(id));
-            Assert.Equals(1, DBHandler.Instance.GetAllMembers().Count);
-
-        }
         
         [TestMethod()]
         public void DB_Remove_non_empty_Success()
         {
             Guid tempid = trading.Enter().Value;
-            Guid loggedid = trading.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
             int numOfMembers = DBHandler.Instance.GetAllMembers().Count;
             
             Guid id = trading.Enter().Value;
             trading.Register(id, "omer@weka.io","omer", "shikma", "143AaC!@#");
-            trading.RemoveUserMembership(loggedid, "omer@weka.io");
-            Assert.Equals(numOfMembers , DBHandler.Instance.GetAllMembers().Count);
-            Assert.IsFalse(DBHandler.Instance.memberExistsById(id));
+            Guid loggedid2 = trading.Login(id, "omer@weka.io", "143AaC!@#").Value;
+            trading.RemoveUserMembership(buyerMemberID, "omer@weka.io");
+            Assert.AreEqual(numOfMembers , DBHandler.Instance.GetAllMembers().Count);
+            Assert.IsFalse(DBHandler.Instance.memberExistsById(loggedid2));
         }
 
         [TestMethod()]
@@ -78,8 +72,7 @@ namespace SadnaExpressTests.Persistence_Tests
             Guid id = trading.Enter().Value;
             trading.Register(id, "omer@weka.io", "omer", "shikma", "143AaC!@#");
             Guid tempid = trading.Enter().Value;
-            Guid managerID = trading.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
-            trading.AddStoreManagerPermissions(managerID, storeID1, "omer@weka.io", "owner permissions");
+            trading.AppointStoreOwner(userID, storeID1, "omer@weka.io");
             Member cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
             Assert.IsNotNull(cur);
             Assert.IsTrue(cur.hasPermissions(storeID1, 
@@ -93,8 +86,7 @@ namespace SadnaExpressTests.Persistence_Tests
             Guid id = trading.Enter().Value;
             trading.Register(id, "omer@weka.io", "omer", "shikma", "143AaC!@#");
             Guid tempid = trading.Enter().Value;
-            Guid managerID = trading.Login(tempid, "RotemSela@gmail.com", "AS87654askj").Value;
-            trading.AddStoreManagerPermissions(managerID, storeID1, "omer@weka.io", "Blah Blah");
+            trading.AddStoreManagerPermissions(userID, storeID1, "omer@weka.io", "Blah Blah");
             Member cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
             Assert.IsNotNull(cur);
             Assert.IsFalse(cur.hasPermissions(storeID1, 

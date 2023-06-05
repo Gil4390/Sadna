@@ -106,6 +106,8 @@ namespace SadnaExpress.DomainLayer.Store
         }
         public Guid AddItem(string name, string category, double price, int quantity)
         {
+            if (quantity < 0)
+                throw new Exception("quantity can't be smaller than 0");
             String internedKey = String.Intern(name.ToLower());
 
             lock (internedKey)

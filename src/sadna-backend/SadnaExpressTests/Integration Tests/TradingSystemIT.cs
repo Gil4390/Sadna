@@ -19,11 +19,12 @@ namespace SadnaExpressTests.Integration_Tests
         protected Guid storeID2;
         protected Guid itemID1;
         protected Guid itemID2;
+        protected bool testMood = true;
 
         public virtual void Setup()
         {
             DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
+            DBHandler.Instance.TestMood = testMood;
             DBHandler.Instance.CleanDB();
             NotificationNotifier.GetInstance().TestMood = true;
             trading = new TradingSystem();
@@ -38,6 +39,7 @@ namespace SadnaExpressTests.Integration_Tests
             buyerMemberID = trading.Enter().Value;
             trading.Register(buyerMemberID, "dor@gmail.com", "dor", "biton", "asASD876!@");
             buyerMemberID = trading.Login(buyerMemberID, "dor@gmail.com", "asASD876!@").Value;
+            trading.CreateSystemManager(buyerMemberID);
 
             // open stores
             storeID1 = trading.OpenNewStore(userID, "hello").Value;
@@ -55,6 +57,11 @@ namespace SadnaExpressTests.Integration_Tests
             // add items to cart buyer member
             trading.AddItemToCart(buyerMemberID, storeID1, itemID1, 2);
             trading.AddItemToCart(buyerMemberID, storeID2, itemID2, 1);
+        }
+
+        public void setTestMood()
+        {
+            testMood = false;
         }
 
         public virtual void CleanUp()

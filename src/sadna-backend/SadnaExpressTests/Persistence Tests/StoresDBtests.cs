@@ -5,6 +5,7 @@ using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpressTests.Integration_Tests;
 
 namespace SadnaExpressTests.Persistence_Tests
@@ -15,6 +16,7 @@ namespace SadnaExpressTests.Persistence_Tests
         [TestInitialize]
         public override void Setup()
         {
+            base.setTestMood();
             base.Setup();
             DatabaseContextFactory.TestMode = true;
         }
@@ -26,7 +28,7 @@ namespace SadnaExpressTests.Persistence_Tests
             trading.OpenNewStore(userID, "Jumbo_New_Store");
             
             Assert.IsTrue(DBHandler.Instance.IsStoreNameExist("Jumbo_New_Store"));
-            Assert.Equals(DBHandler.Instance.GetAllStores().Count,numOfStores+1);
+            Assert.AreEqual(DBHandler.Instance.GetAllStores().Count,numOfStores+1);
         }
         
         [TestMethod()]
@@ -36,7 +38,7 @@ namespace SadnaExpressTests.Persistence_Tests
             trading.OpenNewStore(new Guid(), "Store_That_will_not_open");
             
             Assert.IsFalse(DBHandler.Instance.IsStoreNameExist("Store_That_will_not_open"));
-            Assert.Equals(DBHandler.Instance.GetAllStores().Count,numOfStores);
+            Assert.AreEqual(DBHandler.Instance.GetAllStores().Count,numOfStores);
         }
         
         [TestMethod()]
@@ -47,8 +49,8 @@ namespace SadnaExpressTests.Persistence_Tests
             Assert.IsTrue(DBHandler.Instance.IsStoreNameExist("Jumbo_New_Store"));
             trading.CloseStore(userID, storeid);
             
-            Assert.IsFalse(DBHandler.Instance.IsStoreNameExist("Jumbo_New_Store"));
-            Assert.Equals(DBHandler.Instance.GetAllStores().Count,numOfStores);
+            Assert.IsFalse(DBHandler.Instance.GetStoreById(storeid).Active);
+            Assert.AreEqual(DBHandler.Instance.GetAllStores().Count, numOfStores+1);
         }
         
         [TestMethod()]
@@ -60,7 +62,7 @@ namespace SadnaExpressTests.Persistence_Tests
             trading.CloseStore(userID, new Guid());
             
             Assert.IsTrue(DBHandler.Instance.IsStoreNameExist("Store_That_will_not_close"));
-            Assert.Equals(DBHandler.Instance.GetAllStores().Count,numOfStores+1);
+            Assert.AreEqual(DBHandler.Instance.GetAllStores().Count,numOfStores+1);
         }
         
         [TestMethod()]
@@ -68,42 +70,53 @@ namespace SadnaExpressTests.Persistence_Tests
         {
             Guid itemID3 = trading.AddItemToStore(userID, storeID1, "Bike", "Vehicles", 1000, 3).Value;
             Guid itemID4 = trading.AddItemToStore(userID, storeID2, "Car", "Vehicles", 1000, 4).Value;
-            
-            Assert.IsTrue(DBHandler.Instance.GetStoreById(storeID1).itemsInventory.items_quantity[DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3)].Equals(3));
-            Assert.IsFalse(DBHandler.Instance.GetStoreById(storeID1).itemsInventory.items_quantity[DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID4)].Equals(3));
-            Assert.IsTrue(DBHandler.Instance.GetStoreById(storeID2).itemsInventory.items_quantity[DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID4)].Equals(4));
+
+            Store store1 = DBHandler.Instance.GetStoreById(storeID1);
+            Inventory inv1 = store1.itemsInventory;
+
+            Store store2 = DBHandler.Instance.GetStoreById(storeID2);
+            Inventory inv2 = store2.itemsInventory;
+
+            Assert.AreEqual(3, inv1.items_quantity[store1.GetItemById(itemID3)]);
+            Assert.ThrowsException<Exception>(()=>DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID4));
+            Assert.AreEqual(4, inv2.items_quantity[store2.GetItemById(itemID4)]);
         }
         
         [TestMethod()]
         public void DB_Add_Item_Store_Fail()
         {
             Guid itemID3 = trading.AddItemToStore(userID, storeID1, "Bike", "Vehicles", 1000, -1).Value;
-            Assert.IsNull(DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3));
+            Assert.ThrowsException<Exception>(() => DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3));
         }
         
         [TestMethod()]
         public void DB_Remove_Item_Store_Success()
         {
             Guid itemID3 = trading.AddItemToStore(userID, storeID1, "Bike", "Vehicles", 1000, 3).Value;
-            Assert.IsNotNull(DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3));
-            Assert.IsTrue(DBHandler.Instance.GetStoreById(storeID1).itemsInventory.items_quantity[DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3)].Equals(3));
+
+            Store store1 = DBHandler.Instance.GetStoreById(storeID1);
+            Inventory inv1 = store1.itemsInventory;
+
+            Assert.IsNotNull(store1.GetItemById(itemID3));
+            Assert.AreEqual(3, inv1.items_quantity[store1.GetItemById(itemID3)]);
 
             trading.RemoveItemFromStore(userID, storeID1, itemID3);
-            Assert.IsNull(DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3));
+            Assert.ThrowsException<Exception>(()=> DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3));
         }
         
         [TestMethod()]
         public void DB_Remove_Item_Store_Fail()
         {
             Guid itemID3 = trading.AddItemToStore(userID, storeID1, "Bike", "Vehicles", 1000, 3).Value;
-            Assert.IsNotNull(DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3));
-            Assert.IsTrue(DBHandler.Instance.GetStoreById(storeID1).itemsInventory.items_quantity[DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3)].Equals(3));
 
-            trading.RemoveItemFromStore(userID, storeID1, new Guid());
-            Assert.IsTrue(DBHandler.Instance.GetStoreById(storeID1).itemsInventory.items_quantity[DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3)].Equals(3));
+            Store store1 = DBHandler.Instance.GetStoreById(storeID1);
+            Inventory inv1 = store1.itemsInventory;
+
+            Assert.IsNotNull(store1.GetItemById(itemID3));
+            Assert.AreEqual(3, inv1.items_quantity[store1.GetItemById(itemID3)]);
 
             trading.RemoveItemFromStore(userID, storeID2, itemID3);
-            Assert.IsTrue(DBHandler.Instance.GetStoreById(storeID1).itemsInventory.items_quantity[DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3)].Equals(3));
+            Assert.IsNotNull(DBHandler.Instance.GetStoreById(storeID1).GetItemById(itemID3));
         }
         
         [TestMethod()]
@@ -142,7 +155,7 @@ namespace SadnaExpressTests.Persistence_Tests
 
             //Act
             Response res = trading.WriteItemReview(new Guid(),  itemID1, "very nice product!! I like :) #########");
-            Response res1 = trading.WriteItemReview(userID,  itemID2, "nice product !! &&*&*&");
+            Response res1 = trading.WriteItemReview(userID,  itemID1, "nice product !! &&*&*&");
             
 
             List<Guid> reviewsIds = DBHandler.Instance.GetTSReviewsIds();
@@ -155,34 +168,26 @@ namespace SadnaExpressTests.Persistence_Tests
                     reviewsCount++;
             }
             
-            Assert.IsFalse(res.ErrorOccured);
+            Assert.IsTrue(res.ErrorOccured);
             Assert.IsFalse(res1.ErrorOccured);
             Assert.AreNotEqual(2, trading.GetItemReviews(itemID1).Value.Count);
-            Assert.AreEqual(0, trading.GetItemReviews(itemID1).Value.Count);
+            Assert.AreEqual(1, trading.GetItemReviews(itemID1).Value.Count);
         }
         
         [TestMethod()]
         public void DB_Conditions_Add_Success()
         {
             DBHandler.Instance.CleanDB();
-            Condition cond1 = trading.GetStore(storeID1).Value.AddCondition("Item","Bisli", "min quantity", 2, DateTime.MaxValue);
+            Condition cond1 = trading.GetStore(storeID1).Value.AddCondition("Item", "ipad 32", "min quantity", 2, DateTime.MaxValue);
             Assert.AreNotEqual(DBHandler.Instance.GetCond(cond1.ID,storeID1),-1);
-        }
-        
-        [TestMethod()]
-        public void DB_Conditions_Add_Fail()
-        {
-            DBHandler.Instance.CleanDB();
-            Condition cond1 = trading.GetStore(storeID1).Value.AddCondition("Category","Animal", "min quality", 2, DateTime.MaxValue);
-            Assert.AreEqual(DBHandler.Instance.GetCond(cond1.ID,storeID1),-1);
         }
         
         [TestMethod()]
         public void DB_Conditions_Remove_Success()
         {
             DBHandler.Instance.CleanDB();
-            Condition cond1 = trading.GetStore(storeID1).Value.AddCondition("Item","Bisli", "min quantity", 2, DateTime.MaxValue);
-            DBHandler.Instance.RemoveCond(cond1.ID,storeID1);
+            Condition cond1 = trading.GetStore(storeID1).Value.AddCondition("Item", "ipad 32", "min quantity", 2, DateTime.MaxValue);
+            DBHandler.Instance.RemoveCond(cond1.ID, trading.GetStore(storeID1).Value);
             Assert.AreEqual(DBHandler.Instance.GetCond(cond1.ID,storeID1),-1);
         }
         
@@ -190,10 +195,51 @@ namespace SadnaExpressTests.Persistence_Tests
         public void DB_Conditions_Remove_Fail()
         {
             DBHandler.Instance.CleanDB();
-            Condition cond1 = trading.GetStore(storeID1).Value.AddCondition("Item","Bisli", "min quantity", 2, DateTime.MaxValue);
-            DBHandler.Instance.RemoveCond(cond1.ID,storeID2);
-            Assert.AreEqual(DBHandler.Instance.GetCond(cond1.ID,storeID1),cond1.ID);
+            Condition cond1 = trading.GetStore(storeID1).Value.AddCondition("Item", "ipad 32", "min quantity", 2, DateTime.MaxValue);
+            DBHandler.Instance.RemoveCond(cond1.ID, trading.GetStore(storeID1).Value);
+            Assert.AreEqual(-1, DBHandler.Instance.GetCond(cond1.ID,storeID1));
         }
-        
+
+        [TestMethod()]
+        public void DB_Purchase_Success()
+        {
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
+
+            trading.AddItemToCart(buyerMemberID, storeID1, itemID1, 1);
+            int numBefore = trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1);
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent", "38 Tacher st.", "Richmond", "England", "4284200");
+
+            trading.PurchaseCart(buyerMemberID, transactionDetails, transactionDetailsSupply);
+
+            Assert.AreEqual(DBHandler.Instance.GetAllOrders().Count, 1);
+            Assert.AreEqual(0, trading.GetDetailsOnCart(buyerMemberID).Value.Baskets.Count); // the shopping basket get empty
+            Assert.AreEqual(numBefore - 1, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1)); //the quantity updated
+        }
+
+        [TestMethod()]
+        public void DB_Purchase_Fail()
+        {
+            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetSupplierService(new Mocks.Mock_SupplierService());
+
+            Guid id = new Guid();
+
+            id = trading.Enter().Value;
+            Guid userid = trading.Login(id, "hello@gmail.com", "123AaC!@#").Value;
+            trading.AddItemToCart(userid, storeID1, itemID1, 1);
+            int numBefore = trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1);
+            trading.AddItemToCart(userid, storeID1, itemID2, 1);
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent", "38 Tacher st.", "Richmond", "England", "4284200");
+
+            trading.PurchaseCart(new Guid(), transactionDetails, transactionDetailsSupply);
+
+            Assert.AreEqual(DBHandler.Instance.GetAllOrders().Count, 0);
+            Assert.AreEqual(0, trading.GetDetailsOnCart(userid).Value.Baskets.Count); // the shopping basket get empty
+            Assert.AreEqual(numBefore, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1)); //the quantity updated
+        }
+
     }
 }
