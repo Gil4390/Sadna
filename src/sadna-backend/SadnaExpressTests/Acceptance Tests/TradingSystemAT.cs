@@ -128,7 +128,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.Register(storeOwnerid2, "dani@gmail.com", "dani", "dani", "A#!a12345678");
             storeOwnerid2 = proxyBridge.Login(storeOwnerid2, "dani@gmail.com", "A#!a12345678").Value;
             storeHelloID = proxyBridge.OpenNewStore(storeOwnerid2, "Hello").Value;
-            ItemHelloID = proxyBridge.AddItemToStore(storeOwnerid2, storeHelloID, "Pants", "clothes", 150, 200).Value;
+            ItemHelloID = proxyBridge.AddItemToStore(storeOwnerid2, storeHelloID, "Banana", "Food", 150, 200).Value;
 
             DiscountPolicy policy1 = store1.CreateSimplePolicy("Store", 50, DateTime.Now, new DateTime(2024, 5, 20));
             Condition cond3 = store1.AddCondition("Item","Tshirt", "min quantity", 1);

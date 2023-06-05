@@ -1301,7 +1301,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Response t = proxyBridge.ReactToBid(storeOwnerid2, ItemHelloID, bid.Value.BidID,"approved");
             //Assert
             Assert.IsFalse(t.ErrorOccured);
-            Assert.AreEqual(50,proxyBridge.GetItemsForClient(memberId, "Tshirt").Value[0].OfferPrice);
+            Assert.AreEqual(50,proxyBridge.GetItemsForClient(memberId, "Banana").Value[0].OfferPrice);
             Assert.AreEqual(50,proxyBridge.GetCartItems(memberId).Value[0].OfferPrice);
             Assert.AreEqual(1, proxyBridge.GetNotifications(storeOwnerid2).Value.Count);
         }

@@ -670,16 +670,16 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid tempid1 = proxyBridge.Enter().Value;
             proxyBridge.Login(tempid1, "gil@gmail.com", "asASD876!@");
             proxyBridge.AddItemToCart(userid, storeHelloID, ItemHelloID, 1);
-            ResponseT<SBid> bid = proxyBridge.PlaceBid(userid, itemid1, 50);
+            ResponseT<SBid> bid = proxyBridge.PlaceBid(userid, ItemHelloID, 50);
             //Act
             Response t1 = proxyBridge.ReactToBid(storeOwnerid2, ItemHelloID, bid.Value.BidID, "70");
             Response t2 = proxyBridge.ReactToBid(memberId, ItemHelloID, bid.Value.BidID,"approved");
 
             //Assert
             Assert.IsFalse(t1.ErrorOccured && t2.ErrorOccured);
-            Assert.IsTrue(proxyBridge.GetBidsInStore(storeOwnerid, storeid1).Value[0].IsActive);
+            Assert.IsTrue(proxyBridge.GetBidsInStore(storeOwnerid2, storeHelloID).Value[0].IsActive);
             Assert.AreEqual(70,proxyBridge.GetCartItems(userid).Value[0].OfferPrice); // not approved yet
-            Assert.AreEqual(1,proxyBridge.GetBidsInStore(storeOwnerid, storeHelloID).Value.Length);
+            Assert.AreEqual(1,proxyBridge.GetBidsInStore(storeOwnerid2, storeHelloID).Value.Length);
             Assert.AreEqual(1,proxyBridge.GetBidsInStore(memberId, storeHelloID).Value.Length);
         }
       
