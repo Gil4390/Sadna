@@ -35,3 +35,5 @@ Documents can be found here:
 - Architecture Diagram - https://drive.google.com/file/d/11LNjJDK7azYbV6blG5h-ucHGxrN6UemM/view
 
 - Class Diagram - https://drive.google.com/file/d/1y6IqBJfDbgYzhdU5ixmV_VKtPHapEDGq/view?usp=sharing
+
+- Wireframe - https://www.figma.com/file/x74k0dMJ9Yw7SZ3jvyAhLH/login-(Community)?node-id=102-2&t=mLByabG70xMQZryD-0
