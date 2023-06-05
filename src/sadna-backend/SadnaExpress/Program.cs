@@ -159,6 +159,12 @@ namespace SadnaExpress
                 }
             }
 
+            string TestDB = ConfigurationManager.AppSettings["TestDB"];
+            if (string.IsNullOrEmpty(TestDB) == false)
+            {
+                ApplicationOptions.TestDB = TestDB;
+            }
+
 
         }
     }
