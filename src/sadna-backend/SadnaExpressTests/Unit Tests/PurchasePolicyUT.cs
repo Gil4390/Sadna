@@ -38,14 +38,6 @@ namespace SadnaExpressTests.Unit_Tests
             item3 = store.AddItem("Ipad", "electronic", 4000, 2);
             basket = new Dictionary<Item, int> {{store.GetItemById(item1), 1}, {store.GetItemById(item2), 1},
                 {store.GetItemById(item3), 1}};
-            // basket = new Dictionary<Item, int>();
-            // cond1 = store.AddCondition(item1, "min quantity", 2);
-            // // cond2 = store.AddCondition(store, "min value", 0);
-            // //store.AddSimplePurchaseCondition(cond1);
-            // //store.AddSimplePurchaseCondition(cond2);
-            // ConditioningResultSum s1 = new ConditioningResultSum(store.GetItemById(item1), 1);
-            // ConditioningCondition cc1 = new ConditioningCondition(cond1, s1);
-            // store.AddSimplePurchaseCondition(cc1);
         }
         #endregion
         
@@ -160,7 +152,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void Simple1Condition_Fail_time()
         {
             //Arrange
-            cond1 = store.AddCondition("Item","Bisli", "after time", 0 , new DateTime(1998/10/30));
+            cond1 = store.AddCondition("Item","Bisli", "before time", 0 , new DateTime(1998/10/30));
             //Assert
             bool res = store.EvaluatePurchasePolicy(store, basket);
             Assert.IsFalse(res);
@@ -169,7 +161,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void Simple1Condition_Fail_time2()
         {
             //Arrange
-            cond1 = store.AddCondition("Item","Bisli", "after time", 0 , DateTime.Today);
+            cond1 = store.AddCondition("Item","Bisli", "before time", 0 , DateTime.Today);
             //Assert
             bool res = store.EvaluatePurchasePolicy(store, basket);
             Assert.IsFalse(res);

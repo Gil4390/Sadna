@@ -2445,6 +2445,37 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
+        
+        public int GetCond(int condID, Guid storeID)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        try
+                        {
+                            var cond = db.conditions.FirstOrDefault(c => c.ID.Equals(condID) && c.StoreID.Equals(storeID));
+                            if (cond != null)
+                            {
+                                return condID;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+
+            return -1;
+        }
 
         public bool IsSystemInitialized()
         {
