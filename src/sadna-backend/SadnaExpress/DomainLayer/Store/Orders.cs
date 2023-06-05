@@ -120,7 +120,7 @@ namespace SadnaExpress.DomainLayer.Store
             double sum = 0;
             foreach (Order order in GetOrdersByStoreId(storeID))
             {
-                if (order.OrderTime >= date)
+                if (order.OrderTime.Date == date.Date)
                 {
                     sum += order.CalculatorAmount();
                 }
@@ -135,7 +135,7 @@ namespace SadnaExpress.DomainLayer.Store
             {
                 foreach (Order order in orderList)
                 {
-                    if (order.OrderTime >= date)
+                    if (order.OrderTime.Date == date.Date)
                     {
                         sum += order.CalculatorAmount();
                     }

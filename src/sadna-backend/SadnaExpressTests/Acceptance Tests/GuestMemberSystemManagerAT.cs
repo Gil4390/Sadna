@@ -279,7 +279,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid tempid = proxyBridge.Enter().Value;
             proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
             
-            Assert.AreEqual(0, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(0, proxyBridge.GetSystemRevenue(systemManagerid, DateTime.Today).Value);
             
             Guid id = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
@@ -288,13 +288,13 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             
-            Assert.AreEqual(150, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(150, proxyBridge.GetSystemRevenue(systemManagerid, DateTime.Today).Value);
             
             Guid id2 = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id2, storeid1, itemid1, 3);
             proxyBridge.PurchaseCart(id2, transactionDetails, transactionDetailsSupply);
             
-            Assert.AreEqual(299.7, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(299.7, proxyBridge.GetSystemRevenue(systemManagerid, DateTime.Today).Value);
         }
         
         [TestMethod]
@@ -303,7 +303,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid tempid = proxyBridge.Enter().Value;
             proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
             
-            Assert.AreEqual(0, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(0, proxyBridge.GetSystemRevenue(systemManagerid, DateTime.Today).Value);
             
             Guid id = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
@@ -313,7 +313,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
 
-            Assert.AreEqual(299.7, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(299.7, proxyBridge.GetSystemRevenue(systemManagerid, DateTime.Today).Value);
         }
 
         [TestMethod]
@@ -331,13 +331,13 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             
-            Assert.AreEqual(150, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(150, proxyBridge.GetSystemRevenue(systemManagerid, DateTime.Today).Value);
             
             Guid id2 = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id2, storeid2, itemid2, 3);
             proxyBridge.PurchaseCart(id2, transactionDetails, transactionDetailsSupply);
             
-            Assert.AreEqual(600, proxyBridge.GetSystemRevenue(systemManagerid, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(600, proxyBridge.GetSystemRevenue(systemManagerid, DateTime.Today).Value);
         }
         #endregion
         
