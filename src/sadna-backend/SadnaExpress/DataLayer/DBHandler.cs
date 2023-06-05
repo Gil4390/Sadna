@@ -1279,13 +1279,42 @@ namespace SadnaExpress.DataLayer
                                     }
                                 }
 
-                                // todo: get all store condition from DB
+                                int saveStorePurchasePolicyCounter = s.PurchasePolicyCounter;
+                                int saveStoreDiscountPolicyCounter = s.DiscountPolicyCounter;
+
+                                // todo get store condition from DB
                                 List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
-                                s.DiscountPolicyCounter -= condsFromDB.Count;
+                                s.PurchasePolicyCounter = 0;
                                 foreach (ConditionDB c in condsFromDB)
                                 {
                                     s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
                                 }
+
+                                // todo get all policies from DB
+                                s.DiscountPolicyCounter = 0;
+                                List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Simple")).ToList();
+                                foreach (PolicyDB pol in simplePolFromDB)
+                                {
+                                    s.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
+                                    if (pol.activated)
+                                    {
+                                        s.AddPolicy(pol.ID, false);
+                                    }
+                                }
+                                List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Complex")).ToList();
+                                foreach (PolicyDB pol in complexPolFromDB)
+                                {
+                                    s.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);
+                                    if (pol.activated)
+                                    {
+                                        s.AddPolicy(pol.ID, false);
+                                    }
+                                }
+
+
+                                s.PurchasePolicyCounter = saveStorePurchasePolicyCounter;
+                                s.DiscountPolicyCounter = saveStoreDiscountPolicyCounter;
+
 
 
                                 result.TryAdd(s.StoreID, s);
