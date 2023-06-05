@@ -59,7 +59,7 @@ namespace SadnaExpressTests
             {
                 if (amount > 100) 
                     return -1;
-                return -1;
+                return 3;
             }
         }
 
@@ -130,6 +130,30 @@ namespace SadnaExpressTests
             public virtual bool Cancel_Pay(double amount, int transaction_id)
             {
                 return true;
+            }
+        }
+        public class Mock_bad_PaymentService : Mock_PaymentService
+        {
+            public override string Handshake()
+            {
+                return "NOT OK";
+            }
+            public override  int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                return -1;
+            }
+        }
+        public class Mock_bad_15sec_PaymentService : Mock_PaymentService
+        {
+            public override string Handshake()
+            {
+                Thread.Sleep(15000); // Wait for 15 seconds
+                return "OK";
+            }
+            public override  int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                Thread.Sleep(15000); // Wait for 15 seconds
+                return 2;
             }
         }
 
