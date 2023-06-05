@@ -30,7 +30,7 @@ function PurchasePoliciesPage(props) {
   const [selectedOption, setSelectedOption] = useState('');
 
   const [showTextbox, setShowTextbox] = useState(false);
-
+  const [condResponse, setCondResponse]=useState<ResponseT>();
   
 
   const handleButtonClick = () => {
@@ -76,7 +76,7 @@ function PurchasePoliciesPage(props) {
   const handleSubmit = () => {
     handleAddPurchaseCondition(userId,storeId ,EntityChoice, entity,WhichCond,condValue,selectedOption,otherCondition).then(
       value => {
-        // setPolicyList(value as Policy[]);
+
         setWhichCond('');
         setEntity('a');
         setEntityChoice('');
@@ -88,7 +88,7 @@ function PurchasePoliciesPage(props) {
       .catch(error => alert(error));
   };
 
-  const [condResponse, setCondResponse]=useState<ResponseT>();
+ 
   useEffect(() => {
     if(condResponse!=undefined)
       if(condResponse?.errorOccured)
