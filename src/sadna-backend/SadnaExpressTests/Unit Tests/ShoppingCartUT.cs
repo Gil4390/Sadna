@@ -17,6 +17,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             itemID = Guid.NewGuid();
             storeID = Guid.NewGuid();

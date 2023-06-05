@@ -72,7 +72,7 @@ namespace SadnaExpress.DomainLayer.User
             return bidsDict;
         }
         
-        public Bid PlaceBid(Guid storeID, Guid itemID, string itemName, double price, List<PromotedMember> employees)
+        public Bid PlaceBid(Guid storeID, Guid itemID, string itemName, double price)
         {
             Bid oldBid = null;
             foreach (Bid bid in bids)
@@ -89,7 +89,7 @@ namespace SadnaExpress.DomainLayer.User
                     throw new Exception("You already have better offer...");
                 oldBid.CloseBid();
             }
-            Bid newBid = new Bid(this, storeID, itemID, itemName, price, employees);
+            Bid newBid = new Bid(this, storeID, itemID, itemName, price);
             bids.Add(newBid);
             if (this.GetType() != typeof(User)) 
                 DBHandler.Instance.UpdateBidAndUser(newBid, this);
