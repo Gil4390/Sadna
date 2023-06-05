@@ -27,6 +27,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             store = Guid.NewGuid();
             item1 = Guid.NewGuid();
@@ -43,8 +44,9 @@ namespace SadnaExpressTests.Unit_Tests
             founder = new PromotedMember(Guid.NewGuid(), "AsiAzar@gmail.com", "Asi", "Azar",
                 ("A#!a12345678"));
             userFacade.members.TryAdd(founder.UserId, founder);
-            founder.createFounder(Guid.NewGuid());
-            bid = member.PlaceBid(store, item2, "Apple", 5, new List<PromotedMember> { founder });
+            founder.createFounder(store);
+            NotificationSystem.Instance.RegisterObserver(store, founder);
+            bid = member.PlaceBid(store, item2, "Apple", 5);
         }
 
         #endregion
@@ -57,7 +59,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Arrange
             User user1 = new User();
             //Act
-            user1.PlaceBid(store, item1, "Banana", 8, new List<PromotedMember> { founder });
+            user1.PlaceBid(store, item1, "Banana", 8);
             //Assert
             Assert.AreEqual(1, user1.GetBidsOfUser().Count);
             Assert.AreEqual(8, user1.GetBidsOfUser()[item1].Key);

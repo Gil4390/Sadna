@@ -19,6 +19,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
 
         public abstract override bool Equals(object obj);
 
+        public abstract List<int> relatedDiscountPoliciesIds();
     }
 
     public class SimpleDiscount<T> : DiscountPolicy
@@ -117,6 +118,11 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         {
             return level.GetHashCode() ^ percent.GetHashCode() ^  startDate.GetHashCode() ^ endDate.GetHashCode();
         }
+
+        public override List<int> relatedDiscountPoliciesIds()
+        {
+            return null;
+        }
     }
 
     public class ConditionalDiscount : DiscountPolicy
@@ -153,6 +159,13 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         {
             return cond.GetHashCode() ^ discountPolicy.GetHashCode();
         }
+
+        public override List<int> relatedDiscountPoliciesIds()
+        {
+            List<int> list = new List<int>();
+            list.Add(discountPolicy.ID);
+            return list;
+        }
     }
 
     
@@ -183,6 +196,12 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public override int GetHashCode()
         {
             return cond1.GetHashCode() ^ cond2.GetHashCode() ^ discountPolicy.GetHashCode();
+        }
+        public override List<int> relatedDiscountPoliciesIds()
+        {
+            List<int> list = new List<int>();
+            list.Add(discountPolicy.ID);
+            return list;
         }
     }
     
@@ -308,6 +327,14 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         {
             return discountPolicy1.GetHashCode() ^ discountPolicy2.GetHashCode();
         }
+
+        public override List<int> relatedDiscountPoliciesIds()
+        {
+            List<int> list = new List<int>();
+            list.Add(discountPolicy1.ID);
+            list.Add(discountPolicy2.ID);
+            return list;
+        }
     }
 
     public class AddDiscount : DiscountPolicy
@@ -362,6 +389,14 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public override int GetHashCode()
         {
             return discountPolicy1.GetHashCode() ^ discountPolicy2.GetHashCode();
+        }
+
+        public override List<int> relatedDiscountPoliciesIds()
+        {
+            List<int> list = new List<int>();
+            list.Add(discountPolicy1.ID);
+            list.Add(discountPolicy2.ID);
+            return list;
         }
     }
 
@@ -426,6 +461,14 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public override int GetHashCode()
         {
             return roots.GetHashCode();
+        }
+
+        public override List<int> relatedDiscountPoliciesIds()
+        {
+            List<int> list = new List<int>();
+            foreach (DiscountPolicy p in roots)
+                list.Add(p.ID);
+            return list;
         }
     }
 }

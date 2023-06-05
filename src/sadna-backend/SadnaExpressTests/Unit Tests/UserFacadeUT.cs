@@ -36,6 +36,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             members = new ConcurrentDictionary<Guid, Member>();
             member = new Member(memberid, "AssiAzar@gmail.com", "shay", "kresner", "ShaY1787%$%");
@@ -52,7 +53,7 @@ namespace SadnaExpressTests.Unit_Tests
             systemManager.createSystemManager();
             systemManager.LoggedIn = true;
             members.TryAdd(systemManagerid, systemManager);
-            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,founders,
+            _userFacade = new UserFacade(new ConcurrentDictionary<Guid, User>(), members,
                 new ConcurrentDictionary<Guid, string>(), new PasswordHash(), new Mock_PaymentService(),
                 new Mock_SupplierService());
             _userFacade.SetIsSystemInitialize(true);

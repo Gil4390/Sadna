@@ -231,11 +231,11 @@ namespace SadnaExpress.API.Controllers
         
         
         [Route(APIConstants.MemberData.addCondition)]
-        [ResponseType(typeof(Response))]
+        [ResponseType(typeof(ResponseT<Condition>))]
         [HttpPost]
         public IHttpActionResult AddCondition([FromBody] ConditionRequest request)
         {
-            Response a = tradingSystem.AddCondition(request.userID,request.storeID, request.entity, request.entityName,
+            ResponseT<Condition> a = tradingSystem.AddCondition(request.userID,request.storeID, request.entity, request.entityName,
                 request.type, request.value, DateTime.MaxValue, request.entityRes, request.entityNameRes,
                 request.typeRes,
                 request.valueRes, request.op, request.opCond);

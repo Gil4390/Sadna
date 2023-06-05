@@ -40,5 +40,7 @@ namespace SadnaExpress
 
         public static bool RunLoadData = false;
 
+        public static string TestDB = "";
+
     }
 }

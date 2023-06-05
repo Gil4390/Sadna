@@ -28,6 +28,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             NotificationNotifier.GetInstance().TestMood = true;
             UserFacade userFacade = new UserFacade();

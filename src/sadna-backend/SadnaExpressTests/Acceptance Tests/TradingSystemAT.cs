@@ -23,16 +23,18 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected Guid memberId2;
         protected Guid memberId3;
         protected Guid memberId4;
-        protected Guid idDB;
         protected Guid systemManagerid;
         protected Guid storeOwnerid;
+        protected Guid storeOwnerid2;
         protected Guid storeid1;
+        protected Guid storeHelloID;
         protected Guid itemid1;
         protected Guid itemid11;
         protected Guid itemid22;
         protected Guid itemid23;
         protected Guid storeid2;
         protected Guid itemid2;
+        protected Guid ItemHelloID;
         protected Guid itemNoStock;
         protected ConcurrentDictionary<Guid, Store> stores;
         protected IPasswordHash passwordHash;
@@ -42,6 +44,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public virtual void SetUp()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             proxyBridge = new ProxyBridge();
             passwordHash = new PasswordHash();
@@ -92,8 +95,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             newMac = passwordHash.Mac();
             macs.TryAdd(memberId4, newMac);
             Member member4 = new Member(memberId4, "bar@gmail.com", "Bar", "Bar", passwordHash.Hash("asASD159!@"+newMac));
-
-
+            
             newMac = passwordHash.Mac();
             macs.TryAdd(systemManagerid, newMac);
             PromotedMember systemManager = new PromotedMember(systemManagerid, "RotemSela@gmail.com", "Rotem", "Sela", passwordHash.Hash("AS87654askj"+newMac));
@@ -102,6 +104,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "Asi", "Azar", passwordHash.Hash("A#!a12345678"+newMac));
             systemManager.createSystemManager();
             storeOwner.createFounder(storeid1);
+
+
+
             members.TryAdd(systemManagerid, systemManager);
             members.TryAdd(memberId, member);
             members.TryAdd(memberId2, member2);
@@ -109,9 +114,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             members.TryAdd(memberId4, member4);
 
             members.TryAdd(storeOwnerid, storeOwner);
-            ConcurrentDictionary<Guid, PromotedMember>  founders = new ConcurrentDictionary<Guid, PromotedMember>();
-            founders.TryAdd(storeid1, storeOwner);
-            IUserFacade _userFacade = new UserFacade(current_users, members, founders, macs,new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
+            IUserFacade _userFacade = new UserFacade(current_users, members, macs,new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
             TradingSystem Ts = new TradingSystem(_userFacade, storeFacade);
             
             Ts.TestMode = true;
@@ -120,9 +123,13 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.SetPaymentService(new Mock_PaymentService());
             proxyBridge.SetSupplierService(new Mock_SupplierService());
             proxyBridge.SetIsSystemInitialize(true);
-            idDB = proxyBridge.Enter().Value;
-            proxyBridge.Register(idDB, "hello@gmail.com", "hello", "hello", "123AaC!@#");
-            idDB = proxyBridge.Login(idDB, "hello@gmail.com", "123AaC!@#").Value;
+
+            storeOwnerid2 = proxyBridge.Enter().Value;
+            proxyBridge.Register(storeOwnerid2, "dani@gmail.com", "dani", "dani", "A#!a12345678");
+            storeOwnerid2 = proxyBridge.Login(storeOwnerid2, "dani@gmail.com", "A#!a12345678").Value;
+            storeHelloID = proxyBridge.OpenNewStore(storeOwnerid2, "Hello").Value;
+            ItemHelloID = proxyBridge.AddItemToStore(storeOwnerid2, storeHelloID, "Banana", "Food", 150, 200).Value;
+
             DiscountPolicy policy1 = store1.CreateSimplePolicy("Store", 50, DateTime.Now, new DateTime(2024, 5, 20));
             Condition cond3 = store1.AddCondition("Item","Tshirt", "min quantity", 1);
             DiscountPolicy policy2 = store1.CreateComplexPolicy("if", cond3.ID, policy1.ID);
@@ -137,9 +144,9 @@ namespace SadnaExpressTests.Acceptance_Tests
         protected class Mock_Bad_SupplierService : Mock_SupplierService
         {
             // bad connection
-            public override bool Handshake()
+            public override string Handshake()
             {
-                return false;
+                return "BAD";
             }
 
         }

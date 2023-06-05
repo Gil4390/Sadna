@@ -25,6 +25,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             founderID = Guid.NewGuid();
             storeID = Guid.NewGuid();
