@@ -718,5 +718,10 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.ReactToBid(userID, itemID, bidID, bidResponse);
         }
+
+        public void CreateSystemManager(Guid systemManagerid)
+        {
+            userManager.CreateSystemManager(systemManagerid);
+        }
     }
 }

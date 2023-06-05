@@ -1302,7 +1302,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid tempid = proxyBridge.Enter().Value;
             proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
             
-            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, DateTime.Today).Value);
             
             Guid id = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
@@ -1311,14 +1311,14 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
             
-            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, DateTime.Today).Value);
             
             Guid id2 = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id2, storeid1, itemid1, 3);
             
             proxyBridge.PurchaseCart(id2,  transactionDetails, transactionDetailsSupply);
             
-            Assert.AreEqual(149.7, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(149.7, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, DateTime.Today).Value);
         }
         
         [TestMethod]
@@ -1327,7 +1327,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid tempid = proxyBridge.Enter().Value;
             proxyBridge.Login(tempid, "AsiAzar@gmail.com", "A#!a12345678");
             
-            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(0, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, DateTime.Today).Value);
             
             Guid id = proxyBridge.Enter().Value;
             proxyBridge.AddItemToCart(id, storeid2, itemid2, 1);
@@ -1335,9 +1335,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
 
-            proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
+            var a = proxyBridge.PurchaseCart(id, transactionDetails, transactionDetailsSupply);
 
-            Assert.AreEqual(149.7, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, new DateTime(2023, 05, 8)).Value);
+            Assert.AreEqual(149.7, proxyBridge.GetStoreRevenue(storeOwnerid, storeid1, DateTime.Today).Value);
         }
 
         [TestMethod]

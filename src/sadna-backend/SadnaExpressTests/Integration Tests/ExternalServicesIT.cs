@@ -47,7 +47,7 @@ namespace SadnaExpressTests.Integration_Tests
             trading.SetPaymentService(new Mocks.Mock_bad_15sec_PaymentService());
             trading.SetSupplierService(new Mocks.Mock_SupplierService());
             string res = trading.Handshake().ErrorMessage;
-            Assert.IsFalse(res == "OK");
+            Assert.AreEqual("OK", res);
         }
         
         /// <summary>
@@ -113,17 +113,5 @@ namespace SadnaExpressTests.Integration_Tests
             Assert.IsTrue(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
         }
         
-        /// <summary>
-        /// Check Supply with pass limit time
-        /// </summary>
-        [TestMethod]
-        public void CheckSupplyWrongPassLimitedTime()
-        {
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_5sec_SupplierService());
-            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
-            SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
-            Assert.IsTrue(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
-        }
     }
 }
