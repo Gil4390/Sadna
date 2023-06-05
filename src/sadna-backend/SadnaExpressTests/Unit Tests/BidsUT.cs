@@ -44,7 +44,8 @@ namespace SadnaExpressTests.Unit_Tests
             founder = new PromotedMember(Guid.NewGuid(), "AsiAzar@gmail.com", "Asi", "Azar",
                 ("A#!a12345678"));
             userFacade.members.TryAdd(founder.UserId, founder);
-            founder.createFounder(Guid.NewGuid());
+            founder.createFounder(store);
+            NotificationSystem.Instance.RegisterObserver(store, founder);
             bid = member.PlaceBid(store, item2, "Apple", 5);
         }
 

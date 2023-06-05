@@ -1257,149 +1257,153 @@ namespace SadnaExpress.DataLayer
                                             {
                                                 Item item = db.Items.FirstOrDefault(m => m.ItemID.Equals(id));
 
-                                            result.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
+                                                result.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
+                                            }
                                         }
                                     }
-                                }
 
-                                int saveStorePurchasePolicyCounter = result.PurchasePolicyCounter;
-                                int saveStoreDiscountPolicyCounter = result.DiscountPolicyCounter;
+                                    int saveStorePurchasePolicyCounter = result.PurchasePolicyCounter;
+                                    int saveStoreDiscountPolicyCounter = result.DiscountPolicyCounter;
 
-                                // todo get store condition from DB
-                                List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(result.StoreID)).ToList();
-                                result.PurchasePolicyCounter = 0;
-                                foreach (ConditionDB c in condsFromDB)
-                                {
-                                    result.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
-                                }
-
-                                // todo get all policies from DB
-                                result.DiscountPolicyCounter = 0;
-                                List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(result.StoreID) && c.Discriminator.Equals("Simple")).ToList();
-                                foreach(PolicyDB pol in simplePolFromDB)
-                                {
-                                    result.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
-                                    if(pol.activated)
+                                    // todo get store condition from DB
+                                    List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(result.StoreID)).ToList();
+                                    result.PurchasePolicyCounter = 0;
+                                    foreach (ConditionDB c in condsFromDB)
                                     {
-                                        result.AddPolicy(pol.ID, false);
+                                        result.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
                                     }
-                                }
-                                List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(result.StoreID) && c.Discriminator.Equals("Complex")).ToList();
-                                foreach (PolicyDB pol in complexPolFromDB)
-                                {
-                                    result.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);
-                                    if (pol.activated)
+
+                                    // todo get all policies from DB
+                                    result.DiscountPolicyCounter = 0;
+                                    List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(result.StoreID) && c.Discriminator.Equals("Simple")).ToList();
+                                    foreach (PolicyDB pol in simplePolFromDB)
                                     {
-                                        result.AddPolicy(pol.ID, false);
+                                        result.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
+                                        if (pol.activated)
+                                        {
+                                            result.AddPolicy(pol.ID, false);
+                                        }
                                     }
+                                    List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(result.StoreID) && c.Discriminator.Equals("Complex")).ToList();
+                                    foreach (PolicyDB pol in complexPolFromDB)
+                                    {
+                                        result.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);
+                                        if (pol.activated)
+                                        {
+                                            result.AddPolicy(pol.ID, false);
+                                        }
+                                    }
+
+
+                                    result.PurchasePolicyCounter = saveStorePurchasePolicyCounter;
+                                    result.DiscountPolicyCounter = saveStoreDiscountPolicyCounter;
                                 }
 
-
-                                result.PurchasePolicyCounter = saveStorePurchasePolicyCounter;
-                                result.DiscountPolicyCounter = saveStoreDiscountPolicyCounter;
                             }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("failed to interact with stores table");
+                            catch (Exception ex)
+                            {
+                                throw new Exception("failed to interact with stores table");
+                            }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                    return result;
                 }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-                return result;
             }
+            return null;
         }
 
         public ConcurrentDictionary<Guid, Store> GetAllStores()
         {
             ConcurrentDictionary<Guid, Store> result = null;
-            if (!testMood)
-            {
-                lock (this)
+                if (!testMood)
                 {
-                    try
+                    lock (this)
                     {
-                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        try
                         {
-                            try
+                            using (var db = DatabaseContextFactory.ConnectToDatabase())
                             {
-                                var allStores = db.Stores;
-                                result = new ConcurrentDictionary<Guid, Store>();
-                                foreach (Store s in allStores)
+                                try
                                 {
-                                    // get store item_quantity
-                                    var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(s.StoreID));
-                                    string quanity_ItemsDB = null;
-                                    if (inv != null)
-                                        quanity_ItemsDB = inv.Items_quantityDB;
-                                    if (quanity_ItemsDB != null) // add quantity item for store
+                                    var allStores = db.Stores;
+                                    result = new ConcurrentDictionary<Guid, Store>();
+                                    foreach (Store s in allStores)
                                     {
-                                        ConcurrentDictionary<Guid, int> items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(quanity_ItemsDB);
-
-                                        foreach (Guid id in items_quantityHelper.Keys)
+                                        // get store item_quantity
+                                        var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(s.StoreID));
+                                        string quanity_ItemsDB = null;
+                                        if (inv != null)
+                                            quanity_ItemsDB = inv.Items_quantityDB;
+                                        if (quanity_ItemsDB != null) // add quantity item for store
                                         {
-                                            Item item = db.Items.FirstOrDefault(m => m.ItemID.Equals(id));
-                                            s.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
+                                            ConcurrentDictionary<Guid, int> items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(quanity_ItemsDB);
+
+                                            foreach (Guid id in items_quantityHelper.Keys)
+                                            {
+                                                Item item = db.Items.FirstOrDefault(m => m.ItemID.Equals(id));
+                                                s.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
+                                            }
                                         }
+
+                                        int saveStorePurchasePolicyCounter = s.PurchasePolicyCounter;
+                                        int saveStoreDiscountPolicyCounter = s.DiscountPolicyCounter;
+
+                                        // todo get store condition from DB
+                                        List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
+                                        s.PurchasePolicyCounter = 0;
+                                        foreach (ConditionDB c in condsFromDB)
+                                        {
+                                            s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
+                                        }
+
+                                        // todo get all policies from DB
+                                        s.DiscountPolicyCounter = 0;
+                                        List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Simple")).ToList();
+                                        foreach (PolicyDB pol in simplePolFromDB)
+                                        {
+                                            s.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
+                                            if (pol.activated)
+                                            {
+                                                s.AddPolicy(pol.ID, false);
+                                            }
+                                        }
+                                        List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Complex")).ToList();
+                                        foreach (PolicyDB pol in complexPolFromDB)
+                                        {
+                                            s.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);
+                                            if (pol.activated)
+                                            {
+                                                s.AddPolicy(pol.ID, false);
+                                            }
+                                        }
+
+
+                                        s.PurchasePolicyCounter = saveStorePurchasePolicyCounter;
+                                        s.DiscountPolicyCounter = saveStoreDiscountPolicyCounter;
+
+
+
+                                        result.TryAdd(s.StoreID, s);
                                     }
-
-                                int saveStorePurchasePolicyCounter = s.PurchasePolicyCounter;
-                                int saveStoreDiscountPolicyCounter = s.DiscountPolicyCounter;
-
-                                // todo get store condition from DB
-                                List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
-                                s.PurchasePolicyCounter = 0;
-                                foreach (ConditionDB c in condsFromDB)
-                                {
-                                    s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
                                 }
-
-                                // todo get all policies from DB
-                                s.DiscountPolicyCounter = 0;
-                                List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Simple")).ToList();
-                                foreach (PolicyDB pol in simplePolFromDB)
+                                catch (Exception ex)
                                 {
-                                    s.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
-                                    if (pol.activated)
-                                    {
-                                        s.AddPolicy(pol.ID, false);
-                                    }
+                                    //throw new Exception("failed to interact with stores table");
                                 }
-                                List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Complex")).ToList();
-                                foreach (PolicyDB pol in complexPolFromDB)
-                                {
-                                    s.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);
-                                    if (pol.activated)
-                                    {
-                                        s.AddPolicy(pol.ID, false);
-                                    }
-                                }
-
-
-                                s.PurchasePolicyCounter = saveStorePurchasePolicyCounter;
-                                s.DiscountPolicyCounter = saveStoreDiscountPolicyCounter;
-
-
-
-                                result.TryAdd(s.StoreID, s);
                             }
                         }
                         catch (Exception ex)
                         {
-                            //throw new Exception("failed to interact with stores table");
+                            throw new Exception(DbErrorMessage);
                         }
+                        return result;
                     }
                 }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-                return result;
-            }
+                return new ConcurrentDictionary<Guid, Store>();
         }
 
         public List<Guid> GetTSStoreIds()
@@ -2398,43 +2402,46 @@ namespace SadnaExpress.DataLayer
 
         public void RemoveCond(int condID, Store store)
         {
-            lock (this)
+            if (!testMood)
             {
-                try
+                lock (this)
                 {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    try
                     {
-                        try
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
                         {
-                            // update store cond counter
-                            //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
                             try
                             {
-                                db.Stores.Update(store);
-                                db.SaveChanges(true);
+                                // update store cond counter
+                                //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
+                                try
+                                {
+                                    db.Stores.Update(store);
+                                    db.SaveChanges(true);
+                                }
+                                catch (Exception ex)
+                                {
+                                    // store was not add to db
+                                    AddStore(store);
+                                }
+
+                                var cond = db.conditions.FirstOrDefault(c => c.ID.Equals(condID) && c.StoreID.Equals(store.StoreID));
+                                if (cond != null)
+                                {
+                                    db.conditions.Remove(cond);
+                                    db.SaveChanges(true);
+                                }
                             }
                             catch (Exception ex)
                             {
-                                // store was not add to db
-                                AddStore(store);
+                                throw new Exception("failed to interact with stores table");
                             }
-
-                            var cond = db.conditions.FirstOrDefault(c => c.ID.Equals(condID) && c.StoreID.Equals(store.StoreID));
-                            if (cond != null)
-                            {
-                                db.conditions.Remove(cond);
-                                db.SaveChanges(true);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("failed to interact with stores table");
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
                 }
             }
         }
@@ -2504,119 +2511,125 @@ namespace SadnaExpress.DataLayer
 
         public void InsertNewPolicy(PolicyDB pol, Store store)
         {
-            lock (this)
+            if (!testMood)
             {
-                try
+                lock (this)
                 {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    try
                     {
-                        try
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
                         {
-                            
-                            var policies = db.policies;
-                            policies.Add(pol);
-                            db.SaveChanges(true);
-
-                            // update store cond counter
-                            //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
                             try
                             {
-                                db.Stores.Update(store);
+
+                                var policies = db.policies;
+                                policies.Add(pol);
                                 db.SaveChanges(true);
+
+                                // update store cond counter
+                                //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
+                                try
+                                {
+                                    db.Stores.Update(store);
+                                    db.SaveChanges(true);
+                                }
+                                catch (Exception ex)
+                                {
+                                    // store was not add to db
+                                    AddStore(store);
+                                }
+
                             }
                             catch (Exception ex)
                             {
-                                // store was not add to db
-                                AddStore(store);
+                                throw new Exception("failed to add cond");
                             }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("failed to add cond");
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
                 }
             }
         }
 
         public void RemovePolicy(DiscountPolicy policy, Store store)
         {
-            lock (this)
+            if (!testMood)
             {
-                try
+                lock (this)
                 {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    try
                     {
-                        int iD = policy.ID;
-                        try
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
                         {
-                            var pol = db.policies.FirstOrDefault(c => c.StoreId.Equals(store.StoreID) && c.ID.Equals(iD));
-                            if (pol != null && pol.Discriminator.Equals("Complex"))
-                            {
-                                // remove all related policies
-                                List<int> idsToRemove = policy.relatedDiscountPoliciesIds();
-                                if(idsToRemove != null)
-                                {
-                                    foreach(int id in idsToRemove)
-                                    {
-                                        var rpol = db.policies.FirstOrDefault(c => c.StoreId.Equals(store.StoreID) && c.ID.Equals(id));
-                                        if(rpol != null)
-                                        {
-                                            db.policies.Remove(rpol);
-                                            db.SaveChanges(true);
-                                        }
-
-                                    }
-                                }
-
-                                db.policies.Remove(pol);
-                                db.SaveChanges(true);
-                            }
-                            else if(pol != null)
-                            {
-                                //bool shouldRemove = true;
-                                //// check if there is another policy involved
-                                //int checkId = pol.ID;
-                                //List<PolicyDB> complexPolices = db.policies.Where(p => p.StoreId.Equals(store.StoreID) && p.Discriminator.Equals("Complex")).ToList();
-                                //foreach(PolicyDB p in complexPolices)
-                                //{
-                                //    if (p.complex_policys.Contains(checkId))
-                                //        shouldRemove = false;
-                                //}
-                                //if(shouldRemove)
-                                //{
-                                    db.policies.Remove(pol);
-                                    db.SaveChanges(true);
-                                //}
-                            }
-
-                            // update store cond counter
-                            //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
+                            int iD = policy.ID;
                             try
                             {
-                                db.Stores.Update(store);
-                                db.SaveChanges(true);
+                                var pol = db.policies.FirstOrDefault(c => c.StoreId.Equals(store.StoreID) && c.ID.Equals(iD));
+                                if (pol != null && pol.Discriminator.Equals("Complex"))
+                                {
+                                    // remove all related policies
+                                    List<int> idsToRemove = policy.relatedDiscountPoliciesIds();
+                                    if (idsToRemove != null)
+                                    {
+                                        foreach (int id in idsToRemove)
+                                        {
+                                            var rpol = db.policies.FirstOrDefault(c => c.StoreId.Equals(store.StoreID) && c.ID.Equals(id));
+                                            if (rpol != null)
+                                            {
+                                                db.policies.Remove(rpol);
+                                                db.SaveChanges(true);
+                                            }
+
+                                        }
+                                    }
+
+                                    db.policies.Remove(pol);
+                                    db.SaveChanges(true);
+                                }
+                                else if (pol != null)
+                                {
+                                    //bool shouldRemove = true;
+                                    //// check if there is another policy involved
+                                    //int checkId = pol.ID;
+                                    //List<PolicyDB> complexPolices = db.policies.Where(p => p.StoreId.Equals(store.StoreID) && p.Discriminator.Equals("Complex")).ToList();
+                                    //foreach(PolicyDB p in complexPolices)
+                                    //{
+                                    //    if (p.complex_policys.Contains(checkId))
+                                    //        shouldRemove = false;
+                                    //}
+                                    //if(shouldRemove)
+                                    //{
+                                    db.policies.Remove(pol);
+                                    db.SaveChanges(true);
+                                    //}
+                                }
+
+                                // update store cond counter
+                                //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
+                                try
+                                {
+                                    db.Stores.Update(store);
+                                    db.SaveChanges(true);
+                                }
+                                catch (Exception ex)
+                                {
+                                    // store was not add to db
+                                    AddStore(store);
+                                }
                             }
                             catch (Exception ex)
                             {
-                                // store was not add to db
-                                AddStore(store);
+                                throw new Exception("failed to interact with stores table");
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("failed to interact with stores table");
-                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
                 }
             }
         }
