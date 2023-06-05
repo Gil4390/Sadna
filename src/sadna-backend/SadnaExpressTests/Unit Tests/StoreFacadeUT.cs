@@ -29,6 +29,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             storeFacade = new StoreFacade();
             storeFacade.SetIsSystemInitialize(true);

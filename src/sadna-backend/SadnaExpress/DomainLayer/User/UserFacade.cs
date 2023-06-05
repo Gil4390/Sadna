@@ -23,7 +23,6 @@ namespace SadnaExpress.DomainLayer.User
         private ConcurrentDictionary<Guid, User> current_Users; //users that are in the system and not login
         public ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private ConcurrentDictionary<Guid, string> macs;
-        private ConcurrentDictionary<Guid, PromotedMember> founders;
 
         private readonly string guestEmail = "guest";
         private readonly string purchaseNotificationForBuyer = "Your purchase completed successfully, thank you for buying at Sadna Express!";
@@ -38,7 +37,6 @@ namespace SadnaExpress.DomainLayer.User
         public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
-            founders = new ConcurrentDictionary<Guid, PromotedMember>();
             members = new ConcurrentDictionary<Guid, Member>();
             macs = new ConcurrentDictionary<Guid, string>();
             this.paymentService = paymentService;
@@ -46,10 +44,9 @@ namespace SadnaExpress.DomainLayer.User
             _isTSInitialized = false;
         }
 
-        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members,ConcurrentDictionary<Guid, PromotedMember> founders, ConcurrentDictionary<Guid, string> macs, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
+        public UserFacade(ConcurrentDictionary<Guid, User> current_Users, ConcurrentDictionary<Guid, Member> members, ConcurrentDictionary<Guid, string> macs, PasswordHash ph, IPaymentService paymentService=null, ISupplierService supplierService = null)
         {
             this.current_Users = current_Users;
-            this.founders = founders;
             this.members = members;
             this.macs = macs;
             _ph = ph;
@@ -212,15 +209,6 @@ namespace SadnaExpress.DomainLayer.User
                     if (memberFromDB.Discriminator.Equals("PromotedMember")) // check if this member is store founder and add him to founders
                     {
                         PromotedMember pm = (PromotedMember)memberFromDB;
-                        foreach (Guid storeId in pm.Permission.Keys)
-                        {
-                            if (pm.Permission[storeId].Contains("founder permissions"))
-                            {
-                                PromotedMember removed = null;
-                                founders.TryRemove(storeId, out removed);
-                                founders.TryAdd(storeId, pm);
-                            }
-                        }
                         members.TryAdd(pm.UserId, pm);
                         macs.TryAdd(pm.UserId, DBHandler.Instance.GetMacById(pm.UserId));
                         LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[pm.UserId]); //we need that each member will hold valid info on their superriors and appointers
@@ -339,7 +327,6 @@ namespace SadnaExpress.DomainLayer.User
                 members[userID] = founder;
             DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[userID]);
 
-            founders.TryAdd(storeID, founder);
             NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
 
 
@@ -496,19 +483,14 @@ namespace SadnaExpress.DomainLayer.User
         public Bid PlaceBid(Guid userID, Guid storeID, Guid itemID, string itemName, double price)
         {
             IsTsInitialized();
-            List<PromotedMember> decisionBids = new List<PromotedMember>();
-            foreach (PromotedMember employee in founders[storeID].GetEmployeeInfoInStore(storeID))
-                if (employee.hasPermissions(storeID, new List<string>{"founder permissions", "owner permissions", "policies permission"}))
-                    decisionBids.Add(employee);
-            
             Bid bid = null;
             if (members.ContainsKey(userID))
             {
                 isLoggedIn(userID);
-                bid = members[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
+                bid = members[userID].PlaceBid(storeID, itemID, itemName, price);
             }
             else
-                bid = current_Users[userID].PlaceBid(storeID, itemID, itemName, price, decisionBids);
+                bid = current_Users[userID].PlaceBid(storeID, itemID, itemName, price);
             
             Logger.Instance.Info(userID,
                 nameof(UserFacade) + ": " + nameof(PlaceBid) + "Item " + itemName + "asked for new price " + price + " by user " + userID);

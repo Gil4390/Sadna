@@ -23,6 +23,7 @@ namespace SadnaExpressTests.Integration_Tests
         public virtual void Setup()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             NotificationNotifier.GetInstance().TestMood = true;
             trading = new TradingSystem();

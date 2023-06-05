@@ -30,6 +30,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void SetUp()
         {
             DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
             DBHandler.Instance.CleanDB();
             store = new Store("Hello");
             item1 = store.AddItem("Bisli", "Food", 10.0, 2);
