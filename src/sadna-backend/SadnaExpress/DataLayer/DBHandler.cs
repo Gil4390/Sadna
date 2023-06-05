@@ -2253,7 +2253,7 @@ namespace SadnaExpress.DataLayer
             }
         }
 
-        public void RemoveCond(int condID, Guid storeID)
+        public void RemoveCond(int condID, Store store)
         {
             lock (this)
             {
@@ -2263,7 +2263,20 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
-                            var cond = db.conditions.FirstOrDefault(c => c.ID.Equals(condID) && c.StoreID.Equals(storeID));
+                            // update store cond counter
+                            //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
+                            try
+                            {
+                                db.Stores.Update(store);
+                                db.SaveChanges(true);
+                            }
+                            catch (Exception ex)
+                            {
+                                // store was not add to db
+                                AddStore(store);
+                            }
+
+                            var cond = db.conditions.FirstOrDefault(c => c.ID.Equals(condID) && c.StoreID.Equals(store.StoreID));
                             if (cond != null)
                             {
                                 db.conditions.Remove(cond);
@@ -2353,6 +2366,11 @@ namespace SadnaExpress.DataLayer
                     {
                         try
                         {
+                            
+                            var policies = db.policies;
+                            policies.Add(pol);
+                            db.SaveChanges(true);
+
                             // update store cond counter
                             //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
                             try
@@ -2365,13 +2383,88 @@ namespace SadnaExpress.DataLayer
                                 // store was not add to db
                                 AddStore(store);
                             }
-                            var policies = db.policies;
-                            policies.Add(pol);
-                            db.SaveChanges(true);
+
                         }
                         catch (Exception ex)
                         {
                             throw new Exception("failed to add cond");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public void RemovePolicy(DiscountPolicy policy, Store store)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        int iD = policy.ID;
+                        try
+                        {
+                            var pol = db.policies.FirstOrDefault(c => c.StoreId.Equals(store.StoreID) && c.ID.Equals(iD));
+                            if (pol != null && pol.Discriminator.Equals("Complex"))
+                            {
+                                // remove all related policies
+                                List<int> idsToRemove = policy.relatedDiscountPoliciesIds();
+                                if(idsToRemove != null)
+                                {
+                                    foreach(int id in idsToRemove)
+                                    {
+                                        var rpol = db.policies.FirstOrDefault(c => c.StoreId.Equals(store.StoreID) && c.ID.Equals(id));
+                                        if(rpol != null)
+                                        {
+                                            db.policies.Remove(rpol);
+                                            db.SaveChanges(true);
+                                        }
+
+                                    }
+                                }
+
+                                db.policies.Remove(pol);
+                                db.SaveChanges(true);
+                            }
+                            else if(pol != null)
+                            {
+                                //bool shouldRemove = true;
+                                //// check if there is another policy involved
+                                //int checkId = pol.ID;
+                                //List<PolicyDB> complexPolices = db.policies.Where(p => p.StoreId.Equals(store.StoreID) && p.Discriminator.Equals("Complex")).ToList();
+                                //foreach(PolicyDB p in complexPolices)
+                                //{
+                                //    if (p.complex_policys.Contains(checkId))
+                                //        shouldRemove = false;
+                                //}
+                                //if(shouldRemove)
+                                //{
+                                    db.policies.Remove(pol);
+                                    db.SaveChanges(true);
+                                //}
+                            }
+
+                            // update store cond counter
+                            //var storeInDB = db.Stores.FirstOrDefault(s => s.StoreID.Equals(store.StoreID));
+                            try
+                            {
+                                db.Stores.Update(store);
+                                db.SaveChanges(true);
+                            }
+                            catch (Exception ex)
+                            {
+                                // store was not add to db
+                                AddStore(store);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to interact with stores table");
                         }
                     }
                 }
