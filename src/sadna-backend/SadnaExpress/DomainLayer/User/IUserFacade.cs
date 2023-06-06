@@ -69,7 +69,7 @@ namespace SadnaExpress.DomainLayer.User
         ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID);
         void MarkNotificationAsRead(Guid userID, Guid notificationID);
         string Handshake();
-        void NotifyBuyerPurchase(Guid userID);
+        void NotifyBuyerPurchase(Guid userID, DatabaseContext db);
         
         void CreateSystemManager(Guid userID);
         void CheckIsValidMemberOperation(Guid userID);

@@ -167,7 +167,7 @@ namespace SadnaExpress.ServiceLayer
                                     NotificationSystem.Instance.NotifyObservers(basket.StoreID, "New cart purchase at store " + storeFacade.GetStore(basket.StoreID).StoreName + " !", userID, db);
 
                                 //for bar - notify a user that his purchase completed succssefully by notification
-                                userFacade.NotifyBuyerPurchase(userID);
+                                userFacade.NotifyBuyerPurchase(userID, db);
 
                                 // delete the exist shopping cart
                                 userFacade.PurchaseCart(db, userID);
@@ -200,8 +200,6 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
-            Guid storeID = new Guid();
-            bool errorEccorInStore = true;
             try
             {
                 userFacade.CheckIsValidMemberOperation(userID);

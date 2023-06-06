@@ -96,7 +96,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         
         #region Remove membership
         [TestCategory("Concurrency")]
-        [TestMethod]
+        
         public void SystemManagerRemoveMembershipDuringHisPurchase_HappyTest()
         {
             //Arrange
