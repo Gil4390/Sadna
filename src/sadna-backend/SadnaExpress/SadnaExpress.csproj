@@ -113,16 +113,11 @@
     <Compile Include="DomainLayer\User\UserFacade.cs" />
     <Compile Include="ExternalServices\PaymentService.cs" />
     <Compile Include="ExternalServices\SupplierService.cs" />
-    <Compile Include="Migrations\20230605105207_Initial.cs" />
-    <Compile Include="Migrations\20230605105207_Initial.designer.cs">
-      <DependentUpon>20230605105207_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\20230606080015_Initial.cs" />
+    <Compile Include="Migrations\20230606080015_Initial.designer.cs">
+      <DependentUpon>20230606080015_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DatabaseContextModelSnapshot.cs" />
-    <Compile Include="Migrations\DatabaseTests\20230605105213_Initial.cs" />
-    <Compile Include="Migrations\DatabaseTests\20230605105213_Initial.designer.cs">
-      <DependentUpon>20230605105213_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\DatabaseTests\DatabaseTestsContextModelSnapshot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />

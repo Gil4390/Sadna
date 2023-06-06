@@ -37,9 +37,11 @@ namespace SadnaExpress.DataLayer
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseMySql("Server=MYSQL5045.site4now.net;Database=db_a995b0_sadnadb;Uid=a995b0_sadnadb;Pwd=Sadna123");
-            //optionsBuilder.UseSqlServer("Server=SQL5110.site4now.net;Database=db_a995b0_demo2;Uid=db_a995b0_demo2_admin;Pwd=Sadna123");
-
-            optionsBuilder.UseSqlite("Data Source=database.db");
+            
+            optionsBuilder.UseSqlServer("Server=SQL5106.site4now.net;Database=db_a995b0_sadnadbver4;Uid=db_a995b0_sadnadbver4_admin;Pwd=Sadna123");
+            
+            //Data Source=;Initial Catalog=;User Id=;Password=YOUR_DB_PASSWORD
+            //optionsBuilder.UseSqlite("Data Source=database.db");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
