@@ -78,11 +78,12 @@ namespace SadnaExpress.DataLayer
 
             base.OnModelCreating(modelBuilder);
         }
-
+        
         public DatabaseContext() : base()
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
+        
     }
 
 

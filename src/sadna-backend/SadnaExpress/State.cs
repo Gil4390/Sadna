@@ -198,7 +198,15 @@ namespace SadnaExpress
             foreach (Member member in list)
             {
                 // user2 has owner permissions
-                if (member.Email.Equals("user23@gmail.com"))
+                if (member.Email.Equals("user2@gmail.com"))
+                {
+                    if (!((PromotedMember)member).hasPermissions(storeID, permissions))
+                    {
+                        throw new Exception("The user does not have the correct permissions");
+                    }
+                }
+                // user3 has owner permissions
+                if (member.Email.Equals("user3@gmail.com"))
                 {
                     if (!((PromotedMember)member).hasPermissions(storeID, permissions))
                     {

@@ -1329,11 +1329,14 @@ namespace SadnaExpress.DataLayer
                             {
                                 try
                                 {
-                                    var allStores = db.Stores;
+                                    var allStores = db.Stores.ToList();
                                     result = new ConcurrentDictionary<Guid, Store>();
                                     foreach (Store s in allStores)
                                     {
                                         // get store item_quantity
+
+                                        db.Entry(s.itemsInventory).State = EntityState.Detached;
+
                                         var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(s.StoreID));
                                         string quanity_ItemsDB = null;
                                         if (inv != null)

@@ -29,7 +29,7 @@ namespace SadnaExpress
         {
             InitAppSettings();
             State state = State.Instance;
-            String flag = "data";
+            String flag = "data2";
             if (flag.Equals("data"))
             {
                 DBHandler.Instance.CleanDB();
