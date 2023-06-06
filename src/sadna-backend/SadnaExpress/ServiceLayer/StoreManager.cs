@@ -202,6 +202,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                userFacade.CheckIsValidMemberOperation(userID);
                 Guid storeID = storeFacade.OpenNewStore(storeName);
                 userFacade.OpenNewStore(userID,storeID);
                 return new ResponseT<Guid>(storeID);

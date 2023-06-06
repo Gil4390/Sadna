@@ -70,8 +70,8 @@ namespace SadnaExpress.DomainLayer.User
         void MarkNotificationAsRead(Guid userID, Guid notificationID);
         string Handshake();
         void NotifyBuyerPurchase(Guid userID);
-        void UpdateCurrentMemberFromDb(Guid userID);
         
         void CreateSystemManager(Guid userID);
+        void CheckIsValidMemberOperation(Guid userID);
     }
 }

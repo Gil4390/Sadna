@@ -333,6 +333,11 @@ namespace SadnaExpress.DomainLayer.User
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(OpenNewStore) + " opened new store with id- " + storeID);
         }
 
+        public void CheckIsValidMemberOperation(Guid userID)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+        }
 
         public void AddItemToStore(Guid id, Guid storeID)
         {
@@ -424,6 +429,7 @@ namespace SadnaExpress.DomainLayer.User
 
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(RemoveStoreOwner) + " appoints " + storeOwnerID + " removed as store owner");
         }
+
         public void AppointStoreManager(Guid userID, Guid storeID, string email)
         {
             IsTsInitialized();
@@ -562,6 +568,7 @@ namespace SadnaExpress.DomainLayer.User
             else
                 throw new Exception($"The user {members[userID].Email} is not system manager");
         }
+
         public void UpdateFirst(Guid userID, string newFirst)
         {
             IsTsInitialized();
@@ -924,6 +931,7 @@ namespace SadnaExpress.DomainLayer.User
 
             throw new Exception("Member with id " + userID + " does not exist");
         }
+
         public Member GetMember(String email)
         {
             foreach(Member member in members.Values) {
@@ -952,8 +960,6 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("Member with id " + email + " does not exist");
         }
     
-
-
         public bool IsSystemInitialize()
         {
             return _isTSInitialized;
@@ -991,6 +997,7 @@ namespace SadnaExpress.DomainLayer.User
             }
 
         }
+
         public string Handshake()
         {
             return paymentService.Handshake();
@@ -1009,12 +1016,6 @@ namespace SadnaExpress.DomainLayer.User
             PromotedMember systemManager = members[userID].promoteToMember();
             systemManager.createSystemManager();
             members[userID] = systemManager;
-        }
-
-        public void UpdateCurrentMemberFromDb(Guid userID)
-        {
-            //members[userID] = DBHandler.Instance.GetMemberFromDBByEmail(members[userID].Email);
-            //members[userID].LoggedIn = true;
         }
 
         private void LoadPromotedMemberCoWorkersFromDB(PromotedMember pm) //LOAD all the tree of directive/appoint for the promoted member
