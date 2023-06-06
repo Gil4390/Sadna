@@ -14,14 +14,6 @@ namespace SadnaExpress
 
         public static int SignalRPort = 0;
 
-        public static string DataBaseServer = "";
-
-        public static string DataBaseName = "";
-
-        public static string DataBaseUIdAuthentication = "";
-
-        public static string DataBasePwdAuthentication = "";
-
         public static string PaymentServiceURL = "";
 
         public static string SupplierServiceURL = "";
@@ -39,6 +31,8 @@ namespace SadnaExpress
         public static bool StartWithCleanDB = false;
 
         public static bool RunLoadData = false;
+
+        public static string StateFileConfig = "";
 
         public static string TestDB = "";
 
