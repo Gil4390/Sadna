@@ -418,10 +418,10 @@ namespace SadnaExpress.DomainLayer.User
                 }
             }
 
-            foreach (Member mem in StoreOwnersDeleted)
-            {
+            //foreach (Member mem in StoreOwnersDeleted)
+           // {
                 NotificationSystem.Instance.NotifyObservers(StoreOwnersDeleted, storeID, "Yow where removed as store owner", userID);
-            }
+            //}
 
 
             NotificationSystem.Instance.RemoveObservers(storeID, StoreOwnersDeleted);
