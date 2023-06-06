@@ -97,7 +97,6 @@ namespace SadnaExpress.DataLayer
                                 db.notfications.RemoveRange(db.notfications);
                                 db.orders.RemoveRange(db.orders);
                                 db.ItemForOrders.RemoveRange(db.ItemForOrders);
-
                                 db.conditions.RemoveRange(db.conditions);
 
                                 db.SaveChanges(true);
@@ -2357,8 +2356,6 @@ namespace SadnaExpress.DataLayer
         #endregion
 
         #endregion
-
-
 
         public void addCond( ConditionDB cond, Store store)
         {

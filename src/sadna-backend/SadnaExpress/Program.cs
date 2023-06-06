@@ -29,7 +29,7 @@ namespace SadnaExpress
         {
             InitAppSettings();
             State state = State.Instance;
-            String flag = "data2";
+            string flag = ApplicationOptions.StateFileConfig;
             if (flag.Equals("data"))
             {
                 DBHandler.Instance.CleanDB();
@@ -59,7 +59,7 @@ namespace SadnaExpress
                 }
             }
 
-            else
+            else //we will not load a file 
             {
                 if (ApplicationOptions.StartWithCleanDB)
                     DBHandler.Instance.CleanDB();
@@ -67,8 +67,8 @@ namespace SadnaExpress
                 if (ApplicationOptions.RunLoadData)
                     TradingSystem.Instance.LoadData();
             }
-            //start the api server
 
+            //start the api server
             ServerServiceHost serverServiceHost = new ServerServiceHost();
             serverServiceHost.Start();
 
@@ -108,30 +108,6 @@ namespace SadnaExpress
                 {
                     ApplicationOptions.SignalRPort = intValue;
                 }
-            }
-
-            string DataBaseServer = ConfigurationManager.AppSettings["DataBaseServer"];
-            if (string.IsNullOrEmpty(DataBaseServer) == false)
-            {
-                ApplicationOptions.DataBaseServer = DataBaseServer;
-            }
-
-            string DataBaseName = ConfigurationManager.AppSettings["DataBaseName"];
-            if (string.IsNullOrEmpty(DataBaseName) == false)
-            {
-                ApplicationOptions.DataBaseName = DataBaseName;
-            }
-
-            string DataBaseUIdAuthentication = ConfigurationManager.AppSettings["DataBaseUIdAuthentication"];
-            if (string.IsNullOrEmpty(DataBaseUIdAuthentication) == false)
-            {
-                ApplicationOptions.DataBaseUIdAuthentication = DataBaseUIdAuthentication;
-            }
-
-            string DataBasePwdAuthentication = ConfigurationManager.AppSettings["DataBasePwdAuthentication"];
-            if (string.IsNullOrEmpty(DataBasePwdAuthentication) == false)
-            {
-                ApplicationOptions.DataBasePwdAuthentication = DataBasePwdAuthentication;
             }
 
             string PaymentServiceURL = ConfigurationManager.AppSettings["PaymentServiceURL"];
@@ -197,12 +173,17 @@ namespace SadnaExpress
                 }
             }
 
+            string StateFileConfig = ConfigurationManager.AppSettings["StateFileConfig"];
+            if (string.IsNullOrEmpty(StateFileConfig) == false)
+            {
+                ApplicationOptions.StateFileConfig = StateFileConfig;
+            }
+
             string TestDB = ConfigurationManager.AppSettings["TestDB"];
             if (string.IsNullOrEmpty(TestDB) == false)
             {
                 ApplicationOptions.TestDB = TestDB;
             }
-
 
         }
     }
