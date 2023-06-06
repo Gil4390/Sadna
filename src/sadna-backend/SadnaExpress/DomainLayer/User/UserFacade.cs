@@ -1003,11 +1003,11 @@ namespace SadnaExpress.DomainLayer.User
             return paymentService.Handshake();
         }
 
-        public void NotifyBuyerPurchase(Guid userID)
+        public void NotifyBuyerPurchase(Guid userID, DatabaseContext db=null)
         {
             NotificationNotifier.GetInstance().SendNotification(userID, purchaseNotificationForBuyer);
             if (members.ContainsKey(userID))
-                members[userID].Update(new Notification(DateTime.Now, userID, purchaseNotificationForBuyer, userID));
+                members[userID].Update(new Notification(DateTime.Now, userID, purchaseNotificationForBuyer, userID), db);
         }
         
         public void CreateSystemManager(Guid userID)

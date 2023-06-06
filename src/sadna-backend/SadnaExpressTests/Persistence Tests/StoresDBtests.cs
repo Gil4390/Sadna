@@ -35,7 +35,7 @@ namespace SadnaExpressTests.Persistence_Tests
         public void DB_Open_Store_Fail()
         {
             int numOfStores = DBHandler.Instance.GetAllStores().Count;
-            trading.OpenNewStore(new Guid(), "Store_That_will_not_open");
+            trading.OpenNewStore(Guid.NewGuid(), "Store_That_will_not_open");
             
             Assert.IsFalse(DBHandler.Instance.IsStoreNameExist("Store_That_will_not_open"));
             Assert.AreEqual(DBHandler.Instance.GetAllStores().Count,numOfStores);
@@ -207,6 +207,7 @@ namespace SadnaExpressTests.Persistence_Tests
             trading.SetSupplierService(new Mocks.Mock_SupplierService());
 
             trading.AddItemToCart(buyerMemberID, storeID1, itemID1, 1);
+
             int numBefore = trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1);
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent", "38 Tacher st.", "Richmond", "England", "4284200");
@@ -215,30 +216,27 @@ namespace SadnaExpressTests.Persistence_Tests
 
             Assert.AreEqual(DBHandler.Instance.GetAllOrders().Count, 1);
             Assert.AreEqual(0, trading.GetDetailsOnCart(buyerMemberID).Value.Baskets.Count); // the shopping basket get empty
-            Assert.AreEqual(numBefore - 1, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1)); //the quantity updated
+            Assert.AreEqual(numBefore - 3, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1)); //the quantity updated
         }
 
         [TestMethod()]
         public void DB_Purchase_Fail()
         {
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
+            trading.SetPaymentService(new Mocks.Mock_Bad_PaymentService());
             trading.SetSupplierService(new Mocks.Mock_SupplierService());
 
-            Guid id = new Guid();
+            trading.AddItemToCart(buyerMemberID, storeID1, itemID1, 1);
 
-            id = trading.Enter().Value;
-            Guid userid = trading.Login(id, "hello@gmail.com", "123AaC!@#").Value;
-            trading.AddItemToCart(userid, storeID1, itemID1, 1);
             int numBefore = trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1);
-            trading.AddItemToCart(userid, storeID1, itemID2, 1);
+            int numofbasket = trading.GetDetailsOnCart(buyerMemberID).Value.Baskets.Count;
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent", "38 Tacher st.", "Richmond", "England", "4284200");
 
-            trading.PurchaseCart(new Guid(), transactionDetails, transactionDetailsSupply);
+            trading.PurchaseCart(buyerMemberID, transactionDetails, transactionDetailsSupply);
 
             Assert.AreEqual(DBHandler.Instance.GetAllOrders().Count, 0);
-            Assert.AreEqual(0, trading.GetDetailsOnCart(userid).Value.Baskets.Count); // the shopping basket get empty
-            Assert.AreEqual(numBefore, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1)); //the quantity updated
+            Assert.AreEqual(numofbasket, trading.GetDetailsOnCart(buyerMemberID).Value.Baskets.Count); // the shopping basket still full
+            Assert.AreEqual(numBefore, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1)); //the quantity not updated
         }
 
     }

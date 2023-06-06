@@ -1499,7 +1499,8 @@ namespace SadnaExpress.DataLayer
                         var stores = db.Stores;
                         stores.Remove(storeFound);
                         db.SaveChanges(true);
-
+                        if (store.itemsInventory == null)
+                            store.itemsInventory = inventoryFound;
                         store.itemsInventory.Items_quantityDB = store.itemsInventory.Items_quantityJson;
                         stores.Add(store);
                         db.SaveChanges(true);
