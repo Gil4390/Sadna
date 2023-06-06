@@ -105,8 +105,6 @@ namespace SadnaExpress.ServiceLayer
             try
             {
                 userFacade.RemovePermission(userID, storeID, userEmail, permission);
-                // new function here
-                userFacade.UpdateCurrentMemberFromDb(userID);
                 return new Response();
             }
             catch (Exception ex)
