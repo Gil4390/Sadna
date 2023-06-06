@@ -445,6 +445,16 @@ namespace SadnaExpress.ServiceLayer
         {
             return _realBridge.ReactToBid(userID, itemID, bidID, bidResponse);
         }
+
+        public ResponseT<Member> GetMember(string email)
+        {
+            return _realBridge.GetMember(email);
+        }
+
+        public ResponseT<Store> GetStore(string name)
+        {
+            return _realBridge.GetStore(name);
+        }
     }
 
 

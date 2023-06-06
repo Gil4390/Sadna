@@ -1,0 +1,120 @@
+﻿[
+  {
+    "function": "Register",
+    "params": {
+      "email": "user1@gmail.com",
+      "firstName": "user1",
+      "lastName": "user1",
+      "password": "asASD876!@"
+    }
+  },
+  {
+    "function": "CreateSystemManager",
+    "params": {
+      "email": "user1@gmail.com"
+    }
+  },
+  {
+    "function": "Register",
+    "params": {
+      "email": "user2@gmail.com",
+      "firstName": "user2",
+      "lastName": "user2",
+      "password": "asASD876!@"
+    }
+  },
+  {
+    "function": "Register",
+    "params": {
+      "email": "user3@gmail.com",
+      "firstName": "user3",
+      "lastName": "user3",
+      "password": "asASD876!@"
+    }
+  },
+  {
+    "function": "Register",
+    "params": {
+      "email": "user4@gmail.com",
+      "firstName": "user4",
+      "lastName": "user4",
+      "password": "asASD876!@"
+    }
+  },
+  {
+    "function": "Register",
+    "params": {
+      "email": "user5@gmail.com",
+      "firstName": "user5",
+      "lastName": "user5",
+      "password": "asASD876!@"
+    }
+  },
+  {
+    "function": "Register",
+    "params": {
+      "email": "user6@gmail.com",
+      "firstName": "user6",
+      "lastName": "user6",
+      "password": "asASD876!@"
+    }
+  },
+  {
+    "function": "Login",
+    "params": {
+      "password": "asASD876!@",
+      "email": "user2@gmail.com"
+    }
+  },
+  {
+    "function": "OpenNewStore",
+    "params": {
+      "storeName": "store1",
+      "email": "user2@gmail.com"
+    }
+  },
+  {
+    "function": "AddItemToStore",
+    "params": {
+      "itemName": "BAMBA",
+      "storeName": "store1",
+      "itemPrice": 30,
+      "itemQuantity": 20,
+      "itemCategory": "food",
+      "email": "user2@gmail.com"
+
+    }
+  },
+  {
+    "function": "AppointStoreManager",
+    "params": {
+      "email": "user2@gmail.com",
+      "MemberEmail": "user3@gmail.com",
+      "storeName": "store1",
+      "permission":  "product management permissions" 
+    }
+  },
+  {
+    "function": "AppointStoreOwner",
+    "params": {
+      "email": "user2@gmail.com",
+      "MemberEmail": "user4@gmail.com",
+      "storeName": "store1"
+
+    }
+  },
+  {
+    "function": "AppointStoreOwner",
+    "params": {
+      "email": "user2@gmail.com",
+      "MemberEmail": "user5@gmail.com",
+      "storeName": "store1"
+    }
+  },
+  {
+    "function": "Logout",
+    "params": {
+      "email": "user2@gmail.com"
+    }
+  }
+]

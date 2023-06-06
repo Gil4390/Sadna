@@ -145,6 +145,7 @@
     <Compile Include="ServiceLayer\UserManager.cs" />
     <Compile Include="ExternalServices\IPaymentService.cs" />
     <Compile Include="ExternalServices\ISupplierService.cs" />
+    <Compile Include="State.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.Cors" Version="5.0.0" />
@@ -187,6 +188,8 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data.json" />
+    <None Include="data2.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

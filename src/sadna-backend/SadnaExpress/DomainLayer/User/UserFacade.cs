@@ -34,7 +34,7 @@ namespace SadnaExpress.DomainLayer.User
         private ISupplierService supplierService;
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
 
-        public UserFacade(IPaymentService paymentService=null, ISupplierService supplierService =null)
+        public UserFacade(IPaymentService paymentService = null, ISupplierService supplierService = null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
             members = new ConcurrentDictionary<Guid, Member>();
@@ -59,12 +59,12 @@ namespace SadnaExpress.DomainLayer.User
         {
             User user = new User();
             current_Users.TryAdd(user.UserId, user);
-            Logger.Instance.Info(user.UserId , nameof(UserFacade)+": "+nameof(Enter)+": enter the system as guest.");
-            return user.UserId;   
+            Logger.Instance.Info(user.UserId, nameof(UserFacade) + ": " + nameof(Enter) + ": enter the system as guest.");
+            return user.UserId;
         }
 
         public void Exit(Guid id)
-        { 
+        {
             User user;
             Member member;
             if (current_Users.TryRemove(id, out user))
@@ -76,13 +76,13 @@ namespace SadnaExpress.DomainLayer.User
             {
                 lock (members[id])
                 {
-                    Logout(id,true);
+                    Logout(id, true);
                     Logger.Instance.Info(id, nameof(UserFacade) + ": " + nameof(Exit) + ": exited from the system.");
                 }
             }
             else
                 throw new Exception("Error with exiting system with this id- " + id);
-            
+
         }
 
         public void Register(Guid id, string email, string firstName, string lastName, string password)
@@ -110,7 +110,7 @@ namespace SadnaExpress.DomainLayer.User
 
             lock (internedKey)
             {
-                
+
                 foreach (Member m in members.Values)
                 {
                     if (m.Email.ToLower().Equals(email.ToLower()))
@@ -130,7 +130,7 @@ namespace SadnaExpress.DomainLayer.User
                 // add member to database
                 DBHandler.Instance.AddMember(newMember, newMac);
 
-                Logger.Instance.Info(newMember.UserId, nameof(UserFacade) + ": " + nameof(Register) + ": registered with " + email +".");
+                Logger.Instance.Info(newMember.UserId, nameof(UserFacade) + ": " + nameof(Register) + ": registered with " + email + ".");
             }
         }
 
@@ -193,13 +193,13 @@ namespace SadnaExpress.DomainLayer.User
             {
                 var memberFromDB = DBHandler.Instance.CheckMemberValidLogin(id, email, password, _ph);
                 if (memberFromDB != null)
-                {                                                
+                {
                     if (_isTSInitialized == false) //if user id not system manager and system is not initialized user cannot login
                         IsTSSystemManagerID(memberFromDB.UserId);
 
                     memberFromDB.LoggedIn = true;
                     User user;
-                    current_Users.TryRemove(id, out user);                         
+                    current_Users.TryRemove(id, out user);
 
                     memberFromDB.deepCopy(user); //handle shopping cart and bids
 
@@ -223,17 +223,17 @@ namespace SadnaExpress.DomainLayer.User
                     return memberFromDB.UserId;
                 }
             }
-      
+
             //email not found
             throw new Exception("Incorrect email or password");
         }
 
-        public Guid Logout(Guid id,bool exited=false)
+        public Guid Logout(Guid id, bool exited = false)
         {
             if (!members.ContainsKey(id))
                 throw new Exception("member with id dosen't exist");
             lock (members[id])
-            { 
+            {
                 Member member = members[id];
                 if (member.LoggedIn == false)
                     throw new Exception("member is already logged out!");
@@ -241,7 +241,7 @@ namespace SadnaExpress.DomainLayer.User
                 DBHandler.Instance.MemberLogout(member);
                 Logger.Instance.Info(member.UserId, nameof(UserFacade) + ": " + nameof(Logout) + " logged out as member");
             }
-            if(exited==false) //member logout but did not exited
+            if (exited == false) //member logout but did not exited
                 return Enter(); //member logs out and a regular user enters the system instead  
 
             return Guid.Empty; //if member exited we do not need to send new id
@@ -256,25 +256,25 @@ namespace SadnaExpress.DomainLayer.User
                 members[userID].AddItemToCart(storeID, itemID, itemAmount);
                 DBHandler.Instance.UpdateMemberShoppingCart(members[userID]);
             }
-            else 
+            else
                 current_Users[userID].AddItemToCart(storeID, itemID, itemAmount);
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AddItemToCart)+"Item "+itemID+"X"+itemAmount +" to store "+storeID+ " by user "+userID);
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AddItemToCart) + "Item " + itemID + "X" + itemAmount + " to store " + storeID + " by user " + userID);
         }
 
         public void RemoveItemFromCart(Guid userID, Guid storeID, Guid itemID)
         {
             IsTsInitialized();
-            
-            if (members.ContainsKey(userID)&& isLoggedIn(userID))
+
+            if (members.ContainsKey(userID) && isLoggedIn(userID))
             {
                 if (!isLoggedIn(userID))
                     throw new Exception("the user is not logged in");
                 members[userID].RemoveItemFromCart(storeID, itemID);
                 DBHandler.Instance.UpdateMemberShoppingCart(members[userID]);
             }
-            else 
+            else
                 current_Users[userID].RemoveItemFromCart(storeID, itemID);
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveItemFromCart)+"Item "+itemID+"removed from store "+storeID+ " by user "+userID);
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(RemoveItemFromCart) + "Item " + itemID + "removed from store " + storeID + " by user " + userID);
         }
 
         public void EditItemFromCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
@@ -288,9 +288,9 @@ namespace SadnaExpress.DomainLayer.User
                 members[userID].EditItemFromCart(storeID, itemID, itemAmount);
                 DBHandler.Instance.UpdateMemberShoppingCart(members[userID]);
             }
-            else 
+            else
                 current_Users[userID].EditItemFromCart(storeID, itemID, itemAmount);
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(EditItemFromCart)+"Item "+itemID+"X"+itemAmount +" updated in store "+storeID+ " by user "+userID);
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(EditItemFromCart) + "Item " + itemID + "X" + itemAmount + " updated in store " + storeID + " by user " + userID);
         }
 
         public ShoppingCart GetDetailsOnCart(Guid userID)
@@ -298,7 +298,7 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             if (members.ContainsKey(userID))
                 return members[userID].ShoppingCart;
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(GetDetailsOnCart)+" ask to displays his shopping cart");
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(GetDetailsOnCart) + " ask to displays his shopping cart");
             return current_Users[userID].ShoppingCart;
         }
 
@@ -330,15 +330,15 @@ namespace SadnaExpress.DomainLayer.User
             NotificationSystem.Instance.RegisterObserver(storeID, members[userID]);
 
 
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(OpenNewStore)+" opened new store with id- " + storeID);
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(OpenNewStore) + " opened new store with id- " + storeID);
         }
 
-    
+
         public void AddItemToStore(Guid id, Guid storeID)
         {
             IsTsInitialized();
             isLoggedIn(id);
-            if (!members[id].hasPermissions(storeID, new List<string>{"product management permissions","owner permissions","founder permissions"}))
+            if (!members[id].hasPermissions(storeID, new List<string> { "product management permissions", "owner permissions", "founder permissions" }))
                 throw new Exception("The user unauthorised to add add item to store");
 
         }
@@ -347,7 +347,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(id);
-            if (!members[id].hasPermissions(storeID, new List<string>{"product management permissions","owner permissions","founder permissions"}))
+            if (!members[id].hasPermissions(storeID, new List<string> { "product management permissions", "owner permissions", "founder permissions" }))
                 throw new Exception("The user unauthorised to add add item to store");
         }
 
@@ -355,7 +355,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             IsTsInitialized();
             isLoggedIn(id);
-            if (!members[id].hasPermissions(storeID, new List<string>{"product management permissions","owner permissions","founder permissions"}))
+            if (!members[id].hasPermissions(storeID, new List<string> { "product management permissions", "owner permissions", "founder permissions" }))
                 throw new Exception("The user unauthorised to add add item to store");
         }
 
@@ -387,8 +387,8 @@ namespace SadnaExpress.DomainLayer.User
                 DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newOwnerID]);
                 NotificationSystem.Instance.RegisterObserver(storeID, owner);
             }
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreOwner)+" appoints " +newOwnerID +" to new store owner");
-            
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AppointStoreOwner) + " appoints " + newOwnerID + " to new store owner");
+
         }
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)
@@ -396,14 +396,14 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userID);
             Guid storeOwnerID = IsMember(email).UserId;
-            
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +storeOwnerID +" removed as store owner");
-            
+
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AppointStoreManager) + " appoints " + storeOwnerID + " removed as store owner");
+
             Tuple<List<Member>, List<Member>> result = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
             List<Member> membersList = result.Item1;
             List<Member> StoreOwnersDeleted = result.Item2;
 
-            
+
             foreach (Member mem in membersList)
             {
                 String internedKey = String.Intern(mem.UserId.ToString());
@@ -418,17 +418,17 @@ namespace SadnaExpress.DomainLayer.User
                 NotificationSystem.Instance.NotifyObservers(StoreOwnersDeleted, storeID, "Yow where removed as store owner", userID);
             }
 
-              
-            NotificationSystem.Instance.RemoveObservers(storeID, StoreOwnersDeleted);
-            
 
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveStoreOwner)+" appoints " +storeOwnerID +" removed as store owner");
+            NotificationSystem.Instance.RemoveObservers(storeID, StoreOwnersDeleted);
+
+
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(RemoveStoreOwner) + " appoints " + storeOwnerID + " removed as store owner");
         }
         public void AppointStoreManager(Guid userID, Guid storeID, string email)
         {
             IsTsInitialized();
             isLoggedIn(userID);
-            
+
             Guid newManagerID = IsMember(email).UserId;
 
             String internedKey = String.Intern(newManagerID.ToString());
@@ -440,7 +440,7 @@ namespace SadnaExpress.DomainLayer.User
                 DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newManagerID]);
             }
 
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AppointStoreManager)+" appoints " +newManagerID +" to new store manager");
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AppointStoreManager) + " appoints " + newManagerID + " to new store manager");
         }
 
         public void AddStoreManagerPermissions(Guid userID, Guid storeID, string email, string permission)
@@ -454,7 +454,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 members[userID].AddStoreManagerPermissions(storeID, manager, permission);
             }
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(AddStoreManagerPermissions)+"System added "+userID+" manager permissions in store "+storeID+": "+permission);
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AddStoreManagerPermissions) + "System added " + userID + " manager permissions in store " + storeID + ": " + permission);
         }
 
         public void RemoveStoreManagerPermissions(Guid userID, Guid storeID, string email, string permission)
@@ -469,7 +469,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (member != null)
                     members[manager.UserId] = member;
             }
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(RemoveStoreManagerPermissions)+"System removed "+userID+" manager permissions in store "+storeID+": "+permission);
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(RemoveStoreManagerPermissions) + "System removed " + userID + " manager permissions in store " + storeID + ": " + permission);
         }
 
         public List<PromotedMember> GetEmployeeInfoInStore(Guid userID, Guid storeID)
@@ -496,29 +496,29 @@ namespace SadnaExpress.DomainLayer.User
                 nameof(UserFacade) + ": " + nameof(PlaceBid) + "Item " + itemName + "asked for new price " + price + " by user " + userID);
             return bid;
         }
-        
+
         public void ReactToBid(Guid userID, Guid storeID, Guid bid, string bidResponse)
         {
             IsTsInitialized();
             isLoggedIn(userID);
-            
+
             members[userID].ReactToBid(storeID, bid, bidResponse);
-            
+
             Logger.Instance.Info(userID,
                 nameof(UserFacade) + ": " + nameof(ReactToBid) + "Bid " + bid + "get bid response " + bidResponse + " by user " + userID);
         }
-        
+
         public List<Bid> GetBidsInStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
             isLoggedIn(userID);
-            
+
             Logger.Instance.Info(userID,
                 nameof(UserFacade) + ": " + nameof(ReactToBid) + "get bid in store " + storeID + " by user " + userID);
             List<Bid> bidsWithoutNotExistsGuest = new List<Bid>();
             foreach (Bid bid in members[userID].GetBidsInStore(storeID))
             {
-                if (bid.User.GetType() != typeof(User) || current_Users.ContainsKey(bid.User.UserId)) 
+                if (bid.User.GetType() != typeof(User) || current_Users.ContainsKey(bid.User.UserId))
                     bidsWithoutNotExistsGuest.Add(bid);
             }
 
@@ -560,7 +560,7 @@ namespace SadnaExpress.DomainLayer.User
                 }
             }
             else
-              throw new Exception($"The user {members[userID].Email} is not system manager");
+                throw new Exception($"The user {members[userID].Email} is not system manager");
         }
         public void UpdateFirst(Guid userID, string newFirst)
         {
@@ -569,7 +569,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
             members[userID].FirstName = newFirst;
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(UpdateFirst)+"First name updated");
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(UpdateFirst) + "First name updated");
         }
 
         public void UpdateLast(Guid userID, string newLast)
@@ -579,7 +579,7 @@ namespace SadnaExpress.DomainLayer.User
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
             members[userID].LastName = newLast;
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(UpdateLast)+"Last name updated");
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(UpdateLast) + "Last name updated");
         }
 
         public void UpdatePassword(Guid userID, string newPassword)
@@ -588,8 +588,8 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
-            members[userID].Password = _ph.Hash(newPassword+macs[userID]);
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(UpdatePassword)+"Password updated");
+            members[userID].Password = _ph.Hash(newPassword + macs[userID]);
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(UpdatePassword) + "Password updated");
         }
 
         public void CloseStore(Guid userID, Guid storeID)
@@ -597,7 +597,7 @@ namespace SadnaExpress.DomainLayer.User
             IsTsInitialized();
             isLoggedIn(userID);
             members[userID].CloseStore(storeID);
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(CloseStore)+" Closed store "+storeID);
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(CloseStore) + " Closed store " + storeID);
         }
 
         public void GetStorePurchases(Guid userId, Guid storeId)
@@ -606,15 +606,15 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userId);
             if (!members[userId].hasPermissions(storeId,
                     new List<string> { "get store history", "owner permissions", "founder permissions" }))
-                throw new Exception("The member doesn’t have permissions to get store purchases"); 
+                throw new Exception("The member doesn’t have permissions to get store purchases");
         }
 
         public void GetAllStorePurchases(Guid userId)
         {
             IsTsInitialized();
             isLoggedIn(userId);
-            if (!members[userId].hasPermissions(Guid.Empty, new List<string>{"system manager permissions"}))
-                throw new Exception("The member doesn’t have permissions to get all stores purchases");   
+            if (!members[userId].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
+                throw new Exception("The member doesn’t have permissions to get all stores purchases");
         }
 
         public void CleanUp()
@@ -653,13 +653,13 @@ namespace SadnaExpress.DomainLayer.User
 
             }
 
-            if(servicesConnected)
+            if (servicesConnected)
                 _isTSInitialized = true;
             else
                 throw new Exception("Trading system cannot be initialized");
 
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(InitializeTradingSystem)+"System Initialized");
-            return servicesConnected; 
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(InitializeTradingSystem) + "System Initialized");
+            return servicesConnected;
         }
 
         public bool hasPermissions(Guid userID, Guid storeId, List<string> permissions)
@@ -686,7 +686,7 @@ namespace SadnaExpress.DomainLayer.User
 
         private Member IsMember(string email)
         {
-            foreach (Member member in members.Values) 
+            foreach (Member member in members.Values)
                 if (member.Email.ToLower() == email.ToLower())
                     return member;
 
@@ -719,7 +719,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
             {
-                Logger.Instance.Info(userID, nameof(UserFacade)+": requested to display all members");
+                Logger.Instance.Info(userID, nameof(UserFacade) + ": requested to display all members");
 
                 return DBHandler.Instance.GetAllMembers();
                 //return members;
@@ -734,8 +734,8 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userID);
             if (!members.ContainsKey(userID))
                 throw new Exception("member with id dosen't exist");
-            members[userID].SetSecurityQA(q,_ph.Hash(a+macs[userID]));
-            Logger.Instance.Info(userID, nameof(UserFacade)+": "+nameof(SetSecurityQA)+"Security Q&A set");
+            members[userID].SetSecurityQA(q, _ph.Hash(a + macs[userID]));
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(SetSecurityQA) + "Security Q&A set");
         }
 
         public void SetPaymentService(IPaymentService paymentService)
@@ -754,7 +754,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 if (!transactionDetails.ValidationSettings())
                     throw new TimeoutException("Details of payment isn't valid");
-                Logger.Instance.Info(nameof(paymentService)+": request to preform a payment with details : "+transactionDetails);
+                Logger.Instance.Info(nameof(paymentService) + ": request to preform a payment with details : " + transactionDetails);
 
                 var task = Task.Run(() =>
                 {
@@ -768,7 +768,7 @@ namespace SadnaExpress.DomainLayer.User
                 if (isCompletedSuccessfully)
                 {
                     int transaction_id = task.Result;
-                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(PlacePayment) +"Place payment completed with amount of "+amount+" and "+transactionDetails);
+                    Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(PlacePayment) + "Place payment completed with amount of " + amount + " and " + transactionDetails);
                     return transaction_id;
                 }
                 else
@@ -790,7 +790,7 @@ namespace SadnaExpress.DomainLayer.User
 
         public List<Notification> GetNotifications(Guid userId)
         {
-            if(members.ContainsKey(userId))
+            if (members.ContainsKey(userId))
                 return members[userId].AwaitingNotification;
             throw new Exception("Member with id " + userId + " does not exist");
         }
@@ -803,9 +803,9 @@ namespace SadnaExpress.DomainLayer.User
         public List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores)
         {
             List<Member> storeOwners = new List<Member>();
-            foreach(Member member in members.Values)
+            foreach (Member member in members.Values)
             {
-                foreach(Guid storeID in stores.Keys)
+                foreach (Guid storeID in stores.Keys)
                 {
                     if (members[member.UserId].hasPermissions(storeID, new List<string> { "owner permissions" })) ;
                     storeOwners.Add(member);
@@ -818,9 +818,9 @@ namespace SadnaExpress.DomainLayer.User
         public List<Member> GetStoreOwnerOfStores(List<Guid> stores)
         {
             List<Member> storeOwners = new List<Member>();
-            foreach(Member member in members.Values)
+            foreach (Member member in members.Values)
             {
-                foreach(Guid storeID in stores)
+                foreach (Guid storeID in stores)
                 {
                     if (members[member.UserId].hasPermissions(storeID, new List<string> { "owner permissions" })) ;
                     storeOwners.Add(member);
@@ -828,7 +828,7 @@ namespace SadnaExpress.DomainLayer.User
             }
 
             return storeOwners;
-            
+
         }
 
         public int PlaceSupply(SSupplyDetails userDetails)
@@ -837,7 +837,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 if (!userDetails.ValidationSettings())
                     throw new TimeoutException("Details of payment isn't valid");
-                Logger.Instance.Info(nameof(supplierService) + ": user: " + userDetails + " request to preform a supply for order: " );//add SSupplyDetails.toString();
+                Logger.Instance.Info(nameof(supplierService) + ": user: " + userDetails + " request to preform a supply for order: ");//add SSupplyDetails.toString();
 
                 var task = Task.Run(() =>
                 {
@@ -846,12 +846,12 @@ namespace SadnaExpress.DomainLayer.User
                     return supplierService.Supply(userDetails);
                 });
 
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime))&& task.Result != -1;;
+                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result != -1; ;
 
                 if (isCompletedSuccessfully)
                 {
                     int transaction_id = task.Result;
-                    Logger.Instance.Info(nameof(UserFacade)+": "+nameof(PlaceSupply) +"Place supply completed: "+ userDetails +" , "); //add SSupplyDetails.toString();
+                    Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(PlaceSupply) + "Place supply completed: " + userDetails + " , "); //add SSupplyDetails.toString();
                     return transaction_id;
                 }
                 else
@@ -869,8 +869,8 @@ namespace SadnaExpress.DomainLayer.User
         private bool IsTSSystemManagerID(Guid userID)
         {
             if (members.ContainsKey(userID))
-                if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }) == false)                 
-                   throw new Exception("System is not initialized");
+                if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }) == false)
+                    throw new Exception("System is not initialized");
             return true;
         }
 
@@ -918,12 +918,40 @@ namespace SadnaExpress.DomainLayer.User
                 else
                     members.TryAdd(memberFromDb.UserId, memberFromDb);
                 macs.TryAdd(memberFromDb.UserId, DBHandler.Instance.GetMacById(memberFromDb.UserId));
-                
+
                 return members[memberFromDb.UserId];
             }
 
             throw new Exception("Member with id " + userID + " does not exist");
         }
+        public Member GetMember(String email)
+        {
+            foreach(Member member in members.Values) {
+                if (member.Email.Equals(email))
+                    return member;
+            }
+
+      
+            //members is not in members list so we should check in db
+            Member memberFromDb = DBHandler.Instance.GetMemberFromDBByEmail(email);
+
+            if (memberFromDb != null)
+            {
+                if (memberFromDb is PromotedMember)
+                {
+                    members.TryAdd(memberFromDb.UserId, (PromotedMember)memberFromDb);
+                    LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[memberFromDb.UserId]); //we need that each member will hold valid info on their superriors and appointers
+                }
+                else
+                    members.TryAdd(memberFromDb.UserId, memberFromDb);
+                macs.TryAdd(memberFromDb.UserId, DBHandler.Instance.GetMacById(memberFromDb.UserId));
+
+                return members[memberFromDb.UserId];
+            }
+
+            throw new Exception("Member with id " + email + " does not exist");
+        }
+    
 
 
         public bool IsSystemInitialize()

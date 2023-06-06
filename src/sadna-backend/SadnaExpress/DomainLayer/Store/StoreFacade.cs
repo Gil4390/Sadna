@@ -360,7 +360,7 @@ namespace SadnaExpress.DomainLayer.Store
             if (!stores.ContainsKey(storeID))
                 throw new Exception("Store with this id does not exist");
         }
-            
+      
 
         public void WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
@@ -421,7 +421,14 @@ namespace SadnaExpress.DomainLayer.Store
             IsStoreExist(storeID);
             return stores[storeID];
         }
+        public Store GetStore(String name)
+        {
+            foreach (Store store in stores.Values)
+                if (store.StoreName.Equals(name))
+                    return store;
 
+            throw new Exception("Store with this name does not exist");
+        }
         private bool IsStoreNameExist(string storeName)
         {
             foreach (Store store in stores.Values)

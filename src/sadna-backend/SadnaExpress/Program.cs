@@ -28,23 +28,61 @@ namespace SadnaExpress
         public static void Main(string[] args)
         {
             InitAppSettings();
-           
-            if(ApplicationOptions.StartWithCleanDB)
+            State state = State.Instance;
+            String flag = "data";
+            if (flag.Equals("data"))
+            {
                 DBHandler.Instance.CleanDB();
+                state.stateFile(flag + ".json");
+                try
+                {
+                    state.checkFile0();
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    DBHandler.Instance.CleanDB();
+                }
+            }
+            else if (flag.Equals("data2"))
+            {
+                DBHandler.Instance.CleanDB();
+                state.stateFile(flag + ".json");
+                try
+                {
+                    state.checkFile1();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    DBHandler.Instance.CleanDB();
+                }
+            }
 
-            if (ApplicationOptions.RunLoadData)
-                TradingSystem.Instance.LoadData();
+            else
+            {
+                if (ApplicationOptions.StartWithCleanDB)
+                    DBHandler.Instance.CleanDB();
 
+                if (ApplicationOptions.RunLoadData)
+                    TradingSystem.Instance.LoadData();
+            }
             //start the api server
+
             ServerServiceHost serverServiceHost = new ServerServiceHost();
             serverServiceHost.Start();
-            
+
             //start the signalR server
             SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
             signalRServiceHost.Start();
 
+
             Console.ReadLine();
+
+
+
         }
+
 
         public static void InitAppSettings()
         {
@@ -57,7 +95,7 @@ namespace SadnaExpress
             string ApiPort = ConfigurationManager.AppSettings["ApiPort"];
             if (string.IsNullOrEmpty(ApiPort) == false)
             {
-                if(int.TryParse(ApiPort,out int intValue))
+                if (int.TryParse(ApiPort, out int intValue))
                 {
                     ApplicationOptions.ApiPort = intValue;
                 }
@@ -149,7 +187,7 @@ namespace SadnaExpress
                     ApplicationOptions.StartWithCleanDB = boolValue;
                 }
             }
-            
+
             string RunLoadData = ConfigurationManager.AppSettings["RunLoadData"];
             if (string.IsNullOrEmpty(RunLoadData) == false)
             {

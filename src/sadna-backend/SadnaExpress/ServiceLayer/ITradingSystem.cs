@@ -84,7 +84,11 @@ namespace SadnaExpress.ServiceLayer
         void SetIsSystemInitialize(bool isInitialize);
         ResponseT<User> GetUser(Guid userID);
         ResponseT<Member> GetMember(Guid userID);
+        ResponseT<Member> GetMember(String email);
+
         ResponseT<Store> GetStore(Guid storeID);
+        ResponseT<Store> GetStore(String name);
+
         void SetTSOrders(IOrders orders);
         ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
 

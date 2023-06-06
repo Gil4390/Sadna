@@ -61,7 +61,6 @@
     <Compile Include="Integration Tests\ValidCartContentIT.cs" />
     <Compile Include="Persistence Tests\StoresDBtests.cs" />
     <Compile Include="Persistence Tests\UsersDBtests.cs" />
-
 	  <Compile Include="Unit Tests\BidsUT.cs" />
     <Compile Include="Unit Tests\DiscountPolicyUT.cs" />
     <Compile Include="Unit Tests\NotificationUT.cs" />

@@ -352,7 +352,22 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Member>(ex.Message);
             }
         }
-        
+
+      
+        public ResponseT<Member> GetMember(String email)
+        {
+            try
+            {
+                Member member = userFacade.GetMember(email);
+                Logger.Instance.Info(member, nameof(UserManager) + ": " + nameof(GetMember));
+                return new ResponseT<Member>(member);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error( nameof(UserManager) + ": " + nameof(GetMember) + ": " + ex.Message);
+                return new ResponseT<Member>(ex.Message);
+            }
+        }
         public ResponseT<List<Notification>> GetNotifications(Guid userId)
         {
             try
