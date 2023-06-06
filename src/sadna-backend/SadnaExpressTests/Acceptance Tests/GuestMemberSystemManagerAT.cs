@@ -80,26 +80,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         #endregion
 
         #region Get Current Members info
-        [TestMethod]
-        public void SystemManagerRequestMembersInformation_HappyTest()
-        {
-            Task<ResponseT<List<SMember>>> task = Task<ResponseT<List<SMember>>>.Run(() => {
-                Guid tempid = proxyBridge.Enter().Value;
-                proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
-                return proxyBridge.GetMembers(systemManagerid);
-            });
-
-            task.Wait();
-            Assert.IsFalse(task.Result.ErrorOccured); 
-            Assert.AreEqual(6, task.Result.Value.Count); //6 members in base init
-            //Assert.IsTrue(task.Result.Value.Keys.Contains(storeOwnerid));
-            //Assert.IsTrue(task.Result.Value.Keys.Contains(memberId));
-            //Assert.IsTrue(task.Result.Value.Keys.Contains(memberId2));
-            //Assert.IsTrue(task.Result.Value.Keys.Contains(memberId3));
-            //Assert.IsTrue(task.Result.Value.Keys.Contains(memberId4));
-            //Assert.IsTrue(task.Result.Value.Keys.Contains(systemManagerid));
-        }
-        
+       
         [TestMethod]
         public void StoreOwnerRequestMembersInformation_SadTest()
         {

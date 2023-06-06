@@ -200,6 +200,8 @@ namespace SadnaExpress.ServiceLayer
         }
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
+            Guid storeID = new Guid();
+            bool errorEccorInStore = true;
             try
             {
                 userFacade.CheckIsValidMemberOperation(userID);

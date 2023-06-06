@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpressTests.Integration_Tests;
 
 namespace SadnaExpressTests.Persistence_Tests
@@ -91,6 +92,14 @@ namespace SadnaExpressTests.Persistence_Tests
             Assert.IsNotNull(cur);
             Assert.IsFalse(cur.hasPermissions(storeID1, 
                 new List<string> { "owner permissions" }));
+        }
+
+        [TestMethod]
+        public void SystemManagerRequestMembersInformation_HappyTest()
+        {
+            List<SMember> members = trading.GetMembers(buyerMemberID).Value;
+
+            Assert.AreEqual(2, members.Count); 
         }
 
     }

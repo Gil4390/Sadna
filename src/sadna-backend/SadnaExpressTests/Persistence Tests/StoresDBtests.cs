@@ -35,7 +35,7 @@ namespace SadnaExpressTests.Persistence_Tests
         public void DB_Open_Store_Fail()
         {
             int numOfStores = DBHandler.Instance.GetAllStores().Count;
-            trading.OpenNewStore(new Guid(), "Store_That_will_not_open");
+            trading.OpenNewStore(Guid.NewGuid(), "Store_That_will_not_open");
             
             Assert.IsFalse(DBHandler.Instance.IsStoreNameExist("Store_That_will_not_open"));
             Assert.AreEqual(DBHandler.Instance.GetAllStores().Count,numOfStores);
