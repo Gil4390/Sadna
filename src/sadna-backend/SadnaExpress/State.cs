@@ -80,7 +80,7 @@ namespace SadnaExpress
             trading.TestMode = true;
             string email = "";
 
-            string path = Path.Combine(Environment.CurrentDirectory, fileName);
+            string path = Path.Combine(Environment.CurrentDirectory, Path.Combine("..\\..",fileName));
             string json = File.ReadAllText(path);
             List<FunctionParams> functionParamsList = JsonConvert.DeserializeObject<List<FunctionParams>>(json);
             foreach (FunctionParams functionParams in functionParamsList)

@@ -27,10 +27,12 @@ namespace SadnaExpress
     {
         public static void Main(string[] args)
         {
+            InitAppSettings();
             State state = State.Instance;
             String flag = "data";
             if (flag.Equals("data"))
             {
+                DBHandler.Instance.CleanDB();
                 state.stateFile(flag + ".json");
                 try
                 {
@@ -42,8 +44,9 @@ namespace SadnaExpress
                     DBHandler.Instance.CleanDB();
                 }
             }
-            if (flag.Equals("data2"))
+            else if (flag.Equals("data2"))
             {
+                DBHandler.Instance.CleanDB();
                 state.stateFile(flag + ".json");
                 try
                 {
