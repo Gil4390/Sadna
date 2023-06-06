@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SadnaExpress.DataLayer;
@@ -9,62 +10,54 @@ using SadnaExpress.DataLayer;
 namespace SadnaExpress.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230525112942_Initial")]
+    [Migration("20230606080015_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.0");
+                .HasAnnotation("ProductVersion", "3.1.0")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SadnaExpress.DomainLayer.Notification", b =>
                 {
                     b.Property<Guid>("NotificationID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("MemberUserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("MemberUserId1")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Message")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Read")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("SentFrom")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("SentTo")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Time")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("NotificationID");
 
-                    b.HasIndex("MemberUserId");
-
-                    b.HasIndex("MemberUserId1");
-
-                    b.ToTable("Notification");
+                    b.ToTable("notfications");
                 });
 
             modelBuilder.Entity("SadnaExpress.DomainLayer.Store.Inventory", b =>
                 {
                     b.Property<Guid>("InventoryID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Items_quantityDB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("StoreID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("InventoryID");
 
@@ -78,25 +71,25 @@ namespace SadnaExpress.Migrations
                 {
                     b.Property<Guid>("ItemID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Category")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("InventoryID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Price")
-                        .HasColumnType("REAL");
+                        .HasColumnType("float");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("Rating")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("ItemID");
 
@@ -107,38 +100,33 @@ namespace SadnaExpress.Migrations
                 {
                     b.Property<Guid>("ItemForOrderId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Category")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ItemID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("OrderID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Price")
-                        .HasColumnType("REAL");
+                        .HasColumnType("float");
 
                     b.Property<int>("Rating")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<Guid>("StoreID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("StoreName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserEmail")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ItemForOrderId");
-
-                    b.HasIndex("OrderID");
 
                     b.ToTable("ItemForOrders");
                 });
@@ -147,33 +135,120 @@ namespace SadnaExpress.Migrations
                 {
                     b.Property<Guid>("OrderID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ListItemsDB")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OrderTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("OrderID");
 
                     b.ToTable("orders");
                 });
 
+            modelBuilder.Entity("SadnaExpress.DomainLayer.Store.Policy.ConditionDB", b =>
+                {
+                    b.Property<Guid>("UniqueID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Dt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EntityName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityStr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Op")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OpCond")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("StoreID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UniqueID");
+
+                    b.ToTable("conditions");
+                });
+
+            modelBuilder.Entity("SadnaExpress.DomainLayer.Store.Policy.PolicyDB", b =>
+                {
+                    b.Property<Guid>("UniqueID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Discriminator")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ID")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("activated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("complex_op")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("complex_policys")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("simple_endDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("simple_level")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("simple_percent")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("simple_startDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UniqueID");
+
+                    b.ToTable("policies");
+                });
+
             modelBuilder.Entity("SadnaExpress.DomainLayer.Store.Review", b =>
                 {
                     b.Property<Guid>("ReviewID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ItemID")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid>("ItemID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ReviewText")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("StoreID")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid>("ReviewerID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("StoreID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ReviewID");
-
-                    b.HasIndex("ItemID");
-
-                    b.HasIndex("StoreID");
 
                     b.ToTable("Reviews");
                 });
@@ -182,16 +257,16 @@ namespace SadnaExpress.Migrations
                 {
                     b.Property<Guid>("ShoppingBasketId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ItemInBasketDB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ShoppingCartId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("StoreID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ShoppingBasketId");
 
@@ -204,10 +279,10 @@ namespace SadnaExpress.Migrations
                 {
                     b.Property<Guid>("ShoppingCartId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ShoppingCartId");
 
@@ -221,22 +296,22 @@ namespace SadnaExpress.Migrations
                 {
                     b.Property<Guid>("StoreID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Active")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<int>("DiscountPolicyCounter")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("PurchasePolicyCounter")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("StoreName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StoreRating")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("StoreID");
 
@@ -247,42 +322,56 @@ namespace SadnaExpress.Migrations
                 {
                     b.Property<Guid>("BidId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DecisionDB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ItemID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ItemName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("OpenBid")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<double>("Price")
-                        .HasColumnType("REAL");
+                        .HasColumnType("float");
 
                     b.Property<Guid>("StoreID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BidId");
 
                     b.ToTable("bids");
                 });
 
+            modelBuilder.Entity("SadnaExpress.DomainLayer.User.InitializeSystem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsInit")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("initializeSystems");
+                });
+
             modelBuilder.Entity("SadnaExpress.DomainLayer.User.Macs", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("mac")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
@@ -293,14 +382,14 @@ namespace SadnaExpress.Migrations
                 {
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BidsDB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
 
@@ -314,22 +403,22 @@ namespace SadnaExpress.Migrations
                     b.HasBaseType("SadnaExpress.DomainLayer.User.User");
 
                     b.Property<string>("Email")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LoggedIn")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityQuestionsDB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Member");
                 });
@@ -339,29 +428,18 @@ namespace SadnaExpress.Migrations
                     b.HasBaseType("SadnaExpress.DomainLayer.User.Member");
 
                     b.Property<string>("AppointDB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BidsOffersDB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DirectSupervisorDB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PermissionDB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("PromotedMember");
-                });
-
-            modelBuilder.Entity("SadnaExpress.DomainLayer.Notification", b =>
-                {
-                    b.HasOne("SadnaExpress.DomainLayer.User.Member", null)
-                        .WithMany("AwaitingNotification")
-                        .HasForeignKey("MemberUserId");
-
-                    b.HasOne("SadnaExpress.DomainLayer.User.Member", null)
-                        .WithMany("awaitingNotification")
-                        .HasForeignKey("MemberUserId1");
                 });
 
             modelBuilder.Entity("SadnaExpress.DomainLayer.Store.Inventory", b =>
@@ -371,24 +449,6 @@ namespace SadnaExpress.Migrations
                         .HasForeignKey("SadnaExpress.DomainLayer.Store.Inventory", "StoreID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SadnaExpress.DomainLayer.Store.ItemForOrder", b =>
-                {
-                    b.HasOne("SadnaExpress.DomainLayer.Store.Order", null)
-                        .WithMany("ListItems")
-                        .HasForeignKey("OrderID");
-                });
-
-            modelBuilder.Entity("SadnaExpress.DomainLayer.Store.Review", b =>
-                {
-                    b.HasOne("SadnaExpress.DomainLayer.Store.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemID");
-
-                    b.HasOne("SadnaExpress.DomainLayer.Store.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreID");
                 });
 
             modelBuilder.Entity("SadnaExpress.DomainLayer.Store.ShoppingBasket", b =>
