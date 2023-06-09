@@ -77,7 +77,7 @@ namespace SadnaExpress.DataLayer
         
         public DatabaseContext() : base()
         {
-            //Database.EnsureCreated();
+           // Database.EnsureCreated();  //this line needs to be uncomment at the first time we create the db
         }
         
     }
