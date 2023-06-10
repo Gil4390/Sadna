@@ -1,6 +1,21 @@
 # Sadna
 
-app.config file holds the exteral services url, database connection, system manager details and the start point of the trading system (initialize or not). to change this propery values you should edit to your chosen value, compile the code and run sadna express. Good luck and have fun!
+Team members:
+Gil khais - 207181629
+Noga Schawartz - 207181629
+Shay kresner - 207181629
+Tal Galmor - 207181629
+Radwan Ganen - 207181629
+Dina Agapov - 207181629
+
+State Configuration File
+
+The state configuration file for the Sadna Trading System is a JSON file containing an array of objects. Each object represents a system function to be executed during startup. The object consists of two fields: "function" and "params".
+
+"function" (string): Specifies the name of the function to be executed.
+"params" (array): Contains the parameters required for the corresponding function.
+
+![image](https://github.com/Gil4390/Sadna/assets/76035272/b2fd9615-b22e-485b-be7d-97c4e166718d)
 
 Currently there are 3 possible initial states for the system to start with:
 <ul>
@@ -27,7 +42,7 @@ Currently there are 3 possible initial states for the system to start with:
 </ul>
 
 
-
+app.config file holds the exteral services url, database connection, system manager details and the start point of the trading system (initialize or not). to change this propery values you should edit to your chosen value, compile the code and run sadna express. Good luck and have fun!
 
 Documents can be found here:
 - Use Cases / Glossary - https://docs.google.com/document/d/1nwZft8kNO3OjLYLuS8tpSzU0Gz247nENy4-0tZwhq_A/edit
