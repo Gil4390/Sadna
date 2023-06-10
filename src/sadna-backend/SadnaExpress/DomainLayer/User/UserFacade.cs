@@ -390,12 +390,33 @@ namespace SadnaExpress.DomainLayer.User
             lock (internedKey)
             {
                 PromotedMember owner = members[userID].AppointStoreOwner(storeID, members[newOwnerID]);
-                members[newOwnerID] = owner;
-                DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newOwnerID]);
-                NotificationSystem.Instance.RegisterObserver(storeID, owner);
+                if (owner != null)
+                {
+                    members[newOwnerID] = owner;
+                    DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newOwnerID]);
+                    NotificationSystem.Instance.RegisterObserver(storeID, owner);
+                }
             }
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AppointStoreOwner) + " appoints " + newOwnerID + " to new store owner");
 
+        }
+        public void ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+
+            String internedKey = String.Intern(newEmpID.ToString());
+
+            lock (internedKey)
+            {
+                PromotedMember owner = members[userID].ReactToJobOffer(storeID, members[newEmpID], offerResponse);
+                if (owner != null)
+                {
+                    members[newEmpID] = owner;
+                    DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newEmpID]);
+                    NotificationSystem.Instance.RegisterObserver(storeID, owner);
+                }
+            }
         }
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)

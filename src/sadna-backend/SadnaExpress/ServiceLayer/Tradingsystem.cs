@@ -866,7 +866,7 @@ namespace SadnaExpress.ServiceLayer
 
         public Response ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
         {
-            throw new NotImplementedException();
+            return userManager.ReactToJobOffer(userID, newEmpID, offerResponse);
         }
 
         public ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)

@@ -35,14 +35,35 @@ namespace SadnaExpress.DomainLayer.User
         
         public PromotedMember AppointStoreOwner(Guid storeID, PromotedMember directSupervisor, Member newOwner)
         {
+            //check the new owner not have already permissions
             if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
                 throw new Exception("The member is already store owner");
 
-            PromotedMember owner = newOwner.promoteToMember();
-            owner.LoggedIn = newOwner.LoggedIn;
-            directSupervisor.addAppoint(storeID, owner);
-            owner.createOwner(storeID, directSupervisor);
-            return owner;
+            //add to all owners in store the owner to permissionsoffer and build the list of pendding permission for the member
+            Dictionary<PromotedMember, string> decisions = new Dictionary<PromotedMember, string>();
+            foreach (PromotedMember promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
+            {
+                if (promotedMember.Equals(directSupervisor))
+                    decisions.Add(promotedMember, "creator");
+                else
+                    decisions.Add(promotedMember, "undecided");
+                if (promotedMember.PermissionsOffers.ContainsKey(storeID))
+                    promotedMember.PermissionsOffers[storeID].Add(newOwner);
+                else
+                    promotedMember.PermissionsOffers.TryAdd(storeID, new List<Member> { newOwner });
+            }
+            newOwner.PenddingPermission.TryAdd(storeID, decisions);
+            NotificationSystem.Instance.NotifyObservers(storeID, $"You got an offer to make {newOwner.Email} to store owner", directSupervisor.UserId);
+            // check if the offer already approve
+            if (newOwner.PendingPermissionStatus(storeID))
+            {
+                PromotedMember owner = newOwner.promoteToMember();
+                owner.LoggedIn = newOwner.LoggedIn;
+                directSupervisor.addAppoint(storeID, owner);
+                owner.createOwner(storeID, directSupervisor);
+                return owner;
+            }
+            return null;
         }
 
         public Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)

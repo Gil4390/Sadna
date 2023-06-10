@@ -172,7 +172,7 @@ namespace SadnaExpress.ServiceLayer
 
                 foreach (PromotedMember member in employees)
                 {
-                    SMemberForStore sMember = new SMemberForStore(member, storeID);
+                    SMemberForStore sMember = new SMemberForStore(member, storeID, userID);
                     sMembers.Add(sMember);
                 }
                 return new ResponseT<List<SMemberForStore>>(sMembers);
@@ -181,6 +181,21 @@ namespace SadnaExpress.ServiceLayer
             {
                 Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(GetEmployeeInfoInStore)+": "+ex.Message);
                 return new ResponseT<List<SMemberForStore>>(ex.Message);
+            }
+        }
+
+        public Response ReactToJobOffer(Guid userID, Guid newEmpID, bool offerResponse)
+        {
+            try
+            {
+                userFacade.ReactToJobOffer(userID, ReactToJobOffer, offerResponse);
+                Logger.Instance.Info($"User id: {userID} requested to react to job offer user {newEmpID}");
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID, nameof(UserManager) + ": " + nameof(ReactToJobOffer) + ": " + ex.Message);
+                return new Response(ex.Message);
             }
         }
 

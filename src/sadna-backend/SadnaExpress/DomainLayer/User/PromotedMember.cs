@@ -141,6 +141,39 @@ namespace SadnaExpress.DomainLayer.User
 
         #endregion
 
+        #region permissionsOffers
+        private ConcurrentDictionary<Guid, List<Member>> permissionsOffers;
+        [NotMapped]
+        public ConcurrentDictionary<Guid, List<Member>> PermissionsOffers { get => permissionsOffers; set => permissionsOffers = value; }
+
+        [NotMapped]
+        public string PermissionsOffersJson
+        {
+            get
+            {
+                ConcurrentDictionary<Guid, List<Guid>> helper = new ConcurrentDictionary<Guid, List<Guid>>();
+                if (PermissionsOffers != null)
+                    foreach (Guid id in PermissionsOffers.Keys)
+                    {
+                        List<Guid> permissionsList = new List<Guid>();
+                        foreach (Member mem in PermissionsOffers[id])
+                            permissionsList.Add(mem.UserId);
+                        helper.TryAdd(id, permissionsList);
+                    }
+                return JsonConvert.SerializeObject(helper);
+            }
+            set
+            {
+
+            }
+        }
+
+        public string PermissionsOffersDB
+        {
+            get; set;
+        }
+        #endregion
+
         private readonly Permissions permissionsHolder;
 
         #endregion
@@ -341,9 +374,12 @@ namespace SadnaExpress.DomainLayer.User
 
         #endregion
 
+        public void ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
+        {
+        }
         #region HelpFunc
 
-        public List<PromotedMember> getAppoint(Guid storeID)
+            public List<PromotedMember> getAppoint(Guid storeID)
         {
             if (appoint.ContainsKey(storeID))
                 return appoint[storeID];

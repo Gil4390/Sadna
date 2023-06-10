@@ -24,6 +24,7 @@ namespace SadnaExpress.ServiceLayer
         Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID);
         Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission); //4.5 + remove of 4.7
         Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail); //4.4
+        Response ReactToJobOffer(Guid userID, Guid newEmpID, bool offerResponse);
         Response AppointStoreManager(Guid userID, Guid storeID, string userEmail); //4.6
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);

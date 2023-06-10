@@ -40,6 +40,19 @@ namespace SadnaExpress.DomainLayer.User
             set => securityQuestions = JsonConvert.DeserializeObject<Dictionary<string, string>>(value);
         }
 
+        #region pending permissions
+        private ConcurrentDictionary<Guid, Dictionary<PromotedMember, string>> penddingPermission;
+        [NotMapped]
+        public ConcurrentDictionary<Guid, Dictionary<PromotedMember, string>> PenddingPermission { get => penddingPermission; set => penddingPermission = value; }
+
+        public string PermissionPendingDB
+        {
+            get => JsonConvert.SerializeObject(penddingPermission);
+            set => penddingPermission = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, Dictionary<PromotedMember, string>>>(value);
+        }
+        #endregion
+
+
         // todo in database
         [NotMapped]
         public List<Notification> awaitingNotification { get; set; }
@@ -129,6 +142,15 @@ namespace SadnaExpress.DomainLayer.User
             DBHandler.Instance.AddNotification(notification, db);
         }
 
+        public bool PendingPermissionStatus(Guid storeID)
+        {
+            foreach (string decision in penddingPermission[storeID].Values)
+            {
+                if (decision.Equals("undecided"))
+                    return false;
+            }
+            return true;
+        }
 
         
         public Member()

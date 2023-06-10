@@ -41,13 +41,11 @@ namespace SadnaExpress.DomainLayer.User
             this.ItemID = itemID;
             this.itemName = itemName;
             this.price = price;
-            List<Member> toNodify = new List<Member>();
             decisions = new Dictionary<PromotedMember, string>();
             foreach (PromotedMember promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
             {
                 decisions.Add(promotedMember, "undecided");
                 promotedMember.AddBid(this.storeID, this);
-                toNodify.Add(promotedMember);
             }
             NotificationSystem.Instance.NotifyObservers(storeID, $"You got an offer to change the price of {this.itemName} to {price}", this.user.UserId);
         }
