@@ -2,15 +2,15 @@
 
 # Team members:
 
-Gil khais - 207181629
+Gil khais - 207919374
 
-Noga Schawartz - 207181629
+Noga Schawartz - 207687849
 
 Shay kresner - 207181629
 
-Tal Galmor - 207181629
-
 Radwan Ganen - 207181629
+
+Tal Galmor - 318416575
 
 Dina Agapov - 207181629
 
