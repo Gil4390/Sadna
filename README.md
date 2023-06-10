@@ -15,7 +15,8 @@ Radwan Ganen - 207181629
 Dina Agapov - 207181629
 
 
-State Configuration File
+State Configuration File:
+
 
 The state configuration file for the Sadna Trading System is a JSON file containing an array of objects. Each object represents a system function to be executed during startup. The object consists of two fields: "function" and "params".
 
