@@ -139,6 +139,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Logger.Instance.Info("User id: " + userID + " requested to initialize trading system");
                 ResponseT<bool> responseT= userManager.InitializeTradingSystem(userID);
                 if (responseT.Value)
@@ -170,6 +171,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 ResponseT<Guid>  responseT = storeManager.OpenNewStore(userID, storeName);
                 return responseT;
 
@@ -183,6 +185,15 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
             int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+            }
+            catch(Exception ex)
+            {
+                Logger.Instance.Error(userID, nameof(TradingSystem) + ": " + nameof(GetItemsForClient) + ": " + ex.Message);
+                return new ResponseT<List<SItem>>(new List<SItem>());
+            }
             ResponseT<List<Item>> res= storeManager.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category,
                 ratingStore);
 
@@ -237,6 +248,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Logger.Instance.Info("User id: " + userID + " WriteReview to itemID: " + itemID);
                 return storeManager.WriteItemReview(userID, itemID, review);
             }
@@ -251,6 +263,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Logger.Instance.Info("getItemReviews on itemID: " + itemID);
                 return storeManager.GetItemReviews(itemID);
             }
@@ -434,6 +447,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 ConcurrentDictionary<Guid, Member> members = userManager.GetMembers(userID);
                 List<SMember> sMembers = new List<SMember>();
 
