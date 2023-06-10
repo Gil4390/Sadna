@@ -24,6 +24,7 @@ The state configuration file for the Sadna Trading System is a JSON file contain
 
 
 ![image](https://github.com/Gil4390/Sadna/assets/76035272/75c7dc29-a937-4f2d-b57b-6fd3905e5bf0)
+
 Currently there are 3 possible initial states for the system to start with:
 <ul>
   <li> empty state </li>
