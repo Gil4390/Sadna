@@ -1,6 +1,6 @@
 # Sadna
 
-Team members:
+# Team members:
 
 Gil khais - 207181629
 
@@ -15,7 +15,7 @@ Radwan Ganen - 207181629
 Dina Agapov - 207181629
 
 
-State Configuration File:
+# State Configuration File:
 
 
 The state configuration file for the Sadna Trading System is a JSON file containing an array of objects. Each object represents a system function to be executed during startup. The object consists of two fields: "function" and "params".
@@ -24,7 +24,7 @@ The state configuration file for the Sadna Trading System is a JSON file contain
 
 "params" (array): Contains the parameters required for the corresponding function.
 
-
+# example:
 ![image](https://github.com/Gil4390/Sadna/assets/76035272/75c7dc29-a937-4f2d-b57b-6fd3905e5bf0)
 
 Currently there are 3 possible initial states for the system to start with:
@@ -51,7 +51,8 @@ Currently there are 3 possible initial states for the system to start with:
   </li>
 </ul>
 
-
+ # app.config
+ 
 app.config file holds the exteral services url, database connection, system manager details and the start point of the trading system (initialize or not). to change this propery values you should edit to your chosen value, compile the code and run sadna express. Good luck and have fun!
 
 Documents can be found here:
