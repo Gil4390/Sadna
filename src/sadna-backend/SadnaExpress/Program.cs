@@ -33,9 +33,9 @@ namespace SadnaExpress
             if (flag.Equals("data"))
             {
                 DBHandler.Instance.CleanDB();
-                state.stateFile(flag + ".json");
                 try
                 {
+                    state.stateFile(flag + ".json");
                     state.checkFile0();
                 }
                 catch(Exception e)
@@ -47,10 +47,24 @@ namespace SadnaExpress
             else if (flag.Equals("data2"))
             {
                 DBHandler.Instance.CleanDB();
-                state.stateFile(flag + ".json");
                 try
                 {
+                    state.stateFile(flag + ".json");
                     state.checkFile1();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    DBHandler.Instance.CleanDB();
+                }
+            }
+            else if (flag.Equals("dataBad"))
+            {
+                DBHandler.Instance.CleanDB();
+                try
+                {
+                    state.stateFile(flag + ".json");
+
                 }
                 catch (Exception e)
                 {
