@@ -29,7 +29,7 @@ namespace SadnaExpress.DataLayer
         #region properties
         private static readonly object databaseLock = new object();
 
-        private readonly string DbErrorMessage="Unfortunatly connecting to the db faild, please try again in a get minutes";
+        private readonly string DbErrorMessage="Unfortunatly connecting to the db faild, please try again in a few minutes";
 
         private bool testMood = false;
 
@@ -1673,11 +1673,16 @@ namespace SadnaExpress.DataLayer
                         var memberFound = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
                         if (memberFound != null)
                         {
-                            var userBasket = db.shoppingBaskets.Where(b => b.ShoppingCartId.Equals(memberFound.ShoppingCart.ShoppingCartId)).ToList();
-                            if (userBasket.Count > 0)
+                            var shopcartFound = db.shoppingCarts.FirstOrDefault(sc => sc.UserId.Equals(member.UserId));
+                            if (shopcartFound != null)
                             {
-                                db.shoppingBaskets.RemoveRange(userBasket);
-                                db.SaveChanges(true);
+
+                                var userBasket = db.shoppingBaskets.Where(b => b.ShoppingCartId.Equals(shopcartFound.ShoppingCartId)).ToList();
+                                if (userBasket.Count > 0)
+                                {
+                                    db.shoppingBaskets.RemoveRange(userBasket);
+                                    db.SaveChanges(true);
+                                }
                             }
 
                         }
@@ -2668,5 +2673,28 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
+
+
+
+        public void CanConnectToDatabase()
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        db.Database.GetDbConnection().Open();
+                        db.Database.GetDbConnection().Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage+", No internet Connection. Please check your network settings.");
+                }
+            }
+        }
+
+
     }
 }
