@@ -26,7 +26,14 @@ namespace SadnaExpress.ExternalServices
                 {"action_type","cancel_pay"},
                 {"transaction_id",transaction_id.ToString()}
             };
-            return (int)Send(postContent)==1;
+            try
+            {
+                return (int)Send(postContent)==1;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public object Send(Dictionary<string, string> content)
@@ -35,7 +42,7 @@ namespace SadnaExpress.ExternalServices
             var responseTask = client.PostAsync(address, formData);
             var response = responseTask.Result;
             var responseContentTask = response.Content.ReadAsStringAsync();
-            return responseContentTask.Id;
+            return responseContentTask.Result;
             
         }
 
@@ -62,8 +69,17 @@ namespace SadnaExpress.ExternalServices
                 { "year", transactionDetails.Year },
                 { "holder", transactionDetails.Holder },
                 { "ccv", transactionDetails.Cvv },
+                { "id", transactionDetails.Id },
             };
-            return (int)Send(postContent);
+            try
+            {
+                return (int)Send(postContent);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            
         }
     }
 }

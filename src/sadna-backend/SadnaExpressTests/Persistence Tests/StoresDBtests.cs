@@ -237,7 +237,7 @@ namespace SadnaExpressTests.Persistence_Tests
             Assert.AreEqual(DBHandler.Instance.GetAllOrders().Count, 0);
             Assert.AreEqual(numofbasket, trading.GetDetailsOnCart(buyerMemberID).Value.Baskets.Count); // the shopping basket still full
             Assert.AreEqual(numBefore, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1)); //the quantity not updated
-        }
+        }
 
     }
 }
