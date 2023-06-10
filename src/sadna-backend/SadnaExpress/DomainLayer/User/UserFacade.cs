@@ -310,7 +310,9 @@ namespace SadnaExpress.DomainLayer.User
             {
                 if (members.ContainsKey(userID))
                 {
+                    Guid oldShopCartId = members[userID].ShoppingCart.ShoppingCartId;
                     members[userID].ShoppingCart = new ShoppingCart();
+                    members[userID].ShoppingCart.ShoppingCartId = oldShopCartId;
                     DBHandler.Instance.UpdateMemberShoppingCartInTransaction(db, members[userID]);
                 }
                 else
