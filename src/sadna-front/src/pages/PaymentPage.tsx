@@ -245,7 +245,7 @@ function PaymentPage(props) {
         <Row>
         <Col>
             <Form.Group controlId="adress">
-              <Form.Label>Adress</Form.Label>
+              <Form.Label>Address</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter Adress"

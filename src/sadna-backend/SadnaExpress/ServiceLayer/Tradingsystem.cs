@@ -723,5 +723,10 @@ namespace SadnaExpress.ServiceLayer
         {
             userManager.CreateSystemManager(systemManagerid);
         }
+
+        public Response ReactToJobOffer(Guid userID, Guid newEmpID, bool offerResponse)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

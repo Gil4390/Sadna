@@ -135,6 +135,8 @@ namespace SadnaExpress.API.Controllers
 
             public const string reactToBid = "react-to-bid";
 
+            public const string reactToJobOffer = "react-to-job-offer";
+
 
 
         }

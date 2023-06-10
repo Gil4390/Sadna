@@ -189,4 +189,11 @@ namespace SadnaExpress.API.ClientRequests
     {
         public DateTime date { get; set; }
     }
+
+
+    public class ReactToJobOfferRequest : ClientRequest
+    {
+        public Guid newEmpID { get; set; }
+        public bool offerResponse { get; set; }
+    }
 }

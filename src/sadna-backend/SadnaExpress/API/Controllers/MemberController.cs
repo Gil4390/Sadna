@@ -133,7 +133,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetEmployeeInfoInStore([FromBody] StoreIDRequest request)
         {
-            return Ok(tradingSystem.GetEmployeeInfoInStore(request.userID, request.storeID));
+            var res = tradingSystem.GetEmployeeInfoInStore(request.userID, request.storeID);
+            return Ok(res);
         }
         
         
@@ -391,6 +392,16 @@ namespace SadnaExpress.API.Controllers
         public IHttpActionResult ReactToBid([FromBody] ReactToBidRequest request)
         {
             Response res = tradingSystem.ReactToBid(request.userID, request.itemID, request.bidID, request.bidResponse);
+            return Ok(res);
+        }
+
+
+        [Route(APIConstants.MemberData.reactToJobOffer)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult ReactToJobOffer([FromBody] ReactToJobOfferRequest request)
+        {
+            Response res = tradingSystem.ReactToJobOffer(request.userID, request.newEmpID, request.offerResponse);
             return Ok(res);
         }
     }

@@ -915,3 +915,24 @@ export function handleReactToBid(userID, itemID, bidID, bidResponse) {
         return Promise.resolve(data)
     })
 }
+
+export function handleReactToJobOffer(userID, newEmpID, offerResponse) {
+    let url = "http://localhost:8080/api/member/react-to-job-offer";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            newEmpID: newEmpID,
+            offerResponse: offerResponse
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
