@@ -728,5 +728,11 @@ namespace SadnaExpress.ServiceLayer
         {
             throw new NotImplementedException();
         }
+
+        public ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime date)
+        {
+            // guests, members, managers, owners, admins
+            throw new NotImplementedException();
+        }
     }
 }

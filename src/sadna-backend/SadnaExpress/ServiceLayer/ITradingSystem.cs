@@ -124,5 +124,6 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID);
         Response ReactToBid(Guid userID, Guid itemID, Guid bidID, string bidResponse);
         Response ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse);
+        ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime date);
     }
 }
