@@ -2,17 +2,24 @@
 
 Team members:
 Gil khais - 207181629
+
 Noga Schawartz - 207181629
+
 Shay kresner - 207181629
+
 Tal Galmor - 207181629
+
 Radwan Ganen - 207181629
+
 Dina Agapov - 207181629
+
 
 State Configuration File
 
 The state configuration file for the Sadna Trading System is a JSON file containing an array of objects. Each object represents a system function to be executed during startup. The object consists of two fields: "function" and "params".
 
 "function" (string): Specifies the name of the function to be executed.
+
 "params" (array): Contains the parameters required for the corresponding function.
 
 
