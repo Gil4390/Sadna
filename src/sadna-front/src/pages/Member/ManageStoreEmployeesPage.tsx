@@ -142,7 +142,7 @@ useEffect(() => {
 
 
   const reactToJobOffer = (memberID, res) => {
-    handleReactToJobOffer(userId, memberID, res).then(
+    handleReactToJobOffer(userId, storeId, memberID, res).then(
       value => {
         getStoreEmployees();
       })

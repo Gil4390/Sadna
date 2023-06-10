@@ -916,7 +916,7 @@ export function handleReactToBid(userID, itemID, bidID, bidResponse) {
     })
 }
 
-export function handleReactToJobOffer(userID, newEmpID, offerResponse) {
+export function handleReactToJobOffer(userID, storeID, newEmpID, offerResponse) {
     let url = "http://localhost:8080/api/member/react-to-job-offer";
 
     return fetch(url, {
@@ -925,6 +925,7 @@ export function handleReactToJobOffer(userID, newEmpID, offerResponse) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userID: userID,
+            storeID: storeID,
             newEmpID: newEmpID,
             offerResponse: offerResponse
         })

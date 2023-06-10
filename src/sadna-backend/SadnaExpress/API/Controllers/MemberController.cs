@@ -401,7 +401,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult ReactToJobOffer([FromBody] ReactToJobOfferRequest request)
         {
-            Response res = tradingSystem.ReactToJobOffer(request.userID, request.newEmpID, request.offerResponse);
+            Response res = tradingSystem.ReactToJobOffer(request.userID, request.storeID, request.newEmpID, request.offerResponse);
             return Ok(res);
         }
     }

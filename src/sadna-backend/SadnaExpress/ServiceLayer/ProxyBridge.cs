@@ -456,9 +456,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.GetStore(name);
         }
 
-        public Response ReactToJobOffer(Guid userID, Guid newEmpID, bool offerResponse)
+        public Response ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
         {
-            return _realBridge.ReactToJobOffer(userID, newEmpID, offerResponse);
+            return _realBridge.ReactToJobOffer(userID, storeID, newEmpID, offerResponse);
         }
     }
 

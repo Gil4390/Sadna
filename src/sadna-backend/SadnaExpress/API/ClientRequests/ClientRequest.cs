@@ -193,6 +193,7 @@ namespace SadnaExpress.API.ClientRequests
 
     public class ReactToJobOfferRequest : ClientRequest
     {
+        public Guid storeID { get; set; }
         public Guid newEmpID { get; set; }
         public bool offerResponse { get; set; }
     }
