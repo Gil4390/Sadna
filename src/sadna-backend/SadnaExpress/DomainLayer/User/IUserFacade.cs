@@ -26,7 +26,7 @@ namespace SadnaExpress.DomainLayer.User
         void EditItem(Guid userID,Guid storeID);
         void RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);
         void AppointStoreOwner(Guid userID,Guid storeID, string email);
-        void ReactToJobOffer(Guid userID, Guid newEmpID, bool offerResponse);
+        void ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse);
         void AppointStoreManager(Guid userID, Guid storeID, string email);
         void AddStoreManagerPermissions(Guid userID,Guid storeID, string email, string Permission);
         void CloseStore(Guid userID,Guid storeID);

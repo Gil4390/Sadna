@@ -46,26 +46,66 @@ namespace SadnaExpress.DomainLayer.User
                 if (promotedMember.Equals(directSupervisor))
                     decisions.Add(promotedMember, "creator");
                 else
+                {
                     decisions.Add(promotedMember, "undecided");
-                if (promotedMember.PermissionsOffers.ContainsKey(storeID))
-                    promotedMember.PermissionsOffers[storeID].Add(newOwner);
-                else
-                    promotedMember.PermissionsOffers.TryAdd(storeID, new List<Member> { newOwner });
+                    if (promotedMember.PermissionsOffers.ContainsKey(storeID))
+                        promotedMember.PermissionsOffers[storeID].Add(newOwner);
+                    else
+                        promotedMember.PermissionsOffers.TryAdd(storeID, new List<Member> { newOwner });
+                }
             }
             newOwner.PenddingPermission.TryAdd(storeID, decisions);
             NotificationSystem.Instance.NotifyObservers(storeID, $"You got an offer to make {newOwner.Email} to store owner", directSupervisor.UserId);
             // check if the offer already approve
-            if (newOwner.PendingPermissionStatus(storeID))
+            return PermissionApproved(storeID, newOwner); 
+        }
+
+        public PromotedMember ReactToJobOffer(Guid storeID, PromotedMember decided,  Member newOwner, bool offerResponse)
+        {
+            //check the new owner not have already permissions
+            if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
+                throw new Exception("The member is already store owner");
+            if (!decided.PermissionsOffers.ContainsKey(storeID) || !decided.PermissionsOffers[storeID].Contains(newOwner))
+                throw new Exception($"No application to appoint {newOwner.Email} to store owner");
+            decided.PermissionsOffers[storeID].Remove(newOwner);
+            if (offerResponse)
             {
-                PromotedMember owner = newOwner.promoteToMember();
-                owner.LoggedIn = newOwner.LoggedIn;
-                directSupervisor.addAppoint(storeID, owner);
-                owner.createOwner(storeID, directSupervisor);
-                return owner;
+                newOwner.RemoveEmployeeFromDecisions(storeID, decided);
+                return PermissionApproved(storeID, newOwner);
+            }
+            else
+            {
+                foreach (PromotedMember pm in newOwner.PenddingPermission[storeID].Keys)
+                    if (pm.PermissionsOffers.ContainsKey(storeID) && pm.PermissionsOffers[storeID].Count > 0)
+                        pm.PermissionsOffers[storeID].Remove(newOwner);
+                Dictionary<PromotedMember, string> rem = new Dictionary<PromotedMember, string>();
+                newOwner.PenddingPermission.TryRemove(storeID, out rem);
+                NotificationSystem.Instance.NotifyObservers(storeID, $"The offer to make {newOwner.Email} to store owner, denied", decided.UserId);
             }
             return null;
         }
 
+        private PromotedMember PermissionApproved(Guid storeID, Member newOwner)
+        {
+            if (newOwner.PendingPermissionStatus(storeID))
+            {
+                PromotedMember owner = newOwner.promoteToMember();
+                owner.LoggedIn = newOwner.LoggedIn;
+                PromotedMember directSupervisor = null;
+                foreach (PromotedMember pm in newOwner.PenddingPermission[storeID].Keys)
+                {
+                    if (newOwner.PenddingPermission[storeID][pm].Equals("creator"))
+                        directSupervisor = pm;
+                }
+                directSupervisor.addAppoint(storeID, owner);
+                owner.createOwner(storeID, directSupervisor);
+                Dictionary<PromotedMember, string> rem = new Dictionary<PromotedMember, string>();
+                owner.PenddingPermission.TryRemove(storeID, out rem);
+                NotificationSystem.Instance.NotifyObserver(owner, storeID, $"You are store owner of {storeID}");
+                return owner;
+            }
+            return null;
+        }
         public Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
         {
             if (!member.hasPermissions(storeID, new List<string> {"owner permissions"}))

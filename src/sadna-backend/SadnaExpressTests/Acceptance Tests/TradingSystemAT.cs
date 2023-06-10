@@ -104,8 +104,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             storeOwner = new PromotedMember(storeOwnerid, "AsiAzar@gmail.com", "Asi", "Azar", passwordHash.Hash("A#!a12345678"+newMac));
             systemManager.createSystemManager();
             storeOwner.createFounder(storeid1);
-
-
+           
 
             members.TryAdd(systemManagerid, systemManager);
             members.TryAdd(memberId, member);
@@ -116,7 +115,9 @@ namespace SadnaExpressTests.Acceptance_Tests
             members.TryAdd(storeOwnerid, storeOwner);
             IUserFacade _userFacade = new UserFacade(current_users, members, macs,new PasswordHash(), new Mock_PaymentService(), new Mock_SupplierService());
             TradingSystem Ts = new TradingSystem(_userFacade, storeFacade);
-            
+            NotificationSystem.Instance.userFacade = _userFacade;
+            NotificationSystem.Instance.RegisterObserver(storeid1, storeOwner);
+
             Ts.TestMode = true;
            
             proxyBridge.SetBridge(Ts);

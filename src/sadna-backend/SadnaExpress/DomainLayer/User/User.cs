@@ -121,6 +121,12 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to add new owner");
         }
+
+        public virtual PromotedMember ReactToJobOffer(Guid storeID, Member newOwner, bool offerResponse)
+        {
+            throw new Exception("The user unauthorised to react job offer");
+        }
+
         public virtual PromotedMember AppointStoreManager(Guid storeID, Member newManager)
         {
             throw new Exception("The user unauthorised to add new owner");

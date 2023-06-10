@@ -143,6 +143,7 @@ namespace SadnaExpress.DomainLayer.User
 
         #region permissionsOffers
         private ConcurrentDictionary<Guid, List<Member>> permissionsOffers;
+
         [NotMapped]
         public ConcurrentDictionary<Guid, List<Member>> PermissionsOffers { get => permissionsOffers; set => permissionsOffers = value; }
 
@@ -208,6 +209,7 @@ namespace SadnaExpress.DomainLayer.User
             permissions = new ConcurrentDictionary<Guid, List<string>>();
             permissionsHolder = Permissions.Instance;
             bidsOffers = new ConcurrentDictionary<Guid, List<Bid>>();
+            permissionsOffers = new ConcurrentDictionary<Guid, List<Member>>();
             LoggedIn = login;
             if (shoppingCart == null)
                 ShoppingCart = new ShoppingCart();
@@ -277,6 +279,13 @@ namespace SadnaExpress.DomainLayer.User
         {
             if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "add new owner"}))
                 return permissionsHolder.AppointStoreOwner(storeID, this, newOwner);
+            throw new Exception("The member doesn’t have permissions to add new owner");
+        }
+
+        public override PromotedMember ReactToJobOffer(Guid storeID, Member newEmp, bool offerResponse)
+        {
+            if (hasPermissions(storeID, new List<string> { "owner permissions", "founder permissions", "add new owner" }))
+                return permissionsHolder.ReactToJobOffer(storeID, this, newEmp, offerResponse);
             throw new Exception("The member doesn’t have permissions to add new owner");
         }
 
@@ -374,9 +383,7 @@ namespace SadnaExpress.DomainLayer.User
 
         #endregion
 
-        public void ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
-        {
-        }
+        
         #region HelpFunc
 
             public List<PromotedMember> getAppoint(Guid storeID)
@@ -399,6 +406,8 @@ namespace SadnaExpress.DomainLayer.User
         
         public void addAppoint(Guid storeID, PromotedMember member)
         {
+            if (appoint.ContainsKey(storeID))
+                appoint.TryAdd(storeID, new List<PromotedMember>());
             appoint[storeID].Add(member);
             //here
             DBHandler.Instance.UpdatePromotedMember(this);
@@ -420,6 +429,10 @@ namespace SadnaExpress.DomainLayer.User
                 if (bidsOffers.ContainsKey(storeID))
                     foreach (Bid bid in bidsOffers[storeID])
                         bid.RemoveEmployee(this);
+            if (per.Equals("owner permissions"))
+                if (permissionsOffers.ContainsKey(storeID))
+                    foreach (Member mem in permissionsOffers[storeID])
+                        mem.RemoveEmployeeFromDecisions(storeID, this);
         }
         
         public void removeAllDictOfStore(Guid storeID)

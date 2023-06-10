@@ -52,9 +52,6 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeOwnerMail2@gmail.com");
             
-            proxyBridge.AppointStoreOwner(store5Founder, storeid1, "storeOwnerMail2@gmail.com");
-
-            
             store5Manager = proxyBridge.Enter().Value;
             proxyBridge.Register(store5Manager, "storeManagerMail2@gmail.com", "bar", "lerrer", "A#!a12345678");
             store5Manager = proxyBridge.Login(store5Manager, "storeManagerMail2@gmail.com", "A#!a12345678").Value;
@@ -219,6 +216,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         {
             int pre = unreadMessages(proxyBridge.GetMember(store5Manager).Value.AwaitingNotification).Count;
             proxyBridge.AppointStoreOwner(store5Founder, storeID5, "storeManagerMail2@gmail.com");
+            proxyBridge.ReactToJobOffer(store5Owner, storeID5, store5Manager, true);
             Guid enterId = proxyBridge.Enter().Value;
             proxyBridge.Login(enterId, "gil@gmail.com", "asASD876!@");
             Item item = proxyBridge.GetItemsInStore(store5Owner, storeID5).Value[0];
@@ -231,13 +229,6 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.AreEqual(pre + 1, unreadMessages(proxyBridge.GetMember(store5Manager).Value.AwaitingNotification).Count);
             
         }
-        
-        
-        
-        
-        
-        
-        
         
         // not in this version
         public void OpenStoreNotification()
@@ -691,7 +682,8 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void AppointingNewStoreOwner_Good()
         {
             Task<Response> task = Task.Run(() => {
-                return proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+                proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+                return proxyBridge.ReactToJobOffer(store5Owner, storeID5, loggedInUserID1, true);
             });
 
             task.Wait();
@@ -701,6 +693,101 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             int count = proxyBridge.GetItemsForClient(store5Owner, "testItem").Value.Count;
             Assert.AreEqual(1, count); //item was added because the user has permissions
+        }
+
+        [TestMethod]
+        public void AppointingNewStoreOwnerOneDeny_Bad()
+        {
+            Task<Response> task = Task.Run(() => {
+                proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+                return proxyBridge.ReactToJobOffer(store5Owner, storeID5, loggedInUserID1, false);
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //error not occured 
+
+            proxyBridge.AddItemToStore(loggedInUserID1, storeID5, "testItem", "test", 50.0, 45);
+
+            int count = proxyBridge.GetItemsForClient(store5Owner, "testItem").Value.Count;
+            Assert.AreEqual(0, count); //item was not added because the user has permissions
+        }
+
+        [TestMethod]
+        public void AppointingNewStoreOwnerNotEveryOneApprove_Bad()
+        {
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+            });
+
+            task.Wait();
+            Assert.IsFalse(task.Result.ErrorOccured); //error not occured 
+            Assert.AreEqual(0, proxyBridge.GetMemberPermissions(loggedInUserID1).Value.Count);
+            Assert.AreEqual(4, proxyBridge.GetEmployeeInfoInStore(store5Founder, storeID5).Value.Count);
+            bool found = false;
+            foreach (SMemberForStore mem in proxyBridge.GetEmployeeInfoInStore(store5Founder, storeID5).Value)
+            { 
+                if (mem.Id.Equals(loggedInUserID1))
+                {
+                    found = true;
+                    Assert.IsTrue(mem.DidApprove);
+                    Assert.AreEqual(2, mem.Approvers.Count);
+                }
+            }
+            Assert.IsTrue(found);
+            found = false;
+            foreach (SMemberForStore mem in proxyBridge.GetEmployeeInfoInStore(store5Owner, storeID5).Value)
+            {
+                if (mem.Id.Equals(loggedInUserID1))
+                {
+                    found = true;
+                    Assert.IsFalse(mem.DidApprove);
+                    Assert.AreEqual(2, mem.Approvers.Count);
+                }
+            }
+            Assert.IsTrue(found);
+        }
+
+        [TestMethod]
+        public void AppointingOneApproveAndOneDeny_Bad()
+        {
+            //Arrange
+            //add more owner
+            proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail2@gmail.com");
+            proxyBridge.ReactToJobOffer(store5Owner, storeID5, loggedInUserID2, true);
+            List <SMemberForStore> l= proxyBridge.GetEmployeeInfoInStore(store5Founder, storeID5).Value;
+            //Act
+            proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+
+            Task<Response>[] clientTasks = new Task<Response>[] {
+                Task.Run(() => {
+                    return proxyBridge.ReactToJobOffer(store5Owner, storeID5, loggedInUserID1, true);
+                }),
+                Task.Run(() => {
+                    return proxyBridge.ReactToJobOffer(loggedInUserID2, storeID5, loggedInUserID1, false);
+                })
+             };
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+            Console.WriteLine(clientTasks[0].Result.ErrorMessage);
+            Console.WriteLine(clientTasks[1].Result.ErrorMessage);
+            bool situation1 = !clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured;
+            bool situation2 = clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured;
+            Assert.IsTrue(situation1 || situation2);
+            Assert.IsFalse(proxyBridge.GetMemberPermissions(loggedInUserID1).Value.ContainsKey(storeID5));
+            Assert.AreEqual(4, proxyBridge.GetEmployeeInfoInStore(store5Founder, storeID5).Value.Count);
+            Assert.IsFalse(proxyBridge.GetMember(store5Founder).Value.PenddingPermission.ContainsKey(storeID5));
+        }
+
+        [TestMethod]
+        public void ReactToNewStoreOwner_Bad()
+        {
+            Task<Response> task = Task.Run(() => {
+                return proxyBridge.ReactToJobOffer(store5Founder, storeID5,loggedInUserID2 , true);
+            });
+
+            task.Wait();
+            Assert.IsTrue(task.Result.ErrorOccured); //error should occur 
+            Console.WriteLine(task.Result.ErrorMessage);    
         }
 
         [TestMethod]
@@ -743,12 +830,14 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void AppointingNewStoreOwnerBy2StoreOwners_Concurrent_Bad()
         {
             Task<Response> task1 = Task.Run(() => {
-                return proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+                proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
+                return proxyBridge.ReactToJobOffer(store5Owner, storeID5, loggedInUserID1, true);
             });
 
 
             Task<Response> task2 = Task.Run(() => {
-                return proxyBridge.AppointStoreOwner(store5Owner, storeID5, "logmail1@gmail.com");
+                proxyBridge.AppointStoreOwner(store5Owner, storeID5, "logmail1@gmail.com");
+                return proxyBridge.ReactToJobOffer(store5Founder, storeID5, loggedInUserID1, true);
             });
 
             task1.Wait();
@@ -1179,47 +1268,73 @@ namespace SadnaExpressTests.Acceptance_Tests
             Guid storeID = proxyBridge.OpenNewStore(storeFounder, "Store 1").Value;
 
             // create owner 1
-            Response res1 = proxyBridge.AppointStoreOwner(storeFounder, storeID, "gil@gmail.com");
+            Response res1 = proxyBridge.AppointStoreOwner(storeFounder, storeID, "gil@gmail.com"); 
 
-            //create appoint 1 to owner 1
+            //create appoint 1 to owner 1 (1 need to approve)
             Guid enter = proxyBridge.Enter().Value;
-            proxyBridge.Login(enter, "gil@gmail.com", "asASD876!@");
+            proxyBridge.Login(enter, "gil@gmail.com", "asASD876!@"); 
             proxyBridge.AppointStoreOwner(memberId, storeID, "sebatian@gmail.com");
-
-            //create appoint 2 to owner 1
-            Response res2 = proxyBridge.AppointStoreOwner(memberId, storeID, "amihai@gmail.com");
-
-            //create appoint 1 to member1
+            proxyBridge.ReactToJobOffer(storeFounder, storeID, memberId2, true); //accept the offer
+            //
+            //create appoint 2 to owner 1 (2 need to approve)
+            proxyBridge.AppointStoreOwner(memberId, storeID, "amihai@gmail.com");
             enter = proxyBridge.Enter().Value;
             proxyBridge.Login(enter, "sebatian@gmail.com", "asASD123!@");
+            proxyBridge.ReactToJobOffer(memberId2, storeID, memberId3, true); //accept the offer
+            proxyBridge.ReactToJobOffer(storeFounder, storeID, memberId3, true); //accept the offer
+
+            //create appoint 1 to member1 (3 need to approve)
             proxyBridge.AppointStoreOwner(memberId2, storeID, "bar@gmail.com");
-
-            //create appoint 2 to member1
-            Guid memberId5 = proxyBridge.Enter().Value;
-            proxyBridge.Register(memberId5, "member5@gmail.com", "member", "member", "A#!a12345678");
-            proxyBridge.AppointStoreOwner(memberId2, storeID, "member5@gmail.com");
-            memberId5 = proxyBridge.Login(memberId5, "member5@gmail.com", "A#!a12345678").Value;
-
-            //create appoint 1 to member2
             enter = proxyBridge.Enter().Value;
             proxyBridge.Login(enter, "amihai@gmail.com", "asASD753!@");
+            proxyBridge.ReactToJobOffer(memberId3, storeID, memberId4, true); //accept the offer
+            proxyBridge.ReactToJobOffer(storeFounder, storeID, memberId4, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId, storeID, memberId4, true); //accept the offer
+
+            enter = proxyBridge.Enter().Value;
+            proxyBridge.Login(enter, "bar@gmail.com", "asASD159!@");
+
+            //create appoint 2 to member1 (4 need to approve)
+            Guid memberId5 = proxyBridge.Enter().Value;
+            proxyBridge.Register(memberId5, "member5@gmail.com", "member", "member", "A#!a12345678");
+            memberId5 = proxyBridge.Login(memberId5, "member5@gmail.com", "A#!a12345678").Value;
+            proxyBridge.AppointStoreOwner(memberId2, storeID, "member5@gmail.com");
+            proxyBridge.ReactToJobOffer(memberId3, storeID, memberId5, true); //accept the offer
+            proxyBridge.ReactToJobOffer(storeFounder, storeID, memberId5, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId, storeID, memberId5, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId4, storeID, memberId5, true); //accept the offer
+            
+
+            //create appoint 1 to member2 (5 need to approve)
             Guid memberId6 = proxyBridge.Enter().Value;
             proxyBridge.Register(memberId6, "member6@gmail.com", "member", "member", "A#!a12345678");
             memberId6 = proxyBridge.Login(memberId6, "member6@gmail.com", "A#!a12345678").Value;
             proxyBridge.AppointStoreOwner(memberId3, storeID, "member6@gmail.com");
+            proxyBridge.ReactToJobOffer(memberId2, storeID, memberId6, true); //accept the offer
+            proxyBridge.ReactToJobOffer(storeFounder, storeID, memberId6, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId, storeID, memberId6, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId4, storeID, memberId6, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId5, storeID, memberId6, true); //accept the offer
 
             //create appoint 2 to member2
             Guid memberId7 = proxyBridge.Enter().Value;
             proxyBridge.Register(memberId7, "member7@gmail.com", "member", "member", "A#!a12345678");
             proxyBridge.AppointStoreManager(memberId3, storeID, "member7@gmail.com");
 
-            //create appoint 1 to member6
+            //create appoint 1 to member6 (6 need to approve)
             enter = proxyBridge.Enter().Value;
             proxyBridge.Login(enter, "member6@gmail.com", "A#!a12345678");
 
             Guid memberId8 = proxyBridge.Enter().Value;
             proxyBridge.Register(memberId8, "member8@gmail.com", "member", "member", "A#!a12345678");
+            memberId8 = proxyBridge.Login(memberId8, "member8@gmail.com", "A#!a12345678").Value;
             proxyBridge.AppointStoreOwner(memberId6, storeID, "member8@gmail.com");
+            proxyBridge.ReactToJobOffer(storeFounder, storeID, memberId8, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId, storeID, memberId8, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId2, storeID, memberId8, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId3, storeID, memberId8, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId4, storeID, memberId8, true); //accept the offer
+            proxyBridge.ReactToJobOffer(memberId5, storeID, memberId8, true); //accept the offer
 
             //create appoint 1 to member 5
             enter = proxyBridge.Enter().Value;

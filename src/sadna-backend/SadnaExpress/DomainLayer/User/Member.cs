@@ -67,6 +67,7 @@ namespace SadnaExpress.DomainLayer.User
             LoggedIn = false;
             securityQuestions = new Dictionary<string, string>();
             awaitingNotification = new List<Notification>();
+            penddingPermission = new ConcurrentDictionary<Guid, Dictionary<PromotedMember, string>>();
         }
         
         public Member(PromotedMember promotedMember)
@@ -80,6 +81,7 @@ namespace SadnaExpress.DomainLayer.User
             shoppingCart = promotedMember.ShoppingCart;
             securityQuestions = promotedMember.SecurityQuestions;
             awaitingNotification = promotedMember.awaitingNotification;
+            penddingPermission = promotedMember.penddingPermission;
         }
 
         public void deepCopy(User user)
@@ -102,6 +104,20 @@ namespace SadnaExpress.DomainLayer.User
             founder.createFounder(storeID);
             founder.LoggedIn = true;
             return founder;
+        }
+        public void RemoveEmployeeFromDecisions(Guid storeID, PromotedMember toRemove)
+        {
+            if (penddingPermission.ContainsKey(storeID))
+            {
+                foreach (PromotedMember pm in penddingPermission[storeID].Keys)
+                {
+                    if (pm.Equals(toRemove))
+                    {
+                        penddingPermission[storeID].Remove(pm);
+                        break;
+                    }
+                }
+            }
         }
         public void SetSecurityQA(string q , string a)
         {

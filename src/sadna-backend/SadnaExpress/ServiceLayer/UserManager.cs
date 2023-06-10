@@ -169,9 +169,20 @@ namespace SadnaExpress.ServiceLayer
             {
                 List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(userID, storeID);
                 List<SMemberForStore> sMembers = new List<SMemberForStore>();
+                List<Member> pendding = new List<Member>();
 
                 foreach (PromotedMember member in employees)
                 {
+                    if (member.PermissionsOffers.ContainsKey(storeID))
+                        foreach (Member m in member.PermissionsOffers[storeID])
+                        {
+                            if (!pendding.Contains(m))
+                            {
+                                SMemberForStore sPenndingMember = new SMemberForStore(m, storeID, userID);
+                                sMembers.Add(sPenndingMember);
+                                pendding.Add(m);
+                            }
+                        }
                     SMemberForStore sMember = new SMemberForStore(member, storeID, userID);
                     sMembers.Add(sMember);
                 }
@@ -184,11 +195,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response ReactToJobOffer(Guid userID, Guid newEmpID, bool offerResponse)
+        public Response ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
         {
             try
             {
-                userFacade.ReactToJobOffer(userID, ReactToJobOffer, offerResponse);
+                userFacade.ReactToJobOffer(userID, storeID, newEmpID, offerResponse);
                 Logger.Instance.Info($"User id: {userID} requested to react to job offer user {newEmpID}");
                 return new Response();
             }

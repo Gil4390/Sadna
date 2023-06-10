@@ -866,7 +866,7 @@ namespace SadnaExpress.ServiceLayer
 
         public Response ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
         {
-            return userManager.ReactToJobOffer(userID, newEmpID, offerResponse);
+            return userManager.ReactToJobOffer(userID, storeID, newEmpID, offerResponse);
         }
 
         public ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)

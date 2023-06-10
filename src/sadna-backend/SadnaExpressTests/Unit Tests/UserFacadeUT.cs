@@ -44,6 +44,7 @@ namespace SadnaExpressTests.Unit_Tests
             PromotedMember founder = new PromotedMember(founderid, "ani@gmail.com", "noga",
                 "schwartz", "ShaY1787%$%");
             founder.createFounder(storeID);
+            NotificationSystem.Instance.RegisterObserver(storeID, founder);
             founder.LoggedIn = true;
             founders = new ConcurrentDictionary<Guid, PromotedMember>();
             founders.TryAdd(storeID, founder);
@@ -290,18 +291,17 @@ namespace SadnaExpressTests.Unit_Tests
             //create founder
             _userFacade.Register(userId1, "shayk1934@gmail.com", "shay", "kresner", "ShaY1787%$%");
             userId1 = _userFacade.Login(userId1, "shayk1934@gmail.com", "ShaY1787%$%");
-            _userFacade.OpenNewStore(userId1, storeID);
+            Guid storeId1 = Guid.NewGuid();
+            _userFacade.OpenNewStore(userId1, storeId1);
             //create user 
             Guid userIdOwner = _userFacade.Enter();
             _userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "ShaY1787%$%");
             userIdOwner = _userFacade.Login(userIdOwner, "nogaschw@gmail.com", "ShaY1787%$%");
             _userFacade.Exit(userIdOwner);
             // add owner
-            _userFacade.AppointStoreOwner(userId1, storeID, "nogaschw@gmail.com");
+            _userFacade.AppointStoreOwner(userId1, storeId1, "nogaschw@gmail.com");
             //check permission of the one we create as owner
-            List<string> per = new List<string>();
-            per.Add("owner permissions");
-            Assert.IsTrue(_userFacade.hasPermissions(userIdOwner, storeID, per));
+            Assert.IsTrue(_userFacade.hasPermissions(userIdOwner, storeId1, new List<string> { "owner permissions" }));
         }
 
         [TestMethod]
@@ -310,21 +310,22 @@ namespace SadnaExpressTests.Unit_Tests
             //create founder
             _userFacade.Register(userId1, "shayk1934@gmail.com", "shay", "kresner", "ShaY1787%$%");
             userId1 = _userFacade.Login(userId1, "shayk1934@gmail.com", "ShaY1787%$%");
-            _userFacade.OpenNewStore(userId1, storeID);
+            Guid storeId1 = Guid.NewGuid();
+            _userFacade.OpenNewStore(userId1, storeId1);
             //create owner
             Guid userIdOwner = _userFacade.Enter();
             _userFacade.Register(userIdOwner, "nogaschw@gmail.com", "noga", "schwartz", "ShaY1787%$%");
-            _userFacade.AppointStoreOwner(userId1, storeID, "nogaschw@gmail.com");
+            _userFacade.AppointStoreOwner(userId1, storeId1, "nogaschw@gmail.com");
             userIdOwner = _userFacade.Login(userIdOwner, "nogaschw@gmail.com", "ShaY1787%$%");
             //try add owner
             Guid userIdDina = _userFacade.Enter();
             _userFacade.Register(userIdDina, "dinaaga@gmail.com", "dina", "agapov", "ShaY1787%$%");
             _userFacade.Exit(userIdDina);
-            _userFacade.AppointStoreOwner(userIdOwner, storeID, "dinaaga@gmail.com");
+            _userFacade.AppointStoreOwner(userIdOwner, storeId1, "dinaaga@gmail.com");
             ////check permission of the one we create as owner
             List<string> per = new List<string>();
             per.Add("owner permissions");
-            Assert.IsTrue(_userFacade.hasPermissions(userIdOwner, storeID, per));
+            Assert.IsTrue(_userFacade.hasPermissions(userIdOwner, storeId1, per));
         }
 
         [TestMethod]
