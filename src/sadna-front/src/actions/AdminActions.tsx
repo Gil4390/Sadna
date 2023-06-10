@@ -113,3 +113,24 @@ export function handleGetSystemRevenue(userID, date) {
     })
 }
 
+
+export function handleGetSystemUserData(userID, date) {
+    let url = "http://localhost:8080/api/admin/get-system-user-data";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            date: date
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data.value)
+    })
+}
+

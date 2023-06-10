@@ -185,7 +185,7 @@ namespace SadnaExpress.API.ClientRequests
         public Guid storeID { get; set; }
         public DateTime date { get; set; }
     }
-    public class SystemRevenueRequest : ClientRequest
+    public class SystemDateRequest : ClientRequest
     {
         public DateTime date { get; set; }
     }

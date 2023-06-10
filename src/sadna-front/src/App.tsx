@@ -7,7 +7,7 @@ import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPa
          AdminViewAllUsersPage, AdminManageAllStoresPage, AdminViewAllPurchasesPage, AdminManageComplaintsPage,
          AdminInitializeSystemPage, ManageItemsPage, ManageStoreEmployeesPage, PurchasePoliciesPage,
         DiscountPoliciesPage, PurchasedItemsPage, PurchasedStoreItemsPage, MessagesPage,
-        AdminRevenuePage, StoreRevenuePage, ManageStoreBidsPage } from "./pages";
+        AdminRevenuePage, StoreRevenuePage, ManageStoreBidsPage, AdminUserActivityPage } from "./pages";
 
 import { useEffect, useState } from 'react';
 import React from 'react';
@@ -118,6 +118,7 @@ const App:React.FC=()=>{
         <Route path="/AdminManageComplaintsPage" element={<AdminManageComplaintsPage id={id}/>} />
         <Route path="/AdminInitializeSystemPage" element={<AdminInitializeSystemPage id={id} setIsInit={setisInit}/>} />
         <Route path="/AdminRevenuePage" element={<AdminRevenuePage id={id}/>} />
+        <Route path="/AdminUserActivityPage" element={<AdminUserActivityPage id={id}/>} />
         
       </Routes>
       <Footer />

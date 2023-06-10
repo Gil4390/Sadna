@@ -16,6 +16,7 @@ export { default as AdminViewAllPurchasesPage } from "./Admin/AdminViewAllPurcha
 export { default as AdminManageComplaintsPage } from "./Admin/AdminManageComplaintsPage.tsx";
 export { default as AdminInitializeSystemPage } from "./Admin/AdminInitializeSystemPage.tsx";
 export { default as AdminRevenuePage } from "./Admin/AdminRevenuePage.tsx";
+export { default as AdminUserActivityPage } from "./Admin/AdminUserActivityPage.tsx";
 
 export { default as PurchasePoliciesPage } from "./Member/PurchasePoliciesPage.tsx";
 export { default as DiscountPoliciesPage } from "./Member/DiscountPoliciesPage.tsx";
