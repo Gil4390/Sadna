@@ -600,72 +600,197 @@ namespace SadnaExpress.ServiceLayer
         
         public void LoadData()
         {
+          
             SetIsSystemInitialize(true);
 
-            Guid systemManagerid = Enter().Value;
-            Guid memberId = Enter().Value;
-            Guid memberId2 = Enter().Value;
-            Guid memberId3 = Enter().Value;
-            Guid memberId4 = Enter().Value;
-            Guid memberId5 = Enter().Value;
-            Guid storeOwnerid1 = Enter().Value;
-            Guid storeManagerid1 = Enter().Value;
-            Guid storeOwnerid2 = Enter().Value;
-            Guid storeManagerid2 = Enter().Value;
+            #region Enter
+            ResponseT<Guid> enterResSystemManager = Enter();
+            if (enterResSystemManager.ErrorOccured)
+                ThrowLoadDataException(enterResSystemManager.ErrorMessage);
+            Guid systemManagerid = enterResSystemManager.Value;
 
-            Register(systemManagerid, ApplicationOptions.SystemManagerEmail, ApplicationOptions.SystemManagerFirstName, ApplicationOptions.SystemManagerLastName, ApplicationOptions.SystemManagerPass);
-            Register(memberId, "gil@gmail.com", "Gil", "Gil", "asASD876!@");
-            Register(memberId2, "sebatian@gmail.com", "Sebatian", "Sebatian", "asASD123!@");
-            Register(memberId3, "amihai@gmail.com", "Amihai", "Amihai", "asASD123!@");
-            Register(memberId4, "bar@gmail.com", "Bar", "Bar", "asASD159!@");
-            Register(memberId5, "tal@gmail.com", "Tal", "Galmor", "w3ka!Tal");
-            Register(storeOwnerid1, "AsiAzar@gmail.com", "Asi", "Azar", "A#!a12345678");
-            Register(storeOwnerid2, "dani@gmail.com", "dani", "dani", "A#!a12345678");
-            Register(storeManagerid1, "kobi@gmail.com", "kobi", "kobi", "A#!a12345678");
-            Register(storeManagerid2, "Yael@gmail.com", "Yael", "Yael", "A#!a12345678");
+            ResponseT<Guid> enterResMember = Enter();
+            if (enterResMember.ErrorOccured)
+                ThrowLoadDataException(enterResMember.ErrorMessage);
+            Guid memberId = enterResMember.Value;
 
-            systemManagerid = Login(systemManagerid, ApplicationOptions.SystemManagerEmail, ApplicationOptions.SystemManagerPass).Value;
+            ResponseT<Guid> enterResMember2 = Enter();
+            if (enterResMember2.ErrorOccured)
+                ThrowLoadDataException(enterResMember2.ErrorMessage);
+            Guid memberId2 = enterResMember2.Value;
+
+            ResponseT<Guid> enterResMember3 = Enter();
+            if (enterResMember3.ErrorOccured)
+                ThrowLoadDataException(enterResMember3.ErrorMessage);
+            Guid memberId3 = enterResMember3.Value;
+
+            ResponseT<Guid> enterResMember4 = Enter();
+            if (enterResMember4.ErrorOccured)
+                ThrowLoadDataException(enterResMember4.ErrorMessage);
+            Guid memberId4 = enterResMember4.Value;
+
+            ResponseT<Guid> enterResMember5 = Enter();
+            if (enterResMember5.ErrorOccured)
+                ThrowLoadDataException(enterResMember5.ErrorMessage);
+            Guid memberId5 = enterResMember5.Value;
+
+            ResponseT<Guid> enterResStoreOwner1 = Enter();
+            if (enterResStoreOwner1.ErrorOccured)
+                ThrowLoadDataException(enterResStoreOwner1.ErrorMessage);
+            Guid storeOwnerid1 = enterResStoreOwner1.Value;
+
+            ResponseT<Guid> enterResStoreManager1 = Enter();
+            if (enterResStoreManager1.ErrorOccured)
+                ThrowLoadDataException(enterResStoreManager1.ErrorMessage);
+            Guid storeManagerid1 = enterResStoreManager1.Value;
+
+            ResponseT<Guid> enterResStoreOwner2 = Enter();
+            if (enterResStoreOwner2.ErrorOccured)
+                ThrowLoadDataException(enterResStoreOwner2.ErrorMessage);
+            Guid storeOwnerid2 = enterResStoreOwner2.Value;
+
+            ResponseT<Guid> enterResStoreManager2 = Enter();
+            if (enterResStoreManager2.ErrorOccured)
+                ThrowLoadDataException(enterResStoreManager2.ErrorMessage);
+            Guid storeManagerid2 = enterResStoreManager2.Value;
+            #endregion
+
+            #region Register
+
+            Response resRegisterSystemManager = Register(systemManagerid, ApplicationOptions.SystemManagerEmail, ApplicationOptions.SystemManagerFirstName, ApplicationOptions.SystemManagerLastName, ApplicationOptions.SystemManagerPass);
+            if(resRegisterSystemManager.ErrorOccured) { ThrowLoadDataException(resRegisterSystemManager.ErrorMessage); }
+
+            Response resRegisterMember= Register(memberId, "gil@gmail.com", "Gil", "Gil", "asASD876!@");
+            if (resRegisterMember.ErrorOccured) { ThrowLoadDataException(resRegisterMember.ErrorMessage); }
+
+            Response resRegisterMember2= Register(memberId2, "sebatian@gmail.com", "Sebatian", "Sebatian", "asASD123!@");
+            if (resRegisterMember2.ErrorOccured) { ThrowLoadDataException(resRegisterMember2.ErrorMessage); }
+
+            Response resRegisterMember3 = Register(memberId3, "amihai@gmail.com", "Amihai", "Amihai", "asASD123!@");
+            if(resRegisterMember3.ErrorOccured) { ThrowLoadDataException(resRegisterMember3.ErrorMessage); }
+
+            Response resRegisterMember4 = Register(memberId4, "bar@gmail.com", "Bar", "Bar", "asASD159!@");
+            if (resRegisterMember4.ErrorOccured) { ThrowLoadDataException(resRegisterMember4.ErrorMessage); }
+
+            Response resRegisterMember5 = Register(memberId5, "tal@gmail.com", "Tal", "Galmor", "w3ka!Tal");
+            if (resRegisterMember5.ErrorOccured) { ThrowLoadDataException(resRegisterMember5.ErrorMessage); }
+
+            Response resRegisterStoreOwner1 = Register(storeOwnerid1, "AsiAzar@gmail.com", "Asi", "Azar", "A#!a12345678");
+            if (resRegisterStoreOwner1.ErrorOccured) { ThrowLoadDataException(resRegisterStoreOwner1.ErrorMessage); }
+
+            Response resRegisterStoreOwner2 = Register(storeOwnerid2, "dani@gmail.com", "dani", "dani", "A#!a12345678");
+            if (resRegisterStoreOwner2.ErrorOccured) { ThrowLoadDataException(resRegisterStoreOwner2.ErrorMessage); }
+
+            Response resRegisterStoreManager1 = Register(storeManagerid1, "kobi@gmail.com", "kobi", "kobi", "A#!a12345678");
+            if (resRegisterStoreManager1.ErrorOccured) { ThrowLoadDataException(resRegisterStoreManager1.ErrorMessage); }
+
+            Response resRegisterStoreManager2 = Register(storeManagerid2, "Yael@gmail.com", "Yael", "Yael", "A#!a12345678");
+            if (resRegisterStoreManager2.ErrorOccured) { ThrowLoadDataException(resRegisterStoreManager2.ErrorMessage); }
+
+            #endregion
+
+            ResponseT<Guid> resLoginSystemManager = Login(systemManagerid, ApplicationOptions.SystemManagerEmail, ApplicationOptions.SystemManagerPass);
+            if (resLoginSystemManager.ErrorOccured) { ThrowLoadDataException(resLoginSystemManager.ErrorMessage); }
+            systemManagerid = resLoginSystemManager.Value;
             userManager.CreateSystemManager(systemManagerid);
 
-            storeOwnerid1 =Login(storeOwnerid1, "AsiAzar@gmail.com", "A#!a12345678").Value;
-            Guid storeZaraID = OpenNewStore(storeOwnerid1, "Zara").Value;
-            AddItemToStore(storeOwnerid1, storeZaraID, "Tshirt", "clothes", 99.8, 40);
-            AddItemToStore(storeOwnerid1, storeZaraID, "Ipad", "electronic", 99.8, 2);
-            AddItemToStore(storeOwnerid1, storeZaraID, "Dress", "clothes", 70, 45);
+            ResponseT<Guid> resLoginStoreOwner1 = Login(storeOwnerid1, "AsiAzar@gmail.com", "A#!a12345678");
+            if (resLoginStoreOwner1.ErrorOccured) { ThrowLoadDataException(resLoginStoreOwner1.ErrorMessage); }
+            storeOwnerid1 = resLoginStoreOwner1.Value;
 
-            AddCondition(storeOwnerid1, storeZaraID, "Item", "Tshirt", "min quantity", 2, DateTime.MaxValue);
-            AddCondition(storeOwnerid1, storeZaraID, "Item", "Ipad", "min value", 1, DateTime.MaxValue);
+            ResponseT<Guid> resOpenNewStoreStoreOwner1 = OpenNewStore(storeOwnerid1, "Zara");
+            if (resOpenNewStoreStoreOwner1.ErrorOccured) { ThrowLoadDataException(resOpenNewStoreStoreOwner1.ErrorMessage); }
+            Guid storeZaraID = resOpenNewStoreStoreOwner1.Value;
 
-            DiscountPolicy policy1 = CreateSimplePolicy(storeOwnerid1, storeZaraID, "StoreZara", 50, DateTime.Now, new DateTime(2024, 5, 20)).Value;
-            Condition cond3 = AddCondition(storeOwnerid1, storeZaraID, "Item", "Tshirt", "min quantity", 2).Value;
+            ResponseT<Guid> resAddItemToStoreTshirt= AddItemToStore(storeOwnerid1, storeZaraID, "Tshirt", "clothes", 99.8, 40);
+            if (resAddItemToStoreTshirt.ErrorOccured) { ThrowLoadDataException(resAddItemToStoreTshirt.ErrorMessage); }
 
-            CreateComplexPolicy(storeOwnerid1, storeZaraID, "if", cond3.ID, policy1.ID);
+            ResponseT<Guid> resAddItemToStoreIpad = AddItemToStore(storeOwnerid1, storeZaraID, "Ipad", "electronic", 99.8, 2);
+            if (resAddItemToStoreIpad.ErrorOccured) { ThrowLoadDataException(resAddItemToStoreIpad.ErrorMessage); }
 
-            DiscountPolicy policy3 = CreateSimplePolicy(storeOwnerid1, storeZaraID, "StoreZara", 10, DateTime.Now, new DateTime(2024, 5, 20)).Value;
+            ResponseT<Guid> resAddItemToStoreDress = AddItemToStore(storeOwnerid1, storeZaraID, "Dress", "clothes", 70, 45);
+            if (resAddItemToStoreDress.ErrorOccured) { ThrowLoadDataException(resAddItemToStoreDress.ErrorMessage); }
 
-            AddPolicy(storeOwnerid1, storeZaraID, policy3.ID);
+            ResponseT<Condition> resAddCondition1 = AddCondition(storeOwnerid1, storeZaraID, "Item", "Tshirt", "min quantity", 2, DateTime.MaxValue);
+            if (resAddCondition1.ErrorOccured) { ThrowLoadDataException(resAddCondition1.ErrorMessage); }
 
-            AppointStoreManager(storeOwnerid1, storeZaraID, "kobi@gmail.com");
+            ResponseT<Condition> resAddCondition2 = AddCondition(storeOwnerid1, storeZaraID, "Item", "Ipad", "min value", 1, DateTime.MaxValue);
+            if (resAddCondition2.ErrorOccured) { ThrowLoadDataException(resAddCondition2.ErrorMessage); }
 
-            storeOwnerid2 = Login(storeOwnerid2, "dani@gmail.com", "A#!a12345678").Value;
-            Guid storeFoxID = OpenNewStore(storeOwnerid2, "Fox").Value;
-            AddItemToStore(storeOwnerid2, storeFoxID, "Pants", "clothes", 150, 200);
-            AddItemToStore(storeOwnerid2, storeFoxID, "Towel", "Home", 40, 450);
-            AddItemToStore(storeOwnerid2, storeFoxID, "Teddy bear toy", "children toys", 65, 120);
-            AddItemToStore(storeOwnerid2, storeFoxID, "mouse", "animals", 65, 0);
+            ResponseT<DiscountPolicy> resCreateSimplePolicy1 = CreateSimplePolicy(storeOwnerid1, storeZaraID, "StoreZara", 50, DateTime.Now, new DateTime(2024, 5, 20));
+            if (resCreateSimplePolicy1.ErrorOccured) { ThrowLoadDataException(resCreateSimplePolicy1.ErrorMessage); }
+            DiscountPolicy policy1 = resCreateSimplePolicy1.Value;
 
-            AppointStoreManager(storeOwnerid2, storeFoxID, "Yael@gmail.com");
+            ResponseT<Condition> resAddCondition3 =  AddCondition(storeOwnerid1, storeZaraID, "Item", "Tshirt", "min quantity", 2);
+            if (resAddCondition3.ErrorOccured) { ThrowLoadDataException(resAddCondition3.ErrorMessage); }
+            Condition cond3 = resAddCondition3.Value;
 
-            Exit(systemManagerid);
-            Exit(memberId);
-            Exit(memberId2);
-            Exit(memberId3);
-            Exit(memberId4);
-            Exit(memberId5);
-            Exit(storeOwnerid1);
-            Exit(storeManagerid1);
-            Exit(storeOwnerid2);
-            Exit(storeManagerid2);
+            ResponseT<DiscountPolicy> resCreateComplexPolicy1 = CreateComplexPolicy(storeOwnerid1, storeZaraID, "if", cond3.ID, policy1.ID);
+            if (resCreateComplexPolicy1.ErrorOccured) { ThrowLoadDataException(resCreateComplexPolicy1.ErrorMessage); }
+
+            ResponseT<DiscountPolicy> resCreateSimplePolicy3 = CreateSimplePolicy(storeOwnerid1, storeZaraID, "StoreZara", 10, DateTime.Now, new DateTime(2024, 5, 20));
+            if (resCreateSimplePolicy3.ErrorOccured) { ThrowLoadDataException(resCreateSimplePolicy3.ErrorMessage); }
+            DiscountPolicy policy3 = resCreateSimplePolicy3.Value;
+
+            Response resAddPolicy= AddPolicy(storeOwnerid1, storeZaraID, policy3.ID);
+            if (resAddPolicy.ErrorOccured) { ThrowLoadDataException(resAddPolicy.ErrorMessage); }
+
+            Response resAppointStoreManager1 = AppointStoreManager(storeOwnerid1, storeZaraID, "kobi@gmail.com");
+            if (resAppointStoreManager1.ErrorOccured) { ThrowLoadDataException(resAppointStoreManager1.ErrorMessage); }
+
+
+            ResponseT<Guid> resLoginStoreOwner2 = Login(storeOwnerid2, "dani@gmail.com", "A#!a12345678");
+            if (resLoginStoreOwner2.ErrorOccured) { ThrowLoadDataException(resLoginStoreOwner2.ErrorMessage); }
+            storeOwnerid2 = resLoginStoreOwner2.Value;
+
+            ResponseT<Guid> resOpenNewStoreStoreOwner2 = OpenNewStore(storeOwnerid2, "Fox");
+            if (resOpenNewStoreStoreOwner2.ErrorOccured) { ThrowLoadDataException(resOpenNewStoreStoreOwner2.ErrorMessage); }
+            Guid storeFoxID = resOpenNewStoreStoreOwner2.Value;
+
+            ResponseT<Guid> resAddItemToStorePants = AddItemToStore(storeOwnerid2, storeFoxID, "Pants", "clothes", 150, 200);
+            if (resAddItemToStorePants.ErrorOccured) { ThrowLoadDataException(resAddItemToStorePants.ErrorMessage); }
+
+            ResponseT<Guid> resAddItemToStoreTowel = AddItemToStore(storeOwnerid2, storeFoxID, "Towel", "Home", 40, 450);
+            if (resAddItemToStoreTowel.ErrorOccured) { ThrowLoadDataException(resAddItemToStoreTowel.ErrorMessage); }
+
+            ResponseT<Guid> resAddItemToStoreTeddyBearToy = AddItemToStore(storeOwnerid2, storeFoxID, "Teddy bear toy", "children toys", 65, 120);
+            if (resAddItemToStoreTeddyBearToy.ErrorOccured) { ThrowLoadDataException(resAddItemToStoreTeddyBearToy.ErrorMessage); }
+
+            ResponseT<Guid> resAddItemToStoreMouse = AddItemToStore(storeOwnerid2, storeFoxID, "mouse", "animals", 65, 0);
+            if (resAddItemToStoreMouse.ErrorOccured) { ThrowLoadDataException(resAddItemToStoreMouse.ErrorMessage); }
+
+            Response resAppointStoreManager2 = AppointStoreManager(storeOwnerid2, storeFoxID, "Yael@gmail.com");
+            if (resAppointStoreManager2.ErrorOccured) { ThrowLoadDataException(resAppointStoreManager2.ErrorMessage); }
+
+            Response resExitSystemManager =Exit(systemManagerid);
+            if (resExitSystemManager.ErrorOccured) { ThrowLoadDataException(resExitSystemManager.ErrorMessage); }
+
+            Response resExitMember = Exit(memberId);
+            if (resExitMember.ErrorOccured) { ThrowLoadDataException(resExitMember.ErrorMessage); }
+
+            Response resExitMember2 = Exit(memberId2);
+            if (resExitMember2.ErrorOccured) { ThrowLoadDataException(resExitMember2.ErrorMessage); }
+
+            Response resExitMember3 = Exit(memberId3);
+            if (resExitMember3.ErrorOccured) { ThrowLoadDataException(resExitMember3.ErrorMessage); }
+
+            Response resExitMember4 = Exit(memberId4);
+            if (resExitMember4.ErrorOccured) { ThrowLoadDataException(resExitMember4.ErrorMessage); }
+
+            Response resExitMember5 = Exit(memberId5);
+            if (resExitMember5.ErrorOccured) { ThrowLoadDataException(resExitMember5.ErrorMessage); }
+
+            Response resExitStoreOwner1 = Exit(storeOwnerid1);
+            if (resExitStoreOwner1.ErrorOccured) { ThrowLoadDataException(resExitStoreOwner1.ErrorMessage); }
+
+            Response resExitStoreManager1 = Exit(storeManagerid1);
+            if (resExitStoreManager1.ErrorOccured) { ThrowLoadDataException(resExitStoreManager1.ErrorMessage); }
+
+            Response resExitStoreOwner2 = Exit(storeOwnerid2);
+            if (resExitStoreOwner2.ErrorOccured) { ThrowLoadDataException(resExitStoreOwner2.ErrorMessage); }
+
+            Response resExitStoreManager2 = Exit(storeManagerid2);
+            if (resExitStoreManager2.ErrorOccured) { ThrowLoadDataException(resExitStoreManager2.ErrorMessage); }
 
             //SetIsSystemInitialize(false);
         }
@@ -736,6 +861,12 @@ namespace SadnaExpress.ServiceLayer
         public void CreateSystemManager(Guid systemManagerid)
         {
             userManager.CreateSystemManager(systemManagerid);
+        }
+
+        private static void ThrowLoadDataException(string errMsg)
+        {
+            Logger.Instance.Error($"Load data failed, system can not load, error msg: {errMsg}");
+            throw new Exception($"Load data failed, system can not load, error msg: {errMsg}");
         }
     }
 }
