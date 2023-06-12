@@ -36,7 +36,7 @@ namespace SadnaExpress.DataLayer
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connection =System.Configuration.ConfigurationManager.ConnectionStrings["MasterConnectionString"].ConnectionString;
+            var connection = System.Configuration.ConfigurationManager.ConnectionStrings["MasterConnectionString"].ConnectionString;
             optionsBuilder.UseSqlServer(connection);
         }
 

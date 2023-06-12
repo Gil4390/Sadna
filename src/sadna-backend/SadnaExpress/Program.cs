@@ -101,10 +101,11 @@ namespace SadnaExpress
         public static void InitAppSettings()
         {
             string Host = ConfigurationManager.AppSettings["Host"];
-            if (string.IsNullOrEmpty(Host) == false)
+            if (string.IsNullOrEmpty(Host))
             {
-                ApplicationOptions.Host = Host;
+                ThrowConfigException("Host"); 
             }
+            ApplicationOptions.Host = Host;
 
             string ApiPort = ConfigurationManager.AppSettings["ApiPort"];
             if (string.IsNullOrEmpty(ApiPort) == false)
@@ -113,6 +114,14 @@ namespace SadnaExpress
                 {
                     ApplicationOptions.ApiPort = intValue;
                 }
+                else
+                {
+                    ThrowConfigException("ApiPort");
+                }
+            }
+            else
+            {
+                ThrowConfigException("ApiPort");
             }
 
             string SignalRPort = ConfigurationManager.AppSettings["SignalRPort"];
@@ -122,43 +131,57 @@ namespace SadnaExpress
                 {
                     ApplicationOptions.SignalRPort = intValue;
                 }
+                else
+                {
+                    ThrowConfigException("SignalRPort");
+                }
+            }
+            else
+            {
+                ThrowConfigException("SignalRPort");
             }
 
             string PaymentServiceURL = ConfigurationManager.AppSettings["PaymentServiceURL"];
-            if (string.IsNullOrEmpty(PaymentServiceURL) == false)
+            if (string.IsNullOrEmpty(PaymentServiceURL))
             {
-                ApplicationOptions.PaymentServiceURL = PaymentServiceURL;
+                ThrowConfigException("PaymentServiceURL");
             }
+            ApplicationOptions.PaymentServiceURL = PaymentServiceURL;
 
             string SupplierServiceURL = ConfigurationManager.AppSettings["SupplierServiceURL"];
-            if (string.IsNullOrEmpty(SupplierServiceURL) == false)
+            if (string.IsNullOrEmpty(SupplierServiceURL))
             {
-                ApplicationOptions.SupplierServiceURL = SupplierServiceURL;
+                ThrowConfigException("SupplierServiceURL");
             }
+            ApplicationOptions.SupplierServiceURL = SupplierServiceURL;
 
             string SystemManagerEmail = ConfigurationManager.AppSettings["SystemManagerEmail"];
-            if (string.IsNullOrEmpty(SystemManagerEmail) == false)
+            if (string.IsNullOrEmpty(SystemManagerEmail))
             {
-                ApplicationOptions.SystemManagerEmail = SystemManagerEmail;
+                ThrowConfigException("SystemManagerEmail");
             }
+            ApplicationOptions.SystemManagerEmail = SystemManagerEmail;
 
             string SystemManagerFirstName = ConfigurationManager.AppSettings["SystemManagerFirstName"];
-            if (string.IsNullOrEmpty(SystemManagerFirstName) == false)
+            if (string.IsNullOrEmpty(SystemManagerFirstName))
             {
-                ApplicationOptions.SystemManagerFirstName = SystemManagerFirstName;
+                ThrowConfigException("SystemManagerFirstName");
             }
+            ApplicationOptions.SystemManagerFirstName = SystemManagerFirstName;
 
             string SystemManagerLastName = ConfigurationManager.AppSettings["SystemManagerLastName"];
-            if (string.IsNullOrEmpty(SystemManagerLastName) == false)
+            if (string.IsNullOrEmpty(SystemManagerLastName))
             {
-                ApplicationOptions.SystemManagerLastName = SystemManagerLastName;
+                ThrowConfigException("SystemManagerLastName");
             }
+            ApplicationOptions.SystemManagerLastName = SystemManagerLastName;
 
             string SystemManagerPass = ConfigurationManager.AppSettings["SystemManagerPass"];
-            if (string.IsNullOrEmpty(SystemManagerPass) == false)
+            if (string.IsNullOrEmpty(SystemManagerPass))
             {
-                ApplicationOptions.SystemManagerPass = SystemManagerPass;
+                ThrowConfigException("SystemManagerPass");
             }
+            ApplicationOptions.SystemManagerPass = SystemManagerPass;
 
             string InitTradingSystem = ConfigurationManager.AppSettings["InitTradingSystem"];
             if (string.IsNullOrEmpty(InitTradingSystem) == false)
@@ -167,6 +190,14 @@ namespace SadnaExpress
                 {
                     ApplicationOptions.InitTradingSystem = boolValue;
                 }
+                else
+                {
+                    ThrowConfigException("InitTradingSystem");
+                }
+            }
+            else
+            {
+                ThrowConfigException("InitTradingSystem");
             }
 
             string StartWithCleanDB = ConfigurationManager.AppSettings["StartWithCleanDB"];
@@ -176,6 +207,14 @@ namespace SadnaExpress
                 {
                     ApplicationOptions.StartWithCleanDB = boolValue;
                 }
+                else
+                {
+                    ThrowConfigException("StartWithCleanDB");
+                }
+            }
+            else
+            {
+                ThrowConfigException("StartWithCleanDB");
             }
 
             string RunLoadData = ConfigurationManager.AppSettings["RunLoadData"];
@@ -185,20 +224,39 @@ namespace SadnaExpress
                 {
                     ApplicationOptions.RunLoadData = boolValue;
                 }
+                else
+                {
+                    ThrowConfigException("RunLoadData");
+                }
+            }
+            else
+            {
+                ThrowConfigException("RunLoadData");
             }
 
             string StateFileConfig = ConfigurationManager.AppSettings["StateFileConfig"];
-            if (string.IsNullOrEmpty(StateFileConfig) == false)
+            if (StateFileConfig==""|| StateFileConfig == "data" || StateFileConfig == "data2")
             {
                 ApplicationOptions.StateFileConfig = StateFileConfig;
+                
+            }
+            else
+            {
+                ThrowConfigException("StateFileConfig");
             }
 
             string TestDB = ConfigurationManager.AppSettings["TestDB"];
-            if (string.IsNullOrEmpty(TestDB) == false)
+            if (string.IsNullOrEmpty(TestDB))
             {
-                ApplicationOptions.TestDB = TestDB;
+                ThrowConfigException("TestDB");
             }
+            ApplicationOptions.TestDB = TestDB;
+        }
 
+        private static void ThrowConfigException(string configKey)
+        {
+            Logger.Instance.Error($"Configuration is not valid, system can not load, {configKey} was not initialize properly");
+            throw new Exception($"Configuration is not valid, system can not load, {configKey} was not initialize properly");
         }
     }
 }
