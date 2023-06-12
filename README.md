@@ -14,6 +14,8 @@ Tal Galmor - 318416575
 
 Dina Agapov - 207181629
 
+Hello! weolocme to Sadna Express, our trading system program.
+we are third year students in software engineering in Ben Gurion University, we wrote this project for "Sadna" course.
 
 # State Configuration File:
 
@@ -54,6 +56,7 @@ Currently there are 3 possible initial states for the system to start with:
  # app.config
  
 app.config file holds the exteral services url, database connection, system manager details and the start point of the trading system (initialize or not). to change this propery values you should edit to your chosen value, compile the code and run sadna express. Good luck and have fun!
+the file is in Json format,  you can change the key values that will fit to your use, but make sure you supply valid values -> if not the system will not execute.
 
 Documents can be found here:
 - Use Cases / Glossary - https://docs.google.com/document/d/1nwZft8kNO3OjLYLuS8tpSzU0Gz247nENy4-0tZwhq_A/edit
