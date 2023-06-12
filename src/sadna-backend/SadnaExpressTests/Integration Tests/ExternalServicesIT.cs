@@ -12,6 +12,8 @@ namespace SadnaExpressTests.Integration_Tests
         [TestInitialize]
         public override void Setup()
         {
+            trading.SetPaymentService(new PaymentService());
+            trading.SetSupplierService(new SupplierService());
             base.Setup();
         }
 
@@ -21,8 +23,6 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckHandshake()
         {
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             string res = trading.Handshake().ErrorMessage;
             Assert.IsTrue(res == "OK");
         }
@@ -32,8 +32,6 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckHandshakeWrongParams()
         {
-            trading.SetPaymentService(new Mocks.Mock_bad_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             string res = trading.Handshake().ErrorMessage;
             Assert.IsFalse(res == "OK");
         }
@@ -44,8 +42,6 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckHandshakePassLimitedTime()
         {
-            trading.SetPaymentService(new Mocks.Mock_bad_15sec_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             string res = trading.Handshake().ErrorMessage;
             Assert.AreEqual("OK", res);
         }
@@ -56,8 +52,6 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckPaySuccess()
         {
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
             Assert.IsFalse(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
@@ -68,8 +62,6 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckPayWrongParams()
         {
-            trading.SetPaymentService(new Mocks.Mock_bad_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             SPaymentDetails transactionDetails = new SPaymentDetails("-", "-","-","-","-","-");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
             Assert.IsTrue(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
@@ -81,9 +73,8 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckPayWrongPassLimitedTime()
         {
-            trading.SetPaymentService(new Mocks.Mock_bad_15sec_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_SupplierService());
-            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "984", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
             Assert.IsTrue(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
         }
@@ -94,8 +85,6 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckSupplySuccess()
         {
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_SupplierService());
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
             Assert.IsFalse(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
@@ -106,12 +95,11 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckSupplyWrongParams()
         {
-            trading.SetPaymentService(new Mocks.Mock_PaymentService());
-            trading.SetSupplierService(new Mocks.Mock_Bad_SupplierService());
-            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "986", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("-", "-","-","-","-");
             Assert.IsTrue(trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply).ErrorOccured);
         }
-        
+
     }
 }

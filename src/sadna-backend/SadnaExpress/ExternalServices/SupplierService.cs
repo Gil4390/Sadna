@@ -26,25 +26,23 @@ namespace SadnaExpress.ExternalServices
                 {"action_type","cancel_supply"},
                 {"transaction_id",transaction_id}
             };
-            return (int)Send(postContent)==1;
+            try
+            {
+                return (int)Send(postContent)==1;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public object Send(Dictionary<string, string> content)
         {
-            
-            // Convert the dictionary to form URL-encoded content
             var formData = new FormUrlEncodedContent(content);
-
-            // Send the HTTP POST request
             var responseTask = client.PostAsync(address, formData);
-
-            // Wait for the response
             var response = responseTask.Result;
-
-            // Read the response content as a string
             var responseContentTask = response.Content.ReadAsStringAsync();
-            return responseContentTask.Id;
-            
+            return responseContentTask.Result;
         }
 
         public string Handshake()
@@ -71,7 +69,14 @@ namespace SadnaExpress.ExternalServices
                 {"country",userDetails.Country},
                 {"zip",userDetails.Zip}
             };
-            return (int)Send(postContent);
+            try
+            {
+                return int.Parse((string)Send(postContent));
+            }
+            catch (Exception e)
+            {
+                return -1;
+            }
         }
 
 
