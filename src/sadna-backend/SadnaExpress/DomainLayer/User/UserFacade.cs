@@ -770,6 +770,9 @@ namespace SadnaExpress.DomainLayer.User
                     return paymentService.Pay(amount, transactionDetails);
                 });
 
+                if (task.Result == -1)
+                    throw new Exception("Error in payment details , please try again");
+
                 bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result != -1;
 
                 if (isCompletedSuccessfully)

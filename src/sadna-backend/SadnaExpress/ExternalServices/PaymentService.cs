@@ -73,11 +73,11 @@ namespace SadnaExpress.ExternalServices
             };
             try
             {
-                return (int)Send(postContent);
+                return int.Parse((string)Send(postContent));
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                return -1;
             }
             
         }
