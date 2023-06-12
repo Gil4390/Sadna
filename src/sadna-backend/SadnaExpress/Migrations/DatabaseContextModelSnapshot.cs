@@ -396,6 +396,26 @@ namespace SadnaExpress.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("User");
                 });
 
+            modelBuilder.Entity("SadnaExpress.DomainLayer.User.Visit", b =>
+                {
+                    b.Property<Guid>("UniqueID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("VisitDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UniqueID");
+
+                    b.ToTable("visits");
+                });
+
             modelBuilder.Entity("SadnaExpress.DomainLayer.User.Member", b =>
                 {
                     b.HasBaseType("SadnaExpress.DomainLayer.User.User");

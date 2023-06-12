@@ -57,6 +57,12 @@ namespace SadnaExpress.DomainLayer.User
             shoppingCart = member.ShoppingCart;
             bids = member.Bids;
         }
+
+        public virtual string GetRole()
+        {
+            return "Guest";
+        }
+
         public void AddItemToCart(Guid storeID, Guid itemID, int itemAmount)
         {
             shoppingCart.AddItemToCart(storeID, itemID, itemAmount);

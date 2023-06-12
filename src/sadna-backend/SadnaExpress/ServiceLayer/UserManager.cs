@@ -34,6 +34,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Guid userID = userFacade.Enter();
                 return new ResponseT<Guid>(userID);
             }

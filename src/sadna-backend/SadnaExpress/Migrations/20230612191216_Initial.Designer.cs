@@ -10,7 +10,7 @@ using SadnaExpress.DataLayer;
 namespace SadnaExpress.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230606080015_Initial")]
+    [Migration("20230612191216_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -396,6 +396,26 @@ namespace SadnaExpress.Migrations
                     b.ToTable("users");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("User");
+                });
+
+            modelBuilder.Entity("SadnaExpress.DomainLayer.User.Visit", b =>
+                {
+                    b.Property<Guid>("UniqueID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("VisitDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UniqueID");
+
+                    b.ToTable("visits");
                 });
 
             modelBuilder.Entity("SadnaExpress.DomainLayer.User.Member", b =>

@@ -211,6 +211,20 @@ namespace SadnaExpress.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "visits",
+                columns: table => new
+                {
+                    UniqueID = table.Column<Guid>(nullable: false),
+                    UserID = table.Column<Guid>(nullable: false),
+                    Role = table.Column<string>(nullable: true),
+                    VisitDate = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_visits", x => x.UniqueID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Inventories",
                 columns: table => new
                 {
@@ -322,6 +336,9 @@ namespace SadnaExpress.Migrations
 
             migrationBuilder.DropTable(
                 name: "shoppingBaskets");
+
+            migrationBuilder.DropTable(
+                name: "visits");
 
             migrationBuilder.DropTable(
                 name: "Stores");
