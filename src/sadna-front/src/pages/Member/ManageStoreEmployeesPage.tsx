@@ -54,7 +54,6 @@ useEffect(() => {
     event.preventDefault();
       handleAddStoreManagerPermission(userId, storeId,selectedEmployee?.email, editPermission ).then(
         value => {
-          
           setEditPermissionResponse(value as Response);
         })
         .catch(error => alert(error));
@@ -64,7 +63,6 @@ useEffect(() => {
     event.preventDefault();
     handleRemoveStoreManagerPermission(userId, storeId,selectedEmployee?.email, editPermission ).then(
       value => {
-        
         setEditPermissionResponse(value as Response);
       })
       .catch(error => alert(error));
@@ -84,6 +82,7 @@ useEffect(() => {
   const EditPermissionSuccess=()=>{
     getStoreEmployees();
     handleEditModalClose();
+    alert("Permissions edited suucessfully")
   }
 
   const isValidEmail = (email) => 
@@ -124,7 +123,8 @@ useEffect(() => {
   
   const AddEmployeeSuccess=()=>{
     handleAddModalClose();
-    getStoreEmployees(); 
+    getStoreEmployees();
+    alert("Permission added suucessfully to user") 
   }
 
   const handlePermissionChange = (event) => {

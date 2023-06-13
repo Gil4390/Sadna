@@ -63,7 +63,6 @@ function PurchasePoliciesPage(props) {
   const GetPurcahsePolicys =()=>{
     handleGetAllPurchaseConditions(userId,storeId).then(
       value => {
-        console.log(value)
         setPolicyList(value as Policy[]);
       })
       .catch(error => alert(error));
@@ -84,6 +83,7 @@ function PurchasePoliciesPage(props) {
         setOtherCondition('');
         setShowModal(false);
         setCondResponse(value as ResponseT)
+
       })
       .catch(error => alert(error));
   };
@@ -91,10 +91,13 @@ function PurchasePoliciesPage(props) {
  
   useEffect(() => {
     if(condResponse!=undefined)
-      if(condResponse?.errorOccured)
-        alert(condResponse?.errorMessage) 
+      if(condResponse?.errorOccured)        alert(condResponse?.errorMessage) 
       else{
         GetPurcahsePolicys();
+        setTimeout(() => {
+          alert("New Condition added successfully");
+        }, 0);
+
       }
       setCondResponse(undefined);
   }, [condResponse])

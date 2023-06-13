@@ -53,6 +53,9 @@ const cartItemStyles = {
         else{
           props.onPolicyChanged();
           setIsActive(true);
+          setTimeout(() => {
+            alert("Policy activated successfully")
+          }, 0);
         }
         setActivatePolicyResponse(undefined);
     }, [activatePolicyResponse])
@@ -63,6 +66,10 @@ const cartItemStyles = {
           alert(condResponse?.errorMessage) 
         else{
           props.onPolicyChanged();
+          setTimeout(() => {
+            alert("Condition removed successfully")
+          }, 0);
+
         }
         setCondResponse(undefined);
     }, [condResponse])
@@ -73,6 +80,9 @@ const cartItemStyles = {
           alert(condResponseDis?.errorMessage) 
         else{
           props.onPolicyChanged();
+          setTimeout(() => {
+            alert("Condition removed successfully")
+          }, 0);
         }
         setCondResponseDis(undefined);
     }, [condResponseDis])
