@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
@@ -75,6 +76,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 storeFacade.AddItemToCart(storeID, itemID, itemAmount);
                 userFacade.AddItemToCart(userID, storeID, itemID, itemAmount);
                 return new Response();
@@ -91,6 +93,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.RemoveItemFromCart(userID, storeID, itemID);
                 return new Response();
 
@@ -106,6 +109,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.EditItemFromCart(userID, storeID, itemID, itemAmount);
                 return new Response();
 
@@ -128,6 +132,8 @@ namespace SadnaExpress.ServiceLayer
                 {
                     using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
+                        db.Database.GetDbConnection().Open();
+                        db.Database.GetDbConnection().Close();
                         using (var transaction = db.Database.BeginTransaction())
                         {
                             try
@@ -193,7 +199,7 @@ namespace SadnaExpress.ServiceLayer
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to Connect With Database");
+                    return new ResponseT<List<ItemForOrder>>("failed to connect to DataBase, No internet Connection. Please check your network settings.");
                 }
             }
             return new ResponseT<List<ItemForOrder>>(itemForOrders);
@@ -218,6 +224,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.CloseStore(userID, storeID);
                 storeFacade.CloseStore(storeID);
                 NotificationSystem.Instance.NotifyObservers(storeID,"Store "+ storeFacade.GetStore(storeID).StoreName+" was Closed",userID);
@@ -233,6 +240,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 storeFacade.DeleteStore(storeID);
                 return new ResponseT<Guid>(storeID);
             }
@@ -259,6 +267,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.AddItemToStore(userID, storeID);
                 return new ResponseT<Guid>(storeFacade.AddItemToStore(storeID, itemName, itemCategory, itemPrice, quantity));
             }
@@ -272,6 +281,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.RemoveItemFromStore(userID, storeID);
                 storeFacade.RemoveItemFromStore(storeID, itemID);
                 return new Response();
@@ -309,6 +319,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.EditItem(userID, storeID);
                 storeFacade.EditItemPrice(storeID, itemID, price);
                 return new Response();
@@ -323,6 +334,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.EditItem(userID, storeID);
                 storeFacade.EditItemCategory(storeID, itemID, category);
                 return new Response();
@@ -337,6 +349,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.EditItem(userID, storeID);
                 storeFacade.EditItemName(storeID, itemID, name);
                 return new Response();
@@ -351,6 +364,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.EditItem(userID, storeID);
                 storeFacade.EditItemQuantity(storeID, itemID, quantity);
                 return new Response();
@@ -399,6 +413,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Guid storeID = storeFacade.GetItemStoreId(itemID);
                 Bid bid = userFacade.PlaceBid(userID, storeID, itemID, storeFacade.GetStore(storeID).GetItemById(itemID).Name, price);
                 return new ResponseT<SBid>(new SBid(bid));
@@ -414,6 +429,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Guid storeID = storeFacade.GetItemStoreId(itemID);
                 userFacade.ReactToBid(userID, storeID, bidID, bidResponse);
                 return new Response();
@@ -458,6 +474,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Store store = storeFacade.GetStore(storeID);
                 return new ResponseT<Store>(store);
             }
@@ -505,6 +522,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 return new ResponseT<Condition>(storeFacade.AddCondition(store, entity, entityName, type, value, dt, op, opCond)); 
                 
@@ -520,6 +538,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.hasPermissions(userID, storeID,new List<string> {"founder permissions", "owner permissions"});
                 storeFacade.RemoveCondition(storeID ,condID);
                 return new Response();
@@ -554,6 +573,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 return new ResponseT<DiscountPolicy>(storeFacade.CreateSimplePolicy(store, level, percent, startDate , endDate));
             }
@@ -568,6 +588,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 return new ResponseT<DiscountPolicy>(storeFacade.CreateComplexPolicy(store, op , policys));
             }
@@ -609,6 +630,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 storeFacade.AddPolicy(store, discountPolicy);
                 return new Response();
@@ -624,6 +646,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
                 storeFacade.RemovePolicy(store, discountPolicy , type);
                 return new Response();
@@ -685,6 +708,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.EditItem(userId, storeId);
                 storeFacade.EditItem(storeId, itemId, itemName, itemCategory, itemPrice, quantity);
                 return new Response();
@@ -714,6 +738,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 ///maybe add here a check of credentials to userfacade? this func in called from client after we know that user has permissions on this store
                 Store s = storeFacade.GetStoreInfo(storeId);
                 return new ResponseT<SStore>(new SStore(s));

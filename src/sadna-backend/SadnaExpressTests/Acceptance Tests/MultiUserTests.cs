@@ -270,7 +270,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     return proxyBridge.EditItemName(loggedId6, storeId2, itemId2, "potato");
                 }),
                 Task.Run( () => {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(5000);
                     userId7 = proxyBridge.Enter().Value;
                     Thread.Sleep(20);
                     Response resp = proxyBridge.AddItemToCart(userId7, storeId2, itemId2, 1);
@@ -284,7 +284,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
                 }),
                 Task.Run( () => {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(5000);
                     userId8 = proxyBridge.Enter().Value;
                     Thread.Sleep(20);
                     Response resp = proxyBridge.AddItemToCart(userId8, storeId2, itemId2, 1);
@@ -297,7 +297,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     return proxyBridge.PurchaseCart(userId8, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(5000);
                     userId9 = proxyBridge.Enter().Value;
                     Thread.Sleep(20);
                     Response resp = proxyBridge.AddItemToCart(userId9, storeId2, itemId2, 1);
@@ -310,7 +310,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     return proxyBridge.PurchaseCart(userId9, transactionDetails, transactionDetailsSupply);
                 }),
                 Task.Run( () => {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(5000);
                     userId10 = proxyBridge.Enter().Value;
                     Thread.Sleep(20);
                     Response resp = proxyBridge.AddItemToCart(userId10, storeId2, itemId2, 1);

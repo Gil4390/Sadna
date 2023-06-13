@@ -310,7 +310,9 @@ namespace SadnaExpress.DomainLayer.User
             {
                 if (members.ContainsKey(userID))
                 {
+                    Guid oldShopCartId = members[userID].ShoppingCart.ShoppingCartId;
                     members[userID].ShoppingCart = new ShoppingCart();
+                    members[userID].ShoppingCart.ShoppingCartId = oldShopCartId;
                     DBHandler.Instance.UpdateMemberShoppingCartInTransaction(db, members[userID]);
                 }
                 else
@@ -769,6 +771,9 @@ namespace SadnaExpress.DomainLayer.User
                         throw new Exception("Communication with the external services is temporarily down, please try again in a few minutes");
                     return paymentService.Pay(amount, transactionDetails);
                 });
+
+                if (task.Result == -1)
+                    throw new Exception("Error in payment details , please try again");
 
                 bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result != -1;
 

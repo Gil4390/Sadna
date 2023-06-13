@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
@@ -61,6 +62,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.Register(userID, email, firstName, lastName, password);
                 return new Response();
             }
@@ -75,6 +77,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Guid newID = userFacade.Login(userID, email, password);
                 return new ResponseT<Guid>(newID);
 
@@ -89,6 +92,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Guid newID = userFacade.Logout(userID);
                 return new ResponseT<Guid>(newID);
 
@@ -104,6 +108,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.RemovePermission(userID, storeID, userEmail, permission);
                 return new Response();
             }
@@ -117,6 +122,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.AppointStoreOwner(userID, storeID, userEmail);
                 return new Response();
             }
@@ -130,6 +136,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.AppointStoreManager(userID, storeID, userEmail);
                 return new Response();
             }
@@ -144,6 +151,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.AddStoreManagerPermissions(userID, storeID, userEmail, permission);
                 return new Response();
             }
@@ -179,6 +187,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.RemoveUserMembership(userID, email);
                 Logger.Instance.Info($"User id: {userID} requested to removing user {email} membership");
                 return new Response();
@@ -340,6 +349,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Member member = userFacade.GetMember(userID);
                 Logger.Instance.Info(userID , nameof(UserManager)+": "+nameof(GetMember));
                 return new ResponseT<Member>(member);
@@ -481,6 +491,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 userFacade.MarkNotificationAsRead(userID, notificationID);
                 return new Response();
 
@@ -497,6 +508,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+
                 return new Response(userFacade.Handshake());
             }
             catch (Exception ex)
