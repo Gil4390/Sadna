@@ -4,7 +4,7 @@ import Exit from "../Exit.tsx";
 import { Member } from "../../models/User.tsx";
 import { useLocation } from 'react-router-dom';
 import { handleAddStoreManagerPermission,handleRemoveStoreManagerPermission, handleEmployeesOfStore
-,handleAppointStoreOwner,handleAppointStoreManager } from "../../actions/MemberActions.tsx";
+,handleAppointStoreOwner,handleAppointStoreManager, handleReactToJobOffer } from "../../actions/MemberActions.tsx";
 import { ResponseT,Response } from "../../models/Response.tsx";
 
 const ManageStoreEmployeesPage = (props) => {
@@ -98,7 +98,7 @@ useEffect(() => {
     event.preventDefault();
     if(isValidEmail(appointEmail))
     {
-      if(appointType==="Appintment owner"){
+      if(appointType==="Appoint owner"){
         handleAppointStoreOwner(userId, storeId,appointEmail).then(
           value => {
             
@@ -106,7 +106,7 @@ useEffect(() => {
           })
           .catch(error => alert(error));
       }
-      else if(appointType==="Appintment store manager"){
+      else if(appointType==="Appoint store manager"){
         handleAppointStoreManager(userId, storeId,appointEmail).then(
           value => {
             setAddEmployeeResponse(value as Response);
@@ -138,6 +138,16 @@ useEffect(() => {
   const handleAppointEmailChange = (event) => {
     setAppointEmail(event.target.value);
   }
+
+
+
+  const reactToJobOffer = (memberID, res) => {
+    handleReactToJobOffer(userId, storeId, memberID, res).then(
+      value => {
+        getStoreEmployees();
+      })
+      .catch(error => alert(error));
+  };
   
 
   return (
@@ -183,6 +193,7 @@ useEffect(() => {
           <th>First Name</th>
           <th>Last Name</th>
           <th>Email</th>
+          <th>Status</th>
           <th>Permissions</th>
           </tr>
         </thead>
@@ -192,6 +203,22 @@ useEffect(() => {
             <td>{member.firstName}</td>
             <td>{member.lastName}</td>
             <td>{member.email}</td>
+            <td>{member.didApprove ? (
+              <div> 
+                <strong>Approvers Left: </strong>
+                <div>
+                  {member.approvers.map((approver, index) => (<div key={index}> {approver} </div>))}
+                </div>
+              </div>) : (
+              <div>
+                <Button variant="success" onClick={() => reactToJobOffer(member.id, true)} style={{margin: "0.3rem"}}>
+                  Approve 
+                </Button>
+                <Button variant="danger" onClick={() => reactToJobOffer(member.id, false)} style={{margin: "0.3rem"}}>
+                  Reject 
+                </Button>
+              </div>)}
+            </td>
             <td>{member.permissions?.map((p) => (
               <div> {p} </div>
             ))}</td>

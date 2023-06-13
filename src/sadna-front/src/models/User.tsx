@@ -4,5 +4,7 @@ export interface Member {
   firstName: string,
   lastName: string,
   loggedIn: boolean,
-  permissions: string[]
+  permissions: string[],
+  approvers: string[],
+  didApprove: boolean
 };

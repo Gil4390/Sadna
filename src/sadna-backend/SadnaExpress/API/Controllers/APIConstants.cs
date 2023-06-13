@@ -135,6 +135,8 @@ namespace SadnaExpress.API.Controllers
 
             public const string reactToBid = "react-to-bid";
 
+            public const string reactToJobOffer = "react-to-job-offer";
+
 
 
         }
@@ -156,6 +158,9 @@ namespace SadnaExpress.API.Controllers
             public const string removeMember = "rm-member";
 
             public const string getSystemRevenue = "get-system-revenue";
+
+            public const string getSystemUserData = "get-system-user-data";
+
         }
     }
 }

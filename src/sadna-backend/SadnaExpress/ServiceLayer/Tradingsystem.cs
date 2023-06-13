@@ -863,10 +863,22 @@ namespace SadnaExpress.ServiceLayer
             userManager.CreateSystemManager(systemManagerid);
         }
 
+
+        public Response ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime date)
+        {
+            // guests, members, managers, owners, admins
+            throw new NotImplementedException();
+
         private static void ThrowLoadDataException(string errMsg)
         {
             Logger.Instance.Error($"Load data failed, system can not load, error msg: {errMsg}");
             throw new Exception($"Load data failed, system can not load, error msg: {errMsg}");
+
         }
     }
 }

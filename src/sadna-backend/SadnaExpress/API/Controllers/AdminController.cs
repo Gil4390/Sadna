@@ -82,9 +82,18 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.AdminData.getSystemRevenue)]
         [ResponseType(typeof(ResponseT<double>))]
         [HttpPost]
-        public IHttpActionResult GetStoreRevenue([FromBody] SystemRevenueRequest request)
+        public IHttpActionResult GetStoreRevenue([FromBody] SystemDateRequest request)
         {
             double res = tradingSystem.GetSystemRevenue(request.userID, request.date).Value;
+            return Ok(res);
+        }
+
+        [Route(APIConstants.AdminData.getSystemUserData)]
+        [ResponseType(typeof(ResponseT<List<int>>))]
+        [HttpPost]
+        public IHttpActionResult GetSystemUserActivity([FromBody] SystemDateRequest request)
+        {
+            ResponseT<List<int>> res = tradingSystem.GetSystemUserActivity(request.userID, request.date);
             return Ok(res);
         }
 

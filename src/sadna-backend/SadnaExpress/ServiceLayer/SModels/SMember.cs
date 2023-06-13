@@ -16,6 +16,8 @@ namespace SadnaExpress.ServiceLayer.SModels
         private string lastName;
         private bool loggedIn;
         private List<string> permissions;
+        private List<string> approvers;
+        private bool didApprove;
 
         public SMember(Member member)
         {
@@ -34,6 +36,8 @@ namespace SadnaExpress.ServiceLayer.SModels
         public string LastName { get => lastName; set => lastName = value; }
         public bool LoggedIn { get => loggedIn; set => loggedIn = value; }
         public List<string> Permissions { get => permissions; set => permissions = value; }
+        public List<string> Approvers { get => approvers; set => approvers = value; }
+        public bool DidApprove { get => didApprove; set => didApprove = value; }
     }
 
     public class SMemberForStore : SMember
@@ -41,6 +45,11 @@ namespace SadnaExpress.ServiceLayer.SModels
         public SMemberForStore(Member member, Guid storeID) : base(member)
         {
             this.Permissions = new List<string>();
+
+            //===========NOGA====================
+            this.Approvers = new List<string>();
+            this.DidApprove = false;
+            //===================================
 
             if (member is PromotedMember)
             {
