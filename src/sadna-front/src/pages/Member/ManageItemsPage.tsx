@@ -97,8 +97,12 @@ const ManageItemsPage = (props) => {
         setShowAddModal(false);
         setAllValues();
         getStoreItems();
+        setTimeout(() => {
+          alert("Item added successfully");
+        }, 0);
       }
       setAddItemResponse(undefined);
+  
   }, [addItemResponse])
  
   const handleNameChange = (event) => {
@@ -176,6 +180,9 @@ const ManageItemsPage = (props) => {
       else{
         setShowEditModal(false)
         getStoreItems();
+        setTimeout(() => {
+          alert("Item edited successfully")
+        }, 0);
       }
       setEditItemResponse(undefined);
   }, [editItemResponse])
@@ -195,6 +202,9 @@ const ManageItemsPage = (props) => {
       }
       else{
         getStoreItems();
+        setTimeout(() => {
+          alert("Item removed successfully")
+        }, 0);
       }
       setRemoveItemResponse(undefined);
   }, [removeItemResponse])

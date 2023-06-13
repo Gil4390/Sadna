@@ -96,6 +96,9 @@ export function StoreItem(props) {
         else {
           setShowBidButton(false);
           props.setModified(Date.now());
+          setTimeout(() => {
+            alert("Bid sended")
+          }, 0);
         }
       }
     ).catch(error => alert(error));
@@ -108,6 +111,7 @@ export function StoreItem(props) {
       value => {
         console.log(value);
         setReviews(value);
+
       }
     )
   }

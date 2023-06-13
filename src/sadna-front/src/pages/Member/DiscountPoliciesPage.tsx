@@ -192,6 +192,10 @@ function DiscountPoliciesPage(props) {
         alert(policyResponse?.errorMessage) 
       else{
         GetDiscountPolicy();
+        setTimeout(() => {
+          alert("New Policy dded successfully")
+        }, 0);
+
       }
       setPolicyResponse(undefined);
   }, [policyResponse])
@@ -220,6 +224,9 @@ function DiscountPoliciesPage(props) {
         setWhichCondInDiscount("");
         setcondValueInDiscount("")
         setShowModal(false);
+        setTimeout(() => {
+          alert("New condition added successfully")
+        }, 0);
       })
       .catch(error => alert(error));
   };

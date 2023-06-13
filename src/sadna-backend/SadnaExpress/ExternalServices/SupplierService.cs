@@ -14,9 +14,11 @@ namespace SadnaExpress.ExternalServices
         private HttpClient client;
         string address = ApplicationOptions.SupplierServiceURL;
 
-        public SupplierService()
+        public SupplierService(string adrs = default)
         {
             client = new HttpClient();
+            address = adrs;
+
         }
 
         public bool Cancel_Supply(string transaction_id)

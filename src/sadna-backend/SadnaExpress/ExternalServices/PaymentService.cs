@@ -14,9 +14,10 @@ namespace SadnaExpress.ExternalServices
         private HttpClient client;
         string address = ApplicationOptions.PaymentServiceURL;
 
-        public PaymentService()
+        public PaymentService(string adrs=default)
         {
             client = new HttpClient();
+            address = adrs;
         }
 
         public bool Cancel_Pay(double amount, int transaction_id)
