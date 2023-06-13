@@ -190,6 +190,11 @@ namespace SadnaExpress.API.ClientRequests
         public DateTime date { get; set; }
     }
 
+    public class SystemDataActivityRequest : ClientRequest
+    {
+        public DateTime fromDate { get; set; }
+        public DateTime toDate { get; set; }
+    }
 
     public class ReactToJobOfferRequest : ClientRequest
     {

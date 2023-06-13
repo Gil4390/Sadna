@@ -91,9 +91,9 @@ namespace SadnaExpress.API.Controllers
         [Route(APIConstants.AdminData.getSystemUserData)]
         [ResponseType(typeof(ResponseT<List<int>>))]
         [HttpPost]
-        public IHttpActionResult GetSystemUserActivity([FromBody] SystemDateRequest request)
+        public IHttpActionResult GetSystemUserActivity([FromBody] SystemDataActivityRequest request)
         {
-            ResponseT<List<int>> res = tradingSystem.GetSystemUserActivity(request.userID, request.date);
+            ResponseT<List<int>> res = tradingSystem.GetSystemUserActivity(request.userID, request.fromDate, request.toDate);
             return Ok(res);
         }
 

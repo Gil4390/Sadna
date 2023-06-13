@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Microsoft.AspNet.SignalR.Hosting;
 using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
@@ -517,6 +518,22 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
             
+        }
+
+        public ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                List<int> results= userFacade.GetSystemUserActivity(userID, fromDate, toDate);
+                return new ResponseT<List<int>>(results);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"{userID}" + nameof(GetSystemUserActivity) + ": " + ex.Message);
+                return new ResponseT<List<int>>(ex.Message);
+            }
         }
 
         public void CreateSystemManager(Guid userID)

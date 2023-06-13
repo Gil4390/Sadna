@@ -734,7 +734,7 @@ namespace SadnaExpress.DomainLayer.User
                 //return members;
             }
 
-            throw new Exception("Don't have permissions");
+            throw new Exception("User doesn't have permissions to preform this operation");
         }
 
         public void SetSecurityQA(Guid userID, string q, string a)
@@ -1006,6 +1006,22 @@ namespace SadnaExpress.DomainLayer.User
         public string Handshake()
         {
             return paymentService.Handshake();
+        }
+
+        public List<int> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)
+        {
+
+            if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
+            {
+                Logger.Instance.Info(userID, $" {nameof(UserFacade)} {nameof(GetSystemUserActivity)} system administrator requested to get System User Activity from {fromDate} to {toDate}");
+
+                List<int> data = new List<int>();
+                //call to db and get all visit data and sort it by that order: guests, members, managers, owners, admins
+
+                return data;
+            }
+
+            throw new Exception("User doesn't have permissions to preform this operation");
         }
 
         public void NotifyBuyerPurchase(Guid userID, DatabaseContext db=null)
