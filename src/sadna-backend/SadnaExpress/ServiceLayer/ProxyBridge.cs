@@ -461,9 +461,9 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.ReactToJobOffer(userID, storeID, newEmpID, offerResponse);
         }
 
-        public ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime date)
+        public ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)
         {
-            return _realBridge.GetSystemUserActivity(userID, date);
+            return _realBridge.GetSystemUserActivity(userID, fromDate, toDate);
         }
     }
 

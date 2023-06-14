@@ -73,5 +73,7 @@ namespace SadnaExpress.DomainLayer.User
         
         void CreateSystemManager(Guid userID);
         void CheckIsValidMemberOperation(Guid userID);
+
+        List<int> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate);
     }
 }
