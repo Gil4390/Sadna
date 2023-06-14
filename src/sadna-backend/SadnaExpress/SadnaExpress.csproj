@@ -115,11 +115,6 @@
     <Compile Include="DomainLayer\User\Visit.cs" />
     <Compile Include="ExternalServices\PaymentService.cs" />
     <Compile Include="ExternalServices\SupplierService.cs" />
-    <Compile Include="Migrations\20230612191216_Initial.cs" />
-    <Compile Include="Migrations\20230612191216_Initial.designer.cs">
-      <DependentUpon>20230612191216_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\DatabaseContextModelSnapshot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceLayer\IStoreManager.cs" />
