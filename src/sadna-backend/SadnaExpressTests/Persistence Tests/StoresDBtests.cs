@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
+using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpressTests.Integration_Tests;
@@ -13,12 +15,68 @@ namespace SadnaExpressTests.Persistence_Tests
     [TestClass]
     public class StoresDBtests: TradingSystemIT
     {
+        private Guid storeID;
+        private Guid founderID;
+        private PromotedMember founder;
+        private Guid storeOwnerAppointID;
+        private Member storeOwnerAppoint;
+        private Guid storeOwnerDirectID;
+        private PromotedMember storeOwnerDirect;
+        
+        private Store store;
+        private Guid item1;
+        private Guid item2;
+        private Guid item3;
+        private DiscountPolicy policy1;
+        private DiscountPolicy policy2;
+        private DiscountPolicy policy3;
+        private Condition cond1;
+        private Condition cond2;
+        private Condition cond3;
+        private Condition cond4;
+        private Dictionary<Item, int> basket;
+        
         [TestInitialize]
         public override void Setup()
         {
             base.setTestMood();
             base.Setup();
             DatabaseContextFactory.TestMode = true;
+        }
+
+        public void PermissionSetup()
+        {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
+            DBHandler.Instance.CleanDB();
+            founderID = Guid.NewGuid();
+            storeID = Guid.NewGuid();
+            founder =
+                new PromotedMember(founderID, "AssiAzar@gmail.com", "shay", "kresner", "ShaY1787%$%");
+            founder.openNewStore(storeID);
+            Member memberBeforeOwner = new Member(storeOwnerDirectID, "RotemSela@gmail.com", "noga", "schwartz",
+                "ShaY1787%$%");
+            storeOwnerDirect = founder.AppointStoreOwner(storeID, memberBeforeOwner);
+            storeOwnerAppoint = new Member(storeOwnerAppointID, "Tal@gmail.com", "Tal", "Galmor",
+                "ShaY1787%$%");
+            UserFacade userFacade = new UserFacade();
+            userFacade.members.TryAdd(founder.UserId, founder);
+            userFacade.members.TryAdd(storeOwnerAppoint.UserId, storeOwnerAppoint);
+            userFacade.members.TryAdd(storeOwnerDirect.UserId, storeOwnerDirect);
+            userFacade.members.TryAdd(memberBeforeOwner.UserId, memberBeforeOwner);
+        }
+        
+        public void ConditionsSetUp()
+        {
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = true;
+            DBHandler.Instance.CleanDB();
+            store = new Store("Hello");
+            item1 = store.AddItem("Bisli", "Food", 10.0, 2);
+            item2 = store.AddItem("Bamba", "Food", 8.0, 2);
+            item3 = store.AddItem("Ipad", "electronic", 4000, 2);
+            basket = new Dictionary<Item, int> {{store.GetItemById(item1), 1}, {store.GetItemById(item2), 1},
+                {store.GetItemById(item3), 1}};
         }
         
         [TestMethod()]
@@ -238,6 +296,61 @@ namespace SadnaExpressTests.Persistence_Tests
             Assert.AreEqual(numofbasket, trading.GetDetailsOnCart(buyerMemberID).Value.Baskets.Count); // the shopping basket still full
             Assert.AreEqual(numBefore, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1)); //the quantity not updated
         }
+        
+        [TestMethod()]
+        public void DB_AppointStoreOwnerSuccess()
+        {
+            PermissionSetup();
+            //Act
+            PromotedMember promotedMember = founder.AppointStoreOwner(storeID, storeOwnerAppoint);
+            //Assert
+            foreach (Guid id in DBHandler.Instance.GetAllMembers().Keys)
+            {
+                if (promotedMember.UserId == id)
+                {
+                    PromotedMember newPromotedMember = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(id);
+                    Assert.IsTrue(founder.getAppoint(storeID).Contains(newPromotedMember));
+                    Assert.IsTrue(newPromotedMember.hasPermissions(storeID, new List<string>{"owner permissions"}));
+                }
+            }
+        }
+        
+        [TestMethod()]
+        public void DB_AppointStoreOwnerFail()
+        {
+            PermissionSetup();
+            //Act
+            PromotedMember promotedMember = founder.AppointStoreOwner(storeID, storeOwnerAppoint);
 
+            //Assert
+            foreach (Guid id in DBHandler.Instance.GetAllMembers().Keys)
+            {
+                if (promotedMember.UserId == id)
+                {
+                    PromotedMember newPromotedMember = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(id);
+                    Assert.ThrowsException<Exception>(() =>
+                        founder.AppointStoreOwner(storeID, newPromotedMember));
+                    
+                }
+            }
+        }
+        [TestMethod()]
+        public void DB_RemoveStoreOwnerSuccess()
+        {
+            PermissionSetup();
+            //Act
+            founder.RemoveStoreOwner(storeID, storeOwnerDirect);
+            //Assert
+            //Assert
+            foreach (Guid id in DBHandler.Instance.GetAllMembers().Keys)
+            {
+                if (storeOwnerDirect.UserId == id)
+                {
+                    PromotedMember newPromotedMember = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(id);
+                    Assert.IsFalse(newPromotedMember.hasPermissions(storeID, new List<string>{"owner permissions"}));
+                    Assert.IsFalse(founder.getAppoint(storeID).Contains(newPromotedMember));
+                }
+            }
+        }
     }
 }
