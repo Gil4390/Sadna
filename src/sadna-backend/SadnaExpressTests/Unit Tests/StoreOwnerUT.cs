@@ -64,7 +64,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             founder.AppointStoreOwner(storeID, storeOwnerAppoint);
             // check the dict
-            Assert.IsTrue(storeOwnerAppoint.PenddingPermission[storeID].ContainsKey(storeOwnerDirect));
+            Assert.IsTrue(storeOwnerAppoint.PenddingPermission[storeID].ContainsKey(storeOwnerDirect.Email));
             Assert.IsTrue(founder.PermissionsOffers.IsEmpty);
             Assert.AreEqual(1, storeOwnerDirect.PermissionsOffers[storeID].Count);
             PromotedMember promotedMember = storeOwnerDirect.ReactToJobOffer(storeID, storeOwnerAppoint, true);
@@ -96,7 +96,7 @@ namespace SadnaExpressTests.Unit_Tests
             founder.AppointStoreOwner(storeID, storeOwnerAppoint);
             founder.LoggedIn = false;
             // check the dict
-            Assert.IsTrue(storeOwnerAppoint.PenddingPermission[storeID].ContainsKey(storeOwnerDirect));
+            Assert.IsTrue(storeOwnerAppoint.PenddingPermission[storeID].ContainsKey(storeOwnerDirect.Email));
             Assert.IsTrue(founder.PermissionsOffers.IsEmpty);
             Assert.AreEqual(1, storeOwnerDirect.PermissionsOffers[storeID].Count);
             PromotedMember promotedMember = storeOwnerDirect.ReactToJobOffer(storeID, storeOwnerAppoint, false);

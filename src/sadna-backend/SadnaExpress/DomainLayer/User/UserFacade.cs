@@ -427,10 +427,10 @@ namespace SadnaExpress.DomainLayer.User
 
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AppointStoreManager) + " appoints " + storeOwnerID + " removed as store owner");
 
-            Tuple<List<Member>, List<Member>> result = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
+            Tuple<List<Member>, List<Member>, HashSet<Guid>> result = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
             List<Member> membersList = result.Item1;
             List<Member> StoreOwnersDeleted = result.Item2;
-
+            HashSet<Guid> pendingPer = result.Item3;
 
             foreach (Member mem in membersList)
             {
@@ -441,12 +441,17 @@ namespace SadnaExpress.DomainLayer.User
                 }
             }
 
-            //foreach (Member mem in StoreOwnersDeleted)
-           // {
-                NotificationSystem.Instance.NotifyObservers(StoreOwnersDeleted, storeID, "Yow where removed as store owner", userID);
-            //}
-
-
+            foreach (Guid memID in pendingPer)
+            {
+                foreach (Member oldOwner in StoreOwnersDeleted)
+                {
+                    GetMember(memID).RemoveEmployeeFromDecisions(storeID, oldOwner.Email);
+                    PromotedMember mem = Permissions.Instance.PermissionApproved(storeID, (PromotedMember)members[userID], oldOwner);
+                    if (mem != null)
+                        members[memID] = mem;
+                }
+            }
+            NotificationSystem.Instance.NotifyObservers(StoreOwnersDeleted, storeID, "Yow where removed as store owner", userID);
             NotificationSystem.Instance.RemoveObservers(storeID, StoreOwnersDeleted);
 
 

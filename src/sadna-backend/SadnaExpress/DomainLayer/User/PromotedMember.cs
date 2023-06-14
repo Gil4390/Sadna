@@ -142,26 +142,17 @@ namespace SadnaExpress.DomainLayer.User
         #endregion
 
         #region permissionsOffers
-        private ConcurrentDictionary<Guid, List<Member>> permissionsOffers;
+        private ConcurrentDictionary<Guid, List<Guid>> permissionsOffers;
 
         [NotMapped]
-        public ConcurrentDictionary<Guid, List<Member>> PermissionsOffers { get => permissionsOffers; set => permissionsOffers = value; }
+        public ConcurrentDictionary<Guid, List<Guid>> PermissionsOffers { get => permissionsOffers; set => permissionsOffers = value; }
 
         [NotMapped]
         public string PermissionsOffersJson
         {
             get
             {
-                ConcurrentDictionary<Guid, List<Guid>> helper = new ConcurrentDictionary<Guid, List<Guid>>();
-                if (PermissionsOffers != null)
-                    foreach (Guid id in PermissionsOffers.Keys)
-                    {
-                        List<Guid> permissionsList = new List<Guid>();
-                        foreach (Member mem in PermissionsOffers[id])
-                            permissionsList.Add(mem.UserId);
-                        helper.TryAdd(id, permissionsList);
-                    }
-                return JsonConvert.SerializeObject(helper);
+                return JsonConvert.SerializeObject(PermissionsOffers);
             }
             set
             {
@@ -209,7 +200,7 @@ namespace SadnaExpress.DomainLayer.User
             permissions = new ConcurrentDictionary<Guid, List<string>>();
             permissionsHolder = Permissions.Instance;
             bidsOffers = new ConcurrentDictionary<Guid, List<Bid>>();
-            permissionsOffers = new ConcurrentDictionary<Guid, List<Member>>();
+            permissionsOffers = new ConcurrentDictionary<Guid, List<Guid>>();
             LoggedIn = login;
             if (shoppingCart == null)
                 ShoppingCart = new ShoppingCart();
@@ -289,7 +280,7 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("The member doesn’t have permissions to add new owner");
         }
 
-        public override Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID, Member storeOwner)
+        public override Tuple<List<Member>, List<Member>, HashSet<Guid>> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "remove owner"}))
                 return permissionsHolder.RemoveStoreOwner(storeID, this, storeOwner);
@@ -429,10 +420,6 @@ namespace SadnaExpress.DomainLayer.User
                 if (bidsOffers.ContainsKey(storeID))
                     foreach (Bid bid in bidsOffers[storeID])
                         bid.RemoveEmployee(this);
-            if (per.Equals("owner permissions"))
-                if (permissionsOffers.ContainsKey(storeID))
-                    foreach (Member mem in permissionsOffers[storeID])
-                        mem.RemoveEmployeeFromDecisions(storeID, this);
         }
         
         public void removeAllDictOfStore(Guid storeID)
@@ -441,6 +428,7 @@ namespace SadnaExpress.DomainLayer.User
             List<string> removedValue2;
             PromotedMember removedValue3;
             List<Bid> removedValue4;
+            List<Guid> removedValue5;
             appoint.TryRemove(storeID, out removedValue1);
             if (permissions.ContainsKey(storeID))
             {
@@ -453,6 +441,7 @@ namespace SadnaExpress.DomainLayer.User
             }
             directSupervisor.TryRemove(storeID, out removedValue3);
             bidsOffers.TryRemove(storeID, out removedValue4);
+            permissionsOffers.TryRemove(storeID, out removedValue5);
         }
 
         #endregion

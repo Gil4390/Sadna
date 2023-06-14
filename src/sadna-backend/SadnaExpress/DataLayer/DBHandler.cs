@@ -206,6 +206,7 @@ namespace SadnaExpress.DataLayer
                                 db.SaveChanges(true);
 
                                 newMember.BidsDB = newMember.BidsJson;
+                                newMember.PenddingPermissionDB = newMember.PenddingPermissionJson;
                                 memberss.Add(newMember);
 
                                 db.SaveChanges(true);
@@ -328,6 +329,11 @@ namespace SadnaExpress.DataLayer
                                         PromotedmemberExist.Appoint = loadedAppoint;
                                         #endregion
 
+                                        #region load permission offer
+                                        PromotedmemberExist.PermissionsOffers = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.PermissionsOffersDB);
+                        
+                                        #endregion
+
                                         #region load bids offers
                                         ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
                                         ConcurrentDictionary<Guid, List<Guid>> helper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.BidsOffersDB);
@@ -372,6 +378,8 @@ namespace SadnaExpress.DataLayer
 
                                         memberExist = PromotedmemberExist;
                                     }
+
+                                    memberExist.PenddingPermission = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, Dictionary<string, string>>>(memberExist.PenddingPermissionDB);
 
                                     #region load shopping cart
                                     result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
@@ -506,6 +514,12 @@ namespace SadnaExpress.DataLayer
                                         PromotedmemberExist.Appoint = loadedAppoint;
                                         #endregion
 
+                                        #region load permission offer
+                                        ConcurrentDictionary<Guid, List<Member>> loadedPermissionOffer = new ConcurrentDictionary<Guid, List<Member>>();
+                                        PromotedmemberExist.PermissionsOffers = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.PermissionsOffersDB);
+                                       
+                                        #endregion
+
                                         #region load bids offers
                                         ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
                                         ConcurrentDictionary<Guid, List<Guid>> helper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.BidsOffersDB);
@@ -555,6 +569,8 @@ namespace SadnaExpress.DataLayer
                                     }
 
                                     result = memberExist;
+
+                                    memberExist.PenddingPermission = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, Dictionary<string, string>>>(memberExist.PenddingPermissionDB);
 
                                     #region load shopping cart
                                     result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
@@ -690,6 +706,10 @@ namespace SadnaExpress.DataLayer
                                         PromotedmemberExist.Appoint = loadedAppoint;
                                         #endregion
 
+                                        #region load permission offer
+                                        PromotedmemberExist.PermissionsOffers = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.PermissionsOffersDB);
+                                        #endregion
+
                                         #region load bids offers
                                         ConcurrentDictionary<Guid, List<Bid>> loadedBids = new ConcurrentDictionary<Guid, List<Bid>>();
                                         ConcurrentDictionary<Guid, List<Guid>> helper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.BidsOffersDB);
@@ -739,6 +759,7 @@ namespace SadnaExpress.DataLayer
                                     }
 
                                     result = memberExist;
+                                    memberExist.PenddingPermission = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, Dictionary<string, string>>>(memberExist.PenddingPermissionDB);
 
                                     #region load shopping cart
                                     result.ShoppingCart = db.shoppingCarts.FirstOrDefault(m => m.UserId.Equals(memberExist.UserId));
@@ -929,6 +950,45 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public void MemberPendingPermission(Member member)
+        {
+            if (!testMood)
+            {
+                lock (this)
+                {
+                    try
+                    {
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        {
+                            try
+                            {
+                                var memberExist = db.members.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                                if (memberExist != null)
+                                {
+                                    if (!memberExist.Discriminator.Equals("Member"))
+                                    {
+                                        memberExist = db.promotedMembers.FirstOrDefault(m => m.Email.ToLower().Equals(member.Email.ToLower()));
+                                        memberExist.PenddingPermissionDB = member.PenddingPermissionJson;
+                                        db.SaveChanges();
+                                    }
+                                    memberExist.PenddingPermissionDB = member.PenddingPermissionJson;
+                                    db.SaveChanges();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                //throw new Exception("failed to interact with stores table");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                }
+            }
+        }
+
         public void UpgradeMemberToPromotedMember(PromotedMember pm)
         {
             if (!testMood)
@@ -954,9 +1014,10 @@ namespace SadnaExpress.DataLayer
 
                                 pm.DirectSupervisorDB = pm.DirectSupervisorJson;
                                 pm.AppointDB = pm.AppointJson;
+                                pm.PermissionsOffersDB = pm.PermissionsOffersJson;
                                 pm.BidsOffersDB = pm.BidsOffersJson;
                                 pm.BidsDB = pm.BidsJson;
-
+                                pm.PenddingPermissionDB = pm.PenddingPermissionJson;
                                 db.promotedMembers.Add(pm);
                                 //db.promotedMembers.Update(pm);
                                 db.SaveChanges(true);
@@ -991,7 +1052,9 @@ namespace SadnaExpress.DataLayer
                                 pm.BidsDB = pm.BidsJson;
                                 pm.DirectSupervisorDB = pm.DirectSupervisorJson;
                                 pm.AppointDB = pm.AppointJson;
+                                pm.PermissionsOffersDB = pm.PermissionsOffersJson;
                                 pm.BidsOffersDB = pm.BidsOffersJson;
+                                pm.PenddingPermissionDB = pm.PenddingPermissionJson;
 
                                 promotedMembers.Update(pm);
                                 db.SaveChanges(true);
@@ -1064,7 +1127,7 @@ namespace SadnaExpress.DataLayer
                                         db.promotedMembers.Remove(proMemberExist);
                                     }
                                 db.SaveChanges(true);
-
+                                pm.PenddingPermissionDB = pm.PenddingPermissionJson;
                                 pm.BidsDB = pm.BidsJson;
 
                                 db.members.Add(pm);

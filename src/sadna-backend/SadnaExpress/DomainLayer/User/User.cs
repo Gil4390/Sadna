@@ -147,7 +147,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to close");
         }
-        public virtual Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID, Member storeOwner)
+        public virtual Tuple<List<Member>, List<Member>, HashSet<Guid>> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             throw new Exception("The user unauthorised to remove store owner");
         }

@@ -41,17 +41,29 @@ namespace SadnaExpress.DomainLayer.User
         }
 
         #region pending permissions
-        private ConcurrentDictionary<Guid, Dictionary<PromotedMember, string>> penddingPermission;
+        private ConcurrentDictionary<Guid, Dictionary<string, string>> penddingPermission;
         [NotMapped]
-        public ConcurrentDictionary<Guid, Dictionary<PromotedMember, string>> PenddingPermission { get => penddingPermission; set => penddingPermission = value; }
+        public ConcurrentDictionary<Guid, Dictionary<string, string>> PenddingPermission { get => penddingPermission; set => penddingPermission = value; }
 
-        public string PermissionPendingDB
+        [NotMapped]
+        public string PenddingPermissionJson
         {
-            get => JsonConvert.SerializeObject(penddingPermission);
-            set => penddingPermission = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, Dictionary<PromotedMember, string>>>(value);
-        }
-        #endregion
+            get
+            {
+                return JsonConvert.SerializeObject(PenddingPermission);
+            }
+            set
+            {
 
+            }
+        }
+
+        public string PenddingPermissionDB
+        {
+            get; set;
+        }
+
+        #endregion
 
         // todo in database
         [NotMapped]
@@ -67,7 +79,7 @@ namespace SadnaExpress.DomainLayer.User
             LoggedIn = false;
             securityQuestions = new Dictionary<string, string>();
             awaitingNotification = new List<Notification>();
-            penddingPermission = new ConcurrentDictionary<Guid, Dictionary<PromotedMember, string>>();
+            penddingPermission = new ConcurrentDictionary<Guid, Dictionary<string, string>>();
         }
         
         public Member(PromotedMember promotedMember)
@@ -105,11 +117,11 @@ namespace SadnaExpress.DomainLayer.User
             founder.LoggedIn = true;
             return founder;
         }
-        public void RemoveEmployeeFromDecisions(Guid storeID, PromotedMember toRemove)
+        public void RemoveEmployeeFromDecisions(Guid storeID, string toRemove)
         {
             if (penddingPermission.ContainsKey(storeID))
             {
-                foreach (PromotedMember pm in penddingPermission[storeID].Keys)
+                foreach (string pm in penddingPermission[storeID].Keys)
                 {
                     if (pm.Equals(toRemove))
                     {

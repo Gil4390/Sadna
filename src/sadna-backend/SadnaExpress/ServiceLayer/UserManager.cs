@@ -174,16 +174,17 @@ namespace SadnaExpress.ServiceLayer
                 foreach (PromotedMember member in employees)
                 {
                     if (member.PermissionsOffers.ContainsKey(storeID))
-                        foreach (Member m in member.PermissionsOffers[storeID])
-                        {
+                        foreach (Guid mem in member.PermissionsOffers[storeID])
+                        { 
+                            Member m = userFacade.GetMember(mem);
                             if (!pendding.Contains(m))
                             {
-                                SMemberForStore sPenndingMember = new SMemberForStore(m, storeID, userID);
+                                SMemberForStore sPenndingMember = new SMemberForStore(m, storeID, userFacade.GetMember(userID));
                                 sMembers.Add(sPenndingMember);
                                 pendding.Add(m);
                             }
                         }
-                    SMemberForStore sMember = new SMemberForStore(member, storeID, userID);
+                    SMemberForStore sMember = new SMemberForStore(member, storeID, userFacade.GetMember(userID));
                     sMembers.Add(sMember);
                 }
                 return new ResponseT<List<SMemberForStore>>(sMembers);
