@@ -114,7 +114,7 @@ export function handleGetSystemRevenue(userID, date) {
 }
 
 
-export function handleGetSystemUserData(userID, date) {
+export function handleGetSystemUserData(userID, fromDate, toDate) {
     let url = "http://localhost:8080/api/admin/get-system-user-data";
 
     return fetch(url, {
@@ -123,7 +123,8 @@ export function handleGetSystemUserData(userID, date) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userID: userID,
-            date: date
+            fromDate: fromDate,
+            toDate: toDate
         })
     }).then(async response => {
         const data = await response.json();
