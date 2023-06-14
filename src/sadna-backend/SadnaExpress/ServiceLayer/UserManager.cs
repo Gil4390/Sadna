@@ -238,63 +238,6 @@ namespace SadnaExpress.ServiceLayer
             return userFacade.GetMembers(userID);
         }
 
-        public ResponseT<Guid> SetSecurityQA(Guid userID, string q, string a)
-        {
-            try
-            {
-                userFacade.SetSecurityQA(userID,q,a);
-                return new ResponseT<Guid>(userID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(SetSecurityQA)+": "+ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-
-        public ResponseT<Guid> UpdateFirst(Guid userID, string newFirst)
-        {
-            try
-            {
-                userFacade.UpdateFirst(userID, newFirst);
-                return new ResponseT<Guid>(userID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(UpdateFirst)+": "+ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-
-        public ResponseT<Guid> UpdateLast(Guid userID, string newLast)
-        {
-            try
-            {
-                userFacade.UpdateLast(userID, newLast);
-                return new ResponseT<Guid>(userID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(UpdateLast)+": "+ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-
-        public ResponseT<Guid> UpdatePassword(Guid userID, string newPassword)
-        {
-            try
-            {
-                userFacade.UpdatePassword(userID, newPassword);
-                return new ResponseT<Guid>(userID);
-                
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(UpdatePassword)+": "+ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-
         public void SetPaymentService(IPaymentService paymentService)
         {
             try

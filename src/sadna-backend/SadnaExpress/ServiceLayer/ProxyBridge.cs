@@ -189,30 +189,11 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.DeleteStore(id, storeID);
         }
 
-        public ResponseT<Guid> UpdateFirst(Guid id, string newFirst)
-        {
-            throw new NotImplementedException();
-        }
-
         public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
         {
             return _realBridge.RemovePermission(userID, storeID, userEmail, permission);
         }
-
-        public ResponseT<Guid> UpdateLast(Guid id, string newLast)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResponseT<Guid> UpdatePassword(Guid id, string newPassword)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResponseT<Guid> SetSecurityQA(Guid id,string q, string a)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public Response AddItemToCart(Guid id, Guid storeID, Guid itemID, int itemAmount)
         {

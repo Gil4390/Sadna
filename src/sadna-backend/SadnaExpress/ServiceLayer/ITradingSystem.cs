@@ -73,10 +73,6 @@ namespace SadnaExpress.ServiceLayer
         void CleanUp();
         ResponseT<bool> InitializeTradingSystem(Guid userID);
         Response DeleteStore(Guid userID, Guid storeID);
-        ResponseT<Guid> UpdateFirst(Guid userID, string newFirst);
-        ResponseT<Guid> UpdateLast(Guid userID, string newLast);
-        ResponseT<Guid> UpdatePassword(Guid userID, string newPassword);
-        ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a);
 
         //helpers
         void SetPaymentService(IPaymentService paymentService);
