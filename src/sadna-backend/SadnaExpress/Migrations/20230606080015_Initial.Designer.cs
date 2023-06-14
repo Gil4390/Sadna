@@ -417,8 +417,6 @@ namespace SadnaExpress.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SecurityQuestionsDB")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Member");
                 });

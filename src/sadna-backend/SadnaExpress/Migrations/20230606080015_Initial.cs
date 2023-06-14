@@ -199,7 +199,6 @@ namespace SadnaExpress.Migrations
                     LastName = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
                     LoggedIn = table.Column<bool>(nullable: true),
-                    SecurityQuestionsDB = table.Column<string>(nullable: true),
                     DirectSupervisorDB = table.Column<string>(nullable: true),
                     AppointDB = table.Column<string>(nullable: true),
                     PermissionDB = table.Column<string>(nullable: true),

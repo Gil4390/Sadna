@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.API.SignalR;
 using SadnaExpress.DataLayer;
+using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.Store.Policy;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpressTests.Integration_Tests;
+using SadnaExpressTests.Unit_Tests;
 
 namespace SadnaExpressTests.Persistence_Tests
 {
@@ -22,20 +25,16 @@ namespace SadnaExpressTests.Persistence_Tests
         private Member storeOwnerAppoint;
         private Guid storeOwnerDirectID;
         private PromotedMember storeOwnerDirect;
-        
-        private Store store;
+
+        private Guid store;
         private Guid item1;
         private Guid item2;
         private Guid item3;
-        private DiscountPolicy policy1;
-        private DiscountPolicy policy2;
-        private DiscountPolicy policy3;
-        private Condition cond1;
-        private Condition cond2;
-        private Condition cond3;
-        private Condition cond4;
-        private Dictionary<Item, int> basket;
-        
+        private Member member;
+        private Bid bid;
+
+
+
         [TestInitialize]
         public override void Setup()
         {
@@ -65,19 +64,7 @@ namespace SadnaExpressTests.Persistence_Tests
             userFacade.members.TryAdd(storeOwnerDirect.UserId, storeOwnerDirect);
             userFacade.members.TryAdd(memberBeforeOwner.UserId, memberBeforeOwner);
         }
-        
-        public void ConditionsSetUp()
-        {
-            DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
-            DBHandler.Instance.CleanDB();
-            store = new Store("Hello");
-            item1 = store.AddItem("Bisli", "Food", 10.0, 2);
-            item2 = store.AddItem("Bamba", "Food", 8.0, 2);
-            item3 = store.AddItem("Ipad", "electronic", 4000, 2);
-            basket = new Dictionary<Item, int> {{store.GetItemById(item1), 1}, {store.GetItemById(item2), 1},
-                {store.GetItemById(item3), 1}};
-        }
+
         
         [TestMethod()]
         public void DB_Open_Store_Success()
@@ -352,5 +339,125 @@ namespace SadnaExpressTests.Persistence_Tests
                 }
             }
         }
+
+        public void bidSetup()
+        {
+            Guid id = trading.Enter().Value;
+            trading.Register(id, "omer@weka.io", "omer", "shikma", "143AaC!@#");
+            Guid memID = trading.Login(id, "omer@weka.io", "143AaC!@#").Value;
+            Assert.IsTrue(DBHandler.Instance.memberExistsById(memID));
+            member = DBHandler.Instance.GetMemberFromDBById(memID);
+            UserFacade userFacade = new UserFacade();
+            userFacade.members.TryAdd(memID, member);
+
+            NotificationNotifier.GetInstance().TestMood = true;
+            NotificationSystem.Instance.userFacade = userFacade;
+            founder = new PromotedMember(Guid.NewGuid(), "AsiAzar@gmail.com", "Asi", "Azar",
+                ("A#!a12345678"));
+            userFacade.members.TryAdd(founder.UserId, founder);
+            founder.createFounder(store);
+            NotificationSystem.Instance.RegisterObserver(store, founder);
+            bid = member.PlaceBid(store, item2, "Apple", 5);
+        }
+
+        [TestMethod]
+        public void PlaceBidFounderNotLoginSuccess()
+        {
+            bidSetup();
+            //Arrange
+            User user1 = new User();
+            //Act
+            user1.PlaceBid(store, item1, "Banana", 8);
+            //Assert
+            Assert.AreEqual(1, user1.GetBidsOfUser().Count);
+            Assert.AreEqual(8, user1.GetBidsOfUser()[item1].Key);
+            Assert.AreEqual(2, founder.AwaitingNotification.Count);
+        }
+        [TestMethod]
+        public void ReactToBidSuccess()
+        {
+            bidSetup();
+            //Act
+            founder.ReactToBid(store, bid.BidId, "approved");
+            //Assert
+            Assert.AreEqual(1, member.GetBidsOfUser().Count);
+            Assert.AreEqual(1, member.AwaitingNotification.Count);
+        }
+
+        [TestMethod]
+        public void GetBidsInStoreSuccess()
+        {
+            bidSetup();
+            //Act
+            List<Bid> bids = founder.GetBidsInStore(store);
+            //Assert
+            Assert.AreEqual(1, bids.Count);
+            Assert.AreEqual(5, bids[0].Price);
+            Assert.AreEqual(false, bids[0].Approved());
+        }
+
+        [TestMethod]
+        public void GetBidsInStoreFail()
+        {
+            bidSetup();
+            //Act
+            Assert.ThrowsException<Exception>(() => founder.GetBidsInStore(Guid.NewGuid()));
+        }
+
+        [TestMethod]
+        public void GetBidsAfterApprovedSuccess()
+        {
+            bidSetup();
+            //Arrange
+            founder.ReactToBid(store, bid.BidId, "approved");
+            //Act
+            List<Bid> bids = founder.GetBidsInStore(store);
+            //Assert
+            Assert.IsTrue(bids[0].Approved());
+            Assert.AreEqual(1, member.AwaitingNotification.Count);
+            Assert.AreEqual("Your offer on Apple accepted! The price changed to 5", member.AwaitingNotification[0].Message);
+        }
+
+        [TestMethod]
+        public void GetBidsAfterOfferNewPriceSuccess()
+        {
+            bidSetup();
+            //Arrange
+            founder.ReactToBid(store, bid.BidId, "6");
+            //Act
+            List<Bid> bids = founder.GetBidsInStore(store);
+            //Assert
+            Assert.IsTrue(bids[0].Approved());
+            Assert.AreEqual(1, member.AwaitingNotification.Count);
+            Assert.AreEqual("Your offer on Apple wasn't approved. You get counter offer of this amount 6", member.AwaitingNotification[0].Message);
+        }
+
+        [TestMethod]
+        public void GetBidsAfterOfferNewDoublePriceSuccess()
+        {
+            bidSetup();
+            //Arrange
+            founder.ReactToBid(store, bid.BidId, "6.5");
+            //Act
+            List<Bid> bids = founder.GetBidsInStore(store);
+            //Assert
+            Assert.IsTrue(bids[0].Approved());
+            Assert.AreEqual(1, member.AwaitingNotification.Count);
+            Assert.AreEqual("Your offer on Apple wasn't approved. You get counter offer of this amount 6.5", member.AwaitingNotification[0].Message);
+        }
+
+        [TestMethod]
+        public void GetBidsAfterDenySuccess()
+        {
+            bidSetup();
+            //Arrange
+            founder.ReactToBid(store, bid.BidId, "denied");
+            //Act
+            List<Bid> bids = founder.GetBidsInStore(store);
+            //Assert
+            Assert.AreEqual(0, bids.Count);
+            Assert.AreEqual("Your offer on Apple denied!", member.AwaitingNotification[0].Message);
+        }
+
     }
 }
