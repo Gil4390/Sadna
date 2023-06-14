@@ -570,37 +570,6 @@ namespace SadnaExpress.DomainLayer.User
             else
                 throw new Exception($"The user {members[userID].Email} is not system manager");
         }
-
-        public void UpdateFirst(Guid userID, string newFirst)
-        {
-            IsTsInitialized();
-            isLoggedIn(userID);
-            if (!members.ContainsKey(userID))
-                throw new Exception("member with id dosen't exist");
-            members[userID].FirstName = newFirst;
-            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(UpdateFirst) + "First name updated");
-        }
-
-        public void UpdateLast(Guid userID, string newLast)
-        {
-            IsTsInitialized();
-            isLoggedIn(userID);
-            if (!members.ContainsKey(userID))
-                throw new Exception("member with id dosen't exist");
-            members[userID].LastName = newLast;
-            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(UpdateLast) + "Last name updated");
-        }
-
-        public void UpdatePassword(Guid userID, string newPassword)
-        {
-            IsTsInitialized();
-            isLoggedIn(userID);
-            if (!members.ContainsKey(userID))
-                throw new Exception("member with id dosen't exist");
-            members[userID].Password = _ph.Hash(newPassword + macs[userID]);
-            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(UpdatePassword) + "Password updated");
-        }
-
         public void CloseStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
@@ -735,16 +704,6 @@ namespace SadnaExpress.DomainLayer.User
             }
 
             throw new Exception("User doesn't have permissions to preform this operation");
-        }
-
-        public void SetSecurityQA(Guid userID, string q, string a)
-        {
-            IsTsInitialized();
-            isLoggedIn(userID);
-            if (!members.ContainsKey(userID))
-                throw new Exception("member with id dosen't exist");
-            members[userID].SetSecurityQA(q, _ph.Hash(a + macs[userID]));
-            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(SetSecurityQA) + "Security Q&A set");
         }
 
         public void SetPaymentService(IPaymentService paymentService)
