@@ -34,6 +34,7 @@ namespace SadnaExpress.DataLayer
 
         public DbSet<PolicyDB> policies { get; set; }
 
+        public DbSet<Visit> visits { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connection = System.Configuration.ConfigurationManager.ConnectionStrings["MasterConnectionString"].ConnectionString;
@@ -77,7 +78,7 @@ namespace SadnaExpress.DataLayer
         
         public DatabaseContext() : base()
         {
-           // Database.EnsureCreated();  //this line needs to be uncomment at the first time we create the db
+            //Database.EnsureCreated();  //this line needs to be uncomment at the first time we create the db
         }
         
     }

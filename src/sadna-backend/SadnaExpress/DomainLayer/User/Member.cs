@@ -31,14 +31,7 @@ namespace SadnaExpress.DomainLayer.User
 
         private bool loggedIn;
         public bool LoggedIn { get => loggedIn; set => loggedIn = value; }
-
-        [NotMapped]
-        public Dictionary<string , string> securityQuestions { get; set; }
-        public string SecurityQuestionsDB
-        {
-            get => JsonConvert.SerializeObject(securityQuestions);
-            set => securityQuestions = JsonConvert.DeserializeObject<Dictionary<string, string>>(value);
-        }
+        
 
         #region pending permissions
         private ConcurrentDictionary<Guid, Dictionary<string, string>> penddingPermission;
@@ -77,7 +70,6 @@ namespace SadnaExpress.DomainLayer.User
             lastName = mlastLame;
             password = mpassword;
             LoggedIn = false;
-            securityQuestions = new Dictionary<string, string>();
             awaitingNotification = new List<Notification>();
             penddingPermission = new ConcurrentDictionary<Guid, Dictionary<string, string>>();
         }
@@ -91,7 +83,6 @@ namespace SadnaExpress.DomainLayer.User
             password = promotedMember.Password;
             LoggedIn = promotedMember.LoggedIn;
             shoppingCart = promotedMember.ShoppingCart;
-            securityQuestions = promotedMember.SecurityQuestions;
             awaitingNotification = promotedMember.awaitingNotification;
             penddingPermission = promotedMember.penddingPermission;
         }
@@ -117,6 +108,7 @@ namespace SadnaExpress.DomainLayer.User
             founder.LoggedIn = true;
             return founder;
         }
+
         public void RemoveEmployeeFromDecisions(Guid storeID, string toRemove)
         {
             if (penddingPermission.ContainsKey(storeID))
@@ -131,25 +123,7 @@ namespace SadnaExpress.DomainLayer.User
                 }
             }
         }
-        public void SetSecurityQA(string q , string a)
-        {
-            securityQuestions.Add(q,a);
-        }
-        public string GetSecurityQ()
-        {
-            return securityQuestions.ElementAt(new Random().Next(0, securityQuestions.Count)).Value;
-        }
-        public bool CheckSecurityQ(string q , string a)
-        {
-            return securityQuestions[q] == a;
-        }
-
-        public Dictionary<string, string> SecurityQuestions
-        {
-            get => securityQuestions;
-        }
         
-
         public void MarkNotificationAsRead(Guid notificationID)
         {
             foreach (Notification notification in awaitingNotification)
@@ -184,6 +158,11 @@ namespace SadnaExpress.DomainLayer.User
         public Member()
         {
 
+        }
+
+        public override string GetRole()
+        {
+            return "Member";
         }
 
     }

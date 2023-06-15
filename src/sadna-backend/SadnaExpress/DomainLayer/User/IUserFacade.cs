@@ -31,16 +31,12 @@ namespace SadnaExpress.DomainLayer.User
         void AddStoreManagerPermissions(Guid userID,Guid storeID, string email, string Permission);
         void CloseStore(Guid userID,Guid storeID);
         List<PromotedMember> GetEmployeeInfoInStore(Guid userID, Guid storeID);
-        void UpdateFirst(Guid userID, string newFirst);
-        void UpdateLast(Guid userID, string newLast);
-        void UpdatePassword(Guid userID, string newPassword);
         bool InitializeTradingSystem(Guid userID);
         void CleanUp();
         ConcurrentDictionary<Guid, User> GetCurrent_Users();
         ConcurrentDictionary<Guid, Member> GetMembers(Guid userID);
         bool hasPermissions(Guid userId, Guid storeID, List<string> per);
         void RemoveUserMembership(Guid userID, string email);
-        void SetSecurityQA(Guid userID,string q, string a);
         void SetPaymentService(IPaymentService paymentService);
         int PlacePayment(double amount, SPaymentDetails transactionDetails);
         void SetSupplierService(ISupplierService supplierService);

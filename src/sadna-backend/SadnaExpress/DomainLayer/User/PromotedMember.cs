@@ -454,5 +454,33 @@ namespace SadnaExpress.DomainLayer.User
 
             return false;
         }
+
+
+        public override string GetRole()
+        {
+            string role = "PromotedMember";
+            if(PermissionDB.Contains("system manager permissions"))
+            {
+                role += ",system manager";
+            }
+            if (PermissionDB.Contains("founder permissions"))
+            {
+                role += ",founder";
+            }
+            else
+            {
+                if (PermissionDB.Contains("owner permissions"))
+                {
+                    role += ",owner";
+                }
+                if (PermissionDB.Contains("get store history"))
+                {
+                    role += ",store manager";
+                }
+            }
+
+            return role;
+        }
+
     }
 }

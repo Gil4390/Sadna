@@ -412,26 +412,9 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.DeleteStore(userID, storeID);
         }
-
-        public ResponseT<Guid> UpdateFirst(Guid userID, string newFirst)
-        {
-            return userManager.UpdateFirst(userID, newFirst);
-        }
-
-        public ResponseT<Guid> UpdateLast(Guid userID, string newLast)
-        {
-            return userManager.UpdateLast(userID, newLast);
-        }
-
-        public ResponseT<Guid> UpdatePassword(Guid userID, string newPassword)
-        {
-            return userManager.UpdatePassword(userID, newPassword);
-        }
-
-        public ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a)
-        {
-            return userManager.SetSecurityQA(userID,q,a);
-        }
+        
+        
+        
 
         public void CleanUp() // for the tests
         {

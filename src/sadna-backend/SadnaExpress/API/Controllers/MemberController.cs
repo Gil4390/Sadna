@@ -145,47 +145,7 @@ namespace SadnaExpress.API.Controllers
         {
             return Ok(tradingSystem.DeleteStore(request.userID, request.storeID));
         }
-        
-        [Route(APIConstants.MemberData.updateFirst)]
-        [ResponseType(typeof(ResponseT<Guid>))]
-        [HttpPost]
-        public IHttpActionResult UpdateFirst([FromBody] SQARequest request)
-        {
-            return Ok(tradingSystem.UpdateFirst(request.userID, request.field));
-        }
-        
-        [Route(APIConstants.MemberData.updateLast)]
-        [ResponseType(typeof(ResponseT<Guid>))]
-        [HttpPost]
-        public IHttpActionResult UpdateLast([FromBody] SQARequest request)
-        {
-            return Ok(tradingSystem.UpdateLast(request.userID, request.field));
-        }
-        
-        [Route(APIConstants.MemberData.updatePass)]
-        [ResponseType(typeof(ResponseT<Guid>))]
-        [HttpPost]
-        public IHttpActionResult UpdatePassword([FromBody] SQARequest request)
-        {
-            return Ok(tradingSystem.UpdatePassword(request.userID, request.field));
-        }
-        
-        [Route(APIConstants.MemberData.setSQA)]
-        [ResponseType(typeof(ResponseT<Guid>))]
-        [HttpPost]
-        public IHttpActionResult SetSecurityQA([FromBody] SQARequest request)
-        {
-            return Ok(tradingSystem.SetSecurityQA(request.userID, request.field, request.field2));
-        }
-        
-        //[Route(APIConstants.MemberData.getStores)]
-        //[ResponseType(typeof(ResponseT<List<Store>>))]
-        //[HttpPost]
-        //public IHttpActionResult GetStores([FromBody] ClientRequest request)
-        //{
-        //    return Ok(tradingSystem.GetStores());
-        //}
-        
+
         [Route(APIConstants.MemberData.getStoreOwners)]
         [ResponseType(typeof(ResponseT<List<Member>>))]
         [HttpPost]

@@ -37,11 +37,6 @@ namespace SadnaExpress.ServiceLayer
        
         ConcurrentDictionary<Guid, User> GetCurrent_Users();
         ConcurrentDictionary<Guid, Member> GetMembers(Guid userID);
-        ResponseT<Guid> SetSecurityQA(Guid userID,string q, string a);
-
-        ResponseT<Guid> UpdateFirst(Guid userID, string newFirst);
-        ResponseT<Guid> UpdateLast(Guid userID, string newLast);
-        ResponseT<Guid> UpdatePassword(Guid userID,string newPassword);
         void SetPaymentService(IPaymentService paymentService);
         void SetSupplierService(ISupplierService supplierService);
         void SetIsSystemInitialize(bool isInitialize);

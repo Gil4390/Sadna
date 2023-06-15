@@ -21,6 +21,8 @@ using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.DomainLayer;
 using System.Security.Cryptography;
 using SadnaExpress.DomainLayer.Store.Policy;
+using System.Globalization;
+using System.Linq.Expressions;
 
 namespace SadnaExpress.DataLayer
 {
@@ -98,6 +100,7 @@ namespace SadnaExpress.DataLayer
                                 db.orders.RemoveRange(db.orders);
                                 db.ItemForOrders.RemoveRange(db.ItemForOrders);
                                 db.conditions.RemoveRange(db.conditions);
+                                db.visits.RemoveRange(db.visits);
 
                                 db.SaveChanges(true);
                             }
@@ -1021,6 +1024,23 @@ namespace SadnaExpress.DataLayer
                                 db.promotedMembers.Add(pm);
                                 //db.promotedMembers.Update(pm);
                                 db.SaveChanges(true);
+
+                                // update visit in the same day as today
+                                // first remove visit with this id only if in the same date as today
+                                string todayStr = DateTime.Now.ToString("dd/MM/yyyy");
+                                var visits = db.visits;
+                                var mem = visits.FirstOrDefault(g => g.UserID.Equals(pm.UserId) && g.VisitDate.Equals(todayStr));
+                                if (mem != null)
+                                {
+                                    visits.Remove(mem);
+                                    db.SaveChanges(true);
+
+                                    // then add a new visit for this member
+
+                                    Visit newVisit = new Visit { UniqueID = Guid.NewGuid(), UserID = pm.UserId, Role = pm.GetRole(), VisitDate = DateTime.Now.ToString("dd/MM/yyyy") };
+                                    visits.Add(newVisit);
+                                    db.SaveChanges(true);
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -1133,6 +1153,23 @@ namespace SadnaExpress.DataLayer
                                 db.members.Add(pm);
                                 //db.promotedMembers.Update(pm);
                                 db.SaveChanges(true);
+
+                                // update visit in the same day as today
+                                // first remove visit with this id only if in the same date as today
+                                string todayStr = DateTime.Now.ToString("dd/MM/yyyy");
+                                var visits = db.visits;
+                                var mem = visits.FirstOrDefault(g => g.UserID.Equals(pm.UserId) && g.Role.Equals("Member") && g.VisitDate.Equals(todayStr));
+                                if (mem != null)
+                                {
+                                    visits.Remove(mem);
+                                    db.SaveChanges(true);
+
+                                    // then add a new visit for this member
+
+                                    Visit newVisit = new Visit { UniqueID = Guid.NewGuid(), UserID = pm.UserId, Role = pm.GetRole(), VisitDate = DateTime.Now.ToString("dd/MM/yyyy") };
+                                    visits.Add(newVisit);
+                                    db.SaveChanges(true);
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -2758,6 +2795,95 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public void AddGuestVisit(User user)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        var visits = db.visits;
+                        Visit newVisit = new Visit { UniqueID = Guid.NewGuid(), UserID = user.UserId, Role = user.GetRole(), VisitDate = DateTime.Now.ToString("dd/MM/yyyy") };
+                        visits.Add(newVisit);
+                        db.SaveChanges(true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
+
+        public void AddMemberVisit(Guid id, Member member)
+        {
+            if (!testMood)
+            {
+                lock (this)
+                {
+                    try
+                    {
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        {
+                            // first remove visit with this id only if in the same date as today
+                            string todayStr = DateTime.Now.ToString("dd/MM/yyyy");
+                            var visits = db.visits;
+                            var guest = visits.FirstOrDefault(g => g.UserID.Equals(id) && g.Role.Equals("Guest") && g.VisitDate.Equals(todayStr));
+                            if (guest != null)
+                            {
+                                visits.Remove(guest);
+                                db.SaveChanges(true);
+                            }
+                            try
+                            {
+                                guest = visits.FirstOrDefault(g => g.UserID.Equals(member.UserId) && g.VisitDate.Equals(todayStr));
+                                if (guest != null)
+                                {
+                                    visits.Remove(guest);
+                                    db.SaveChanges(true);
+                                }
+                            }
+                            catch { }
+                            // then add a new visit for this member
+                            
+                            Visit newVisit = new Visit { UniqueID = Guid.NewGuid(), UserID = member.UserId, Role = member.GetRole(), VisitDate = DateTime.Now.ToString("dd/MM/yyyy") };
+                            visits.Add(newVisit);
+                            db.SaveChanges(true);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                }
+            }
+        }
+
+
+        public List<Visit> GetVisitsInDates(string RoleType, DateTime start, DateTime end)
+        {
+            lock (this)
+            {
+                try
+                {
+                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    {
+                        List<Visit> visitsList = db.visits
+                            .Where(g => 
+                            DateTime.ParseExact(g.VisitDate, "dd/MM/yyyy",CultureInfo.InvariantCulture) >= start &&
+                            DateTime.ParseExact(g.VisitDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) <= end)
+                            .ToList();
+                         
+                        return visitsList;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(DbErrorMessage);
+                }
+            }
+        }
 
     }
 }
