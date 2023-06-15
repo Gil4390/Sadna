@@ -4,7 +4,8 @@ import { Button, Container, Form } from 'react-bootstrap';
 import {Chart as ChartJS} from 'chart.js/auto'
 import {CategoryScale, LinearScale} from 'chart.js'
 import { handleGetSystemUserData } from '../../actions/AdminActions.tsx'
-import useSignalRNotifications from '../../hooks/signalR/useSignalRNotifications.ts';;
+import useSignalRNotifications from '../../hooks/signalR/useSignalRNotifications.ts';import Exit from '../Exit.tsx';
+;
 
 ChartJS.register(
   CategoryScale,
@@ -60,7 +61,8 @@ const AdminUserActivityPage = (props) => {
  });
 
   return (
-    <Container>
+    <Container style={{paddingBottom: "4rem"}}>
+      <Exit id={props.id}/>
       <h1>User Activity</h1>
       <Form.Group controlId="formDate">
         <Form.Label>Please select dates:</Form.Label>
