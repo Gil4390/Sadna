@@ -26,14 +26,19 @@ const AdminUserActivityPage = (props) => {
       },
     ],
   });
-  const [selectedDate, setSelectedDate] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
+
+  const handleFromDateChange = (event) => {
+    setFromDate(event.target.value);
+  };
+  const handleToDateChange = (event) => {
+    setToDate(event.target.value);
   };
 
   const handleRequest = () => {
-    handleGetSystemUserData(props.id, selectedDate).then(
+    handleGetSystemUserData(props.id, fromDate, toDate).then(
       value => {
         setChart((prevChartData) => ({
           ...prevChartData,
@@ -53,7 +58,8 @@ const AdminUserActivityPage = (props) => {
       <h1>User Activity</h1>
       <Form.Group controlId="formDate">
         <Form.Label>Select Date:</Form.Label>
-        <Form.Control type="date" value={selectedDate} onChange={handleDateChange} />
+        <Form.Control type="date" value={fromDate} onChange={handleFromDateChange} />
+        <Form.Control type="date" value={toDate} onChange={handleToDateChange} />
       </Form.Group>
 
       <Button variant="primary" onClick={handleRequest}>

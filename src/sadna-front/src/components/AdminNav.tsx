@@ -48,6 +48,11 @@ function MemberNav(props) {
                   System-Revenue
                 </NavLink>
               </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/AdminUserActivityPage">
+                  User-Activity
+                </NavLink>
+              </li>
               {/* <li className="nav-item">
                 <NavLink className="nav-link" to="/AdminManageAllStoresPage">
                   Manage-All-Stores
