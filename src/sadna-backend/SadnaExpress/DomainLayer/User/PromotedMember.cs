@@ -141,6 +141,31 @@ namespace SadnaExpress.DomainLayer.User
 
         #endregion
 
+        #region permissionsOffers
+        private ConcurrentDictionary<Guid, List<Guid>> permissionsOffers;
+
+        [NotMapped]
+        public ConcurrentDictionary<Guid, List<Guid>> PermissionsOffers { get => permissionsOffers; set => permissionsOffers = value; }
+
+        [NotMapped]
+        public string PermissionsOffersJson
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(PermissionsOffers);
+            }
+            set
+            {
+
+            }
+        }
+
+        public string PermissionsOffersDB
+        {
+            get; set;
+        }
+        #endregion
+
         private readonly Permissions permissionsHolder;
 
         #endregion
@@ -175,6 +200,7 @@ namespace SadnaExpress.DomainLayer.User
             permissions = new ConcurrentDictionary<Guid, List<string>>();
             permissionsHolder = Permissions.Instance;
             bidsOffers = new ConcurrentDictionary<Guid, List<Bid>>();
+            permissionsOffers = new ConcurrentDictionary<Guid, List<Guid>>();
             LoggedIn = login;
             if (shoppingCart == null)
                 ShoppingCart = new ShoppingCart();
@@ -247,7 +273,14 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("The member doesn’t have permissions to add new owner");
         }
 
-        public override Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID, Member storeOwner)
+        public override PromotedMember ReactToJobOffer(Guid storeID, Member newEmp, bool offerResponse)
+        {
+            if (hasPermissions(storeID, new List<string> { "owner permissions", "founder permissions", "add new owner" }))
+                return permissionsHolder.ReactToJobOffer(storeID, this, newEmp, offerResponse);
+            throw new Exception("The member doesn’t have permissions to add new owner");
+        }
+
+        public override Tuple<List<Member>, List<Member>, HashSet<Guid>> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             if (hasPermissions(storeID, new List<string>{"owner permissions","founder permissions", "remove owner"}))
                 return permissionsHolder.RemoveStoreOwner(storeID, this, storeOwner);
@@ -341,9 +374,10 @@ namespace SadnaExpress.DomainLayer.User
 
         #endregion
 
+        
         #region HelpFunc
 
-        public List<PromotedMember> getAppoint(Guid storeID)
+            public List<PromotedMember> getAppoint(Guid storeID)
         {
             if (appoint.ContainsKey(storeID))
                 return appoint[storeID];
@@ -363,6 +397,8 @@ namespace SadnaExpress.DomainLayer.User
         
         public void addAppoint(Guid storeID, PromotedMember member)
         {
+            if (appoint.ContainsKey(storeID))
+                appoint.TryAdd(storeID, new List<PromotedMember>());
             appoint[storeID].Add(member);
             //here
             DBHandler.Instance.UpdatePromotedMember(this);
@@ -392,6 +428,7 @@ namespace SadnaExpress.DomainLayer.User
             List<string> removedValue2;
             PromotedMember removedValue3;
             List<Bid> removedValue4;
+            List<Guid> removedValue5;
             appoint.TryRemove(storeID, out removedValue1);
             if (permissions.ContainsKey(storeID))
             {
@@ -404,6 +441,7 @@ namespace SadnaExpress.DomainLayer.User
             }
             directSupervisor.TryRemove(storeID, out removedValue3);
             bidsOffers.TryRemove(storeID, out removedValue4);
+            permissionsOffers.TryRemove(storeID, out removedValue5);
         }
 
         #endregion

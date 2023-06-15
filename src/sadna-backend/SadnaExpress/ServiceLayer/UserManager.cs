@@ -170,10 +170,22 @@ namespace SadnaExpress.ServiceLayer
             {
                 List<PromotedMember> employees = userFacade.GetEmployeeInfoInStore(userID, storeID);
                 List<SMemberForStore> sMembers = new List<SMemberForStore>();
+                List<Member> pendding = new List<Member>();
 
                 foreach (PromotedMember member in employees)
                 {
-                    SMemberForStore sMember = new SMemberForStore(member, storeID);
+                    if (member.PermissionsOffers.ContainsKey(storeID))
+                        foreach (Guid mem in member.PermissionsOffers[storeID])
+                        { 
+                            Member m = userFacade.GetMember(mem);
+                            if (!pendding.Contains(m))
+                            {
+                                SMemberForStore sPenndingMember = new SMemberForStore(m, storeID, userFacade.GetMember(userID));
+                                sMembers.Add(sPenndingMember);
+                                pendding.Add(m);
+                            }
+                        }
+                    SMemberForStore sMember = new SMemberForStore(member, storeID, userFacade.GetMember(userID));
                     sMembers.Add(sMember);
                 }
                 return new ResponseT<List<SMemberForStore>>(sMembers);
@@ -182,6 +194,21 @@ namespace SadnaExpress.ServiceLayer
             {
                 Logger.Instance.Error(userID,nameof(UserManager)+": "+nameof(GetEmployeeInfoInStore)+": "+ex.Message);
                 return new ResponseT<List<SMemberForStore>>(ex.Message);
+            }
+        }
+
+        public Response ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
+        {
+            try
+            {
+                userFacade.ReactToJobOffer(userID, storeID, newEmpID, offerResponse);
+                Logger.Instance.Info($"User id: {userID} requested to react to job offer user {newEmpID}");
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID, nameof(UserManager) + ": " + nameof(ReactToJobOffer) + ": " + ex.Message);
+                return new Response(ex.Message);
             }
         }
 

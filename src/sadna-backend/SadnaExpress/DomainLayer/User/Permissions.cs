@@ -3,6 +3,7 @@ using SadnaExpress.DomainLayer.Store;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 using Exception = System.Exception;
 
 namespace SadnaExpress.DomainLayer.User
@@ -35,17 +36,89 @@ namespace SadnaExpress.DomainLayer.User
         
         public PromotedMember AppointStoreOwner(Guid storeID, PromotedMember directSupervisor, Member newOwner)
         {
+            //check the new owner not have already permissions
             if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
                 throw new Exception("The member is already store owner");
 
-            PromotedMember owner = newOwner.promoteToMember();
-            owner.LoggedIn = newOwner.LoggedIn;
-            directSupervisor.addAppoint(storeID, owner);
-            owner.createOwner(storeID, directSupervisor);
-            return owner;
+            //add to all owners in store the owner to permissionsoffer and build the list of pendding permission for the member
+            Dictionary<string, string> decisions = new Dictionary<string, string>();
+            foreach (PromotedMember promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
+            {
+                if (promotedMember.Equals(directSupervisor))
+                    decisions.Add(promotedMember.Email, "creator");
+                else
+                {
+                    decisions.Add(promotedMember.Email, "undecided");
+                    if (promotedMember.PermissionsOffers.ContainsKey(storeID))
+                        promotedMember.PermissionsOffers[storeID].Add(newOwner.UserId);
+                    else
+                        promotedMember.PermissionsOffers.TryAdd(storeID, new List<Guid> { newOwner.UserId });
+                }
+                DBHandler.Instance.UpdatePromotedMember(promotedMember);
+            }
+            newOwner.PenddingPermission.TryAdd(storeID, decisions);
+
+            NotificationSystem.Instance.NotifyObservers(storeID, $"You got an offer to make {newOwner.Email} to store owner", directSupervisor.UserId);
+            DBHandler.Instance.MemberPendingPermission(newOwner);
+            // check if the offer already approve
+            return PermissionApproved(storeID, directSupervisor,  newOwner); 
         }
 
-        public Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
+        public PromotedMember ReactToJobOffer(Guid storeID, PromotedMember decided,  Member newOwner, bool offerResponse)
+        {
+            //check the new owner not have already permissions
+            if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
+                throw new Exception("The member is already store owner");
+            if (!decided.PermissionsOffers.ContainsKey(storeID) || !decided.PermissionsOffers[storeID].Contains(newOwner.UserId))
+                throw new Exception($"No application to appoint {newOwner.Email} to store owner");
+            decided.PermissionsOffers[storeID].Remove(newOwner.UserId);
+            DBHandler.Instance.UpdatePromotedMember(decided);
+            if (offerResponse)
+            {
+                newOwner.RemoveEmployeeFromDecisions(storeID, decided.Email);
+                DBHandler.Instance.UpdatePromotedMember(decided);
+                DBHandler.Instance.MemberPendingPermission(newOwner);
+                return PermissionApproved(storeID, decided, newOwner);
+            }
+            else
+            {
+                foreach (PromotedMember pm in GetEmployeeInfoInStore(storeID, decided))
+                    if (pm.PermissionsOffers.ContainsKey(storeID) && pm.PermissionsOffers[storeID].Count > 0) 
+                    { 
+                        pm.PermissionsOffers[storeID].Remove(newOwner.UserId);
+                        DBHandler.Instance.UpdatePromotedMember(pm);
+                    }
+                Dictionary<string, string> rem = new Dictionary<string, string>();
+                newOwner.PenddingPermission.TryRemove(storeID, out rem);
+                DBHandler.Instance.MemberPendingPermission(newOwner);
+                NotificationSystem.Instance.NotifyObservers(storeID, $"The offer to make {newOwner.Email} to store owner, denied", decided.UserId);
+            }
+            return null;
+        }
+
+        public PromotedMember PermissionApproved(Guid storeID, PromotedMember decider, Member newOwner)
+        {
+            if (newOwner.PendingPermissionStatus(storeID))
+            {
+                PromotedMember owner = newOwner.promoteToMember();
+                owner.LoggedIn = newOwner.LoggedIn;
+                PromotedMember directSupervisor = null;
+                foreach (PromotedMember pm in GetEmployeeInfoInStore(storeID, decider))
+                {
+                    if (newOwner.PenddingPermission[storeID].ContainsKey(pm.Email) && newOwner.PenddingPermission[storeID][pm.Email].Equals("creator"))
+                        directSupervisor = pm;
+                }
+                directSupervisor.addAppoint(storeID, owner);
+                owner.createOwner(storeID, directSupervisor);
+                Dictionary<string, string> rem = new Dictionary<string, string>();
+                owner.PenddingPermission.TryRemove(storeID, out rem);
+                NotificationSystem.Instance.NotifyObserver(owner, storeID, $"You are store owner of {storeID}");
+                DBHandler.Instance.UpdatePromotedMember(owner);
+                return owner;
+            }
+            return null;
+        }
+        public Tuple<List<Member>, List<Member>, HashSet<Guid>> RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
         {
             if (!member.hasPermissions(storeID, new List<string> {"owner permissions"}))
                 throw new Exception($"The member {member.Email} isn't owner");
@@ -58,6 +131,7 @@ namespace SadnaExpress.DomainLayer.User
             Stack<PromotedMember> stack = new Stack<PromotedMember>();
             List<Member> regMembers = new List<Member>();
             List<Member> NotOwners = new List<Member>();
+            HashSet<Guid> pendingMember = new HashSet<Guid>();
             stack.Push(storeOwner);
 
             while (stack.Count > 0)
@@ -71,6 +145,8 @@ namespace SadnaExpress.DomainLayer.User
                 }
 
                 NotOwners.Add(current);
+                if (current.PermissionsOffers.ContainsKey(storeID))
+                    pendingMember.UnionWith(current.PermissionsOffers[storeID]);
                 current.removeAllDictOfStore(storeID);
                 if (current.Permission.Count == 0)
                 {
@@ -85,7 +161,7 @@ namespace SadnaExpress.DomainLayer.User
             }
             //remove the owner from appoint
             directOwner.removeAppoint(storeID, storeOwner);
-            Tuple<List<Member>, List<Member>> result = new Tuple<List<Member>, List<Member>>(regMembers, NotOwners);
+            Tuple<List<Member>, List<Member>, HashSet<Guid>> result = new Tuple<List<Member>, List<Member>, HashSet<Guid>>(regMembers, NotOwners, pendingMember);
             return result;
         }
         

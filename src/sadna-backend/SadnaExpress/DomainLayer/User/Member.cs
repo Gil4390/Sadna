@@ -33,6 +33,31 @@ namespace SadnaExpress.DomainLayer.User
         public bool LoggedIn { get => loggedIn; set => loggedIn = value; }
         
 
+        #region pending permissions
+        private ConcurrentDictionary<Guid, Dictionary<string, string>> penddingPermission;
+        [NotMapped]
+        public ConcurrentDictionary<Guid, Dictionary<string, string>> PenddingPermission { get => penddingPermission; set => penddingPermission = value; }
+
+        [NotMapped]
+        public string PenddingPermissionJson
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(PenddingPermission);
+            }
+            set
+            {
+
+            }
+        }
+
+        public string PenddingPermissionDB
+        {
+            get; set;
+        }
+
+        #endregion
+
         // todo in database
         [NotMapped]
         public List<Notification> awaitingNotification { get; set; }
@@ -46,6 +71,7 @@ namespace SadnaExpress.DomainLayer.User
             password = mpassword;
             LoggedIn = false;
             awaitingNotification = new List<Notification>();
+            penddingPermission = new ConcurrentDictionary<Guid, Dictionary<string, string>>();
         }
         
         public Member(PromotedMember promotedMember)
@@ -58,6 +84,7 @@ namespace SadnaExpress.DomainLayer.User
             LoggedIn = promotedMember.LoggedIn;
             shoppingCart = promotedMember.ShoppingCart;
             awaitingNotification = promotedMember.awaitingNotification;
+            penddingPermission = promotedMember.penddingPermission;
         }
 
         public void deepCopy(User user)
@@ -81,6 +108,21 @@ namespace SadnaExpress.DomainLayer.User
             founder.LoggedIn = true;
             return founder;
         }
+
+        public void RemoveEmployeeFromDecisions(Guid storeID, string toRemove)
+        {
+            if (penddingPermission.ContainsKey(storeID))
+            {
+                foreach (string pm in penddingPermission[storeID].Keys)
+                {
+                    if (pm.Equals(toRemove))
+                    {
+                        penddingPermission[storeID].Remove(pm);
+                        break;
+                    }
+                }
+            }
+        }
         
         public void MarkNotificationAsRead(Guid notificationID)
         {
@@ -102,6 +144,15 @@ namespace SadnaExpress.DomainLayer.User
             DBHandler.Instance.AddNotification(notification, db);
         }
 
+        public bool PendingPermissionStatus(Guid storeID)
+        {
+            foreach (string decision in penddingPermission[storeID].Values)
+            {
+                if (decision.Equals("undecided"))
+                    return false;
+            }
+            return true;
+        }
 
         
         public Member()

@@ -102,5 +102,92 @@ namespace SadnaExpressTests.Persistence_Tests
             Assert.AreEqual(2, members.Count); 
         }
 
+        [TestMethod()]
+        public void DB_CheckTheFlowOfAppointOwner_Fail()
+        {
+            //create user
+            Guid id = trading.Enter().Value;
+            trading.Register(id, "omer@weka.io", "omer", "shikma", "143AaC!@#");
+            Guid tempid = trading.Enter().Value;
+            //check that the user created
+            Member cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
+            Assert.IsNotNull(cur);
+
+            //appoint first store owner
+            trading.AppointStoreOwner(userID, storeID1, "dor@gmail.com");
+            PromotedMember cur2 = (PromotedMember)DBHandler.Instance.GetMemberFromDBByEmail("dor@gmail.com");
+            Assert.IsFalse(cur.hasPermissions(storeID1, new List<string> { "owner permissions" }));
+            Assert.IsTrue(cur2.hasPermissions(storeID1, new List<string> { "owner permissions" }));
+
+            //appoint store owner2 - one false
+            trading.AppointStoreOwner(userID, storeID1, "omer@weka.io");
+            cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
+            cur2 = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(buyerMemberID);
+            Assert.AreEqual(1, cur2.PermissionsOffers[storeID1].Count);
+            Assert.IsTrue(cur2.PermissionsOffers[storeID1].Contains(cur.UserId));
+            Assert.IsTrue(cur.PenddingPermission[storeID1].ContainsKey(cur2.Email));
+            trading.ReactToJobOffer(buyerMemberID, storeID1, cur.UserId, false);
+            cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
+            cur2 = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(buyerMemberID);
+            Assert.IsFalse(cur.hasPermissions(storeID1, new List<string> { "owner permissions" }));
+            Assert.IsFalse(cur2.PermissionsOffers[storeID1].Contains(cur.UserId));
+            Assert.IsFalse(cur.PenddingPermission.ContainsKey(storeID1));
+
+            //appoint store owner2
+            trading.AppointStoreOwner(userID, storeID1, "omer@weka.io");
+            trading.ReactToJobOffer(cur2.UserId, storeID1, cur.UserId, true);
+            cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
+            cur2 = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(buyerMemberID);
+            Assert.IsTrue(cur2.hasPermissions(storeID1, new List<string> { "owner permissions" }));
+            Assert.IsFalse(cur2.PermissionsOffers[storeID1].Contains(cur.UserId));
+            Assert.IsFalse(cur.PenddingPermission.ContainsKey(storeID1));
+        }
+
+        [TestMethod()]
+        public void DB_CheckTheFlowOfAppointOwner2Stores_Fail()
+        {
+            //create user
+            Guid id = trading.Enter().Value;
+            trading.Register(id, "omer@weka.io", "omer", "shikma", "143AaC!@#");
+            Guid tempid = trading.Enter().Value;
+            //check that the user created
+            Member cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
+            Assert.IsNotNull(cur);
+
+            //appoint first store owner
+            trading.AppointStoreOwner(userID, storeID1, "dor@gmail.com");
+            trading.AppointStoreOwner(userID, storeID2, "dor@gmail.com");
+            PromotedMember cur2 = (PromotedMember)DBHandler.Instance.GetMemberFromDBByEmail("dor@gmail.com");
+            Assert.IsFalse(cur.hasPermissions(storeID1, new List<string> { "owner permissions" }));
+            Assert.IsTrue(cur2.hasPermissions(storeID1, new List<string> { "owner permissions" }));
+            Assert.IsTrue(cur2.hasPermissions(storeID2, new List<string> { "owner permissions" }));
+
+            //appoint store owner2 to store 1 
+            trading.AppointStoreOwner(userID, storeID1, "omer@weka.io");
+            trading.AppointStoreOwner(userID, storeID2, "omer@weka.io");
+            cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
+            cur2 = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(buyerMemberID);
+
+            trading.ReactToJobOffer(buyerMemberID, storeID2, cur.UserId, false);
+            trading.ReactToJobOffer(buyerMemberID, storeID1, cur.UserId, true);
+
+            cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
+            cur2 = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(buyerMemberID);
+            Assert.IsTrue(cur.hasPermissions(storeID1, new List<string> { "owner permissions" }));
+            Assert.IsFalse(cur.PenddingPermission.ContainsKey(storeID1));
+            Assert.IsFalse(cur2.PermissionsOffers[storeID1].Contains(cur.UserId));
+            Assert.IsFalse(cur.hasPermissions(storeID2, new List<string> { "owner permissions" }));
+            Assert.IsFalse(cur.PenddingPermission.ContainsKey(storeID2));
+            Assert.IsFalse(cur2.PermissionsOffers[storeID2].Contains(cur.UserId));
+
+            //appoint store owner2
+            trading.AppointStoreOwner(userID, storeID2, "omer@weka.io");
+            trading.ReactToJobOffer(cur2.UserId, storeID2, cur.UserId, true);
+            cur = DBHandler.Instance.GetMemberFromDBByEmail("omer@weka.io");
+            cur2 = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(buyerMemberID);
+            Assert.IsTrue(cur2.hasPermissions(storeID2, new List<string> { "owner permissions" }));
+            Assert.IsFalse(cur2.PermissionsOffers[storeID2].Contains(cur.UserId));
+            Assert.IsFalse(cur.PenddingPermission.ContainsKey(storeID2));
+        }
     }
 }

@@ -392,12 +392,33 @@ namespace SadnaExpress.DomainLayer.User
             lock (internedKey)
             {
                 PromotedMember owner = members[userID].AppointStoreOwner(storeID, members[newOwnerID]);
-                members[newOwnerID] = owner;
-                DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newOwnerID]);
-                NotificationSystem.Instance.RegisterObserver(storeID, owner);
+                if (owner != null)
+                {
+                    members[newOwnerID] = owner;
+                    DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newOwnerID]);
+                    NotificationSystem.Instance.RegisterObserver(storeID, owner);
+                }
             }
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AppointStoreOwner) + " appoints " + newOwnerID + " to new store owner");
 
+        }
+        public void ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+
+            String internedKey = String.Intern(newEmpID.ToString());
+
+            lock (internedKey)
+            {
+                PromotedMember owner = members[userID].ReactToJobOffer(storeID, members[newEmpID], offerResponse);
+                if (owner != null)
+                {
+                    members[newEmpID] = owner;
+                    DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newEmpID]);
+                    NotificationSystem.Instance.RegisterObserver(storeID, owner);
+                }
+            }
         }
 
         public void RemoveStoreOwner(Guid userID, Guid storeID, string email)
@@ -408,10 +429,10 @@ namespace SadnaExpress.DomainLayer.User
 
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AppointStoreManager) + " appoints " + storeOwnerID + " removed as store owner");
 
-            Tuple<List<Member>, List<Member>> result = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
+            Tuple<List<Member>, List<Member>, HashSet<Guid>> result = members[userID].RemoveStoreOwner(storeID, members[storeOwnerID]);
             List<Member> membersList = result.Item1;
             List<Member> StoreOwnersDeleted = result.Item2;
-
+            HashSet<Guid> pendingPer = result.Item3;
 
             foreach (Member mem in membersList)
             {
@@ -422,12 +443,17 @@ namespace SadnaExpress.DomainLayer.User
                 }
             }
 
-            //foreach (Member mem in StoreOwnersDeleted)
-           // {
-                NotificationSystem.Instance.NotifyObservers(StoreOwnersDeleted, storeID, "Yow where removed as store owner", userID);
-            //}
-
-
+            foreach (Guid memID in pendingPer)
+            {
+                foreach (Member oldOwner in StoreOwnersDeleted)
+                {
+                    GetMember(memID).RemoveEmployeeFromDecisions(storeID, oldOwner.Email);
+                    PromotedMember mem = Permissions.Instance.PermissionApproved(storeID, (PromotedMember)members[userID], oldOwner);
+                    if (mem != null)
+                        members[memID] = mem;
+                }
+            }
+            NotificationSystem.Instance.NotifyObservers(StoreOwnersDeleted, storeID, "Yow where removed as store owner", userID);
             NotificationSystem.Instance.RemoveObservers(storeID, StoreOwnersDeleted);
 
 

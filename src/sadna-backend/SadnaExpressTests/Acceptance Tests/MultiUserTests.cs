@@ -1025,7 +1025,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.RemovePermission(memberId5, storeID, "member9@gmail.com", "owner permissions");
             //Assert
             //check that only the founder has left
-            Assert.AreEqual(1, proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value.Count);
+            Assert.AreEqual(3, proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value.Count);
            // Assert.IsTrue( proxyBridge.GetEmployeeInfoInStore(storeFounder, storeID).Value.Contains((SMember)proxyBridge.GetMember(storeFounder).Value));
             //check that the other didnt have permissions to the store
             Assert.IsFalse(proxyBridge.GetMember(memberId).Value.hasPermissions(storeID, new List<string>{"owner permissions"}));

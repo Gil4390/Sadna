@@ -127,6 +127,12 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to add new owner");
         }
+
+        public virtual PromotedMember ReactToJobOffer(Guid storeID, Member newOwner, bool offerResponse)
+        {
+            throw new Exception("The user unauthorised to react job offer");
+        }
+
         public virtual PromotedMember AppointStoreManager(Guid storeID, Member newManager)
         {
             throw new Exception("The user unauthorised to add new owner");
@@ -147,7 +153,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             throw new Exception("The user unauthorised to close");
         }
-        public virtual Tuple<List<Member>, List<Member>> RemoveStoreOwner(Guid storeID, Member storeOwner)
+        public virtual Tuple<List<Member>, List<Member>, HashSet<Guid>> RemoveStoreOwner(Guid storeID, Member storeOwner)
         {
             throw new Exception("The user unauthorised to remove store owner");
         }

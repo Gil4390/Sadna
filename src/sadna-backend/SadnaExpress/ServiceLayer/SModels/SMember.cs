@@ -42,15 +42,23 @@ namespace SadnaExpress.ServiceLayer.SModels
 
     public class SMemberForStore : SMember
     {
-        public SMemberForStore(Member member, Guid storeID) : base(member)
+        public SMemberForStore(Member member, Guid storeID, Member user) : base(member)
         {
             this.Permissions = new List<string>();
-
-            //===========NOGA====================
-            this.Approvers = new List<string>();
-            this.DidApprove = false;
-            //===================================
-
+            Approvers = new List<string>();
+            // make the approve list
+            DidApprove = true;
+            if (member.PenddingPermission.Count > 0)
+            {
+                foreach (string pm in member.PenddingPermission[storeID].Keys)
+                {
+                    if (pm.Equals(user.Email))
+                    {
+                        DidApprove = !member.PenddingPermission[storeID][pm].Equals("undecided");
+                    }
+                    Approvers.Add($"{pm}: {member.PenddingPermission[storeID][pm]}");
+                }
+            }
             if (member is PromotedMember)
             {
                 PromotedMember pmember = (PromotedMember)member;
