@@ -57,6 +57,7 @@
     <Compile Include="Integration Tests\GetCartItemsIT.cs" />
     <Compile Include="Integration Tests\PurchaseIT.cs" />
     <Compile Include="Integration Tests\StoreManagementIT.cs" />
+    <Compile Include="Integration Tests\SystemActivityIT.cs" />
     <Compile Include="Integration Tests\TradingSystemIT.cs" />
     <Compile Include="Integration Tests\ValidCartContentIT.cs" />
     <Compile Include="Persistence Tests\StoresDBtests.cs" />
