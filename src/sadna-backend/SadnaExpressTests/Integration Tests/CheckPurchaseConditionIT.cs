@@ -16,10 +16,9 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod()]
         public void UserTryToPurchaseCartSuccess()
         {
-            Guid tempid = trading.Enter().Value;
-            tempid = trading.Login(tempid, "AsiAzar@gmail.com", "Aa12345678").Value;
+
             //Arrange
-            trading.AddCondition(tempid,storeID1, "Item", "ipad 32", "min quantity", 1);
+            trading.AddCondition(userID, storeID1, "Item", "ipad 32", "min quantity", 1);
             //Act
             Response task1 = trading.CheckPurchaseConditions(buyerID);
             //Assert
@@ -29,10 +28,8 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod()]
         public void UserTryToPurchaseCartFail()
         {
-            Guid tempid = trading.Enter().Value;
-            tempid = trading.Login(tempid, "AsiAzar@gmail.com", "Aa12345678").Value;
             //Arrange
-            trading.AddCondition(tempid,storeID1, "Item", "ipad 32","min quantity", 3, DateTime.MaxValue);
+            trading.AddCondition(userID, storeID1, "Item", "ipad 32","min quantity", 3, DateTime.MaxValue);
             //Act
             Response task1 = trading.CheckPurchaseConditions(buyerID);
             //Assert
@@ -43,11 +40,9 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod()]
         public void UserTryToPurchaseCartOneCondFail()
         {
-            Guid tempid = trading.Enter().Value;
-            tempid = trading.Login(tempid, "AsiAzar@gmail.com", "Aa12345678").Value;
             //Arrange
-            trading.AddCondition(tempid,storeID1, "Item", "ipad 32","min quantity", 1, DateTime.MaxValue);
-            trading.AddCondition(tempid,storeID2, "Store", "","min value", 5000, DateTime.MaxValue);
+            trading.AddCondition(userID, storeID1, "Item", "ipad 32","min quantity", 1, DateTime.MaxValue);
+            trading.AddCondition(userID, storeID2, "Store", "","min value", 5000, DateTime.MaxValue);
 
             //Act
             Response task1 = trading.CheckPurchaseConditions(buyerID);
@@ -59,11 +54,10 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod()]
         public void UserTryToPurchaseCartTwoCondFail()
         {  
-            Guid tempid = trading.Enter().Value;
-            tempid = trading.Login(tempid, "AsiAzar@gmail.com", "Aa12345678").Value;
+
             //Arrange
-            trading.AddCondition(tempid,storeID1, "Item", "ipad 32","min quantity", 3, DateTime.MaxValue);
-            trading.AddCondition(tempid,storeID1, "Store", "","min value", 5000, DateTime.MaxValue);
+            trading.AddCondition(userID, storeID1, "Item", "ipad 32","min quantity", 3, DateTime.MaxValue);
+            trading.AddCondition(userID, storeID1, "Store", "","min value", 5000, DateTime.MaxValue);
 
             //Act
             Response task1 = trading.CheckPurchaseConditions(buyerID);

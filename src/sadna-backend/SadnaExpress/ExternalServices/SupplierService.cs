@@ -14,10 +14,12 @@ namespace SadnaExpress.ExternalServices
         private HttpClient client;
         string address = ApplicationOptions.SupplierServiceURL;
 
-        public SupplierService(string adrs = default)
+        public SupplierService(string adrs = null)
         {
             client = new HttpClient();
             address = adrs;
+            if (adrs == null)
+                address = ApplicationOptions.SupplierServiceURL;
 
         }
 
