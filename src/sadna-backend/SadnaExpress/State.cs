@@ -93,7 +93,6 @@ namespace SadnaExpress
                     case "Register":
                         userId = trading.Enter().Value;
                         email = parameters.email;
-                        Logger.Instance.Info(member.UserId, nameof(UserFacade) + ": " + nameof(Logout) + " logged out as member");
                         if (string.IsNullOrEmpty(email))
                         {
                            throw new Exception("The email field is null in function " + (function));
