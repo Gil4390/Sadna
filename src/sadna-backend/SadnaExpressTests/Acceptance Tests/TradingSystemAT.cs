@@ -43,11 +43,10 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestInitialize]
         public virtual void SetUp()
         {
-            DatabaseContextFactory.TestMode = true;
             DBHandler.Instance.TestMood = true;
-            DBHandler.Instance.CleanDB();
             proxyBridge = new ProxyBridge();
             passwordHash = new PasswordHash();
+            SystemActivityNotifier.GetInstance().TestMood = true;
             NotificationNotifier.GetInstance().TestMood = true;
             stores = new ConcurrentDictionary<Guid, Store>();
             Store store1 = new Store("Zara");

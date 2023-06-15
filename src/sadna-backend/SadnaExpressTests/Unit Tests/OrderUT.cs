@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.API.SignalR;
 using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer.Store;
 
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass()]
-    public class OrderUT
+    public class OrderUT : TradingSystemUT
     {
         private static Orders _orders;
         private Guid userID;
@@ -17,11 +18,9 @@ namespace SadnaExpressTests.Unit_Tests
         private new List<ItemForOrder> orderList;
             
         [TestInitialize]
-        public void SetUp()
+        public override void SetUp()
         {
-            DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
-            DBHandler.Instance.CleanDB();
+            base.SetUp();
             _orders = Orders.Instance;
             userID = Guid.NewGuid();
             storeID = Guid.NewGuid();

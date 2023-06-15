@@ -187,7 +187,7 @@ namespace SadnaExpress.DataLayer
 
         public void AddMember(Member newMember, string newMac)
         {
-            if (!TestMood)
+            if (!testMood)
             {
                 lock (this)
                 {
@@ -1024,23 +1024,6 @@ namespace SadnaExpress.DataLayer
                                 db.promotedMembers.Add(pm);
                                 //db.promotedMembers.Update(pm);
                                 db.SaveChanges(true);
-
-                                // update visit in the same day as today
-                                // first remove visit with this id only if in the same date as today
-                                string todayStr = DateTime.Now.ToString("dd/MM/yyyy");
-                                var visits = db.visits;
-                                var mem = visits.FirstOrDefault(g => g.UserID.Equals(pm.UserId) && g.VisitDate.Equals(todayStr));
-                                if (mem != null)
-                                {
-                                    visits.Remove(mem);
-                                    db.SaveChanges(true);
-
-                                    // then add a new visit for this member
-
-                                    Visit newVisit = new Visit { UniqueID = Guid.NewGuid(), UserID = pm.UserId, Role = pm.GetRole(), VisitDate = DateTime.Now.ToString("dd/MM/yyyy") };
-                                    visits.Add(newVisit);
-                                    db.SaveChanges(true);
-                                }
                             }
                             catch (Exception ex)
                             {
@@ -1153,23 +1136,6 @@ namespace SadnaExpress.DataLayer
                                 db.members.Add(pm);
                                 //db.promotedMembers.Update(pm);
                                 db.SaveChanges(true);
-
-                                // update visit in the same day as today
-                                // first remove visit with this id only if in the same date as today
-                                string todayStr = DateTime.Now.ToString("dd/MM/yyyy");
-                                var visits = db.visits;
-                                var mem = visits.FirstOrDefault(g => g.UserID.Equals(pm.UserId) && g.Role.Equals("Member") && g.VisitDate.Equals(todayStr));
-                                if (mem != null)
-                                {
-                                    visits.Remove(mem);
-                                    db.SaveChanges(true);
-
-                                    // then add a new visit for this member
-
-                                    Visit newVisit = new Visit { UniqueID = Guid.NewGuid(), UserID = pm.UserId, Role = pm.GetRole(), VisitDate = DateTime.Now.ToString("dd/MM/yyyy") };
-                                    visits.Add(newVisit);
-                                    db.SaveChanges(true);
-                                }
                             }
                             catch (Exception ex)
                             {
@@ -2150,6 +2116,8 @@ namespace SadnaExpress.DataLayer
         #region System init managment
         public bool LoadSystemInit()
         {
+            CanConnectToDatabase();
+
             if (!testMood)
             {
                 lock (this)
@@ -2227,28 +2195,63 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public bool IsSystemInitialized()
+        {
+            bool result = false;
+            if (!testMood)
+            {
+                lock (this)
+                {
+                    try
+                    {
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        {
+                            try
+                            {
+                                var initialized = db.initializeSystems.FirstOrDefault();
+                                if (initialized != null)
+                                    result = initialized.IsInit;
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception("failed to interact with system initialized table");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                }
+            }
+            return result;
+        }
+
         #endregion
 
         #region Orders managment
         public void AddOrder(DatabaseContext db,Order newOrder)
         {
-            lock (this)
+            if (!testMood)
             {
-                try
+                lock (this)
                 {
-                    foreach (ItemForOrder itemForOrder in newOrder.ListItems)
+                    try
                     {
-                        db.ItemForOrders.Add(itemForOrder);
-                    }
+                        foreach (ItemForOrder itemForOrder in newOrder.ListItems)
+                        {
+                            db.ItemForOrders.Add(itemForOrder);
+                        }
 
-                    newOrder.ListItemsDB = newOrder.OrderIDsJson;
-                    db.orders.Add(newOrder);
-                    db.SaveChanges(true);
-                         
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
+                        newOrder.ListItemsDB = newOrder.OrderIDsJson;
+                        db.orders.Add(newOrder);
+                        db.SaveChanges(true);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
                 }
             }
         }
@@ -2461,7 +2464,7 @@ namespace SadnaExpress.DataLayer
         }
         #endregion
 
-        #endregion
+        #region Condition managment
 
         public void addCond( ConditionDB cond, Store store)
         {
@@ -2554,38 +2557,6 @@ namespace SadnaExpress.DataLayer
         
         public int GetCond(int condID, Guid storeID)
         {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
-                    {
-                        try
-                        {
-                            var cond = db.conditions.FirstOrDefault(c => c.ID.Equals(condID) && c.StoreID.Equals(storeID));
-                            if (cond != null)
-                            {
-                                return condID;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("failed to interact with stores table");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-            }
-
-            return -1;
-        }
-
-        public bool IsSystemInitialized()
-        {
-            bool result = false;
             if (!testMood)
             {
                 lock (this)
@@ -2596,13 +2567,15 @@ namespace SadnaExpress.DataLayer
                         {
                             try
                             {
-                                var initialized = db.initializeSystems.FirstOrDefault();
-                                if (initialized != null)
-                                    result = initialized.IsInit;
+                                var cond = db.conditions.FirstOrDefault(c => c.ID.Equals(condID) && c.StoreID.Equals(storeID));
+                                if (cond != null)
+                                {
+                                    return condID;
+                                }
                             }
                             catch (Exception ex)
                             {
-                                throw new Exception("failed to interact with system initialized table");
+                                throw new Exception("failed to interact with stores table");
                             }
                         }
                     }
@@ -2612,8 +2585,13 @@ namespace SadnaExpress.DataLayer
                     }
                 }
             }
-            return result;
+
+            return -1;
         }
+
+        #endregion
+
+        #region Policy managment
 
         public void AddPolicy(int id, Store store)
         {
@@ -2773,50 +2751,10 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
+        #endregion
 
-
-
-        public void CanConnectToDatabase()
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
-                    {
-                        db.Database.GetDbConnection().Open();
-                        db.Database.GetDbConnection().Close();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage+", No internet Connection. Please check your network settings.");
-                }
-            }
-        }
-
-        public void AddGuestVisit(User user)
-        {
-            lock (this)
-            {
-                try
-                {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
-                    {
-                        var visits = db.visits;
-                        Visit newVisit = new Visit { UniqueID = Guid.NewGuid(), UserID = user.UserId, Role = user.GetRole(), VisitDate = DateTime.Now.ToString("dd/MM/yyyy") };
-                        visits.Add(newVisit);
-                        db.SaveChanges(true);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(DbErrorMessage);
-                }
-            }
-        }
-
-        public void AddMemberVisit(Guid id, Member member)
+        #region Visit managment
+        public void AddGuestVisit(Visit newVisit)
         {
             if (!testMood)
             {
@@ -2826,28 +2764,7 @@ namespace SadnaExpress.DataLayer
                     {
                         using (var db = DatabaseContextFactory.ConnectToDatabase())
                         {
-                            // first remove visit with this id only if in the same date as today
-                            string todayStr = DateTime.Now.ToString("dd/MM/yyyy");
                             var visits = db.visits;
-                            var guest = visits.FirstOrDefault(g => g.UserID.Equals(id) && g.Role.Equals("Guest") && g.VisitDate.Equals(todayStr));
-                            if (guest != null)
-                            {
-                                visits.Remove(guest);
-                                db.SaveChanges(true);
-                            }
-                            try
-                            {
-                                guest = visits.FirstOrDefault(g => g.UserID.Equals(member.UserId) && g.VisitDate.Equals(todayStr));
-                                if (guest != null)
-                                {
-                                    visits.Remove(guest);
-                                    db.SaveChanges(true);
-                                }
-                            }
-                            catch { }
-                            // then add a new visit for this member
-                            
-                            Visit newVisit = new Visit { UniqueID = Guid.NewGuid(), UserID = member.UserId, Role = member.GetRole(), VisitDate = DateTime.Now.ToString("dd/MM/yyyy") };
                             visits.Add(newVisit);
                             db.SaveChanges(true);
                         }
@@ -2860,30 +2777,129 @@ namespace SadnaExpress.DataLayer
             }
         }
 
+        public void AddMemberVisit(Guid id, Visit newVisit)
+        {
+            if (!testMood)
+            {
+                lock (this)
+                {
+                    try
+                    {
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        {
+                            // first remove visit with this id only if in the same date as today
+                            string todayStr = DateTime.Now.ToString("dd/MM/yyyy");
+                            var visits = db.visits;
+                            var guest = visits.FirstOrDefault(v => v.UserID.Equals(id) && v.Role.Equals("guest") && v.VisitDate.Equals(todayStr));
+                            if (guest != null) //case member logged in 
+                            {
+                                visits.Remove(guest);
+                                db.SaveChanges(true);
+                            }
+                            try
+                            {
+                                guest = visits.FirstOrDefault(v => v.UserID.Equals(newVisit.UserID) && v.VisitDate.Equals(todayStr)&&v.Role.Equals(newVisit.Role));
+                                if (guest != null) //member already entered today with that role, no need to make more changes
+                                {
+                                    return;
+                                }
+                                else
+                                {
+                                    // then add a new visit for this member
+                                    visits.Add(newVisit);
+                                    db.SaveChanges(true);
+                                }
+                            }
+                            catch 
+                            {
+                                throw new Exception(DbErrorMessage);
+                            }
+                           
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                   
+                }           
+            }
+        }
 
         public List<Visit> GetVisitsInDates(string RoleType, DateTime start, DateTime end)
         {
-            lock (this)
+            if (!testMood)
             {
-                try
+                lock (this)
                 {
-                    using (var db = DatabaseContextFactory.ConnectToDatabase())
+                    try
                     {
-                        List<Visit> visitsList = db.visits
-                            .Where(g => 
-                            DateTime.ParseExact(g.VisitDate, "dd/MM/yyyy",CultureInfo.InvariantCulture) >= start &&
-                            DateTime.ParseExact(g.VisitDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) <= end)
-                            .ToList();
-                         
-                        return visitsList;
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        {
+                            List<Visit> visitsList = db.visits
+                                .Where(g =>
+                                DateTime.ParseExact(g.VisitDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= start &&
+                                DateTime.ParseExact(g.VisitDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) <= end)
+                                .ToList();
+
+                            return visitsList;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
                     }
                 }
-                catch (Exception ex)
+            }
+            return new List<Visit>();
+        }
+
+        public List<Visit> GetAllVisits()
+        {
+            if (!testMood)
+            {
+                lock (this)
                 {
-                    throw new Exception(DbErrorMessage);
+                    try
+                    {
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        {
+                            List<Visit> visitsList = db.visits.ToList();
+                            return visitsList;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                }
+            }
+            return new List<Visit>();
+        }
+        #endregion
+
+        public void CanConnectToDatabase()
+        {
+            if (!testMood)
+            {
+                lock (this)
+                {
+                    try
+                    {
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        {
+                            db.Database.GetDbConnection().Open();
+                            db.Database.GetDbConnection().Close();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage + ", No internet Connection. Please check your network settings.");
+                    }
                 }
             }
         }
 
+        #endregion
     }
 }

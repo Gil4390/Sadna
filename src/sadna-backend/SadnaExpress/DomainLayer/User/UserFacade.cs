@@ -59,7 +59,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             User user = new User();
             current_Users.TryAdd(user.UserId, user);
-            DBHandler.Instance.AddGuestVisit(user);
+            UserUsageData.Instance.AddGuestVisit(user);
             Logger.Instance.Info(user.UserId, nameof(UserFacade) + ": " + nameof(Enter) + ": enter the system as guest.");
             return user.UserId;
         }
@@ -185,7 +185,8 @@ namespace SadnaExpress.DomainLayer.User
                             throw new Exception("Incorrect email or password");
                         }
                     }
-                    DBHandler.Instance.AddMemberVisit(id, member);
+
+                    UserUsageData.Instance.AddMemberVisit(id, member);
                     Logger.Instance.Info($"{member} {member.Email} logged in");
                     return member.UserId;
                 }
@@ -220,7 +221,8 @@ namespace SadnaExpress.DomainLayer.User
                         members.TryAdd(memberFromDB.UserId, memberFromDB);
                         macs.TryAdd(memberFromDB.UserId, DBHandler.Instance.GetMacById(memberFromDB.UserId));
                     }
-                    DBHandler.Instance.AddMemberVisit(id, memberFromDB);
+
+                    UserUsageData.Instance.AddMemberVisit(id, members[memberFromDB.UserId]);
                     Logger.Instance.Info($"{memberFromDB} {memberFromDB.Email} logged in");
                     return memberFromDB.UserId;
                 }
@@ -1002,10 +1004,7 @@ namespace SadnaExpress.DomainLayer.User
             {
                 Logger.Instance.Info(userID, $" {nameof(UserFacade)} {nameof(GetSystemUserActivity)} system administrator requested to get System User Activity from {fromDate} to {toDate}");
 
-                List<int> data = new List<int>();
-                //call to db and get all visit data and sort it by that order: guests, members, managers, owners, admins
-
-                return data;
+                return UserUsageData.Instance.GetUserUsageData(fromDate, toDate);
             }
 
             throw new Exception("User doesn't have permissions to preform this operation");

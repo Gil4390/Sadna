@@ -21,5 +21,15 @@ namespace SadnaExpress.DomainLayer.User
         // 5. SystemManager -> מנהל מערכת
         public string Role { get; set; }
         public string VisitDate { get; set; } // format: DD/MM/YYYY
+
+        public override bool Equals(object obj)
+        {   //visits are the same if the same user by the same role logged in at the same day
+            if(obj is Visit)
+            {
+                Visit visitToCompare = (Visit)obj;
+                return visitToCompare.UserID==UserID && visitToCompare.Role==Role &&visitToCompare.VisitDate==VisitDate;
+            }
+            return base.Equals(obj);
+        }
     }
 }

@@ -6,7 +6,7 @@ using SadnaExpress.DataLayer;
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass()]
-    public class ShoppingCartUT
+    public class ShoppingCartUT: TradingSystemUT
     {
         private ShoppingCart shoppingCart;
         private ShoppingBasket shoppingBasket1;
@@ -14,11 +14,9 @@ namespace SadnaExpressTests.Unit_Tests
         private Guid storeID;
 
         [TestInitialize]
-        public void SetUp()
+        public override void SetUp()
         {
-            DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
-            DBHandler.Instance.CleanDB();
+            base.SetUp();
             itemID = Guid.NewGuid();
             storeID = Guid.NewGuid();
             shoppingCart = new ShoppingCart();
