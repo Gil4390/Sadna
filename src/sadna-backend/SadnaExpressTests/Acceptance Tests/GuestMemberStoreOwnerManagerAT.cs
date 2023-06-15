@@ -766,8 +766,6 @@ namespace SadnaExpressTests.Acceptance_Tests
              };
             // Wait for all clients to complete
             Task.WaitAll(clientTasks);
-            Console.WriteLine(clientTasks[0].Result.ErrorMessage);
-            Console.WriteLine(clientTasks[1].Result.ErrorMessage);
             bool situation1 = !clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured;
             bool situation2 = clientTasks[0].Result.ErrorOccured && !clientTasks[1].Result.ErrorOccured;
             Assert.IsTrue(situation1 || situation2);
@@ -785,7 +783,6 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             task.Wait();
             Assert.IsTrue(task.Result.ErrorOccured); //error should occur 
-            Console.WriteLine(task.Result.ErrorMessage);    
         }
 
         [TestMethod]

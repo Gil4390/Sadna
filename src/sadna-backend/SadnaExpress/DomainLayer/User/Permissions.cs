@@ -241,20 +241,17 @@ namespace SadnaExpress.DomainLayer.User
                 while (stack.Count > 0)
                 {
                     PromotedMember current = stack.Pop();
-                    Console.Write($"\nMy name is: {current.Email}, ");
                     employees.Add(current);
 
                     PromotedMember directManager = current.getDirectManager(storeID);
 
                     if (directManager != null && !employees.Contains(directManager))
                     {
-                        Console.Write($"My directManager is: {directManager.Email}, ");
                         stack.Push(directManager);
                     }
 
                     foreach (PromotedMember child in current.getAppoint(storeID))
                         if (!employees.Contains(child)) {
-                            Console.Write($"My child Are: {child.Email}, ");
                             stack.Push(child);
                         }
                 }
