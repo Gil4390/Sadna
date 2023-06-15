@@ -10,7 +10,7 @@ namespace SadnaExpressTests.Unit_Tests
 {
     
     [TestClass()]
-    public class StoreOwnerUT
+    public class StoreOwnerUT : TradingSystemUT
     {
         private Guid storeID;
         private Guid founderID;
@@ -22,11 +22,8 @@ namespace SadnaExpressTests.Unit_Tests
         
         #region SetUp
         [TestInitialize]
-        public void SetUp()
+        public override void SetUp()
         {
-            DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
-            NotificationNotifier.GetInstance().TestMood = true;
             UserFacade userFacade = new UserFacade();
             NotificationSystem.Instance.userFacade = userFacade;
             DBHandler.Instance.CleanDB();

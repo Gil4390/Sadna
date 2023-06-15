@@ -1,15 +1,15 @@
-﻿using SadnaExpress.ServiceLayer;
+﻿using SadnaExpress.API.SignalR;
+using SadnaExpress.DataLayer;
+using SadnaExpress.ServiceLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SadnaExpress.API.SignalR;
-using SadnaExpress.DataLayer;
 
-namespace SadnaExpressTests.Integration_Tests
+namespace SadnaExpressTests.Persistence_Tests
 {
-    public class TradingSystemIT
+    public class TradingSystemPT
     {
         protected TradingSystem trading;
         protected Guid userID;
@@ -19,10 +19,13 @@ namespace SadnaExpressTests.Integration_Tests
         protected Guid storeID2;
         protected Guid itemID1;
         protected Guid itemID2;
+        protected bool testMood = true;
 
         public virtual void Setup()
         {
-            DBHandler.Instance.TestMood = true;
+            DatabaseContextFactory.TestMode = true;
+            DBHandler.Instance.TestMood = testMood;
+            DBHandler.Instance.CleanDB();
             SystemActivityNotifier.GetInstance().TestMood = true;
             NotificationNotifier.GetInstance().TestMood = true;
             trading = new TradingSystem();
@@ -43,7 +46,7 @@ namespace SadnaExpressTests.Integration_Tests
             storeID1 = trading.OpenNewStore(userID, "hello").Value;
             storeID2 = trading.OpenNewStore(userID, "hello2").Value;
             // add items to stores
-            
+
             itemID1 = trading.AddItemToStore(userID, storeID1, "ipad 32", "electronic", 4000, 3).Value;
             itemID2 = trading.AddItemToStore(userID, storeID2, "ipad 32", "electronic", 3000, 1).Value;
             // create guest
@@ -55,6 +58,11 @@ namespace SadnaExpressTests.Integration_Tests
             // add items to cart buyer member
             trading.AddItemToCart(buyerMemberID, storeID1, itemID1, 2);
             trading.AddItemToCart(buyerMemberID, storeID2, itemID2, 1);
+        }
+
+        public void setTestMood()
+        {
+            testMood = false;
         }
 
         public virtual void CleanUp()

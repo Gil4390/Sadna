@@ -8,7 +8,7 @@ using SadnaExpress.DataLayer;
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass()]
-    public class StoreFacadeUT
+    public class StoreFacadeUT : TradingSystemUT
     {
         private IStoreFacade storeFacade;
         private Guid storeID;
@@ -26,11 +26,9 @@ namespace SadnaExpressTests.Unit_Tests
 
         #region SetUp
         [TestInitialize]
-        public void SetUp()
+        public override void SetUp()
         {
-            DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
-            DBHandler.Instance.CleanDB();
+            base.SetUp();
             storeFacade = new StoreFacade();
             storeFacade.SetIsSystemInitialize(true);
             storeID = Guid.NewGuid();

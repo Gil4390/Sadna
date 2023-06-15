@@ -35,9 +35,6 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
-            DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
-            DBHandler.Instance.CleanDB();
             members = new ConcurrentDictionary<Guid, Member>();
             member = new Member(memberid, "AssiAzar@gmail.com", "shay", "kresner", "ShaY1787%$%");
             members.TryAdd(memberid, member);

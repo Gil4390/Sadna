@@ -11,7 +11,7 @@ using SadnaExpressTests.Integration_Tests;
 namespace SadnaExpressTests.Persistence_Tests
 {
     [TestClass]
-    public class StoresDBtests: TradingSystemIT
+    public class StoresDBtests: TradingSystemPT
     {
         [TestInitialize]
         public override void Setup()

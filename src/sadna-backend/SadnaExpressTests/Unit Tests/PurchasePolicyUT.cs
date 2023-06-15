@@ -10,7 +10,7 @@ using SadnaExpress.DomainLayer.Store.Policy;
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass()]
-    public class PurchasePolicyUT
+    public class PurchasePolicyUT : TradingSystemUT
     {
         private Store store;
         private Guid item1;
@@ -27,11 +27,9 @@ namespace SadnaExpressTests.Unit_Tests
         
         #region SetUp
         [TestInitialize]
-        public void SetUp()
+        public override void SetUp()
         {
-            DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
-            DBHandler.Instance.CleanDB();
+           base.SetUp();
             store = new Store("Hello");
             item1 = store.AddItem("Bisli", "Food", 10.0, 2);
             item2 = store.AddItem("Bamba", "Food", 8.0, 2);

@@ -46,23 +46,15 @@ function CartPage(props) {
   };
 
   const handleCheckout=(id)=>{
-    handleHandshake().then(
+   
+    handleCheckPurchaseConditions(id).then(
       value => {
-        if (value.errorMessage=="OK")
-        {
-          handleCheckPurchaseConditions(id).then(
-            value => {
-              value.errorOccured ?
-              alert(value.errorMessage) :  navigate('/PaymentPage', {state: {id}})
-            })
-            .catch(error => alert(error));
-        }
-        else
-        {
-          alert(value.errorMessage)
-        }
+        value.errorOccured ?
+        alert(value.errorMessage) :  navigate('/PaymentPage', {state: {id}})
       })
       .catch(error => alert(error));
+     
+  
 
   }
 

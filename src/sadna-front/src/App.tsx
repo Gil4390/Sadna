@@ -18,7 +18,7 @@ import { hubConnection,connection } from 'signalr-no-jquery';
 import Popup from './components/Popup.tsx';
 import ReactDOM from 'react-dom';
 import { handleGetMemberName } from './actions/MemberActions.tsx';
-import useSignalRNotifications from './hooks/useSignalRNotifications.ts';
+import useSignalRNotifications from './hooks/signalR/useSignalRNotifications.ts';
 //import { useLocalStorage } from './hooks/useLocalStorage.ts'; local storage
 
 const App:React.FC=()=>{

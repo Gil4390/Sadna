@@ -28,13 +28,11 @@ namespace SadnaExpress.DataLayer
         public DbSet<ShoppingBasket> shoppingBaskets { get; set; }
         public DbSet<Bid> bids { get; set; }
         public DbSet<InitializeSystem> initializeSystems { get; set; }
-
         public DbSet<Notification> notfications { get; set; }
         public DbSet<ConditionDB> conditions { get; set; }
-
         public DbSet<PolicyDB> policies { get; set; }
-
         public DbSet<Visit> visits { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connection = System.Configuration.ConfigurationManager.ConnectionStrings["MasterConnectionString"].ConnectionString;

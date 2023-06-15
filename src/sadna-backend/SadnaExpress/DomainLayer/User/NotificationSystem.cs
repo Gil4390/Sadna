@@ -119,6 +119,7 @@ namespace SadnaExpress.DomainLayer
 
         public void LoadNotificationOfficialsFromDB()
         {
+            DBHandler.Instance.CanConnectToDatabase();
             NotificationOfficials = DBHandler.Instance.LoadNotificationOfficialsFromDB();
         }
     }

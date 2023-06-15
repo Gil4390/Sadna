@@ -82,8 +82,8 @@ namespace SadnaExpress.ServiceLayer
             //load NotificationSystemList of Officials employees
             NotificationSystem.Instance.LoadNotificationOfficialsFromDB();
 
-            //load founder list in userfacade ??
-
+            //load visits list in UserUsageData 
+            UserUsageData.Instance.LoadVisitsData();
         }
 
         public static TradingSystem Instance
@@ -672,11 +672,14 @@ namespace SadnaExpress.ServiceLayer
 
             #endregion
 
+            #region system manager actions
             ResponseT<Guid> resLoginSystemManager = Login(systemManagerid, ApplicationOptions.SystemManagerEmail, ApplicationOptions.SystemManagerPass);
             if (resLoginSystemManager.ErrorOccured) { ThrowLoadDataException(resLoginSystemManager.ErrorMessage); }
             systemManagerid = resLoginSystemManager.Value;
             userManager.CreateSystemManager(systemManagerid);
+            #endregion
 
+            #region store owner 1 actions
             ResponseT<Guid> resLoginStoreOwner1 = Login(storeOwnerid1, "AsiAzar@gmail.com", "A#!a12345678");
             if (resLoginStoreOwner1.ErrorOccured) { ThrowLoadDataException(resLoginStoreOwner1.ErrorMessage); }
             storeOwnerid1 = resLoginStoreOwner1.Value;
@@ -720,8 +723,9 @@ namespace SadnaExpress.ServiceLayer
 
             Response resAppointStoreManager1 = AppointStoreManager(storeOwnerid1, storeZaraID, "kobi@gmail.com");
             if (resAppointStoreManager1.ErrorOccured) { ThrowLoadDataException(resAppointStoreManager1.ErrorMessage); }
+            #endregion
 
-
+            #region store owner 2 actions
             ResponseT<Guid> resLoginStoreOwner2 = Login(storeOwnerid2, "dani@gmail.com", "A#!a12345678");
             if (resLoginStoreOwner2.ErrorOccured) { ThrowLoadDataException(resLoginStoreOwner2.ErrorMessage); }
             storeOwnerid2 = resLoginStoreOwner2.Value;
@@ -744,7 +748,9 @@ namespace SadnaExpress.ServiceLayer
 
             Response resAppointStoreManager2 = AppointStoreManager(storeOwnerid2, storeFoxID, "Yael@gmail.com");
             if (resAppointStoreManager2.ErrorOccured) { ThrowLoadDataException(resAppointStoreManager2.ErrorMessage); }
+            #endregion
 
+            #region Exit all users
             Response resExitSystemManager =Exit(systemManagerid);
             if (resExitSystemManager.ErrorOccured) { ThrowLoadDataException(resExitSystemManager.ErrorMessage); }
 
@@ -774,6 +780,8 @@ namespace SadnaExpress.ServiceLayer
 
             Response resExitStoreManager2 = Exit(storeManagerid2);
             if (resExitStoreManager2.ErrorOccured) { ThrowLoadDataException(resExitStoreManager2.ErrorMessage); }
+
+#endregion
 
             //SetIsSystemInitialize(false);
         }

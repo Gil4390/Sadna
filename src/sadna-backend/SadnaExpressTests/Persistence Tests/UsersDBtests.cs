@@ -9,7 +9,7 @@ using SadnaExpressTests.Integration_Tests;
 namespace SadnaExpressTests.Persistence_Tests
 {
     [TestClass]
-    public class UsersDBtests: TradingSystemIT
+    public class UsersDBtests: TradingSystemPT
     {
         [TestInitialize]
         public override void Setup()

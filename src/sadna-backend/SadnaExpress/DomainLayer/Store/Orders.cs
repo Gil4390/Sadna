@@ -151,6 +151,7 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void LoadOrdersFromDB()
         {
+            DBHandler.Instance.CanConnectToDatabase();
             List<Order> allOrders=DBHandler.Instance.GetAllOrders();
 
             foreach (Order order in allOrders)

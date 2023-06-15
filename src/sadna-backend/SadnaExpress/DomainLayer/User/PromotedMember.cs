@@ -445,6 +445,7 @@ namespace SadnaExpress.DomainLayer.User
         }
 
         #endregion
+
         public override bool Equals(object obj) 
         {
             PromotedMember newPm = (PromotedMember)obj;
@@ -458,25 +459,23 @@ namespace SadnaExpress.DomainLayer.User
 
         public override string GetRole()
         {
-            string role = "PromotedMember";
-            if(PermissionDB.Contains("system manager permissions"))
+            //here we look for the "highst" permissions 
+
+            string role = "";
+            if (PermissionDB.Contains("system manager permissions"))
             {
-                role += ",system manager";
+                role = "system manager";
             }
-            if (PermissionDB.Contains("founder permissions"))
+            else if (PermissionDB.Contains("founder permissions") || PermissionDB.Contains("owner permissions"))
             {
-                role += ",founder";
+                role += "founder or owner";
             }
-            else
+            else if (PermissionDB.Contains("edit manager permissions") || PermissionDB.Contains("get store history") ||
+                    PermissionDB.Contains("add new owner") || PermissionDB.Contains("remove owner") ||
+                    PermissionDB.Contains("add new manager") || PermissionDB.Contains("get employees info") ||
+                    PermissionDB.Contains("product management permissions") || PermissionDB.Contains("policies permission"))
             {
-                if (PermissionDB.Contains("owner permissions"))
-                {
-                    role += ",owner";
-                }
-                if (PermissionDB.Contains("get store history"))
-                {
-                    role += ",store manager";
-                }
+                role += "store manager";
             }
 
             return role;

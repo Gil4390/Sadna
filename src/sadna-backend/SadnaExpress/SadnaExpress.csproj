@@ -76,6 +76,8 @@
     <Compile Include="API\SignalR\NotificationNotifier.cs" />
     <Compile Include="API\SignalR\SignalRServerConfig.cs" />
     <Compile Include="API\SignalR\SignalRServiceHost.cs" />
+    <Compile Include="API\SignalR\SystemActivityHub.cs" />
+    <Compile Include="API\SignalR\SystemActivityNotifier.cs" />
     <Compile Include="DataLayer\DatabaseContext.cs" />
     <Compile Include="DataLayer\DBHandler.cs" />
     <Compile Include="DomainLayer\Store\Policy\ConditionDB.cs" />
@@ -112,6 +114,7 @@
     <Compile Include="DomainLayer\User\PasswordHash.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserFacade.cs" />
+    <Compile Include="DomainLayer\User\UserUsageData.cs" />
     <Compile Include="DomainLayer\User\Visit.cs" />
     <Compile Include="ExternalServices\PaymentService.cs" />
     <Compile Include="ExternalServices\SupplierService.cs" />

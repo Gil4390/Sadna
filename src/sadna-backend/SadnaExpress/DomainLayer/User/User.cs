@@ -60,7 +60,7 @@ namespace SadnaExpress.DomainLayer.User
 
         public virtual string GetRole()
         {
-            return "Guest";
+            return "guest";
         }
 
         public void AddItemToCart(Guid storeID, Guid itemID, int itemAmount)

@@ -11,7 +11,7 @@ using SadnaExpress.DataLayer;
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass()]
-    public class BidsUT
+    public class BidsUT : TradingSystemUT
     {
         private Guid store;
         private Guid item1;
@@ -24,11 +24,9 @@ namespace SadnaExpressTests.Unit_Tests
         #region SetUp
 
         [TestInitialize]
-        public void SetUp()
+        public override void SetUp()
         {
-            DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
-            DBHandler.Instance.CleanDB();
+            base.SetUp();
             store = Guid.NewGuid();
             item1 = Guid.NewGuid();
             item2 = Guid.NewGuid();
@@ -38,6 +36,7 @@ namespace SadnaExpressTests.Unit_Tests
             UserFacade userFacade = new UserFacade();
             userFacade.members.TryAdd(userID, member);
 
+            SystemActivityNotifier.GetInstance().TestMood = true;
             NotificationNotifier.GetInstance().TestMood = true;
             NotificationSystem.Instance.userFacade = userFacade;
 

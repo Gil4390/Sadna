@@ -12,7 +12,7 @@ using SadnaExpress.DataLayer;
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass()]
-    public class NotificationUT
+    public class NotificationUT: TradingSystemUT
     {
         private NotificationSystem notificationSystem = NotificationSystem.Instance;
         private Guid storeID;
@@ -25,12 +25,9 @@ namespace SadnaExpressTests.Unit_Tests
 
         #region SetUp
         [TestInitialize]
-        public void SetUp()
+        public override void SetUp()
         {
-            DatabaseContextFactory.TestMode = true;
-            DBHandler.Instance.TestMood = true;
-            DBHandler.Instance.CleanDB();
-            NotificationNotifier.GetInstance().TestMood = true;
+            base.SetUp();
             UserFacade userFacade = new UserFacade();
             notificationSystem.userFacade = userFacade;
             storeID = Guid.NewGuid();
