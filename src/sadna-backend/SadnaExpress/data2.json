@@ -76,10 +76,10 @@
   {
     "function": "AddItemToStore",
     "params": {
-      "itemName": "BAMBA",
+      "itemName": "Apple",
       "storeName": "store1",
-      "itemPrice": 30,
-      "itemQuantity": 20,
+      "itemPrice": 20,
+      "itemQuantity": 10,
       "itemCategory": "food",
       "email": "user2@gmail.com"
 
