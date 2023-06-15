@@ -109,5 +109,10 @@ namespace SadnaExpress.DomainLayer.User
 
         }
 
+        public override string GetRole()
+        {
+            return "Member";
+        }
+
     }
 }

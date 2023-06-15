@@ -59,6 +59,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             User user = new User();
             current_Users.TryAdd(user.UserId, user);
+            DBHandler.Instance.AddGuestVisit(user);
             Logger.Instance.Info(user.UserId, nameof(UserFacade) + ": " + nameof(Enter) + ": enter the system as guest.");
             return user.UserId;
         }
@@ -184,6 +185,7 @@ namespace SadnaExpress.DomainLayer.User
                             throw new Exception("Incorrect email or password");
                         }
                     }
+                    DBHandler.Instance.AddMemberVisit(id, member);
                     Logger.Instance.Info($"{member} {member.Email} logged in");
                     return member.UserId;
                 }
@@ -218,7 +220,7 @@ namespace SadnaExpress.DomainLayer.User
                         members.TryAdd(memberFromDB.UserId, memberFromDB);
                         macs.TryAdd(memberFromDB.UserId, DBHandler.Instance.GetMacById(memberFromDB.UserId));
                     }
-
+                    DBHandler.Instance.AddMemberVisit(id, memberFromDB);
                     Logger.Instance.Info($"{memberFromDB} {memberFromDB.Email} logged in");
                     return memberFromDB.UserId;
                 }
