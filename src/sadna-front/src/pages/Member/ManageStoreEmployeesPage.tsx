@@ -18,7 +18,7 @@ const ManageStoreEmployeesPage = (props) => {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [appointEmail, setAppointEmail] = useState<string>('');
-  const [appointType, setAppointType] = useState<string>('Appintment owner');
+  const [appointType, setAppointType] = useState<string>('Appoint store owner');
   
   const [selectedEmployee, setSelectedEmployee] = useState<Member>();
   const [getEmployeesResponse, setGetEmployeesResponse]=useState<ResponseT>();
@@ -46,7 +46,7 @@ useEffect(() => {
 
   const handleEditModalClose = () => {setShowEditModal(false); setEditPermission('owner permissions');}
 
-  const handleAddModalClose = () => {setShowAddModal(false); setAppointEmail(''); setAppointType('Appintment owner');}
+  const handleAddModalClose = () => {setShowAddModal(false); setAppointEmail(''); setAppointType('Appoint store owner');}
   const handleAddModalShow = () => setShowAddModal(true);
 
 
@@ -97,7 +97,7 @@ useEffect(() => {
     event.preventDefault();
     if(isValidEmail(appointEmail))
     {
-      if(appointType==="Appoint owner"){
+      if(appointType==="Appoint store owner"){
         handleAppointStoreOwner(userId, storeId,appointEmail).then(
           value => {
             
@@ -175,10 +175,10 @@ useEffect(() => {
               style={{borderColor: isValidEmail(appointEmail) || appointEmail.length === 0 ? '#28a745' : '#dc3534'}} />
               {!isValidEmail(appointEmail) && appointEmail.length > 0 && <Form.Text className='text-danger'>Not Valid Email! Try Again!</Form.Text>}
           </Form.Group>
-          <span className="fs-2">Choose appintment type:</span>
+          <span className="fs-2">Choose Appoint type:</span>
           <Form.Control as="select" value={appointType} onChange={handleAppointTypeChange}>
-            <option value="Appintment owner">Appintment owner</option>
-            <option value="Appintment store manager">Appintment store manager</option>
+            <option value="Appoint store owner">Appoint store owner</option>
+            <option value="Appoint store manager">Appoint store manager</option>
           </Form.Control>
           <Button variant="primary" style={{margin: "0.5rem"}} onClick={handleAddEmployee}>
             Add
@@ -205,11 +205,15 @@ useEffect(() => {
             <td>{member.email}</td>
             <td>{member.didApprove ? (
               <div> 
-                <strong>Approvers Left: </strong>
-                <div>
-                  {member.approvers.map((approver, index) => (<div key={index}> {approver} </div>))}
-                </div>
-              </div>) : (
+                {member.approvers.length === 0 ? <span>Employed</span> : 
+                <span>
+                  <strong>Approvers Left: </strong>
+                  <div>
+                    {member.approvers.map((approver, index) => (<div key={index}> {approver} </div>))}
+                  </div>
+                </span>
+                }
+              </div>) : (
               <div>
                 <Button variant="success" onClick={() => reactToJobOffer(member.id, true)} style={{margin: "0.3rem"}}>
                   Approve 
