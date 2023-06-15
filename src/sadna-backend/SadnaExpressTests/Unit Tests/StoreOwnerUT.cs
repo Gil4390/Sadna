@@ -26,7 +26,6 @@ namespace SadnaExpressTests.Unit_Tests
         {
             UserFacade userFacade = new UserFacade();
             NotificationSystem.Instance.userFacade = userFacade;
-            DBHandler.Instance.CleanDB();
             founderID = Guid.NewGuid();
             storeID = Guid.NewGuid();
             storeOwnerDirectID = Guid.NewGuid();
