@@ -116,7 +116,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult AppointStoreOwner([FromBody] StoreManagerRequest request)
         {
-            return Ok(tradingSystem.AppointStoreOwner(request.userID, request.storeID, request.userEmail));
+            Response res = tradingSystem.AppointStoreOwner(request.userID, request.storeID, request.userEmail);
+            return Ok(res);
         }
 
         [Route(APIConstants.MemberData.closeStore)]

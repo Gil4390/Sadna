@@ -120,7 +120,7 @@ namespace SadnaExpress.DomainLayer.User
         }
         public Tuple<List<Member>, List<Member>, HashSet<Guid>> RemoveStoreOwner(Guid storeID,PromotedMember directOwner, Member member)
         {
-            if (!member.hasPermissions(storeID, new List<string> {"owner permissions"}))
+            if (!member.hasPermissions(storeID, new List<string> {"owner permissions", "founder permissions" }))
                 throw new Exception($"The member {member.Email} isn't owner");
             PromotedMember storeOwner = ((PromotedMember)member);
             
