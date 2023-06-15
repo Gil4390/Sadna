@@ -93,24 +93,30 @@ namespace SadnaExpress
                     case "Register":
                         userId = trading.Enter().Value;
                         email = parameters.email;
+                        Logger.Instance.Info(member.UserId, nameof(UserFacade) + ": " + nameof(Logout) + " logged out as member");
                         if (string.IsNullOrEmpty(email))
                         {
                            throw new Exception("The email field is null in function " + (function));
+                           Logger.Instance.Error("The email field is null in function " + (function));
+
                         }
                         string firstName = parameters.firstName;
                         if (string.IsNullOrEmpty(firstName))
                         {
                             throw new Exception("The firstName field is null in function " + (function));
+                            Logger.Instance.Error("The firstName field is null in function " + (function));
                         }
                         string lastName = parameters.lastName;
                         if (string.IsNullOrEmpty(lastName))
                         {
                             throw new Exception("The lastName field is null in function " + (function));
+                            Logger.Instance.Error("The lastName field is null in function " + (function));
                         }
                         string password = parameters.password;
                         if (string.IsNullOrEmpty(password))
                         {
                             throw new Exception("The password field is null in function " + (function));
+                            Logger.Instance.Error("The password field is null in function " + (function));
                         }
                         Response res = trading.Register(userId, email, firstName, lastName, password);
                         if (res.ErrorOccured)
@@ -119,6 +125,9 @@ namespace SadnaExpress
                         members.Add(email, member);
                         expectedParamsCount = 4;
                         checkExpectedParams(expectedParamsCount, parameters, function);
+
+                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+
                         break;
 
                     case "CreateSystemManager":
@@ -128,12 +137,19 @@ namespace SadnaExpress
                         if (string.IsNullOrEmpty(email))
                         {
                             throw new Exception("The email field is null in function " + (function));
+                            Logger.Instance.Error("The email field is null in function " + (function));
+
                         }
                         userId = members[email].UserId;
                         PromotedMember promotedMember = trading.GetMember(email).Value.promoteToMember();
-                        if (promotedMember == null)
+                        if (promotedMember == null) { 
                             throw new Exception("unable to promoted this member");
+                            Logger.Instance.Error("unable to promoted this member");
+
+                        }
                         promotedMember.createSystemManager();
+                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+
                         break;
 
                     case "Login":
@@ -144,15 +160,18 @@ namespace SadnaExpress
                         if (string.IsNullOrEmpty(email))
                         {
                             throw new Exception("The email field is null in function " + (function));
+                            Logger.Instance.Error("The email field is null in function " + (function));
                         }
                         password = parameters.password;
                         if (string.IsNullOrEmpty(password))
                         {
                             throw new Exception("The password field is null in function " + (function));
+                            Logger.Instance.Error("The password field is null in function " + (function));
                         }
                         ResponseT<Guid> response = trading.Login(userId, email, password);
                         if (response.ErrorOccured)
                             throw new Exception(response.ErrorMessage);
+                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
                         break;
 
@@ -163,11 +182,15 @@ namespace SadnaExpress
                         if (string.IsNullOrEmpty(email))
                         {
                             throw new Exception("The email field is null in function " + (function));
+                            Logger.Instance.Error("The email field is null in function " + (function));
+
                         }
                         userId = members[email].UserId;
                         response = trading.Logout(userId);
                         if (response.ErrorOccured)
                             throw new Exception(response.ErrorMessage);
+                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+
                         break;
 
                     case "OpenNewStore":
@@ -177,11 +200,15 @@ namespace SadnaExpress
                         if (string.IsNullOrEmpty(StoreName))
                         {
                             throw new Exception("The StoreName field is null in function " + (function));
+                            Logger.Instance.Error("The email field is null in function " + (function));
+
                         }
                         email = parameters.email;
                         if (string.IsNullOrEmpty(email))
                         {
                             throw new Exception("The email field is null in function " + (function));
+                            Logger.Instance.Error("The email field is null in function " + (function));
+
                         }
                         userId = members[email].UserId;
                         response = trading.OpenNewStore(userId, StoreName);
@@ -189,6 +216,8 @@ namespace SadnaExpress
                             throw new Exception(response.ErrorMessage);
                         Store store = trading.GetStore(StoreName).Value;
                         stores.Add(StoreName, store);
+                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+
                         break;
 
                     case "AppointStoreOwner":
@@ -198,16 +227,22 @@ namespace SadnaExpress
                         if (string.IsNullOrEmpty(email))
                         {
                             throw new Exception("The email field is null in function " + (function));
+                            Logger.Instance.Error("The email field is null in function " + (function));
+
                         }
                         String anotherEmail = parameters.MemberEmail;
                         if (string.IsNullOrEmpty(anotherEmail))
                         {
                             throw new Exception("The anotherEmail field is null in function " + (function));
+                            Logger.Instance.Error("The anotherEmail field is null in function " + (function));
+
                         }
                         StoreName = parameters.StoreName;
                         if (string.IsNullOrEmpty(StoreName))
                         {
                             throw new Exception("The StoreName field is null in function " + (function));
+                            Logger.Instance.Error("The StoreName field is null in function " + (function));
+
                         }
                         userId = members[email].UserId;
                         anotherEmail = members[anotherEmail].Email;
@@ -215,6 +250,9 @@ namespace SadnaExpress
                         res = trading.AppointStoreOwner(userId, storeID, anotherEmail);
                         if (res.ErrorOccured)
                             throw new Exception(res.ErrorMessage);
+
+                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+
                         break;
 
                     case "AppointStoreManager":
@@ -224,20 +262,28 @@ namespace SadnaExpress
                         if (string.IsNullOrEmpty(email))
                         {
                             throw new Exception("The email field is null in function " + (function));
+                            Logger.Instance.Error("The email field is null in function " + (function));
+
                         }
                         anotherEmail = parameters.MemberEmail;
                         if (string.IsNullOrEmpty(anotherEmail))
                         {
                             throw new Exception("The anotherEmail field is null in function " + (function));
+                            Logger.Instance.Error("The anotherEmail field is null in function " + (function));
+
                         }
                         StoreName = parameters.StoreName;
                         if (string.IsNullOrEmpty(StoreName))
                         {
                             throw new Exception("The StoreName field is null in function " + (function));
+                            Logger.Instance.Error("The StoreName field is null in function " + (function));
+
                         }
                         if (string.IsNullOrEmpty(parameters.Permission))
                         {
                             throw new Exception("The permission field is null in function " + (function));
+                            Logger.Instance.Error("The permission field is null in function " + (function));
+
                         }
                         userId = members[email].UserId;
                         anotherEmail = members[anotherEmail].Email;
@@ -248,6 +294,8 @@ namespace SadnaExpress
                         res = trading.AddStoreManagerPermissions(userId, storeID, anotherEmail, parameters.Permission);
                         if (res.ErrorOccured)
                             throw new Exception(res.ErrorMessage);
+                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+
                         break;
 
                     case "AddItemToStore":
@@ -257,11 +305,15 @@ namespace SadnaExpress
                         if (string.IsNullOrEmpty(email))
                         {
                             throw new Exception("The email field is null in function " + (function));
+                            Logger.Instance.Error("The email field is null in function " + (function));
+
                         }
                         StoreName = parameters.StoreName;
                         if (string.IsNullOrEmpty(StoreName))
                         {
                             throw new Exception("The StoreName field is null in function " + (function));
+                            Logger.Instance.Error("The StoreName field is null in function " + (function));
+
                         }
                         storeID = stores[StoreName].StoreID;
                         userId = members[email].UserId;
@@ -269,23 +321,33 @@ namespace SadnaExpress
                         if (string.IsNullOrEmpty(itemName))
                         {
                             throw new Exception("The itemName field is null in function " + (function));
+                            Logger.Instance.Error("The itemName field is null in function " + (function));
+
                         }
                         String itemCategory = parameters.ItemCategory;
                         if (string.IsNullOrEmpty(itemCategory))
                         {
                             throw new Exception("The itemCategory field is null in function " + (function));
+                            Logger.Instance.Error("The itemCategory field is null in function " + (function));
+
                         }
 
                         double itemPrice;
                         double.TryParse(parameters.ItemPrice, out itemPrice);
-                         if (itemPrice == 0)
+                         if (itemPrice == 0) { 
                             throw new Exception("The itemPrice field is 0 in function " + (function));
+                            Logger.Instance.Error("The itemPrice field is 0 in function " + (function));
+
+                            }
 
 
                         int quantity;
                         int.TryParse(parameters.ItemQuantity, out quantity);
-                        if (quantity == 0)
+                        if (quantity == 0) { 
                             throw new Exception("The quantity field is 0 in function " + (function));
+                            Logger.Instance.Error("The quantity field is 0 in function " + (function));
+
+                            }
 
                         res = trading.AddItemToStore(userId, storeID, itemName, itemCategory, itemPrice,
                             quantity);
@@ -293,6 +355,8 @@ namespace SadnaExpress
                             throw new Exception(res.ErrorMessage);
                         itemPrice = 0;
                         quantity = 0;
+                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+
                         break;
 
                 }
@@ -305,6 +369,8 @@ namespace SadnaExpress
             if (actualParamsCount != expectedParamsCount)
             {
                 throw new Exception($"Invalid number of parameters for function '{function}'. Expected: {expectedParamsCount}, Received: {actualParamsCount}");
+                Logger.Instance.Error($"Invalid number of parameters for function '{function}'. Expected: {expectedParamsCount}, Received: {actualParamsCount}");
+
             }
         }
 
@@ -334,6 +400,8 @@ namespace SadnaExpress
             if (members.Count != 3)
             {
                 throw new Exception("There is a user that was not initilized");
+                Logger.Instance.Error("There is a user that was not initilized");
+
             }
             List<Member> list = new List<Member>(members.Values);
 
@@ -344,6 +412,8 @@ namespace SadnaExpress
             if (storesList[0] == null)
             {
                 throw new Exception("The store was not created");
+                throw new Exception("The store was not created");
+
 
             }
             Guid storeID = storesList[0].StoreID;
@@ -358,6 +428,8 @@ namespace SadnaExpress
                     if (!((PromotedMember)member).hasPermissions(storeID, permissions))
                     {
                         throw new Exception("The user does not have the correct permissions");
+                        Logger.Instance.Error("The user does not have the correct permissions");
+
                     }
                 }
                 // user3 has owner permissions
@@ -366,11 +438,12 @@ namespace SadnaExpress
                     if (!((PromotedMember)member).hasPermissions(storeID, permissions))
                     {
                         throw new Exception("The user does not have the correct permissions");
+                        Logger.Instance.Error("The user does not have the correct permissions");
+
                     }
                 }
-
-
             }
+           Logger.Instance.Info("The parser for data.json file worked successfully.");
         }
 
         public void checkFile1()
@@ -384,6 +457,8 @@ namespace SadnaExpress
             if (members.Count != 6)
             {
                 throw new Exception("There is a user that was not initilized");
+                Logger.Instance.Error("There is a user that was not initilized");
+
             }
             List<Member> list = new List<Member>(members.Values);
 
@@ -393,6 +468,8 @@ namespace SadnaExpress
             if (storesList[0] == null)
             {
                 throw new Exception("The store was not created");
+                Logger.Instance.Error("The store was not created");
+
 
             }
             Guid storeID = storesList[0].StoreID;
@@ -402,6 +479,7 @@ namespace SadnaExpress
             if (items[0] == null)
             {
                 throw new Exception("The store does not have items");
+                Logger.Instance.Error("The store does not have items");
             }
             List<String> permissionsOwner = new List<string>();
             List<String> permissionsManager = new List<string>();
@@ -416,6 +494,8 @@ namespace SadnaExpress
                     if (!((PromotedMember)member).hasPermissions(storeID, permissionsManager))
                     {
                         throw new Exception("The user does not have the correct permissions");
+                        Logger.Instance.Error("The user does not have the correct permissions");
+
                     }
                 }
                 // user4 or user5 has owner permissions
@@ -425,11 +505,14 @@ namespace SadnaExpress
                     if (!((PromotedMember)member).hasPermissions(storeID, permissionsOwner))
                     {
                         throw new Exception("The user does not have the correct permissions");
+                        Logger.Instance.Error("The user does not have the correct permissions");
+
                     }
                 }
-              
+
             }
-           
+          Logger.Instance.Info("The parser for data2.json file worked successfully.");
+
         }
 
     }
