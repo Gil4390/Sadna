@@ -14,7 +14,7 @@ Tal Galmor - 318416575
 
 Dina Agapov - 207181629
 
-Hello! weolocme to Sadna Express, our trading system program.
+Hello! welocome to Sadna Express, our trading system program.
 we are third year students in software engineering in Ben Gurion University, we wrote this project for "Sadna" course.
 
 # State Configuration File:
@@ -45,7 +45,7 @@ Currently there are 3 possible initial states for the system to start with:
     <ul> 
       <li> Registered users: U1 - admin, U2, U3, U4, U5, U6 - members. </li>
       <li> U2 logs in and opens store S1. </li>
-      <li> U2 adds item "Bamba" to store S1 with cost 30$ and quantity 20. </li>
+      <li> U2 adds item "apple" to store S1 with cost 10$ and quantity 20. </li>
       <li> U2 appoints U3 as S1 store manager with permission to manage inventory. </li>
       <li> U2 appoints U4 and U5 as S1 store owners. </li>  
       <li> U2 logs out. </li>
