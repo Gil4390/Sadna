@@ -43,11 +43,9 @@ Currently there are 3 possible initial states for the system to start with:
   </li>
     <li> state2
     <ul> 
-      <li> Registered users: U1 - admin, U2, U3, U4, U5, U6 - members. </li>
-      <li> U2 logs in and opens store S1. </li>
-      <li> U2 adds item "apple" to store S1 with cost 10$ and quantity 20. </li>
-      <li> U2 appoints U3 as S1 store manager with permission to manage inventory. </li>
-      <li> U2 appoints U4 and U5 as S1 store owners. </li>  
+      <li> Registered users: U1 - admin, U2, U3, U4, U5 - members. </li>
+      <li> U2 logs in and opens store store1. </li>
+      <li> U2 adds item "apple" to store S1 with cost 20$ and quantity 10. </li>
       <li> U2 logs out. </li>
     </ul>
   </li>
