@@ -655,9 +655,9 @@ namespace SadnaExpress.DomainLayer.User
                     return servicesConnected = paymentService.Handshake() == "OK" && supplierService.Handshake() == "OK";
                 });
 
-                if (task.Result == false | task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)))
+                if (!(task.Result == true & task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime))))
                     throw new Exception("Error in connecting to external services , please try again in a few minutes.");
-                
+
             }
             catch (Exception e)
             {
