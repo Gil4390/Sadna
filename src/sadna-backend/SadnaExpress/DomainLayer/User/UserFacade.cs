@@ -398,7 +398,6 @@ namespace SadnaExpress.DomainLayer.User
                 {
                     members[newOwnerID] = owner;
                     DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newOwnerID]);
-                    NotificationSystem.Instance.RegisterObserver(storeID, owner);
                 }
             }
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AppointStoreOwner) + " appoints " + newOwnerID + " to new store owner");
@@ -418,7 +417,6 @@ namespace SadnaExpress.DomainLayer.User
                 {
                     members[newEmpID] = owner;
                     DBHandler.Instance.UpgradeMemberToPromotedMember((PromotedMember)members[newEmpID]);
-                    NotificationSystem.Instance.RegisterObserver(storeID, owner);
                 }
             }
         }

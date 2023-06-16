@@ -223,9 +223,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             proxyBridge.AddItemToCart(memberId, storeID5, item.ItemID, 1);
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
-
             proxyBridge.PurchaseCart(memberId, transactionDetails, transactionDetailsSupply);
-            
             Assert.AreEqual(pre + 1, unreadMessages(proxyBridge.GetMember(store5Manager).Value.AwaitingNotification).Count);
             
         }
@@ -830,26 +828,24 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void AppointingNewStoreOwnerBy2StoreOwners_Concurrent_Bad()
         {
             Task<Response> task1 = Task.Run(() => {
-                proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
-                return proxyBridge.ReactToJobOffer(store5Owner, storeID5, loggedInUserID1, true);
+                return proxyBridge.AppointStoreOwner(store5Founder, storeID5, "logmail1@gmail.com");
             });
 
 
             Task<Response> task2 = Task.Run(() => {
-                proxyBridge.AppointStoreOwner(store5Owner, storeID5, "logmail1@gmail.com");
-                return proxyBridge.ReactToJobOffer(store5Founder, storeID5, loggedInUserID1, true);
+                return proxyBridge.AppointStoreOwner(store5Owner, storeID5, "logmail1@gmail.com");
             });
 
             task1.Wait();
             task2.Wait();
             bool error1occured = task1.Result.ErrorOccured;
             bool error2occured = task2.Result.ErrorOccured;
-            Assert.IsTrue(error1occured || error2occured); //at lest one should fail
-            Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
+            Assert.IsFalse(error1occured || error2occured); 
 
             proxyBridge.AddItemToStore(loggedInUserID1, storeID5, "testItem", "test", 50.0, 45);
             int count = proxyBridge.GetItemsForClient(store5Owner, "testItem").Value.Count;
             Assert.AreEqual(1, count); //item was added because the user has permissions
+            Assert.AreEqual(4, proxyBridge.GetEmployeeInfoInStore(store5Founder, storeID5).Value.Count); 
         }
 
         #endregion
@@ -1029,6 +1025,8 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             Response response2 = proxyBridge.AddStoreManagerPermissions(store5Founder, storeID5, "storeManagerMail2@gmail.com", "owner permissions");
             Assert.IsFalse(response2.ErrorOccured); //error not occured 
+            proxyBridge.ReactToJobOffer(store5Owner, storeID5, store5Manager, true);
+            Assert.AreEqual(3, proxyBridge.GetEmployeeInfoInStore(store5Founder, storeID5).Value.Count);
 
             ResponseT<Guid> response3 = proxyBridge.AddItemToStore(store5Manager, storeID5, "testItem", "testCat", 50.0, 5);
             Assert.IsFalse(response3.ErrorOccured); //now he has permissions
@@ -1038,10 +1036,10 @@ namespace SadnaExpressTests.Acceptance_Tests
         [TestMethod]
         public void AddingOwnerPermissionsTwice_Bad()
         {
-            Response response1 = proxyBridge.AddStoreManagerPermissions(store5Founder, storeID5, "storeManagerMail2@gmail.com", "owner permissions");
+            Response response1 = proxyBridge.AddStoreManagerPermissions(store5Founder, storeID5, "storeManagerMail2@gmail.com","product management permissions");
             Assert.IsFalse(response1.ErrorOccured); //added permission 
 
-            Response response2 = proxyBridge.AddStoreManagerPermissions(store5Owner, storeID5, "storeManagerMail2@gmail.com", "owner permissions");
+            Response response2 = proxyBridge.AddStoreManagerPermissions(store5Owner, storeID5, "storeManagerMail2@gmail.com", "product management permissions");
             Assert.IsTrue(response2.ErrorOccured); //added again, should be error
         }
 
@@ -1082,6 +1080,7 @@ namespace SadnaExpressTests.Acceptance_Tests
 
 
             Task<Response> task2 = Task.Run(() => {
+                proxyBridge.AddStoreManagerPermissions(store5Owner, storeID5, "storeManagerMail2@gmail.com", "owner permissions");
                 return proxyBridge.AddStoreManagerPermissions(store5Owner, storeID5, "storeManagerMail2@gmail.com", "owner permissions");
             });
 
@@ -1091,6 +1090,8 @@ namespace SadnaExpressTests.Acceptance_Tests
             bool error2occured = task2.Result.ErrorOccured;
             Assert.IsTrue(error1occured || error2occured); //at lest one should fail
             Assert.IsTrue(!(error1occured && error2occured)); //at least one should succeed
+            Assert.AreEqual(3, proxyBridge.GetEmployeeInfoInStore(store5Founder, storeID5).Value.Count);
+            Assert.AreEqual(3, proxyBridge.GetEmployeeInfoInStore(store5Owner, storeID5).Value.Count);
         }
 
 
@@ -1108,6 +1109,8 @@ namespace SadnaExpressTests.Acceptance_Tests
 
             Response response2 = proxyBridge.AddStoreManagerPermissions(store5Founder, storeID5, "storeManagerMail2@gmail.com", "owner permissions");
             Assert.IsFalse(response2.ErrorOccured); //error not occured 
+            proxyBridge.ReactToJobOffer(store5Owner, storeID5, store5Manager, true);
+            Assert.AreEqual(3, proxyBridge.GetEmployeeInfoInStore(store5Founder, storeID5).Value.Count);
 
             ResponseT<Guid> response3 = proxyBridge.AddItemToStore(store5Manager, storeID5, "testItem", "testCat", 50.0, 5);
             Assert.IsFalse(response3.ErrorOccured); //now he has permissions
