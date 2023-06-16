@@ -51,15 +51,6 @@
     }
   },
   {
-    "function": "Register",
-    "params": {
-      "email": "user6@gmail.com",
-      "firstName": "user6",
-      "lastName": "user6",
-      "password": "asASD876!@"
-    }
-  },
-  {
     "function": "Login",
     "params": {
       "password": "asASD876!@",
@@ -83,32 +74,6 @@
       "itemCategory": "food",
       "email": "user2@gmail.com"
 
-    }
-  },
-  {
-    "function": "AppointStoreManager",
-    "params": {
-      "email": "user2@gmail.com",
-      "MemberEmail": "user3@gmail.com",
-      "storeName": "store1",
-      "permission":  "product management permissions" 
-    }
-  },
-  {
-    "function": "AppointStoreOwner",
-    "params": {
-      "email": "user2@gmail.com",
-      "MemberEmail": "user4@gmail.com",
-      "storeName": "store1"
-
-    }
-  },
-  {
-    "function": "AppointStoreOwner",
-    "params": {
-      "email": "user2@gmail.com",
-      "MemberEmail": "user5@gmail.com",
-      "storeName": "store1"
     }
   },
   {
