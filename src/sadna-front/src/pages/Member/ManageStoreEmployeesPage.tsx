@@ -9,6 +9,8 @@ import { ResponseT,Response } from "../../models/Response.tsx";
 
 const ManageStoreEmployeesPage = (props) => {
 
+  var remove_edit = ''
+
   const location = useLocation();
   const { userId, storeId } = location.state;
   const [employees, setEmployees] = useState<Member[]>([]);
@@ -59,11 +61,13 @@ useEffect(() => {
         .catch(error => alert(error));
   };
 
+  
   const handleRemovePermission = (event) => {
     event.preventDefault();
     handleRemoveStoreManagerPermission(userId, storeId,selectedEmployee?.email, editPermission ).then(
       value => {
         setEditPermissionResponse(value as Response);
+
       })
       .catch(error => alert(error));
   };
@@ -82,7 +86,9 @@ useEffect(() => {
   const EditPermissionSuccess=()=>{
     getStoreEmployees();
     handleEditModalClose();
-    alert("Permissions edited suucessfully")
+    setTimeout(() => {
+      alert("Permissions edited suucessfully")
+    }, 0);
   }
 
   const isValidEmail = (email) => 
@@ -124,7 +130,9 @@ useEffect(() => {
   const AddEmployeeSuccess=()=>{
     handleAddModalClose();
     getStoreEmployees();
-    alert("Permission added suucessfully to user") 
+    setTimeout(() => {
+      alert("Permission will be added upon approve of all owners") 
+        }, 0);
   }
 
   const handlePermissionChange = (event) => {

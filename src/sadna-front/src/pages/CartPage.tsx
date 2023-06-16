@@ -4,7 +4,7 @@ import { CartItem } from '../components/CartItem.tsx';
 import { useNavigate } from "react-router-dom";
 import { ItemCart } from '../models/Shop.tsx';
 import SystemNotInit from './SystemNotInit.tsx';
-import { handleGetDetailsOnCart, handleHandshake } from '../actions/GuestActions.tsx';
+import { handleGetDetailsOnCart } from '../actions/GuestActions.tsx';
 import Exit from './Exit.tsx';
 import { handleCheckPurchaseConditions } from '../actions/MemberActions.tsx';
 

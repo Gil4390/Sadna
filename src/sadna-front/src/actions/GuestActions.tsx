@@ -277,20 +277,3 @@ export function handlePlaceBid(userID, itemID, price) {
         return Promise.resolve(data)
     })
 }
-export function handleHandshake() {
-    let url = "http://localhost:8080/api/guest/handshake";
-  
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
