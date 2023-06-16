@@ -8,7 +8,9 @@ using SadnaExpress;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
 using SadnaExpress.ServiceLayer;
+using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.ServiceLayer.SModels;
+using SadnaExpressTests.Unit_Tests;
 using static SadnaExpressTests.Mocks;
 
 namespace SadnaExpressTests.Acceptance_Tests
@@ -16,10 +18,13 @@ namespace SadnaExpressTests.Acceptance_Tests
     [TestClass]
     public class GuestMemberSystemManagerAT : TradingSystemAT
     {
+        private UserUsageData userUsageData;
+
         [TestInitialize]
         public override void SetUp()
         {
             base.SetUp();
+            userUsageData = UserUsageData.Instance;
         }
 
         #region Purchases information history
@@ -321,7 +326,81 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.AreEqual(600, proxyBridge.GetSystemRevenue(systemManagerid, DateTime.Today).Value);
         }
         #endregion
-        
+
+        #region System activity
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsEnter_HappyTest()
+
+        {
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
+
+            int guestCount = userUsageData.GetUserUsageData(DateTime.Today, DateTime.Today)[0];
+
+            //Arrange
+            Task<ResponseT<Guid>>[] clientTasks = new Task<ResponseT<Guid>>[] {
+                Task.Run(() => proxyBridge.Enter()),
+                Task.Run(() => proxyBridge.Enter()),
+                Task.Run(() =>  proxyBridge.Enter()),
+                Task.Run(() =>  proxyBridge.Enter()),
+                Task.Run(() =>  proxyBridge.Enter()),
+                Task.Run(() =>  proxyBridge.Enter())
+             };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[3].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[4].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[5].Result.ErrorOccured);
+
+            Assert.IsTrue(proxyBridge.GetSystemUserActivity(systemManagerid, DateTime.Today, DateTime.Today).Value[0] == guestCount + 6
+                 && proxyBridge.GetSystemUserActivity(systemManagerid, DateTime.Today, DateTime.Today).Value[4] == 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Concurrency")]
+        public void MultipleClientsEnterAndLogin_HappyTest()
+        {
+            //Arrange
+            Guid tempid = proxyBridge.Enter().Value;
+            proxyBridge.Login(tempid, "RotemSela@gmail.com", "AS87654askj");
+
+            int guestCount = userUsageData.GetUserUsageData(DateTime.Today, DateTime.Today)[0];
+            int memberCount = userUsageData.GetUserUsageData(DateTime.Today, DateTime.Today)[1];
+
+            Task<ResponseT<Guid>>[] clientTasks = new Task<ResponseT<Guid>>[] {
+                Task.Run(() =>{ Guid guestId=proxyBridge.Enter().Value; return proxyBridge.Login(guestId, "sebatian@gmail.com", "asASD123!@"); }),
+                Task.Run(() => proxyBridge.Enter()),
+                Task.Run(() =>  proxyBridge.Enter()),
+                Task.Run(() =>  {Guid guestId=proxyBridge.Enter().Value; return proxyBridge.Login(guestId, "bar@gmail.com", "asASD159!@"); }),
+                Task.Run(() =>  proxyBridge.Enter()),
+                Task.Run(() =>  proxyBridge.Enter())
+             };
+
+            // Wait for all clients to complete
+            Task.WaitAll(clientTasks);
+
+            Assert.IsFalse(clientTasks[0].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[1].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[2].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[3].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[4].Result.ErrorOccured);
+            Assert.IsFalse(clientTasks[5].Result.ErrorOccured);
+
+            Assert.IsTrue(proxyBridge.GetSystemUserActivity(systemManagerid, DateTime.Today, DateTime.Today).Value[0] == guestCount+4
+                && proxyBridge.GetSystemUserActivity(systemManagerid, DateTime.Today, DateTime.Today).Value[1] == memberCount+2
+                && proxyBridge.GetSystemUserActivity(systemManagerid, DateTime.Today, DateTime.Today).Value[4]==1);
+        }
+
+
+        #endregion
+
         [TestCleanup]
         public override void CleanUp()
         {

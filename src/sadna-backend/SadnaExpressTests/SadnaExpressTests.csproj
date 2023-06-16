@@ -76,6 +76,7 @@
     <Compile Include="Unit Tests\TradingSystemUT.cs" />
     <Compile Include="Unit Tests\UserFacadeUT.cs" />
     <Compile Include="Unit Tests\StoreUT.cs" />
+    <Compile Include="Unit Tests\UserUsageDataUT.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
