@@ -50,15 +50,22 @@ namespace SadnaExpressTests.Persistence_Tests
             DBHandler.Instance.CleanDB();
             founderID = Guid.NewGuid();
             storeID = Guid.NewGuid();
+            UserFacade userFacade = new UserFacade();
+            NotificationSystem.Instance.userFacade = userFacade;
+            founderID = Guid.NewGuid();
+            storeID = Guid.NewGuid();
+            storeOwnerDirectID = Guid.NewGuid();
+            storeOwnerAppointID = Guid.NewGuid();
             founder =
-                new PromotedMember(founderID, "AssiAzar@gmail.com", "shay", "kresner", "ShaY1787%$%");
+                new PromotedMember(founderID, "AssiAzar@gmail.com", "Assi", "Azar", "ShaY1787%$%");
             founder.openNewStore(storeID);
-            Member memberBeforeOwner = new Member(storeOwnerDirectID, "RotemSela@gmail.com", "noga", "schwartz",
+            NotificationSystem.Instance.RegisterObserver(storeID, founder);
+            Member memberBeforeOwner = new Member(storeOwnerDirectID, "RotemSela@gmail.com", "Rotem", "Sela",
                 "ShaY1787%$%");
             storeOwnerDirect = founder.AppointStoreOwner(storeID, memberBeforeOwner);
+            NotificationSystem.Instance.RegisterObserver(storeID, storeOwnerDirect);
             storeOwnerAppoint = new Member(storeOwnerAppointID, "Tal@gmail.com", "Tal", "Galmor",
                 "ShaY1787%$%");
-            UserFacade userFacade = new UserFacade();
             userFacade.members.TryAdd(founder.UserId, founder);
             userFacade.members.TryAdd(storeOwnerAppoint.UserId, storeOwnerAppoint);
             userFacade.members.TryAdd(storeOwnerDirect.UserId, storeOwnerDirect);
