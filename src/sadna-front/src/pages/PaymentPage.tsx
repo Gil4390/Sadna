@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import { useNavigate, useLocation } from "react-router-dom";
 import { Response } from '../models/Response.tsx';
-import { handleHandshake, handlePurchaseCart } from '../actions/GuestActions.tsx';
+import { handlePurchaseCart } from '../actions/GuestActions.tsx';
 import Exit from "./Exit.tsx";
 
 function PaymentPage(props) {
