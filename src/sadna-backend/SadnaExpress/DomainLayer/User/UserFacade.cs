@@ -631,8 +631,7 @@ namespace SadnaExpress.DomainLayer.User
             members.Clear();
             paymentService = null;
             supplierService = null;
-
-            DBHandler.Instance.CleanDB();
+            UserUsageData.Instance.UsersVisits = new ConcurrentBag<Visit>();
         }
 
         public bool InitializeTradingSystem(Guid userID)
@@ -999,7 +998,7 @@ namespace SadnaExpress.DomainLayer.User
 
         public List<int> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)
         {
-
+            isLoggedIn(userID);
             if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
             {
                 Logger.Instance.Info(userID, $" {nameof(UserFacade)} {nameof(GetSystemUserActivity)} system administrator requested to get System User Activity from {fromDate} to {toDate}");
