@@ -192,7 +192,7 @@ namespace SadnaExpress.DomainLayer.User
         #endregion
 
         #region constructor
-        public PromotedMember(Guid id, string email, string firstName, string lastName, string password, ShoppingCart shoppingCart=null, bool login=false) : base(id,
+        public PromotedMember(Guid id, string email, string firstName, string lastName, string password, ShoppingCart shoppingCart=null, ConcurrentDictionary<Guid, Dictionary<string, string>> pendingPer = null, bool login=false) : base(id,
             email, firstName, lastName, password)
         {
             directSupervisor = new ConcurrentDictionary<Guid, PromotedMember>();
@@ -206,14 +206,27 @@ namespace SadnaExpress.DomainLayer.User
                 ShoppingCart = new ShoppingCart();
             else
                 ShoppingCart = shoppingCart;
+            if (pendingPer == null)
+                PenddingPermission = new ConcurrentDictionary<Guid, Dictionary<string, string>>();
+            else
+                PenddingPermission = pendingPer;
         }
         #endregion
 
         #region PromotedMember actions
         public void createOwner(Guid storeID, PromotedMember directSupervisor)
         {
-            this.directSupervisor.TryAdd(storeID, directSupervisor);
-            permissions.TryAdd(storeID, new List<string>{"owner permissions"});
+            if (this.directSupervisor.ContainsKey(storeID))
+            {
+                this.directSupervisor[storeID].appoint[storeID].Remove(this);
+                this.directSupervisor[storeID] = directSupervisor;
+            }
+            else
+                this.directSupervisor.TryAdd(storeID, directSupervisor);
+            if (permissions.ContainsKey(storeID))
+                permissions[storeID] = new List<string> { "owner permissions" };
+            else
+                permissions.TryAdd(storeID, new List<string> { "owner permissions" });
             appoint.TryAdd(storeID, new List<PromotedMember>());
             //here
             DBHandler.Instance.UpdatePromotedMember(this);

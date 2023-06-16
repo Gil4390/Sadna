@@ -42,24 +42,30 @@ namespace SadnaExpress.DomainLayer.User
 
             //add to all owners in store the owner to permissionsoffer and build the list of pendding permission for the member
             Dictionary<string, string> decisions = new Dictionary<string, string>();
-            foreach (PromotedMember promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
+            if (!newOwner.PenddingPermission.ContainsKey(storeID))
             {
-                if (promotedMember.Equals(directSupervisor))
-                    decisions.Add(promotedMember.Email, "creator");
-                else
+                foreach (PromotedMember promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
                 {
-                    decisions.Add(promotedMember.Email, "undecided");
-                    if (promotedMember.PermissionsOffers.ContainsKey(storeID))
-                        promotedMember.PermissionsOffers[storeID].Add(newOwner.UserId);
+                    if (promotedMember.Equals(directSupervisor))
+                        decisions.Add(promotedMember.Email, "creator");
                     else
-                        promotedMember.PermissionsOffers.TryAdd(storeID, new List<Guid> { newOwner.UserId });
+                    {
+                        decisions.Add(promotedMember.Email, "undecided");
+                        if (promotedMember.PermissionsOffers.ContainsKey(storeID))
+                            promotedMember.PermissionsOffers[storeID].Add(newOwner.UserId);
+                        else
+                            promotedMember.PermissionsOffers.TryAdd(storeID, new List<Guid> { newOwner.UserId });
+                    }
+                    DBHandler.Instance.UpdatePromotedMember(promotedMember);
                 }
-                DBHandler.Instance.UpdatePromotedMember(promotedMember);
+                newOwner.PenddingPermission.TryAdd(storeID, decisions);
+                NotificationSystem.Instance.NotifyObservers(storeID, $"You got an offer to make {newOwner.Email} to store owner", directSupervisor.UserId);
+                DBHandler.Instance.MemberPendingPermission(newOwner);
             }
-            newOwner.PenddingPermission.TryAdd(storeID, decisions);
-
-            NotificationSystem.Instance.NotifyObservers(storeID, $"You got an offer to make {newOwner.Email} to store owner", directSupervisor.UserId);
-            DBHandler.Instance.MemberPendingPermission(newOwner);
+            else
+            {
+                return ReactToJobOffer(storeID, directSupervisor, newOwner, true);
+            }
             // check if the offer already approve
             return PermissionApproved(storeID, directSupervisor,  newOwner); 
         }
@@ -113,6 +119,7 @@ namespace SadnaExpress.DomainLayer.User
                 Dictionary<string, string> rem = new Dictionary<string, string>();
                 owner.PenddingPermission.TryRemove(storeID, out rem);
                 NotificationSystem.Instance.NotifyObserver(owner, storeID, $"You are store owner of {storeID}");
+                NotificationSystem.Instance.RegisterObserver(storeID, owner);
                 DBHandler.Instance.UpdatePromotedMember(owner);
                 return owner;
             }
@@ -186,24 +193,22 @@ namespace SadnaExpress.DomainLayer.User
                         new List<string> { "founder permissions", "owner permissions", permission }))
                     throw new Exception("The member already has the permission");
                 Guid directManagerID = pmember.getDirectManager(storeID).UserId;
-                if (!directManagerID.Equals(appointer.UserId))
-                    throw new Exception("The caller is not the appointer of the manager");
                 if (permission == "owner permissions")
                 {
-                    pmember.Permission[storeID] = new List<string>();
-                    NotificationSystem.Instance.RegisterObserver(storeID, manager);
+                    AppointStoreOwner(storeID, appointer, manager);
                 }
-                pmember.addPermission(storeID, permission);
+                else
+                    pmember.addPermission(storeID, permission);
             }
         }
 
         public Member RemoveStoreManagerPermissions(PromotedMember directManager, Guid storeID, Member manager, string permission)
         {
-            lock (manager)
-            {
-                if (!manager.hasPermissions(storeID, new List<string> { permission }))
-                    throw new Exception($"The member {manager.Email} dosen't have the permission");
-            }
+            if (!manager.hasPermissions(storeID, new List<string> { permission }))
+                throw new Exception($"The member {manager.Email} dosen't have the permission");
+
+            if (!((PromotedMember)manager).getDirectManager(storeID).Email.ToLower().Equals(directManager.Email.ToLower()))
+                throw new Exception($"{directManager.Email} isn't the direct owner of {manager.Email}");
             PromotedMember promanager = (PromotedMember)manager;
             promanager.removePermission(storeID, permission);
             if (promanager.Permission[storeID].Count == 0)
@@ -239,12 +244,16 @@ namespace SadnaExpress.DomainLayer.User
                     employees.Add(current);
 
                     PromotedMember directManager = current.getDirectManager(storeID);
+
                     if (directManager != null && !employees.Contains(directManager))
+                    {
                         stack.Push(directManager);
+                    }
 
                     foreach (PromotedMember child in current.getAppoint(storeID))
-                        if (!employees.Contains(child))
+                        if (!employees.Contains(child)) {
                             stack.Push(child);
+                        }
                 }
             }
             catch(Exception ex)

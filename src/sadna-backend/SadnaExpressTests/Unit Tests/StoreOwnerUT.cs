@@ -24,6 +24,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public override void SetUp()
         {
+            base.SetUp();
             UserFacade userFacade = new UserFacade();
             NotificationSystem.Instance.userFacade = userFacade;
             founderID = Guid.NewGuid();
@@ -37,7 +38,6 @@ namespace SadnaExpressTests.Unit_Tests
             Member memberBeforeOwner = new Member(storeOwnerDirectID, "RotemSela@gmail.com", "Rotem", "Sela",
                 "ShaY1787%$%");
             storeOwnerDirect = founder.AppointStoreOwner(storeID, memberBeforeOwner);
-            NotificationSystem.Instance.RegisterObserver(storeID, storeOwnerDirect);
             storeOwnerAppoint = new Member(storeOwnerAppointID, "Tal@gmail.com", "Tal", "Galmor",
                 "ShaY1787%$%");
             userFacade.members.TryAdd(founder.UserId, founder);

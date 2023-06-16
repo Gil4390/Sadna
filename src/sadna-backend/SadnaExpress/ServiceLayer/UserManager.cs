@@ -178,13 +178,14 @@ namespace SadnaExpress.ServiceLayer
                         foreach (Guid mem in member.PermissionsOffers[storeID])
                         { 
                             Member m = userFacade.GetMember(mem);
-                            if (!pendding.Contains(m))
+                            if (!pendding.Contains(m) && !(m.GetType() == typeof(PromotedMember) && ((PromotedMember)m).Permission.ContainsKey(storeID)))
                             {
                                 SMemberForStore sPenndingMember = new SMemberForStore(m, storeID, userFacade.GetMember(userID));
                                 sMembers.Add(sPenndingMember);
                                 pendding.Add(m);
                             }
                         }
+                    
                     SMemberForStore sMember = new SMemberForStore(member, storeID, userFacade.GetMember(userID));
                     sMembers.Add(sMember);
                 }
