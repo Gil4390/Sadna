@@ -18,7 +18,7 @@ namespace SadnaExpress.ExternalServices
         {
             client = new HttpClient();
             address = adrs;
-            if (adrs != null)
+            if (adrs == null)
                 address= ApplicationOptions.PaymentServiceURL;
         }
 
