@@ -9,8 +9,6 @@ import { ResponseT,Response } from "../../models/Response.tsx";
 
 const ManageStoreEmployeesPage = (props) => {
 
-  var remove_edit = ''
-
   const location = useLocation();
   const { userId, storeId } = location.state;
   const [employees, setEmployees] = useState<Member[]>([]);
