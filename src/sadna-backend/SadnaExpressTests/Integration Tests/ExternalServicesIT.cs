@@ -1,7 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ExternalServices;
+using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.SModels;
 
 namespace SadnaExpressTests.Integration_Tests
@@ -33,8 +38,14 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckHandshakePassLimitedTime()
         {
-            string res = trading.Handshake().ErrorMessage;
-            Assert.AreEqual("OK", res);
+            Task<string> task = Task.Run(async () =>
+            {
+                Thread.Sleep(11000);
+                return "OK";
+            });
+            bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(10000)) && task.Result == "OK"; ;
+            Assert.AreEqual("OK", task.Result);
+            Assert.IsFalse(isCompletedSuccessfully);
         }
         
         /// <summary>

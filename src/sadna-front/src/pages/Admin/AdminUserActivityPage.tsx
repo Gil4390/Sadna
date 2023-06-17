@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Button, Container, Form } from 'react-bootstrap';
+import { Button, Container, Form, Row, Col } from 'react-bootstrap';
 import {Chart as ChartJS} from 'chart.js/auto'
 import {CategoryScale, LinearScale} from 'chart.js'
 import { handleGetSystemUserData } from '../../actions/AdminActions.tsx'
@@ -61,13 +61,26 @@ const AdminUserActivityPage = (props) => {
  });
 
   return (
-    <Container style={{paddingBottom: "4rem"}}>
-      <Exit id={props.id}/>
+    <Container style={{ paddingBottom: "4rem" }}>
+      <Exit id={props.id} />
       <h1>User Activity</h1>
       <Form.Group controlId="formDate">
-        <Form.Label>Please select dates:</Form.Label>
-        <Form.Control type="date" value={fromDate} onChange={handleFromDateChange}  />
-        <Form.Control type="date" value={toDate} onChange={handleToDateChange} />
+        <Row>
+          <Form.Label column sm="2">
+            From date:
+          </Form.Label>
+          <Col sm="6">
+            <Form.Control type="date" value={fromDate} onChange={handleFromDateChange} />
+          </Col>
+        </Row>
+        <Row>
+          <Form.Label column sm="2">
+            To date:
+          </Form.Label>
+          <Col sm="6">
+            <Form.Control type="date" value={toDate} onChange={handleToDateChange} />
+          </Col>
+        </Row>
       </Form.Group>
 
       <Button variant="primary" onClick={handleRequest}>
@@ -78,6 +91,7 @@ const AdminUserActivityPage = (props) => {
         <Bar data={chart} />
       </div>
     </Container>
+
   );
 };
 

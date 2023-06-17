@@ -88,7 +88,6 @@ namespace SadnaExpress
                 string function = functionParams.function;
                 Params parameters = functionParams.@params;
                 switch (function)
-
                 {
                     case "Register":
                         userId = trading.Enter().Value;
@@ -357,6 +356,10 @@ namespace SadnaExpress
                         Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
                         break;
+
+                    default:
+                        Logger.Instance.Error("Invalid function name: " + (function));
+                        throw new Exception("Invalid function name: " + (function));
 
                 }
             }

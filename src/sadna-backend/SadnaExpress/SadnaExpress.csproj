@@ -185,6 +185,7 @@
   <ItemGroup>
     <None Include="data.json" />
     <None Include="data2.json" />
+    <None Include="dataBad.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

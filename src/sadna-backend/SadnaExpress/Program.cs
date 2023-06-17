@@ -27,6 +27,7 @@ namespace SadnaExpress
     {
         public static void Main(string[] args)
         {
+            bool validInitialization = true;
             InitAppSettings();
             State state = State.Instance;
             string flag = ApplicationOptions.StateFileConfig;
@@ -42,6 +43,7 @@ namespace SadnaExpress
                 {
                     Console.WriteLine(e.Message);
                     DBHandler.Instance.CleanDB();
+                    validInitialization = false;
                 }
             }
             else if (flag.Equals("data2"))
@@ -56,6 +58,7 @@ namespace SadnaExpress
                 {
                     Console.WriteLine(e.Message);
                     DBHandler.Instance.CleanDB();
+                    validInitialization = false;
                 }
             }
             else if (flag.Equals("dataBad"))
@@ -64,15 +67,15 @@ namespace SadnaExpress
                 try
                 {
                     state.stateFile(flag + ".json");
-
+                    validInitialization = false;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     DBHandler.Instance.CleanDB();
+                    validInitialization = false;
                 }
             }
-
             else //we will not load a file 
             {
                 if (ApplicationOptions.StartWithCleanDB)
@@ -81,19 +84,25 @@ namespace SadnaExpress
                 if (ApplicationOptions.RunLoadData)
                     TradingSystem.Instance.LoadData();
             }
+            if (validInitialization)
+            {
 
-            //start the api server
-            ServerServiceHost serverServiceHost = new ServerServiceHost();
-            serverServiceHost.Start();
+                //start the api server
+                ServerServiceHost serverServiceHost = new ServerServiceHost();
+                serverServiceHost.Start();
 
-            //start the signalR server
-            SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
-            signalRServiceHost.Start();
+                //start the signalR server
+                SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
+                signalRServiceHost.Start();
 
+
+            }
+            else
+            {
+                Console.WriteLine("Error in Initializaztion file, please make sure the file meats the requirements and try again");
+            }
 
             Console.ReadLine();
-
-
 
         }
 
@@ -235,7 +244,7 @@ namespace SadnaExpress
             }
 
             string StateFileConfig = ConfigurationManager.AppSettings["StateFileConfig"];
-            if (StateFileConfig==""|| StateFileConfig == "data" || StateFileConfig == "data2"|| StateFileConfig == "dataBad")
+            if (StateFileConfig==""|| StateFileConfig == "data" || StateFileConfig == "data2" || StateFileConfig == "dataBad")
             {
                 ApplicationOptions.StateFileConfig = StateFileConfig;
                 

@@ -790,7 +790,26 @@ namespace SadnaExpress.DomainLayer.User
 
         public bool CancelPayment(double amount, int transaction_id)
         {
-            return paymentService.Cancel_Pay(amount, transaction_id);
+            var task = Task.Run(() =>
+            {
+                if (paymentService.Handshake() != "OK")
+                    throw new Exception("Communication with the external services is temporarily down, please try again in a few minutes");
+                return paymentService.Cancel_Pay(amount, transaction_id);
+            });
+            if (task.Result == false)
+                throw new Exception("Error in payment details , please try again");
+
+            bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result != false;
+
+            if (isCompletedSuccessfully)
+            {
+                Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(CancelPayment) + "Cancel payment completed");
+                return true;
+            }
+            else
+            {
+                throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed.");
+            }
         }
 
         public List<Notification> GetNotifications(Guid userId)
