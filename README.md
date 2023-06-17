@@ -1,5 +1,8 @@
 # Sadna
 
+Hello! welcome to Sadna Express, our trading system program.
+we are third year students in software engineering in Ben Gurion University, we wrote this project for "Sadna" course.
+
 # Team members:
 
 Gil khais - 207919374
@@ -14,8 +17,6 @@ Tal Galmor - 318416575
 
 Dina Agapov - 207181629
 
-Hello! welcome to Sadna Express, our trading system program.
-we are third year students in software engineering in Ben Gurion University, we wrote this project for "Sadna" course.
 
 # State Configuration File:
 
