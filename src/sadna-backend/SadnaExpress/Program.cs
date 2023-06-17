@@ -27,6 +27,7 @@ namespace SadnaExpress
     {
         public static void Main(string[] args)
         {
+            bool validInitialization = true;
             InitAppSettings();
             State state = State.Instance;
             string flag = ApplicationOptions.StateFileConfig;
@@ -42,6 +43,7 @@ namespace SadnaExpress
                 {
                     Console.WriteLine(e.Message);
                     DBHandler.Instance.CleanDB();
+                    validInitialization = false;
                 }
             }
             else if (flag.Equals("data2"))
@@ -56,6 +58,7 @@ namespace SadnaExpress
                 {
                     Console.WriteLine(e.Message);
                     DBHandler.Instance.CleanDB();
+                    validInitialization = false;
                 }
             }
             else if (flag.Equals("dataBad"))
@@ -70,9 +73,9 @@ namespace SadnaExpress
                 {
                     Console.WriteLine(e.Message);
                     DBHandler.Instance.CleanDB();
+                    validInitialization = false;
                 }
             }
-
             else //we will not load a file 
             {
                 if (ApplicationOptions.StartWithCleanDB)
@@ -81,19 +84,25 @@ namespace SadnaExpress
                 if (ApplicationOptions.RunLoadData)
                     TradingSystem.Instance.LoadData();
             }
+            if (validInitialization)
+            {
 
-            //start the api server
-            ServerServiceHost serverServiceHost = new ServerServiceHost();
-            serverServiceHost.Start();
+                //start the api server
+                ServerServiceHost serverServiceHost = new ServerServiceHost();
+                serverServiceHost.Start();
 
-            //start the signalR server
-            SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
-            signalRServiceHost.Start();
+                //start the signalR server
+                SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
+                signalRServiceHost.Start();
 
+
+            }
+            else
+            {
+                Console.WriteLine("Error in Initializaztion file, please make sure the file meats the requirements and try again");
+            }
 
             Console.ReadLine();
-
-
 
         }
 
