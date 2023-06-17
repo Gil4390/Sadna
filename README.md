@@ -52,12 +52,12 @@ Currently there are 3 possible initial states for the system to start with:
 </ul>
 
 supported initialization functions: 
-- Register
-- CreateSystemManager
-- Login
-- Logout
-- OpenNewStore
-- AddItemToStore
+- Register(userId, email, firstName, lastName, password)
+- CreateSystemManager(email)
+- Login(userId, email, password)
+- Logout(userId)
+- OpenNewStore(userId, StoreName)
+- AddItemToStore(userId, storeID, itemName, itemCategory, itemPrice, quantity)
 
  # app.config
  
