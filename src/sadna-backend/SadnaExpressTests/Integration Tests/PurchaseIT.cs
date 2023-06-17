@@ -108,7 +108,7 @@ namespace SadnaExpressTests.Integration_Tests
             //Arrange
             trading.SetPaymentService(new PaymentService());
             trading.SetSupplierService(new Mocks.Mock_SupplierService());
-            trading.EditItemQuantity(userID, storeID1, itemID1, -2);
+            trading.EditItem(userID, storeID1, itemID1, "ipad 32", "electronic", 4000, - 2);
             // Act
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
@@ -138,7 +138,7 @@ namespace SadnaExpressTests.Integration_Tests
 
             trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
             // Act
-            trading.EditItemPrice(userID, storeID1, itemID1, 10000);
+            trading.EditItem(userID, storeID1, itemID1, "ipad 32", "electronic", 10000, 3);
             // Assert
             // see the prices
             // Assert.AreEqual(4000, trading.GetStorePurchases(userID, storeID1).Value[0].CalculatorAmount()); meanwhile the price of order not matter

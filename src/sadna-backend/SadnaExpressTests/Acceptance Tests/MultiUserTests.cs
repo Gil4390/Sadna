@@ -190,7 +190,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     storeId1 = proxyBridge.OpenNewStore(loggedId1, "FruitsStore").Value;
 
                     itemId1 = proxyBridge.AddItemToStore(loggedId1, storeId1, "apple", "fruits", 5.99, 1).Value;
-                    return proxyBridge.EditItemName(loggedId1, storeId1, itemId1, "lemon");
+                    return proxyBridge.EditItem(loggedId1, storeId1, itemId1, "lemon", "fruits", 5.99, 0);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(200);
@@ -267,7 +267,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     storeId2 = proxyBridge.OpenNewStore(loggedId6, "VegtablesStore").Value;
 
                     itemId2 = proxyBridge.AddItemToStore(loggedId6, storeId2, "tomato", "vegtables", 3.99, 2).Value;
-                    return proxyBridge.EditItemName(loggedId6, storeId2, itemId2, "potato");
+                    return proxyBridge.EditItem(loggedId6, storeId2, itemId2, "potato","vegtables", 3.99, 0);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(5000);
@@ -741,7 +741,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     storeId1 = proxyBridge.OpenNewStore(loggedId1, "FruitsStore").Value;
 
                     itemId1 = proxyBridge.AddItemToStore(loggedId1, storeId1, "apple", "fruits", 10, 1).Value;
-                    return proxyBridge.EditItemPrice(loggedId1, storeId1, itemId1, 40);
+                    return proxyBridge.EditItem(loggedId1, storeId1, itemId1, "apple", "fruits", 40, 0);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -818,7 +818,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     storeId2 = proxyBridge.OpenNewStore(loggedId6, "VegtablesStore").Value;
 
                     itemId2 = proxyBridge.AddItemToStore(loggedId6, storeId2, "tomato", "vegtables", 3.99, 2).Value;
-                    return proxyBridge.EditItemPrice(loggedId6, storeId2, itemId2, 10);
+                    return proxyBridge.EditItem(loggedId6, storeId2, itemId2, "tomato", "vegtables", 10, 0);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -1323,7 +1323,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     storeId1 = proxyBridge.OpenNewStore(loggedId1, "FruitsStore").Value;
 
                     itemId1 = proxyBridge.AddItemToStore(loggedId1, storeId1, "apple", "fruits", 5.99, 1).Value;
-                    return proxyBridge.EditItemQuantity(loggedId1, storeId1, itemId1, 9);
+                    return proxyBridge.EditItem(loggedId1, storeId1, itemId1,"apple", "fruits", 5.99, 9);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);
@@ -1400,7 +1400,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     storeId2 = proxyBridge.OpenNewStore(loggedId6, "VegtablesStore").Value;
 
                     itemId2 = proxyBridge.AddItemToStore(loggedId6, storeId2, "tomato", "vegtables", 3.99, 2).Value;
-                    return proxyBridge.EditItemQuantity(loggedId6, storeId2, itemId2, 1);
+                    return proxyBridge.EditItem(loggedId6, storeId2, itemId2,"tomato", "vegtables", 3.99, 1);
                 }),
                 Task.Run( () => {
                     Thread.Sleep(1000);

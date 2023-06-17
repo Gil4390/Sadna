@@ -280,7 +280,7 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult GetPurchasesOfUser([FromBody] ClientRequest request)
         {
-            var res = tradingSystem.GetPurchasesInfoUserOnlu(request.userID);
+            var res = tradingSystem.GetPurchasesOfUser(request.userID);
             return Ok(res);
         }
 

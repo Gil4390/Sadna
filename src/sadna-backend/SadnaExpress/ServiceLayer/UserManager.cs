@@ -15,13 +15,8 @@ namespace SadnaExpress.ServiceLayer
     public class UserManager: IUserManager
     {
         private IUserFacade userFacade;
-        
 
-        public IUserFacade GetUserFacade()
-        {
-            return userFacade;
-        }
-
+        #region Constructor
         public UserManager(IUserFacade uf)
         {
             userFacade = uf;
@@ -31,6 +26,9 @@ namespace SadnaExpress.ServiceLayer
         {
             this.userFacade = new UserFacade();
         }
+        #endregion
+
+        #region User operatrions
         public ResponseT<Guid> Enter()
         {
             try
@@ -105,7 +103,9 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
+        #endregion
 
+        #region Permissions Store manage
         public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
         {
             try
@@ -120,6 +120,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
+
         public Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
             try
@@ -134,6 +135,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
+
         public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {
             try
@@ -213,6 +215,28 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
+        public ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID)
+        {
+            try
+            {
+                List<Bid> bids = userFacade.GetBidsInStore(userID, storeID);
+                List<SBid> sbids = new List<SBid>();
+                foreach (Bid bid in bids)
+                {
+                    sbids.Add(new SBid(bid));
+                }
+                return new ResponseT<SBid[]>(sbids.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID, nameof(UserManager) + ": " + nameof(GetNotifications) + ": " + ex.Message);
+                return new ResponseT<SBid[]>(ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Admin operations
         public Response RemoveUserMembership(Guid userID, string email)
         {
             try
@@ -229,11 +253,6 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public void CleanUp()
-        {
-            userFacade.CleanUp();
-        }
-
         public ResponseT<bool> InitializeTradingSystem(Guid userID)
         {
             try
@@ -241,7 +260,7 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Info("User id: " + userID + " requested to initialize trading system");
 
                 return new ResponseT<bool>(userFacade.InitializeTradingSystem(userID));
-                
+           
                // return new ResponseT<bool>(paymentService.Connect() && supplierService.Connect());
             }
             catch (Exception ex)
@@ -250,178 +269,15 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<bool>(ex.Message);
             }
         }
-        public ConcurrentDictionary<Guid , User> GetCurrent_Users()
+
+        public void CreateSystemManager(Guid userID)
         {
-            try
-            {
-                return userFacade.GetCurrent_Users();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.Message + " in " + nameof(GetCurrent_Users));
-                return new ConcurrentDictionary<Guid, User>();
-            }
+            userFacade.CreateSystemManager(userID);
         }
+
         public ConcurrentDictionary<Guid, Member> GetMembers(Guid userID)
         {
             return userFacade.GetMembers(userID);
-        }
-
-        public void SetPaymentService(IPaymentService paymentService)
-        {
-            try
-            {
-                userFacade.SetPaymentService(paymentService);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(UserManager)+": "+nameof(SetPaymentService)+": "+ex.Message);
-            }
-        }
-
-        public void SetSupplierService(ISupplierService supplierService)
-        {
-            try
-            {
-                userFacade.SetSupplierService(supplierService);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(UserManager)+": "+nameof(SetSupplierService)+": "+ex.Message);
-            }
-        }
-
-        public void SetIsSystemInitialize(bool isInitialize)
-        {
-            try
-            {
-                userFacade.SetIsSystemInitialize(isInitialize);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(UserManager)+": "+nameof(SetIsSystemInitialize)+": "+ex.Message);
-            }
-        }
-
-        public ResponseT<User> GetUser(Guid userID)
-        {
-            try
-            {
-                User user = userFacade.GetUser(userID);
-                Logger.Instance.Info(userID , nameof(UserManager)+": "+nameof(GetUser));
-                return new ResponseT<User>(user);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(UserManager)+": "+nameof(GetUser)+": "+ex.Message);
-                return new ResponseT<User>(ex.Message);
-            }
-        }
-
-        public ResponseT<Member> GetMember(Guid userID)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                Member member = userFacade.GetMember(userID);
-                Logger.Instance.Info(userID , nameof(UserManager)+": "+nameof(GetMember));
-                return new ResponseT<Member>(member);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(UserManager)+": "+nameof(GetMember)+": "+ex.Message);
-                return new ResponseT<Member>(ex.Message);
-            }
-        }
-
-      
-        public ResponseT<Member> GetMember(String email)
-        {
-            try
-            {
-                Member member = userFacade.GetMember(email);
-                Logger.Instance.Info(member, nameof(UserManager) + ": " + nameof(GetMember));
-                return new ResponseT<Member>(member);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error( nameof(UserManager) + ": " + nameof(GetMember) + ": " + ex.Message);
-                return new ResponseT<Member>(ex.Message);
-            }
-        }
-        public ResponseT<List<Notification>> GetNotifications(Guid userId)
-        {
-            try
-            {
-                List<Notification> notifications =  userFacade.GetNotifications(userId);
-                return new ResponseT<List<Notification>>(notifications);
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userId , nameof(UserManager)+": "+nameof(GetNotifications)+": "+ex.Message);
-                return new ResponseT<List<Notification>>(ex.Message);
-            }
-        }
-
-        public ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID)
-        {
-            try
-            {
-                List<Bid> bids=  userFacade.GetBidsInStore(userID, storeID);
-                List<SBid> sbids = new List<SBid>();
-                foreach (Bid bid in bids)
-                {
-                    sbids.Add(new SBid(bid));
-                }
-                return new ResponseT<SBid[]>(sbids.ToArray());
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(UserManager)+": "+nameof(GetNotifications)+": "+ex.Message);
-                return new ResponseT<SBid[]>(ex.Message);
-            }
-        }
-
-        public Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID)
-        {
-            return userFacade.GetBidsOfUser(userID);
-        }
-
-        public ResponseT<List<Member>> getAllStoreOwners(ConcurrentDictionary<Guid, Store> stores)
-        {
-            try
-            {
-                List<Member> storesOwners =  userFacade.getAllStoreOwners(stores);
-                return new ResponseT<List<Member>>(storesOwners);
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(  nameof(UserManager)+": "+nameof(getAllStoreOwners)+": "+ex.Message);
-                return new ResponseT<List<Member>>(ex.Message);
-            }
-            
-        }
-
-        public ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores)
-        {
-            try
-            {
-                List<Member> storesOwners = userFacade.GetStoreOwnerOfStores(stores);
-                return new ResponseT<List<Member>>(storesOwners);
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(UserManager) + ": " + nameof(GetStoreOwnerOfStores) + ": " + ex.Message);
-                return new ResponseT<List<Member>>(ex.Message);
-            }
-        }
-
-        public bool IsSystemInitialize()
-        {
-            return userFacade.IsSystemInitialize();
         }
 
         public ResponseT<bool> isAdmin(Guid userID)
@@ -437,6 +293,47 @@ namespace SadnaExpress.ServiceLayer
                 Logger.Instance.Error($"{userID}" + nameof(isAdmin) + ": " + ex.Message);
                 return new ResponseT<bool>(ex.Message);
             }
+        }
+
+        public ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                List<int> results = userFacade.GetSystemUserActivity(userID, fromDate, toDate);
+                return new ResponseT<List<int>>(results);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"{userID}" + nameof(GetSystemUserActivity) + ": " + ex.Message);
+                return new ResponseT<List<int>>(ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region User data
+
+        public ResponseT<List<Notification>> GetNotifications(Guid userId)
+        {
+            try
+            {
+                List<Notification> notifications =  userFacade.GetNotifications(userId);
+                return new ResponseT<List<Notification>>(notifications);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userId , nameof(UserManager)+": "+nameof(GetNotifications)+": "+ex.Message);
+                return new ResponseT<List<Notification>>(ex.Message);
+            }
+        }
+
+
+        public Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID)
+        {
+            return userFacade.GetBidsOfUser(userID);
         }
 
         public ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID)
@@ -476,26 +373,104 @@ namespace SadnaExpress.ServiceLayer
             }
             
         }
-        
-        public ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)
+
+        #endregion
+
+        #region Getters & Setters
+
+        public bool IsSystemInitialize()
+        {
+            return userFacade.IsSystemInitialize();
+        }
+
+        public void SetPaymentService(IPaymentService paymentService)
+        {
+            try
+            {
+                userFacade.SetPaymentService(paymentService);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(UserManager) + ": " + nameof(SetPaymentService) + ": " + ex.Message);
+            }
+        }
+
+        public void SetSupplierService(ISupplierService supplierService)
+        {
+            try
+            {
+                userFacade.SetSupplierService(supplierService);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(UserManager) + ": " + nameof(SetSupplierService) + ": " + ex.Message);
+            }
+        }
+
+        public void SetIsSystemInitialize(bool isInitialize)
+        {
+            try
+            {
+                userFacade.SetIsSystemInitialize(isInitialize);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(UserManager) + ": " + nameof(SetIsSystemInitialize) + ": " + ex.Message);
+            }
+        }
+
+        public ResponseT<User> GetUser(Guid userID)
+        {
+            try
+            {
+                User user = userFacade.GetUser(userID);
+                Logger.Instance.Info(userID, nameof(UserManager) + ": " + nameof(GetUser));
+                return new ResponseT<User>(user);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID, nameof(UserManager) + ": " + nameof(GetUser) + ": " + ex.Message);
+                return new ResponseT<User>(ex.Message);
+            }
+        }
+
+        public ResponseT<Member> GetMember(Guid userID)
         {
             try
             {
                 DBHandler.Instance.CanConnectToDatabase();
-                List<int> results= userFacade.GetSystemUserActivity(userID, fromDate, toDate);
-                return new ResponseT<List<int>>(results);
-
+                Member member = userFacade.GetMember(userID);
+                Logger.Instance.Info(userID, nameof(UserManager) + ": " + nameof(GetMember));
+                return new ResponseT<Member>(member);
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"{userID}" + nameof(GetSystemUserActivity) + ": " + ex.Message);
-                return new ResponseT<List<int>>(ex.Message);
+                Logger.Instance.Error(userID, nameof(UserManager) + ": " + nameof(GetMember) + ": " + ex.Message);
+                return new ResponseT<Member>(ex.Message);
             }
         }
 
-        public void CreateSystemManager(Guid userID)
+
+        public ResponseT<Member> GetMember(String email)
         {
-            userFacade.CreateSystemManager(userID);
+            try
+            {
+                Member member = userFacade.GetMember(email);
+                Logger.Instance.Info(member, nameof(UserManager) + ": " + nameof(GetMember));
+                return new ResponseT<Member>(member);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(UserManager) + ": " + nameof(GetMember) + ": " + ex.Message);
+                return new ResponseT<Member>(ex.Message);
+            }
+        }
+
+        #endregion
+
+        public void CleanUp()
+        {
+            userFacade.CleanUp();
         }
     }
 }
