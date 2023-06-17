@@ -92,8 +92,6 @@ namespace SadnaExpress.API.Controllers
             public const string getStores = "get-stores";
             
             public const string getStoreOwners = "get-stores-owners";
-            
-            public const string getStoresOwnerList = "get-store-owner";
 
             public const string getAllConditions = "get-conds";
             

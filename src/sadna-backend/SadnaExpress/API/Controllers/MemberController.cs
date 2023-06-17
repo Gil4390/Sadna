@@ -155,14 +155,6 @@ namespace SadnaExpress.API.Controllers
             return Ok(tradingSystem.GetStoreOwners());
         }
         
-        [Route(APIConstants.MemberData.getStoresOwnerList)]
-        [ResponseType(typeof(ResponseT<List<Member>>))]
-        [HttpPost]
-        public IHttpActionResult GetStoreOwnerOfStores([FromBody] ListGuidRequest request)
-        {
-            return Ok(tradingSystem.GetStoreOwnerOfStores(request.storeID));
-        }
-        
         [Route(APIConstants.MemberData.getNotifications)]
         [ResponseType(typeof(ResponseT<List<Notification>>))]
         [HttpPost]

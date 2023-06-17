@@ -235,7 +235,7 @@ namespace SadnaExpress
             }
 
             string StateFileConfig = ConfigurationManager.AppSettings["StateFileConfig"];
-            if (StateFileConfig==""|| StateFileConfig == "data" || StateFileConfig == "data2")
+            if (StateFileConfig==""|| StateFileConfig == "data" || StateFileConfig == "data2"|| StateFileConfig == "dataBad")
             {
                 ApplicationOptions.StateFileConfig = StateFileConfig;
                 

@@ -17,6 +17,7 @@ namespace SadnaExpress.API.ClientRequests
         public string Email { get; set; }
         public string Password { get; set; }
     }
+
     public class RegisterRequest : ClientRequest
     {
         public string Email { get; set; }
@@ -35,12 +36,14 @@ namespace SadnaExpress.API.ClientRequests
         public Guid storeId { get; set; }
         public string storeName{ get; set; }
     }
+
     public class ItemCartRequest : ClientRequest
     {
         public Guid storeId { get; set; }
         public Guid itemID { get; set; }
         public int ItemAmount { get; set; }
     }
+
     public class SearchItemRequest : ClientRequest
     {
         //Guid userID, string category, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, int ratingStore = -1
@@ -52,11 +55,13 @@ namespace SadnaExpress.API.ClientRequests
         public int RatingStore { get; set; }
        
     }
+
     public class PurchaseRequest : ClientRequest
     {
         public SPaymentDetails PaymentDetails { get; set; }
         public SSupplyDetails UsersDetails { get; set; }
     }
+
     public class WriteItemReviewRequest : ClientRequest
     {
         public Guid StoreId { get; set; }
@@ -69,6 +74,7 @@ namespace SadnaExpress.API.ClientRequests
         public Guid StoreID { get; set; }
         public Guid ItemID { get; set; }
     }
+
     public class ItemRequest : ClientRequest
     {
         public Guid storeID { get; set; }
@@ -97,22 +103,11 @@ namespace SadnaExpress.API.ClientRequests
         public string userEmail { get; set; }
 
     }
+
     public class StoreManagerPerRequest : StoreManagerRequest
     {
         public string permission { get; set; }
     }
-    
-    public class SQARequest : ClientRequest
-    {
-        public string field { get; set; }
-        public string field2 { get; set; }
-
-    }
-    public class ListGuidRequest : ClientRequest
-    {
-        public List<Guid> storeID { get; set; }
-    }
-    
     
     public class ConditionRequest: ClientRequest
     {
