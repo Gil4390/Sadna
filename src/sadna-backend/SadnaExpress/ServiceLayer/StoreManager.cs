@@ -236,33 +236,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        public Response DeleteStore(Guid userID ,Guid storeID)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                storeFacade.DeleteStore(storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(DeleteStore)+": "+ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
-        public Response ReopenStore(Guid userID ,Guid storeID)
-        {
-            try
-            {
-                storeFacade.ReopenStore(storeID);
-                return new ResponseT<Guid>(storeID);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(ReopenStore)+": "+ex.Message);
-                return new ResponseT<Guid>(ex.Message);
-            }
-        }
+ 
         public ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
             try

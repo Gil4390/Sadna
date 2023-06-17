@@ -27,6 +27,8 @@ namespace SadnaExpress.API.Controllers
             tradingSystem = TradingSystem.Instance;
         }
 
+        #region user operations
+
         [Route(APIConstants.GuestData.enter)]
         [ResponseType(typeof(Guid))]
         [HttpGet]
@@ -73,14 +75,9 @@ namespace SadnaExpress.API.Controllers
             return Ok(res);
         }
 
-        [Route(APIConstants.GuestData.storeInfo)]
-        [ResponseType(typeof(ResponseT<Store>))]
-        [HttpPost]
-        public IHttpActionResult GetStoreInfo([FromBody] StoreRequest request)
-        {
-            return Ok(tradingSystem.GetStore(request.storeId));
-        }
+        #endregion
 
+        #region user shopping operations
         [Route(APIConstants.GuestData.searchItems)]
         [ResponseType(typeof(ResponseT<List<SItem>>))]
         [HttpPost]
@@ -136,15 +133,14 @@ namespace SadnaExpress.API.Controllers
             ResponseT<List<ItemForOrder>> res = tradingSystem.PurchaseCart(request.userID, request.PaymentDetails, request.UsersDetails);
             return Ok(new Response(res.ErrorMessage));
         }
-        
-        [Route(APIConstants.GuestData.handshake)]
+
+        [Route(APIConstants.GuestData.checkPurchaseCondition)]
         [ResponseType(typeof(Response))]
         [HttpPost]
-        public IHttpActionResult Handshake([FromBody] ClientRequest request)
+        public IHttpActionResult CheckPurchaseConditions([FromBody] ClientRequest request)
         {
-            return Ok(tradingSystem.Handshake());
+            return Ok(tradingSystem.CheckPurchaseConditions(request.userID));
         }
-
 
         [Route(APIConstants.GuestData.placeBid)]
         [ResponseType(typeof(Response))]
@@ -155,6 +151,6 @@ namespace SadnaExpress.API.Controllers
             return Ok(res);
         }
 
-
+        #endregion
     }
 }

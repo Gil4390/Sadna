@@ -11,7 +11,8 @@ import { Home, ShoppingPage, CartPage, PaymentPage, About, LoginPage, RegisterPa
 
 import { useEffect, useState } from 'react';
 import React from 'react';
-import { handleIsSystemInit, handleEnter, handleIsAdmin } from './actions/GuestActions.tsx';
+import { handleEnter, handleIsAdmin } from './actions/GuestActions.tsx';
+
 import { handleLogout } from '../actions/MemberActions.tsx';
 import { ResponseT } from "../models/Response.tsx";
 import { hubConnection,connection } from 'signalr-no-jquery';
@@ -19,6 +20,7 @@ import Popup from './components/Popup.tsx';
 import ReactDOM from 'react-dom';
 import { handleGetMemberName } from './actions/MemberActions.tsx';
 import useSignalRNotifications from './hooks/signalR/useSignalRNotifications.ts';
+import { handleIsSystemInit } from './actions/AdminActions.tsx';
 //import { useLocalStorage } from './hooks/useLocalStorage.ts'; local storage
 
 const App:React.FC=()=>{

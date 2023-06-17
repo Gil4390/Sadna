@@ -17,25 +17,7 @@ export function handleLogout(userID) {
         return Promise.resolve(data)
     })
 }
-export function handleOpenNewStore(userID , storeName) {
-    let url = "http://localhost:8080/api/member/open-store";
 
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID: userID,
-            storeName: storeName,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
 export function handleWriteItemReview(userID, itemID, review) {
     let url = "http://localhost:8080/api/member/write-item-review";
 
@@ -56,6 +38,7 @@ export function handleWriteItemReview(userID, itemID, review) {
         return Promise.resolve(data)
     })
 }
+
 export function handleGetItemReviews(itemID) {
     let url = "http://localhost:8080/api/member/item-reviews";
 
@@ -74,6 +57,27 @@ export function handleGetItemReviews(itemID) {
         return Promise.resolve(data.value)
     })
 }
+
+export function handleOpenNewStore(userID , storeName) {
+    let url = "http://localhost:8080/api/member/open-store";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            storeName: storeName,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+
 export function handleAddItemStore(userID , storeID, itemName , itemCategory , itemPrice , quantity) {
     let url = "http://localhost:8080/api/member/add-item-store";
 
@@ -97,6 +101,7 @@ export function handleAddItemStore(userID , storeID, itemName , itemCategory , i
         return Promise.resolve(data)
     })
 }
+
 export function handleRemoveItemStore(userID,storeID, itemID) {
     let url = "http://localhost:8080/api/member/rm-item-store";
 
@@ -117,6 +122,7 @@ export function handleRemoveItemStore(userID,storeID, itemID) {
         return Promise.resolve(data)
     })
 }
+
 export function handleEditItemStore(userID , storeID, itemID,itemName , itemCategory , itemPrice , quantity) {
     let url = "http://localhost:8080/api/member/edit-item-store";
 
@@ -162,6 +168,7 @@ export function handleAppointStoreManager(userID, storeID, userEmail) {
         return Promise.resolve(data)
     })
 }
+
 export function handleAddStoreManagerPermission(userID, storeID, userEmail , permission) {
     let url = "http://localhost:8080/api/member/add-store-manager-per";
 
@@ -183,6 +190,7 @@ export function handleAddStoreManagerPermission(userID, storeID, userEmail , per
         return Promise.resolve(data)
     })
 }
+
 export function handleAppointStoreOwner(userID, storeID, userEmail ) {
     let url = "http://localhost:8080/api/member/appoint-store-owner";
 
@@ -226,27 +234,6 @@ export function handleRemoveStoreManagerPermission(userID, storeID, userEmail, p
     })
 }
 
-export function handleRemoveStoreOwner(userID, storeID, userEmail ) {
-    let url = "http://localhost:8080/api/member/rm-store-owner";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID:userID,
-            storeID: storeID,
-            userEmail: userEmail,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-
 export function handleCloseStore(userID, storeID ) {
     let url = "http://localhost:8080/api/member/close-store";
 
@@ -266,6 +253,7 @@ export function handleCloseStore(userID, storeID ) {
         return Promise.resolve(data)
     })
 }
+
 export function handleEmployeesOfStore(userID, storeID ) {
     let url = "http://localhost:8080/api/member/get-employees";
 
@@ -276,161 +264,6 @@ export function handleEmployeesOfStore(userID, storeID ) {
         body: JSON.stringify({
             userID:userID,
             storeID: storeID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-
-export function handleGetStorePurchases(userID, storeID ) {
-    let url = "http://localhost:8080/api/member/get-store-purchases";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID:userID,
-            storeID: storeID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-
-export function handleDeleteStore(userID, storeID ) {
-    let url = "http://localhost:8080/api/member/rm-store";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID:userID,
-            storeID: storeID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-export function handleGetUsers(userID, q , a ) {
-    let url = "http://localhost:8080/api/member/update-pass";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID:userID,
-            q: q,
-            a: a,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-// export function handleGetStores( ) {
-//     let url = "http://localhost:8080/api/member/get-stores";
-
-//     return fetch(url, {
-//         method: 'POST',
-//         mode: 'cors',
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//         })
-//     }).then(async response => {
-//         const data = await response.json();
-//         if (!response.ok) {
-//             return Promise.reject(data.error);
-//         }
-//         return Promise.resolve(data)
-//     })
-// }
-//All employees that is store owners
-
-// export function handleGetStoresOwners( ) {
-//     let url = "http://localhost:8080/api/member/get-stores-owners";
-
-//     return fetch(url, {
-//         method: 'POST',
-//         mode: 'cors',
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//         })
-//     }).then(async response => {
-//         const data = await response.json();
-//         if (!response.ok) {
-//             return Promise.reject(data.error);
-//         }
-//         return Promise.resolve(data)
-//     })
-// }
-
-//All employees that is store owners in specific store
-// export function handleGetStoresOwnersSpecificStore(storeID) {
-//     let url = "http://localhost:8080/api/member/get-stores-owner";
-
-//     return fetch(url, {
-//         method: 'POST',
-//         mode: 'cors',
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//             storeID:storeID,
-//         })
-//     }).then(async response => {
-//         const data = await response.json();
-//         if (!response.ok) {
-//             return Promise.reject(data.error);
-//         }
-//         return Promise.resolve(data)
-//     })
-// }
-
-export function handleGetUserNotifications(UserID) {
-    let url = "http://localhost:8080/api/member/get-notifications";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            UserID:UserID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data.value)
-    })
-}
-
-export function handleMarkNotificationAsRead(UserID, notificationID) {
-    let url = "http://localhost:8080/api/member/mark-notification-read";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            UserID: UserID,
-            notificationID: notificationID,
         })
     }).then(async response => {
         const data = await response.json();
@@ -460,6 +293,7 @@ export function handleGetAllPurchaseConditions(userId,storeID) {
         return Promise.resolve(data.value)
     })
 }
+
 export function handleAddPurchaseCondition(userId,storeID , entity,entityName,type,value,op,opCond) {
     let url = "http://localhost:8080/api/member/add-cond";
 
@@ -485,6 +319,7 @@ export function handleAddPurchaseCondition(userId,storeID , entity,entityName,ty
         return Promise.resolve(data)
     })
 }
+
 export function handleAddDiscountCondition(userId,storeID , entity,entityName,type,value,op,opCond) {
     let url = "http://localhost:8080/api/member/add-cond-dic";
 
@@ -532,6 +367,7 @@ export function handleRemovePurchaseCondition(userID,storeID , condID) {
         return Promise.resolve(data)
     })
 }
+
 export function handleCreateSimplePolicy(userId,storeID , level ,percent, startDate,endDate ) {
     let url = "http://localhost:8080/api/member/create-simple-policy";
 
@@ -621,7 +457,6 @@ export function handleRemovePolicy(userID,storeID , discountPolicy , type) {
     })
 }
 
-
 export function handleGetItems(userID,storeID) {
     let url = "http://localhost:8080/api/member/get-items";
 
@@ -642,6 +477,26 @@ export function handleGetItems(userID,storeID) {
     })
 }
 
+export function handleGetStoreInfo(userID, storeID) {
+    let url = "http://localhost:8080/api/member/get-store-info";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID:userID,
+            storeID:storeID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+
 export function handleGetAllPurchasesFromStore(userID , storeID) {
     let url = "http://localhost:8080/api/member/get-store-purchases";
 
@@ -652,6 +507,67 @@ export function handleGetAllPurchasesFromStore(userID , storeID) {
         body: JSON.stringify({
             userID:userID,
             storeID:storeID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data.value)
+    })
+}
+
+export function handleGetAllPolicy(userID ,storeID) {
+    let url = "http://localhost:8080/api/member/get-all-policy";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID:userID,
+            storeID:storeID
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+
+export function handleGetStoreRevenue(userID, storeID, date) {
+    let url = "http://localhost:8080/api/member/get-store-revenue";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            storeID: storeID,
+            date: date
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+
+export function handleGetBidsInStore(userID, storeID) {
+    let url = "http://localhost:8080/api/member/get-bids-in-store";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userID: userID,
+            storeID: storeID,
         })
     }).then(async response => {
         const data = await response.json();
@@ -701,62 +617,6 @@ export function handleGetMemberPermissions(userID) {
     })
 }
 
-export function handleGetStoreInfo(userID, storeID) {
-    let url = "http://localhost:8080/api/member/get-store-info";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID:userID,
-            storeID:storeID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-export function handleCheckPurchaseConditions(userID) {
-    let url = "http://localhost:8080/api/member/check-purchase-conds";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID:userID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-export function handleGetAllPolicy(userID ,storeID) {
-    let url = "http://localhost:8080/api/member/get-all-policy";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID:userID,
-            storeID:storeID
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
 export function handleGetMemberName(userID) {
     let url = "http://localhost:8080/api/member/get-member-name";
 
@@ -775,46 +635,7 @@ export function handleGetMemberName(userID) {
         return Promise.resolve(data.value)
     })
 }
-export function handleGetStoreRevenue(userID, storeID, date) {
-    let url = "http://localhost:8080/api/member/get-store-revenue";
 
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID: userID,
-            storeID: storeID,
-            date: date
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-
-export function handleGetBidsInStore(userID, storeID) {
-    let url = "http://localhost:8080/api/member/get-bids-in-store";
-
-    return fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            userID: userID,
-            storeID: storeID,
-        })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data.value)
-    })
-}
 export function handleReactToBid(userID, itemID, bidID, bidResponse) {
     let url = "http://localhost:8080/api/member/react-to-bid";
 
@@ -849,6 +670,45 @@ export function handleReactToJobOffer(userID, storeID, newEmpID, offerResponse) 
             storeID: storeID,
             newEmpID: newEmpID,
             offerResponse: offerResponse
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data)
+    })
+}
+
+export function handleGetUserNotifications(UserID) {
+    let url = "http://localhost:8080/api/member/get-notifications";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            UserID:UserID,
+        })
+    }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            return Promise.reject(data.error);
+        }
+        return Promise.resolve(data.value)
+    })
+}
+
+export function handleMarkNotificationAsRead(UserID, notificationID) {
+    let url = "http://localhost:8080/api/member/mark-notification-read";
+
+    return fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            UserID: UserID,
+            notificationID: notificationID,
         })
     }).then(async response => {
         const data = await response.json();

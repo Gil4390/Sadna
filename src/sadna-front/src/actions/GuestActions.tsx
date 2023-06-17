@@ -14,6 +14,7 @@ export function handleEnter() {
         return Promise.resolve(data)
     })
 }
+
 export function handleExit(userID) {
     let url = "http://localhost:8080/api/guest/exit";
 
@@ -24,22 +25,6 @@ export function handleExit(userID) {
         body: JSON.stringify({
             userID: userID,
         })
-    }).then(async response => {
-        const data = await response.json();
-        if (!response.ok) {
-            return Promise.reject(data.error);
-        }
-        return Promise.resolve(data)
-    })
-}
-
-export function handleIsSystemInit() {
-    let url = "http://localhost:8080/api/admin/is-system-init";
-
-    return fetch(url, {
-        method: 'GET',
-        mode: 'cors',
-        headers: { "Content-Type": "application/json" },
     }).then(async response => {
         const data = await response.json();
         if (!response.ok) {
@@ -92,15 +77,16 @@ export function handleLogin(userID, email , password) {
         return Promise.resolve(data)
     })
 }
-export function handleStoreInfo(storeID) {
-    let url = "http://localhost:8080/api/guest/store-info";
+
+export function handleIsAdmin(userID) {
+    let url = "http://localhost:8080/api/guest/is-admin";
 
     return fetch(url, {
         method: 'POST',
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            storeID: storeID,
+            userID: userID,
         })
     }).then(async response => {
         const data = await response.json();
@@ -135,6 +121,7 @@ export function handleSearchItems(userID,keyWord="", minPrice=0, maxPrice=-1, ra
         return Promise.resolve(data.value)
     })
 }
+
 export function handleAddItemCart(userID,storeID , itemID , itemAmount=1) {
     let url = "http://localhost:8080/api/guest/add-item-cart";
 
@@ -156,6 +143,7 @@ export function handleAddItemCart(userID,storeID , itemID , itemAmount=1) {
         return Promise.resolve(data)
     })
 }
+
 export function handleRemoveItemCart(userID,storeID , itemID) {
     let url = "http://localhost:8080/api/guest/rm-item-cart";
 
@@ -177,6 +165,7 @@ export function handleRemoveItemCart(userID,storeID , itemID) {
         return Promise.resolve(data)
     })
 }
+
 export function handleEditItemCart(userID,storeID , itemID , itemAmount) {
     let url = "http://localhost:8080/api/guest/edit-item-cart";
 
@@ -198,6 +187,7 @@ export function handleEditItemCart(userID,storeID , itemID , itemAmount) {
         return Promise.resolve(data)
     })
 }
+
 export function handleGetDetailsOnCart(userID) {
     let url = "http://localhost:8080/api/guest/shopping-cart";
 
@@ -216,6 +206,7 @@ export function handleGetDetailsOnCart(userID) {
         return Promise.resolve(data.value)
     })
 }
+
 export function handlePurchaseCart(userID, paymentDetails, usersDetails ) {
     let url = "http://localhost:8080/api/guest/purchase-cart";
 
@@ -237,16 +228,15 @@ export function handlePurchaseCart(userID, paymentDetails, usersDetails ) {
     })
 }
 
-
-export function handleIsAdmin(userID) {
-    let url = "http://localhost:8080/api/guest/is-admin";
+export function handleCheckPurchaseConditions(userID) {
+    let url = "http://localhost:8080/api/guest/check-purchase-conds";
 
     return fetch(url, {
         method: 'POST',
         mode: 'cors',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            userID: userID,
+            userID:userID,
         })
     }).then(async response => {
         const data = await response.json();

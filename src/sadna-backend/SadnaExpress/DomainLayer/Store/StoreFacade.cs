@@ -72,28 +72,6 @@ namespace SadnaExpress.DomainLayer.Store
             
             Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(CloseStore)+"store " + stores[storeID].StoreName + " closed.");
         }
-        public void ReopenStore(Guid storeID)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
-            lock (stores[storeID])
-            {
-                if (stores[storeID].Active)
-                    throw new Exception("Store already reopend");
-                stores[storeID].Active = true;
-            }
-            Logger.Instance.Info(nameof(StoreFacade) + ": " + nameof(ReopenStore) + "store " + stores[storeID].StoreName + " reopen.");
-        }
-        public void DeleteStore(Guid storeID)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
-            lock (stores[storeID])
-            {
-                stores.TryRemove(storeID, out var store);
-                Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(DeleteStore)+"store " + store.StoreName + " deleted.");
-            }
-        }
         
         public List<Order> GetStorePurchases(Guid storeID)
         {

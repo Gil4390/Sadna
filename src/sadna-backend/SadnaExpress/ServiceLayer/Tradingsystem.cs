@@ -108,33 +108,32 @@ namespace SadnaExpress.ServiceLayer
             DBHandler.Instance.SetSystemInit(isInitialize);
         }
 
-        public int GetMaximumWaitServiceTime()
-        {
-            return 10000;
-        }
         public ResponseT<Guid> Enter()
         {
-            // load stores and items from data base
-            //storeManager.LoadStoresFromDB();
             return userManager.Enter();
         }
+
         public Response Exit(Guid userID)
         {
             return userManager.Exit(userID);
         }
+
         public Response Register(Guid userID, string email, string firstName, string lastName, string password)
         {
             return userManager.Register(userID, email, firstName, lastName, password);
         }
+
         public ResponseT<Guid> Login(Guid userID, string email, string password)
         {
             return userManager.Login(userID, email, password);
         }
+
         public ResponseT<Guid> Logout(Guid userID)
         {
             return userManager.Logout(userID);
 
         }
+
         public ResponseT<bool> InitializeTradingSystem(Guid userID)
         {
             try
@@ -167,6 +166,7 @@ namespace SadnaExpress.ServiceLayer
             }
             
         }
+
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
             try
@@ -182,6 +182,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
+
         public ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0,
             int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
@@ -274,27 +275,13 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response RateItem(Guid userID, int itemID, int score)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Response WriteMessageToStore(Guid userID, Guid storeID, string message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Response ComplainToAdmin(Guid userID, string message)
-        {
-            throw new NotImplementedException();
-        }
-
         public ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID)
         {
             Dictionary<Guid, List<Order>> orders = Orders.Instance.GetUserOrders();
             
             return new ResponseT<Dictionary<Guid, List<Order>>>(orders);
         }
+
         public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
         {
             List<ItemForOrder> list = new List<ItemForOrder>();
@@ -317,6 +304,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.RemoveItemFromStore(userID, storeID, itemID);
         }
+
         public Response EditItemCategory(Guid userID, Guid storeID, Guid itemID, string category)
         {
             return storeManager.EditItemCategory(userID, storeID, itemID, category);
@@ -326,10 +314,12 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.EditItemPrice(userID, storeID, itemID, price);
         }
+
         public Response EditItemName(Guid userID, Guid storeID,  Guid itemID, string name)
         {
             return storeManager.EditItemName(userID, storeID, itemID, name);
         }
+
         public Response EditItemQuantity(Guid userID, Guid storeID, Guid itemID, int quantity)
         {
             // if you want remove put -i and to add +i
@@ -346,7 +336,6 @@ namespace SadnaExpress.ServiceLayer
             return userManager.AppointStoreOwner(userID, storeID, userEmail);
         }
         
-
         public Response AppointStoreManager(Guid userID, Guid storeID, string userEmail)
         {
             return userManager.AppointStoreManager(userID, storeID, userEmail);
@@ -367,13 +356,6 @@ namespace SadnaExpress.ServiceLayer
         {
             Response response =  storeManager.CloseStore(userID,storeID);
             return response;
-        }
-
-        public Response ReopenStore(Guid userID, Guid storeID)
-        {
-            throw new NotImplementedException();
-            //notificationSystem.NotifyObservers(storeID,"reopen store",userID);
-            //return storeManager.ReopenStore(userID,storeID);
         }
 
         public ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID)
@@ -398,6 +380,7 @@ namespace SadnaExpress.ServiceLayer
             }
             return new ResponseT<List<ItemForOrder>>(list);
         }
+
         public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
         {
             return userManager.RemovePermission(userID, storeID, userEmail, permission);
@@ -408,14 +391,6 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetAllStorePurchases(userID);
         }
         
-        public Response DeleteStore(Guid userID, Guid storeID)
-        {
-            return storeManager.DeleteStore(userID, storeID);
-        }
-        
-        
-        
-
         public void CleanUp() // for the tests
         {
             storeManager.CleanUp();
@@ -426,6 +401,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetCurrent_Users();
         }
+
         public ResponseT<List<SMember>> GetMembers(Guid userID)
         {
             try
@@ -504,18 +480,22 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetMember(userID);
         }
+
         public ResponseT<Member> GetMember(String email)
         {
             return userManager.GetMember(email);
         }
+
         public ResponseT<Store> GetStore(Guid storeID)
         {
             return storeManager.GetStore(storeID);
         }
+
         public ResponseT<Store> GetStore(String name)
         {
             return storeManager.GetStore(name);
         }
+
         public void SetTSOrders(IOrders orders)
         {
             storeManager.SetTSOrders(orders);
@@ -530,12 +510,12 @@ namespace SadnaExpress.ServiceLayer
         {
             return userManager.GetNotifications(userID);
         }
-        
-
+       
         public void getNotificationsForOfflineMembers()
         {
             throw new NotImplementedException();
         }
+
         public bool IsSystemInitialize()
         {
             return userManager.IsSystemInitialize();
@@ -576,6 +556,7 @@ namespace SadnaExpress.ServiceLayer
         {
             return storeManager.RemovePolicy(userID,store, discountPolicy , type);
         }
+
         public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
         {
             return storeManager.GetAllPolicy(userID, storeID);
@@ -783,7 +764,7 @@ namespace SadnaExpress.ServiceLayer
 
 #endregion
 
-            //SetIsSystemInitialize(false);
+            SetIsSystemInitialize(ApplicationOptions.InitTradingSystem);
         }
 
         public ResponseT<bool> IsAdmin(Guid userID)
@@ -829,11 +810,6 @@ namespace SadnaExpress.ServiceLayer
             return storeManager.GetSystemRevenue(userID,date);
         }
 
-        public Response Handshake()
-        {
-            return userManager.Handshake();
-        }
-
         public ResponseT<SBid> PlaceBid(Guid userID, Guid itemID, double price)
         {
             return storeManager.PlaceBid(userID, itemID, price);
@@ -853,7 +829,6 @@ namespace SadnaExpress.ServiceLayer
         {
             userManager.CreateSystemManager(systemManagerid);
         }
-
 
         public Response ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
         {
