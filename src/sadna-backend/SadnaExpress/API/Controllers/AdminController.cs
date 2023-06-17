@@ -23,6 +23,7 @@ namespace SadnaExpress.API.Controllers
             tradingSystem = TradingSystem.Instance;
         }
 
+        #region system-init
         [Route(APIConstants.AdminData.isInit)]
         [ResponseType(typeof(ResponseT<bool>))]
         [HttpGet]
@@ -39,6 +40,10 @@ namespace SadnaExpress.API.Controllers
             var res = tradingSystem.InitializeTradingSystem(request.userID);
             return Ok(res);
         }
+        #endregion
+
+        #region members manage
+
         [Route(APIConstants.AdminData.allMembers)]
         [ResponseType(typeof(ResponseT<List<SMember>>))]
         [HttpPost]
@@ -48,6 +53,20 @@ namespace SadnaExpress.API.Controllers
             var res = tradingSystem.GetMembers(request.userID);
             return Ok(res);
         }
+
+        [Route(APIConstants.AdminData.removeMember)]
+        [ResponseType(typeof(Response))]
+        [HttpPost]
+        public IHttpActionResult RemoveMember([FromBody] RegisterRequest request)
+        {
+            var res = tradingSystem.RemoveUserMembership(request.userID, request.Email);
+            return Ok(res);
+        }
+
+        #endregion
+
+        #region purchases
+
         [Route(APIConstants.AdminData.allpurchasesStore)]
         [ResponseType(typeof(ResponseT<Dictionary<Guid, List<Order>>>))]
         [HttpPost]
@@ -68,17 +87,10 @@ namespace SadnaExpress.API.Controllers
             var res = tradingSystem.GetPurchasesInfoUser(request.userID);
             return Ok(res);
         }
-        
-        
-        [Route(APIConstants.AdminData.removeMember)]
-        [ResponseType(typeof(Response))]
-        [HttpPost]
-        public IHttpActionResult RemoveMember([FromBody] RegisterRequest request)
-        {
-            var res = tradingSystem.RemoveUserMembership(request.userID, request.Email);
-            return Ok(res);
-        }
 
+        #endregion
+
+        #region system revenue
         [Route(APIConstants.AdminData.getSystemRevenue)]
         [ResponseType(typeof(ResponseT<double>))]
         [HttpPost]
@@ -87,7 +99,9 @@ namespace SadnaExpress.API.Controllers
             double res = tradingSystem.GetSystemRevenue(request.userID, request.date).Value;
             return Ok(res);
         }
+        #endregion
 
+        #region system activity
         [Route(APIConstants.AdminData.getSystemUserData)]
         [ResponseType(typeof(ResponseT<List<int>>))]
         [HttpPost]
@@ -96,6 +110,7 @@ namespace SadnaExpress.API.Controllers
             ResponseT<List<int>> res = tradingSystem.GetSystemUserActivity(request.userID, request.fromDate, request.toDate);
             return Ok(res);
         }
+        #endregion
 
     }
 }

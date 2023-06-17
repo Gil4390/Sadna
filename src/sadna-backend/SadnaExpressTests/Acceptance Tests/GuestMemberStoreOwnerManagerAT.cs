@@ -227,18 +227,7 @@ namespace SadnaExpressTests.Acceptance_Tests
             Assert.AreEqual(pre + 1, unreadMessages(proxyBridge.GetMember(store5Manager).Value.AwaitingNotification).Count);
             
         }
-        
-        // not in this version
-        public void OpenStoreNotification()
-        {   
-            //Arrange
-            proxyBridge.GetMember(store5Founder).Value.LoggedIn = false;
-            proxyBridge.CloseStore(store5Founder, storeID5);
-            //Act
-            proxyBridge.ReopenStore(store5Founder, storeID5);
-            //Assert
-            Assert.AreEqual(proxyBridge.GetMember(store5Founder).Value.AwaitingNotification.Count,2);
-        }
+       
         #endregion
 
         #endregion

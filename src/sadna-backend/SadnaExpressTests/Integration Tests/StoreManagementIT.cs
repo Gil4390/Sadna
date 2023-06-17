@@ -102,25 +102,6 @@ namespace SadnaExpressTests.Integration_Tests
         }
 
         /// <summary>
-        /// Tests the UserReopenStore method when provided with valid input.
-        /// not in this version
-        /// Asserts that the store was successfully reopened.
-        /// <summary> 
-        public void UserReOpenStore_HappyTest()
-        {
-            //Arrange
-            trading.GetStore(storeID1).Value.Active = false;
-
-            //Act
-            Response res = trading.ReopenStore(userID, storeID1);
-
-            //Assert
-            Assert.IsFalse(res.ErrorOccured);
-            Assert.IsTrue(trading.GetStore(storeID1).Value.Active);//store active
-           
-        }
-
-        /// <summary>
         /// Tests the WriteItemReview method when provided with valid input
         /// Asserts that the review was successfully added to the item.
         /// <summary>

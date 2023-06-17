@@ -8,18 +8,24 @@ using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.ExternalServices;
 using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.SModels;
+using SadnaExpress.Services;
 
 namespace SadnaExpressTests.Integration_Tests
 {
     [TestClass]
     public class ExternalServicesIT: TradingSystemIT
     {
-        [TestInitialize]
+        private PaymentService paymentService;
+        private SupplierService supplierService;
+
+      [TestInitialize]
         public override void Setup()
         {
             base.Setup();
-            trading.SetPaymentService(new PaymentService("https://php-server-try.000webhostapp.com/"));
-            trading.SetSupplierService(new SupplierService("https://php-server-try.000webhostapp.com/"));
+            paymentService = new PaymentService("https://php-server-try.000webhostapp.com/");
+            supplierService = new SupplierService("https://php-server-try.000webhostapp.com/");
+            trading.SetPaymentService(paymentService);
+            trading.SetSupplierService(supplierService);
         }
 
         /// <summary>
@@ -28,7 +34,7 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckHandshake()
         {
-            string res = trading.Handshake().ErrorMessage;
+            string res = paymentService.Handshake();
             Assert.IsTrue(res == "OK");
         }
         
@@ -43,6 +49,7 @@ namespace SadnaExpressTests.Integration_Tests
                 Thread.Sleep(11000);
                 return "OK";
             });
+
             bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(10000)) && task.Result == "OK"; ;
             Assert.AreEqual("OK", task.Result);
             Assert.IsFalse(isCompletedSuccessfully);

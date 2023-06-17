@@ -1015,11 +1015,6 @@ namespace SadnaExpress.DomainLayer.User
 
         }
 
-        public string Handshake()
-        {
-            return paymentService.Handshake();
-        }
-
         public List<int> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)
         {
             isLoggedIn(userID);

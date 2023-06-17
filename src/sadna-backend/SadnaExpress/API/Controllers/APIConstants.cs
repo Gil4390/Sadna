@@ -14,17 +14,15 @@ namespace SadnaExpress.API.Controllers
         {
             public const string root = "guest";
 
+            public const string enter = "enter";
+
+            public const string exit = "exit";
+
             public const string register = "register";
 
             public const string login = "login";
 
             public const string isAdmin = "is-admin";
-
-            public const string exit = "exit";
-
-            public const string enter = "enter";
-
-            public const string storeInfo = "store-info";
 
             public const string searchItems = "search-items";
 
@@ -37,12 +35,10 @@ namespace SadnaExpress.API.Controllers
             public const string shoppingCart = "shopping-cart";
 
             public const string purchaseCart = "purchase-cart";
-            
-            public const string handshake = "handshake";
+
+            public const string checkPurchaseCondition = "check-purchase-conds";
 
             public const string placeBid = "place-bid";
-
-
         }
 
         public static class MemberData
@@ -51,57 +47,37 @@ namespace SadnaExpress.API.Controllers
 
             public const string logout = "logout";
 
-            public const string openStore = "open-store";
-            
             public const string writeItemReview = "write-item-review";
-            
+
             public const string itemReviews = "item-reviews";
+
+            public const string openStore = "open-store";
             
             public const string addItemToStore = "add-item-store";
             
             public const string removeItemToStore = "rm-item-store";
             
-            public const string editItemToStore = "edit-item-store";
-            
-            public const string appointStoreOwner = "appoint-store-owner";
+            public const string editItemToStore = "edit-item-store";           
             
             public const string appointStoreManager = "appoint-store-manager";
             
             public const string addStoreManagerPer = "add-store-manager-per";
-            
+
+            public const string appointStoreOwner = "appoint-store-owner";
+
             public const string removeStorePer =  "rm-store-per";
             
             public const string closeStore = "close-store";
 
             public const string getEmployee = "get-employees";
 
-            public const string getStorePurchases = "get-store-purchases";
-
-            public const string getUserPurchases = "get-user-purchases";
-
-            public const string deleteStore = "rm-store";
-
-            public const string updateFirst = "update-first";
-                
-            public const string updateLast = "update-last";
-                
-            public const string updatePass = "update-pass";
-                
-            public const string setSQA = "set-sqa";
-
-            public const string getStores = "get-stores";
-            
-            public const string getStoreOwners = "get-stores-owners";
-
             public const string getAllConditions = "get-conds";
-            
 
             public const string addCondition = "add-cond";
-            public const string addConditionForDiscount = "add-cond-dic";
 
+            public const string addConditionForDiscount = "add-cond-dic";
                 
             public const string removeCondition = "rm-cond";
-
 
             public const string createSimplePolicy = "create-simple-policy";
 
@@ -111,31 +87,31 @@ namespace SadnaExpress.API.Controllers
 
             public const string removePolicy = "rm-policy";
             
-            public const string getNotifications = "get-notifications";
-
-            public const string MarkNotificationAsRead = "mark-notification-read";
-
             public const string getItems = "get-items";
 
-            public const string getMemberPermissions = "get-member-permissions";
-
             public const string getStoreInfo = "get-store-info";
-            
-            public const string checkPurchaseCondition = "check-purchase-conds";
-            
-            public const string getAllPolicy = "get-all-policy";
 
-            public const string getMemberName = "get-member-name";
+            public const string getStorePurchases = "get-store-purchases";
+
+            public const string getAllPolicy = "get-all-policy";
 
             public const string getStoreRevenue = "get-store-revenue";
 
             public const string getBidsInStore = "get-bids-in-store";
 
+            public const string getUserPurchases = "get-user-purchases";
+
+            public const string getMemberPermissions = "get-member-permissions";
+            
+            public const string getMemberName = "get-member-name";
+
             public const string reactToBid = "react-to-bid";
 
             public const string reactToJobOffer = "react-to-job-offer";
 
+            public const string getNotifications = "get-notifications";
 
+            public const string MarkNotificationAsRead = "mark-notification-read";
 
         }
 
@@ -149,12 +125,12 @@ namespace SadnaExpress.API.Controllers
 
             public const string allMembers = "all-members";
 
-            public const string allpurchasesUsers = "all-purchases-users";
-            
-            public const string allpurchasesStore= "all-purchases-stores";
-            
             public const string removeMember = "rm-member";
 
+            public const string allpurchasesStore = "all-purchases-stores";
+
+            public const string allpurchasesUsers = "all-purchases-users";
+          
             public const string getSystemRevenue = "get-system-revenue";
 
             public const string getSystemUserData = "get-system-user-data";

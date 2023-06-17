@@ -34,9 +34,6 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
         Response WriteItemReview(Guid userID, Guid itemID, string reviewText); //3.3
         ResponseT<List<SReview>> GetItemReviews(Guid itemID);
-        Response RateItem(Guid userID, int itemID, int score); //3.4 (not in this version)
-        Response WriteMessageToStore(Guid userID, Guid storeID, string message); //3.5  (not in this version)
-        Response ComplainToAdmin(Guid userID, string message); //3.6 (not in this version)
         ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID); //3.7 (not in this version)
         ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID); //3.7 (not in this version)
 
@@ -64,7 +61,6 @@ namespace SadnaExpress.ServiceLayer
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
         Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
         Response CloseStore(Guid userID, Guid storeID); //4.9
-        Response ReopenStore(Guid userID, Guid storeID); //4.10 (not in this version)
         ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
         ResponseT<List<ItemForOrder>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
         Response RemoveUserMembership(Guid userID, string email); //6.2
@@ -72,7 +68,6 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<List<SMember>> GetMembers(Guid userID); //6.6
         void CleanUp();
         ResponseT<bool> InitializeTradingSystem(Guid userID);
-        Response DeleteStore(Guid userID, Guid storeID);
 
         //helpers
         void SetPaymentService(IPaymentService paymentService);
@@ -115,7 +110,6 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<string> GetMemberName(Guid userID);
         ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date);
         ResponseT<double> GetSystemRevenue(Guid userID, DateTime date);
-        Response Handshake();
         ResponseT<SBid> PlaceBid(Guid userID, Guid itemID, double price);
         ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID);
         Response ReactToBid(Guid userID, Guid itemID, Guid bidID, string bidResponse);

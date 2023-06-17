@@ -91,21 +91,6 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.PurchaseCart(id, paymentDetails, usersDetail);
         }
 
-        public Response RateItem(Guid id, int itemID, int score)
-        {
-            return _realBridge.RateItem(id, itemID, score);
-        }
-
-        public Response WriteMessageToStore(Guid id, Guid storeID, string message)
-        {
-            return _realBridge.WriteMessageToStore(id, storeID, message);
-        }
-
-        public Response ComplainToAdmin(Guid id, string message)
-        {
-            return _realBridge.ComplainToAdmin(id, message);
-        }
-
         public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
         {
             throw new NotImplementedException();
@@ -168,11 +153,6 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.CloseStore(id, storeID);
         }
 
-        public Response ReopenStore(Guid id, Guid storeID)
-        {
-            return _realBridge.ReopenStore(id, storeID);
-        }
-
         public ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid id, Guid storeID)
         {
             return _realBridge.GetEmployeeInfoInStore(id, storeID);
@@ -182,11 +162,6 @@ namespace SadnaExpress.ServiceLayer
         public Response RemoveUserMembership(Guid userID, string email)
         {
             return _realBridge.RemoveUserMembership(userID, email);
-        }
-
-        public Response DeleteStore(Guid id, Guid storeID)
-        {
-            return _realBridge.DeleteStore(id, storeID);
         }
 
         public Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission)
@@ -395,11 +370,6 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<string> GetMemberName(Guid userID)
         {
             return _realBridge.GetMemberName(userID);
-        }
-
-        public Response Handshake()
-        {
-            return _realBridge.Handshake();
         }
 
         public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)

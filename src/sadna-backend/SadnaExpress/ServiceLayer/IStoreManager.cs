@@ -35,8 +35,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         
         Response ReactToBid(Guid userID, Guid itemID, Guid bidID, string bidResponse); 
         Response CloseStore(Guid userID, Guid storeID); //4.9
-        Response DeleteStore(Guid userID, Guid storeID); 
-        Response ReopenStore(Guid userID, Guid storeID);
         ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID); //4.13                                                   
         ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID); //6.4
 
