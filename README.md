@@ -51,6 +51,14 @@ Currently there are 3 possible initial states for the system to start with:
   </li>
 </ul>
 
+supported initialization functions: 
+- Register
+- CreateSystemManager
+- Login
+- Logout
+- OpenNewStore
+- AddItemToStore
+
  # app.config
  
 app.config file holds the exteral services url, database connection, system manager details and the start point of the trading system (initialize or not). 
