@@ -710,7 +710,7 @@ namespace SadnaExpressTests.Acceptance_Tests
                     return proxyBridge.PurchaseCart(id2,transactionDetails, transactionDetailsSupply);
                 });
                 Task<Response> task3 = Task.Run(() => {
-                    return proxyBridge.EditItemQuantity(storeOwnerid,storeid1,itemid22,-1);
+                    return proxyBridge.EditItem(storeOwnerid, storeid1, itemid22, "Ipad", "electronic", 99.8, -1);
                 });
             
             // Wait for all clients to complete

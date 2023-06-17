@@ -91,36 +91,14 @@ namespace SadnaExpress.ServiceLayer
             return _realBridge.PurchaseCart(id, paymentDetails, usersDetail);
         }
 
-        public ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID)
+        public ResponseT<List<ItemForOrder>> GetPurchasesOfUser(Guid userID)
         {
             throw new NotImplementedException();
-        }
-
-
-        public Response EditItemCategory(Guid userID,  Guid storeID, Guid itemID, string category)
-        {
-            return _realBridge.EditItemCategory(userID, storeID,  itemID, category);
-        }
-
-        public Response EditItemPrice(Guid userID,  Guid storeID, Guid itemID, int price)
-        {
-            return _realBridge.EditItemPrice(userID, storeID, itemID, price);
-        }
-        
-        public Response EditItemName(Guid userID,  Guid storeID, Guid itemID, string name)
-        {
-            return _realBridge.EditItemName(userID, storeID, itemID, name);
-        }
-        
-        public Response EditItemQuantity(Guid userID, Guid storeID, Guid itemID, int quantity)
-        {
-            // if you want remove put -i and to add +i
-            return _realBridge.EditItemQuantity(userID, storeID, itemID, quantity);
         }
 
         public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)
         {
-            throw new NotImplementedException();
+            return _realBridge.EditItem(userID, storeID, itemID, itemName, itemCategory, itemPrice, quantity);
         }
 
         public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
@@ -141,11 +119,6 @@ namespace SadnaExpress.ServiceLayer
         public Response AddStoreManagerPermissions(Guid id, Guid storeID, string userEmail, string permission)
         {
             return _realBridge.AddStoreManagerPermissions(id, storeID, userEmail, permission);
-        }
-
-        public Response RemoveStoreManager(Guid id, Guid storeID, Guid userID)
-        {
-            return _realBridge.RemoveStoreManager(id, storeID, userID);
         }
 
         public Response CloseStore(Guid id, Guid storeID)
@@ -288,21 +261,6 @@ namespace SadnaExpress.ServiceLayer
         public ResponseT<List<SItem>> GetItemsForClient(Guid userID, string keyWords, int minPrice = 0, int maxPrice = int.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1)
         {
             return _realBridge.GetItemsForClient(userID, keyWords, minPrice, maxPrice, ratingItem, category, ratingStore);
-        }
-
-        public ResponseT<ConcurrentDictionary<Guid, Store>> GetStores()
-        {
-            return _realBridge.GetStores();
-        }
-
-        public ResponseT<List<Member>> GetStoreOwners()
-        {
-            return _realBridge.GetStoreOwners();
-        }
-
-        public ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores)
-        {
-            return _realBridge.GetStoreOwnerOfStores(stores);
         }
 
         public ResponseT<List<Item>> GetItemsInStore(Guid userID, Guid storeId)

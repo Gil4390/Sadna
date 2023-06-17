@@ -19,22 +19,11 @@ namespace SadnaExpress.DomainLayer.Store
         List<Review> GetItemReviews(Guid itemID);
         double PurchaseCart(DatabaseContext db,Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemsForOrder, string email);
         void RemoveItemFromStore(Guid storeID, Guid itemID);
-        void EditItemName(Guid storeID, Guid itemID, string category);
-        void EditItemCategory(Guid storeID, Guid itemID, string category);
-        void EditItemPrice(Guid storeID, Guid itemID, int price);
-        void EditItemQuantity(Guid storeID, Guid itemID, int price);
         List<Store> GetAllStoreInfo();
         List<Item> GetItemsByKeysWord(string keyWords, int minPrice = 0, int maxPrice = Int32.MaxValue, int ratingItem = -1, string category = null, int ratingStore = -1);
         void AddItemToCart(Guid storeID, Guid itemID, int quantity);
         void AddItemToStores(DatabaseContext db, Dictionary<Guid, Dictionary<Guid, int>> items);
-        void CleanUp();
-        ConcurrentDictionary<Guid, Store> GetStores();
-        void SetIsSystemInitialize(bool isInitialize);
-        Store GetStore(Guid storeID);
-        Store GetStore(String name);
-
-        Item GetItemByID(Guid storeID, Guid itemID); //for tests
-        void SetTSOrders(IOrders orders);
+       
         Condition AddCondition(Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string op= default, int opCond= default);
         void RemoveCondition(Guid storeID ,int condID);
         List<Condition> GetAllConditions(Guid store);
@@ -51,6 +40,13 @@ namespace SadnaExpress.DomainLayer.Store
         Dictionary<Guid, Dictionary<Item, double>> GetCartItems(Dictionary<Guid, Dictionary<Guid, int>> cart);
         Store GetStoreInfo(Guid storeId);
         void CheckPurchaseConditions(Dictionary<Guid, Dictionary<Guid, int>> value);
+
         void LoadStoresFromDB();
+        Item GetItemByID(Guid storeID, Guid itemID); //for tests
+        void SetTSOrders(IOrders orders);
+        void SetIsSystemInitialize(bool isInitialize);
+        Store GetStore(Guid storeID);
+        Store GetStore(String name);
+        void CleanUp();
     }
 }

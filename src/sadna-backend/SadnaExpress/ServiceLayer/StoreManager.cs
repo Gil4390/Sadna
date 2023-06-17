@@ -25,19 +25,7 @@ namespace SadnaExpress.ServiceLayer
             this.storeFacade = storeFacade;
         }
 
-        public ResponseT<ShoppingCart> GetDetailsOnCart(Guid userID)
-        {
-            try
-            {
-                return new ResponseT<ShoppingCart>(userFacade.GetDetailsOnCart(userID));
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetDetailsOnCart)+": "+ex.Message);
-                return new ResponseT<ShoppingCart>(ex.Message);
-            }
-        }
-
+        #region Cart operations
         public ResponseT<List<SItem>> GetCartItems(Guid userID)
         {
             try
@@ -120,6 +108,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
+
         public ResponseT<List<ItemForOrder>>  PurchaseCart(Guid userID, SPaymentDetails paymentDetails, SSupplyDetails usersDetail)
         {
             // Version3 transaction
@@ -215,6 +204,30 @@ namespace SadnaExpress.ServiceLayer
             }
             return new ResponseT<List<ItemForOrder>>(itemForOrders);
         }
+
+        public Response CheckPurchaseConditions(Guid userId)
+        {
+            try
+            {
+                Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
+                ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userId);
+                if (shoppingCart.Baskets.Count == 0)
+                    throw new Exception("Cart can't be empty");
+                foreach (ShoppingBasket basket in shoppingCart.Baskets)
+                    cart.Add(basket.StoreID, basket.ItemsInBasket);
+                storeFacade.CheckPurchaseConditions(cart);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CheckPurchaseConditions) + ": " + ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Store operations
         public ResponseT<Guid> OpenNewStore(Guid userID, string storeName)
         {
             try
@@ -262,6 +275,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Guid>(ex.Message);
             }
         }
+        
         public Response RemoveItemFromStore(Guid userID, Guid storeID, Guid itemID)
         {
             try
@@ -277,6 +291,236 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
+
+        public ResponseT<List<Store>> GetAllStoreInfo()
+        {
+            List<Store> stores = storeFacade.GetAllStoreInfo();
+            return new ResponseT<List<Store>>(stores);
+        }
+
+        public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
+        {
+            try
+            {
+                userFacade.GetStorePurchases(userID, storeID);
+                List<Order> purchases = storeFacade.GetStorePurchases(storeID);
+                return new ResponseT<List<Order>>(purchases);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID, nameof(StoreManager) + ": " + nameof(GetStorePurchases) + ": " + ex.Message);
+                return new ResponseT<List<Order>>(ex.Message);
+            }
+        }
+
+        public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, storeID, new List<string> { "owner permissions", "founder permissions", });
+                return new ResponseT<double>(Orders.Instance.GetStoreRevenue(storeID, date));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStoreRevenue) + ": " + ex.Message);
+                return new ResponseT<double>(ex.Message);
+            }
+        }
+
+        public Response EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                userFacade.EditItem(userId, storeId);
+                storeFacade.EditItem(storeId, itemId, itemName, itemCategory, itemPrice, quantity);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userId, nameof(StoreManager) + ": " + nameof(EditItem) + ": " + ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+
+        public ResponseT<List<Item>> GetItemsInStore(Guid userId, Guid storeId)
+        {
+            try
+            {
+                //add check from userfacade if hes premmisions (?)
+                return new ResponseT<List<Item>>(storeFacade.GetItemsInStore(storeId));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetItemsInStore) + ": " + ex.Message);
+                return new ResponseT<List<Item>>(ex.Message);
+            }
+        }
+
+        public ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                ///maybe add here a check of credentials to userfacade? this func in called from client after we know that user has permissions on this store
+                Store s = storeFacade.GetStoreInfo(storeId);
+                return new ResponseT<SStore>(new SStore(s));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStoreInfo) + ": " + ex.Message);
+                return new ResponseT<SStore>(ex.Message);
+            }
+        }
+
+        #region Policy & Condition
+
+        public ResponseT<Condition> AddCondition(Guid userID, Guid store, string entity, string entityName, string type, object value, DateTime dt = default, string entityRes = default, string entityResName = default,
+           string typeRes = default, double valueRes = default, string op = default, int opCond = default)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                userFacade.hasPermissions(userID, store, new List<string> { "founder permissions", "owner permissions" });
+                return new ResponseT<Condition>(storeFacade.AddCondition(store, entity, entityName, type, value, dt, op, opCond));
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(AddCondition) + ": " + ex.Message);
+                return new ResponseT<Condition>(ex.Message);
+            }
+        }
+
+        public Response RemoveCondition(Guid userID, Guid storeID, int condID)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                userFacade.hasPermissions(userID, storeID, new List<string> { "founder permissions", "owner permissions" });
+                storeFacade.RemoveCondition(storeID, condID);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemoveCondition) + ": " + ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+
+        public ResponseT<SPolicy[]> GetAllConditions(Guid userID, Guid store)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, store, new List<string> { "founder permissions", "owner permissions" });
+                List<SPolicy> cond = new List<SPolicy>();
+                foreach (Condition condition in storeFacade.GetAllConditions(store))
+                {
+                    cond.Add(new SPolicy(condition.ID, condition.ToString(), true, "Condition"));
+                }
+                return new ResponseT<SPolicy[]>(cond.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetAllConditions) + ": " + ex.Message);
+                return new ResponseT<SPolicy[]>(ex.Message);
+            }
+        }
+
+        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid userID, Guid store, T level, int percent, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                userFacade.hasPermissions(userID, store, new List<string> { "founder permissions", "owner permissions" });
+                return new ResponseT<DiscountPolicy>(storeFacade.CreateSimplePolicy(store, level, percent, startDate, endDate));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CreateSimplePolicy) + ": " + ex.Message);
+                return new ResponseT<DiscountPolicy>(ex.Message);
+            }
+        }
+
+        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid userID, Guid store, string op, int[] policys)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                userFacade.hasPermissions(userID, store, new List<string> { "founder permissions", "owner permissions" });
+                return new ResponseT<DiscountPolicy>(storeFacade.CreateComplexPolicy(store, op, policys));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CreateComplexPolicy) + ": " + ex.Message);
+                return new ResponseT<DiscountPolicy>(ex.Message);
+            }
+        }
+
+        public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
+        {
+            try
+            {
+                userFacade.hasPermissions(userID, storeID,
+                    new List<string> { "founder permissions", "owner permissions" });
+                (Dictionary<DiscountPolicy, bool>, Dictionary<Condition, bool>) policies =
+                    storeFacade.GetAllPolicy(storeID);
+                List<SPolicy> spolicies = new List<SPolicy>();
+                foreach (DiscountPolicy discount in policies.Item1.Keys)
+                {
+                    spolicies.Add(new SPolicy(discount, policies.Item1[discount], "Policy"));
+                }
+                foreach (Condition cond in policies.Item2.Keys)
+                {
+                    spolicies.Add(new SPolicy(cond.ID, cond.ToString(), policies.Item2[cond], "Condition"));
+                }
+
+                return new ResponseT<List<SPolicy>>(spolicies);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetAllPolicy) + ": " + ex.Message);
+                return new ResponseT<List<SPolicy>>(ex.Message);
+            }
+        }
+
+        public Response AddPolicy(Guid userID, Guid store, int discountPolicy)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                userFacade.hasPermissions(userID, store, new List<string> { "founder permissions", "owner permissions" });
+                storeFacade.AddPolicy(store, discountPolicy);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(AddPolicy) + ": " + ex.Message);
+                return new ResponseT<DiscountPolicyTree>(ex.Message);
+            }
+        }
+
+        public Response RemovePolicy(Guid userID, Guid store, int discountPolicy, string type)
+        {
+            try
+            {
+                DBHandler.Instance.CanConnectToDatabase();
+                userFacade.hasPermissions(userID, store, new List<string> { "founder permissions", "owner permissions" });
+                storeFacade.RemovePolicy(store, discountPolicy, type);
+                return new Response();
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemovePolicy) + ": " + ex.Message);
+                return new Response(ex.Message);
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Reviews
         public Response WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
             try
@@ -291,6 +535,7 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
+
         public ResponseT<List<SReview>> GetItemReviews(Guid itemID)
         {
             List<Review> reviews = storeFacade.GetItemReviews(itemID);
@@ -300,71 +545,10 @@ namespace SadnaExpress.ServiceLayer
             }
             return new ResponseT<List<SReview>>(sReviews);
         }
-        public Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.EditItem(userID, storeID);
-                storeFacade.EditItemPrice(storeID, itemID, price);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(EditItemPrice)+": "+ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-        public Response EditItemCategory(Guid userID, Guid storeID, Guid itemID, string category)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.EditItem(userID, storeID);
-                storeFacade.EditItemCategory(storeID, itemID, category);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(EditItemCategory)+": "+ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-        public Response EditItemName(Guid userID, Guid storeID, Guid itemID, string name)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.EditItem(userID, storeID);
-                storeFacade.EditItemName(storeID, itemID, name);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(EditItemName)+": "+ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-        public Response EditItemQuantity(Guid userID, Guid storeID, Guid itemID, int quantity)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.EditItem(userID, storeID);
-                storeFacade.EditItemQuantity(storeID, itemID, quantity);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(EditItemQuantity)+": "+ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-        public ResponseT<List<Store>> GetAllStoreInfo()
-        {
-            List<Store> stores = storeFacade.GetAllStoreInfo();
-            return new ResponseT<List<Store>>(stores);
-        }
+
+        #endregion
+
+        #region User options
 
         public ResponseT<List<Item>> GetItemsByKeysWord(Guid userID, string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
         {
@@ -377,20 +561,6 @@ namespace SadnaExpress.ServiceLayer
             {
                 Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetItemsByKeysWord)+": "+ex.Message);
                 return new ResponseT<List<Item>>(ex.Message);
-            }
-        }
-        public ResponseT<List<Order>> GetStorePurchases(Guid userID, Guid storeID)
-        {
-            try
-            {
-                userFacade.GetStorePurchases(userID, storeID);
-                List<Order> purchases = storeFacade.GetStorePurchases(storeID);
-                return new ResponseT<List<Order>>(purchases);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userID , nameof(StoreManager)+": "+nameof(GetStorePurchases)+": "+ex.Message);
-                return new ResponseT<List<Order>>(ex.Message);
             }
         }
 
@@ -425,7 +595,11 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-        
+
+        #endregion
+
+        #region Admin operations
+
         public ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID)
         {
             try
@@ -441,14 +615,29 @@ namespace SadnaExpress.ServiceLayer
 
             }
         }
-        public void CleanUp()
+
+        public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
         {
-            storeFacade.CleanUp();
+            try
+            {
+                userFacade.hasPermissions(userID, Guid.Empty, new List<string> { "system manager permissions" });
+                return new ResponseT<double>(Orders.Instance.GetSystemRevenue(date));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetSystemRevenue) + ": " + ex.Message);
+                return new ResponseT<double>(ex.Message);
+            }
         }
-        public ConcurrentDictionary<Guid, Store> GetStores()
+
+        #endregion
+
+        public double GetItemAfterDiscount(Guid itemStoreid, Item item)
         {
-            return storeFacade.GetStores();
+            return storeFacade.GetItemAfterDiscount(itemStoreid, item);
         }
+
+        #region Getters & Setters
 
         public void SetIsSystemInitialize(bool isInitialize)
         {
@@ -469,6 +658,7 @@ namespace SadnaExpress.ServiceLayer
                 return new ResponseT<Store>(ex.Message);
             }
         }
+
         public ResponseT<Store> GetStore(String name)
         {
             try
@@ -483,9 +673,17 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public void SetTSOrders(IOrders orders)
+        public ResponseT<ShoppingCart> GetDetailsOnCart(Guid userID)
         {
-            storeFacade.SetTSOrders(orders);
+            try
+            {
+                return new ResponseT<ShoppingCart>(userFacade.GetDetailsOnCart(userID));
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID, nameof(StoreManager) + ": " + nameof(GetDetailsOnCart) + ": " + ex.Message);
+                return new ResponseT<ShoppingCart>(ex.Message);
+            }
         }
 
         public ResponseT<Item> GetItemByID(Guid storeID, Guid itemID)
@@ -502,185 +700,11 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public ResponseT<Condition> AddCondition(Guid userID ,Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
-            string typeRes = default, double valueRes = default , string op= default, int opCond= default)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
-                return new ResponseT<Condition>(storeFacade.AddCondition(store, entity, entityName, type, value, dt, op, opCond)); 
-                
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(AddCondition) + ": " + ex.Message);
-                return new ResponseT<Condition>(ex.Message);
-            }
-        }
-
-        public Response RemoveCondition(Guid userID,Guid storeID , int condID)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.hasPermissions(userID, storeID,new List<string> {"founder permissions", "owner permissions"});
-                storeFacade.RemoveCondition(storeID ,condID);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemoveCondition) + ": " + ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-
-        public ResponseT<SPolicy[]> GetAllConditions(Guid userID,Guid store)
-        {
-            try
-            {
-                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
-                List<SPolicy> cond = new List<SPolicy>();
-                foreach (Condition condition in storeFacade.GetAllConditions(store))
-                {
-                    cond.Add(new SPolicy(condition.ID, condition.ToString(), true, "Condition"));
-                }
-                return new ResponseT<SPolicy[]>(cond.ToArray());
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetAllConditions) + ": " + ex.Message);
-                return new ResponseT<SPolicy[]>(ex.Message);
-            }
-        }
-        
-        public ResponseT<DiscountPolicy> CreateSimplePolicy<T>(Guid userID,Guid store, T level, int percent, DateTime startDate, DateTime endDate)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
-                return new ResponseT<DiscountPolicy>(storeFacade.CreateSimplePolicy(store, level, percent, startDate , endDate));
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CreateSimplePolicy) + ": " + ex.Message);
-                return new ResponseT<DiscountPolicy>(ex.Message);
-            }
-        }
-
-        public ResponseT<DiscountPolicy> CreateComplexPolicy(Guid userID,Guid store, string op, int[] policys)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
-                return new ResponseT<DiscountPolicy>(storeFacade.CreateComplexPolicy(store, op , policys));
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CreateComplexPolicy) + ": " + ex.Message);
-                return new ResponseT<DiscountPolicy>(ex.Message);
-            }
-        }
-
-        public ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID)
-        {
-            try
-            {
-                userFacade.hasPermissions(userID, storeID,
-                    new List<string> { "founder permissions", "owner permissions" });
-                (Dictionary<DiscountPolicy, bool>, Dictionary<Condition, bool>) policies =
-                    storeFacade.GetAllPolicy(storeID);
-                List<SPolicy> spolicies = new List<SPolicy>();
-                foreach (DiscountPolicy discount in policies.Item1.Keys)
-                {
-                    spolicies.Add(new SPolicy(discount, policies.Item1[discount] , "Policy"));
-                }
-                foreach (Condition cond in policies.Item2.Keys)
-                {
-                    spolicies.Add(new SPolicy(cond.ID, cond.ToString(), policies.Item2[cond] , "Condition"));
-                }
-                
-                return new ResponseT<List<SPolicy>>(spolicies);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetAllPolicy) + ": " + ex.Message);
-                return new ResponseT<List<SPolicy>>(ex.Message);
-            }
-        }
-
-        public Response AddPolicy(Guid userID,Guid store, int discountPolicy)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
-                storeFacade.AddPolicy(store, discountPolicy);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(AddPolicy) + ": " + ex.Message);
-                return new ResponseT<DiscountPolicyTree>(ex.Message);
-            }
-        }
-
-        public Response RemovePolicy(Guid userID,Guid store, int discountPolicy , string type)
-        {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.hasPermissions(userID, store,new List<string> {"founder permissions", "owner permissions"});
-                storeFacade.RemovePolicy(store, discountPolicy , type);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(RemovePolicy) + ": " + ex.Message);
-                return new Response(ex.Message);
-            }
-        }
-
-        public ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date)
-        {
-            try
-            {
-                userFacade.hasPermissions(userID, storeID, new List<string> { "owner permissions", "founder permissions", });
-                return new ResponseT<double>(Orders.Instance.GetStoreRevenue(storeID, date));
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStoreRevenue) + ": " + ex.Message);
-                return new ResponseT<double>(ex.Message);
-            }
-        }
-
-        public ResponseT<double> GetSystemRevenue(Guid userID, DateTime date)
-        {
-            try
-            {
-                userFacade.hasPermissions(userID, Guid.Empty, new List<string> { "system manager permissions" });
-                return new ResponseT<double>(Orders.Instance.GetSystemRevenue(date));
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetSystemRevenue) + ": " + ex.Message);
-                return new ResponseT<double>(ex.Message);
-            }
-        }
-
-        public Guid GetItemStoreId(Guid itemid)
-        {
-            return storeFacade.GetItemStoreId(itemid);
-        }
-
         public ResponseT<int> GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID)
         {
             try
             {
-                return new ResponseT<int> (userFacade.GetItemQuantityInCart(userID, storeID, itemID));
+                return new ResponseT<int>(userFacade.GetItemQuantityInCart(userID, storeID, itemID));
             }
             catch (Exception ex)
             {
@@ -689,75 +713,22 @@ namespace SadnaExpress.ServiceLayer
             }
         }
 
-        public Response EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity)
+        public Guid GetItemStoreId(Guid itemid)
         {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                userFacade.EditItem(userId, storeId);
-                storeFacade.EditItem(storeId, itemId, itemName, itemCategory, itemPrice, quantity);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(userId, nameof(StoreManager) + ": " + nameof(EditItem) + ": " + ex.Message);
-                return new Response(ex.Message);
-            }
+            return storeFacade.GetItemStoreId(itemid);
         }
 
-        public ResponseT<List<Item>> GetItemsInStore(Guid userId,Guid storeId)
+
+        public void SetTSOrders(IOrders orders)
         {
-            try
-            {
-                //add check from userfacade if hes premmisions (?)
-                return new ResponseT<List<Item>>(storeFacade.GetItemsInStore(storeId));
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetItemsInStore) + ": " + ex.Message);
-                return new ResponseT<List<Item>>(ex.Message);
-            }
+            storeFacade.SetTSOrders(orders);
         }
 
-        public ResponseT<SStore> GetStoreInfo(Guid userID, Guid storeId)
+        public void CleanUp()
         {
-            try
-            {
-                DBHandler.Instance.CanConnectToDatabase();
-                ///maybe add here a check of credentials to userfacade? this func in called from client after we know that user has permissions on this store
-                Store s = storeFacade.GetStoreInfo(storeId);
-                return new ResponseT<SStore>(new SStore(s));
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(GetStoreInfo) + ": " + ex.Message);
-                return new ResponseT<SStore>(ex.Message);
-            }
+            storeFacade.CleanUp();
         }
 
-        public double GetItemAfterDiscount(Guid itemStoreid, Item item)
-        {
-            return storeFacade.GetItemAfterDiscount(itemStoreid, item);
-        }
-
-        public Response CheckPurchaseConditions(Guid userId)
-        {
-            try
-            {
-                Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
-                ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userId);
-                if (shoppingCart.Baskets.Count == 0)
-                    throw new Exception("Cart can't be empty");
-                foreach (ShoppingBasket basket in shoppingCart.Baskets) 
-                    cart.Add(basket.StoreID, basket.ItemsInBasket);
-                storeFacade.CheckPurchaseConditions(cart);
-                return new Response();
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(nameof(StoreManager) + ": " + nameof(CheckPurchaseConditions) + ": " + ex.Message);
-                return new Response(ex.Message);
-            }
-        }
+        #endregion
     }
 }

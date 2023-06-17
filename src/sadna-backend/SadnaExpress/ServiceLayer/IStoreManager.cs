@@ -26,10 +26,6 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID,  string itemName, string itemCategory, double itemPrice,
             int quantity);
         Response RemoveItemFromStore(Guid userID, Guid storeID, Guid itemID);
-        Response EditItemCategory(Guid userID, Guid storeID, Guid itemID, string category);
-        Response EditItemPrice(Guid userID, Guid storeID, Guid itemID, int price); 
-        Response EditItemName(Guid userID, Guid storeID, Guid itemID, string name); 
-        Response EditItemQuantity(Guid userID, Guid storeID, Guid itemID, int quantity);
          //4.2
         ResponseT<SBid> PlaceBid(Guid userID, Guid itemID, double price);
         
@@ -41,14 +37,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<double> GetStoreRevenue(Guid userID, Guid storeID, DateTime date);
         
         ResponseT<double> GetSystemRevenue(Guid userID, DateTime date);
-        void CleanUp();
-        ConcurrentDictionary<Guid, Store> GetStores();
-        void SetIsSystemInitialize(bool isInitialize);
-        ResponseT<Store> GetStore(Guid storeID);
-        ResponseT<Store> GetStore(String name);
 
-        void SetTSOrders(IOrders orders);
-        ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
         ResponseT<Condition> AddCondition(Guid userID , Guid store ,string entity, string entityName, string type, object value, DateTime dt=default, string entityRes = default,string entityResName=default,
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);  
         Response RemoveCondition(Guid userID,Guid storeID ,int condID);
@@ -58,7 +47,7 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         Response AddPolicy(Guid userID,Guid store, int discountPolicy);
         Response RemovePolicy(Guid userID,Guid store, int discountPolicy , string type);
         ResponseT<List<SPolicy>> GetAllPolicy(Guid userID, Guid storeID);
-        Guid GetItemStoreId(Guid Itemid);
+       
         ResponseT<List<SItem>> GetCartItems(Guid userID);
         ResponseT<int> GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
         Response EditItem(Guid userId, Guid storeId, Guid itemId, string itemName, string itemCategory, double itemPrice, int quantity);
@@ -66,5 +55,13 @@ namespace SadnaExpress.ServiceLayer.ServiceObjects
         ResponseT<SStore> GetStoreInfo(Guid userID,Guid storeId);
         double GetItemAfterDiscount(Guid itemStoreid, Item item);
         Response CheckPurchaseConditions(Guid userId);
+
+        void SetIsSystemInitialize(bool isInitialize);
+        ResponseT<Store> GetStore(Guid storeID);
+        ResponseT<Store> GetStore(String name);
+        Guid GetItemStoreId(Guid Itemid);
+        void SetTSOrders(IOrders orders);
+        ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
+        void CleanUp();
     }
 }

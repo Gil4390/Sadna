@@ -119,16 +119,18 @@ namespace SadnaExpress.DomainLayer.User
             string todayStr = DateTime.Now.ToString("dd/MM/yyyy");
             Visit toRemove= UsersVisits.FirstOrDefault(v => v.UserID.Equals(userId) && v.Role.Equals("guest") && v.VisitDate.Equals(todayStr));
 
-            var itemsToKeep = usersVisits.Where(item => item.Equals(toRemove) == false);
+            if (toRemove != null)
+            {
+                var itemsToKeep = usersVisits.Where(item => item.Equals(toRemove) == false);
 
-            // Create a new ConcurrentBag and add the filtered items to it
-            ConcurrentBag<Visit> updatedBag = new ConcurrentBag<Visit>(itemsToKeep);
+                // Create a new ConcurrentBag and add the filtered items to it
+                ConcurrentBag<Visit> updatedBag = new ConcurrentBag<Visit>(itemsToKeep);
 
-            // Assign the updated bag to the original bag
-            usersVisits = updatedBag;
+                // Assign the updated bag to the original bag
+                usersVisits = updatedBag;
 
-            
-            Logger.Instance.Info($"{nameof(UserUsageData)} {nameof(AddMemberVisit)} {toRemove.Role} {newVisit.UserID} was removed from the visit table because guest was logged in as member {newVisit.UserID}");
+                Logger.Instance.Info($"{nameof(UserUsageData)} {nameof(AddMemberVisit)} {toRemove.Role} {newVisit.UserID} was removed from the visit table because guest was logged in as member {newVisit.UserID}");
+            }
 
             if (UsersVisits.Count(item => item.Equals(newVisit)) == 0)
             {  //there isn't a visit of that member today

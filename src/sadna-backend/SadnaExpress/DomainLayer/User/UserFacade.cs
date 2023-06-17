@@ -19,11 +19,11 @@ namespace SadnaExpress.DomainLayer.User
 {
     public class UserFacade : IUserFacade
     {
-        private const int MaxExternalServiceWaitTime = 5000; //10 seconds is 10,000 mili seconds
+        #region Properties
+        private const int MaxExternalServiceWaitTime = 5000; //5 seconds is 5,000 mili seconds
         private ConcurrentDictionary<Guid, User> current_Users; //users that are in the system and not login
         public ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private ConcurrentDictionary<Guid, string> macs;
-
         private readonly string guestEmail = "guest";
         private readonly string purchaseNotificationForBuyer = "Your purchase completed successfully, thank you for buying at Sadna Express!";
         private bool _isTSInitialized;
@@ -34,6 +34,9 @@ namespace SadnaExpress.DomainLayer.User
         private ISupplierService supplierService;
         public ISupplierService SupplierService { get => supplierService; set => supplierService = value; }
 
+        #endregion
+
+        #region Constructor
         public UserFacade(IPaymentService paymentService = null, ISupplierService supplierService = null)
         {
             current_Users = new ConcurrentDictionary<Guid, User>();
@@ -55,6 +58,9 @@ namespace SadnaExpress.DomainLayer.User
             _isTSInitialized = false;
         }
 
+        #endregion
+
+        #region User operations
         public Guid Enter()
         {
             User user = new User();
@@ -251,6 +257,24 @@ namespace SadnaExpress.DomainLayer.User
             return Guid.Empty; //if member exited we do not need to send new id
         }
 
+        public ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID)
+        {
+            var member = GetMember(userID);
+            if (member is PromotedMember)
+            {
+                var promoted = (PromotedMember)member;
+                return promoted.Permission;
+            }
+            else
+            {
+                return new ConcurrentDictionary<Guid, List<string>>();
+            }
+
+        }
+
+        #endregion
+
+        #region User Shopping operation
         public void AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)
         {
             IsTsInitialized();
@@ -297,15 +321,6 @@ namespace SadnaExpress.DomainLayer.User
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(EditItemFromCart) + "Item " + itemID + "X" + itemAmount + " updated in store " + storeID + " by user " + userID);
         }
 
-        public ShoppingCart GetDetailsOnCart(Guid userID)
-        {
-            IsTsInitialized();
-            if (members.ContainsKey(userID))
-                return members[userID].ShoppingCart;
-            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(GetDetailsOnCart) + " ask to displays his shopping cart");
-            return current_Users[userID].ShoppingCart;
-        }
-
         public void PurchaseCart(DatabaseContext db, Guid userID)
         {
             String internedKey = String.Intern(userID.ToString());
@@ -324,6 +339,16 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
+        public void NotifyBuyerPurchase(Guid userID, DatabaseContext db = null)
+        {
+            NotificationNotifier.GetInstance().SendNotification(userID, purchaseNotificationForBuyer);
+            if (members.ContainsKey(userID))
+                members[userID].Update(new Notification(DateTime.Now, userID, purchaseNotificationForBuyer, userID), db);
+        }
+
+        #endregion
+
+        #region Store operations
         public void OpenNewStore(Guid userID, Guid storeID)
         {
             IsTsInitialized();
@@ -337,12 +362,6 @@ namespace SadnaExpress.DomainLayer.User
 
 
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(OpenNewStore) + " opened new store with id- " + storeID);
-        }
-
-        public void CheckIsValidMemberOperation(Guid userID)
-        {
-            IsTsInitialized();
-            isLoggedIn(userID);
         }
 
         public void AddItemToStore(Guid id, Guid storeID)
@@ -403,6 +422,7 @@ namespace SadnaExpress.DomainLayer.User
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(AppointStoreOwner) + " appoints " + newOwnerID + " to new store owner");
 
         }
+
         public void ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse)
         {
             IsTsInitialized();
@@ -573,6 +593,26 @@ namespace SadnaExpress.DomainLayer.User
             return current_Users[userID].GetBidsOfUser();
         }
 
+        public void CloseStore(Guid userID, Guid storeID)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+            members[userID].CloseStore(storeID);
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(CloseStore) + " Closed store " + storeID);
+        }
+
+        public void GetStorePurchases(Guid userId, Guid storeId)
+        {
+            IsTsInitialized();
+            isLoggedIn(userId);
+            if (!members[userId].hasPermissions(storeId,
+                    new List<string> { "get store history", "owner permissions", "founder permissions" }))
+                throw new Exception("The member doesn’t have permissions to get store purchases");
+        }
+
+        #endregion
+
+        #region Admin operations
         public void RemoveUserMembership(Guid userID, string email)
         {
             IsTsInitialized();
@@ -598,22 +638,6 @@ namespace SadnaExpress.DomainLayer.User
             else
                 throw new Exception($"The user {members[userID].Email} is not system manager");
         }
-        public void CloseStore(Guid userID, Guid storeID)
-        {
-            IsTsInitialized();
-            isLoggedIn(userID);
-            members[userID].CloseStore(storeID);
-            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(CloseStore) + " Closed store " + storeID);
-        }
-
-        public void GetStorePurchases(Guid userId, Guid storeId)
-        {
-            IsTsInitialized();
-            isLoggedIn(userId);
-            if (!members[userId].hasPermissions(storeId,
-                    new List<string> { "get store history", "owner permissions", "founder permissions" }))
-                throw new Exception("The member doesn’t have permissions to get store purchases");
-        }
 
         public void GetAllStorePurchases(Guid userId)
         {
@@ -621,15 +645,6 @@ namespace SadnaExpress.DomainLayer.User
             isLoggedIn(userId);
             if (!members[userId].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
                 throw new Exception("The member doesn’t have permissions to get all stores purchases");
-        }
-
-        public void CleanUp()
-        {
-            current_Users.Clear();
-            members.Clear();
-            paymentService = null;
-            supplierService = null;
-            UserUsageData.Instance.UsersVisits = new ConcurrentBag<Visit>();
         }
 
         public bool InitializeTradingSystem(Guid userID)
@@ -674,59 +689,6 @@ namespace SadnaExpress.DomainLayer.User
             return servicesConnected;
         }
 
-        public bool hasPermissions(Guid userID, Guid storeId, List<string> permissions)
-        {
-            if (members.ContainsKey(userID))
-                if (members[userID].hasPermissions(storeId, permissions))
-                    return true;
-            return false;
-        }
-
-        public bool isLoggedIn(Guid userID)
-        {
-            if (members.ContainsKey(userID))
-            {
-                lock (members[userID])
-                {
-                    if (members[userID].LoggedIn)
-                        return true;
-                    throw new Exception("member need to login");
-                }
-            }
-            throw new Exception("User need to register first");
-        }
-
-        private Member IsMember(string email)
-        {
-            foreach (Member member in members.Values)
-                if (member.Email.ToLower() == email.ToLower())
-                    return member;
-
-            //members is not in members list so we should check in db
-            Member memberFromDb = DBHandler.Instance.GetMemberFromDBByEmail(email);
-
-            if (memberFromDb != null)
-            {
-                if (memberFromDb is PromotedMember)
-                {
-                    members.TryAdd(memberFromDb.UserId, (PromotedMember)memberFromDb);
-                    LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[memberFromDb.UserId]); //we need that each member will hold valid info on their superriors and appointers
-                }
-                else
-                    members.TryAdd(memberFromDb.UserId, memberFromDb);
-                macs.TryAdd(memberFromDb.UserId, DBHandler.Instance.GetMacById(memberFromDb.UserId));
-
-                return members[memberFromDb.UserId];
-            }
-
-            throw new Exception($"There isn't a member with the email: {email}");
-        }
-
-        public ConcurrentDictionary<Guid, User> GetCurrent_Users()
-        {
-            return current_Users;
-        }
-
         public ConcurrentDictionary<Guid, Member> GetMembers(Guid userID)
         {
             if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
@@ -740,16 +702,30 @@ namespace SadnaExpress.DomainLayer.User
             throw new Exception("User doesn't have permissions to preform this operation");
         }
 
-        public void SetPaymentService(IPaymentService paymentService)
+        public List<int> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)
         {
-            this.paymentService = paymentService;
+            isLoggedIn(userID);
+            if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
+            {
+                Logger.Instance.Info(userID, $" {nameof(UserFacade)} {nameof(GetSystemUserActivity)} system administrator requested to get System User Activity from {fromDate} to {toDate}");
+
+                return UserUsageData.Instance.GetUserUsageData(fromDate, toDate);
+            }
+
+            throw new Exception("User doesn't have permissions to preform this operation");
         }
 
-        public void SetSupplierService(ISupplierService supplierService)
+        public void CreateSystemManager(Guid userID)
         {
-            this.supplierService = supplierService;
+            isLoggedIn(userID);
+            PromotedMember systemManager = members[userID].promoteToMember();
+            systemManager.createSystemManager();
+            members[userID] = systemManager;
         }
 
+        #endregion
+
+        #region External Services operations
         public int PlacePayment(double amount, SPaymentDetails transactionDetails)
         {
             try
@@ -810,49 +786,6 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
-        public List<Notification> GetNotifications(Guid userId)
-        {
-            if (members.ContainsKey(userId))
-                return members[userId].AwaitingNotification;
-            throw new Exception("Member with id " + userId + " does not exist");
-        }
-
-        public void MarkNotificationAsRead(Guid userID, Guid notificationID)
-        {
-            members[userID].MarkNotificationAsRead(notificationID);
-        }
-
-        public List<Member> getAllStoreOwners(ConcurrentDictionary<Guid, Store.Store> stores)
-        {
-            List<Member> storeOwners = new List<Member>();
-            foreach (Member member in members.Values)
-            {
-                foreach (Guid storeID in stores.Keys)
-                {
-                    if (members[member.UserId].hasPermissions(storeID, new List<string> { "owner permissions" })) ;
-                    storeOwners.Add(member);
-                }
-            }
-
-            return storeOwners;
-        }
-
-        public List<Member> GetStoreOwnerOfStores(List<Guid> stores)
-        {
-            List<Member> storeOwners = new List<Member>();
-            foreach (Member member in members.Values)
-            {
-                foreach (Guid storeID in stores)
-                {
-                    if (members[member.UserId].hasPermissions(storeID, new List<string> { "owner permissions" })) ;
-                    storeOwners.Add(member);
-                }
-            }
-
-            return storeOwners;
-
-        }
-
         public int PlaceSupply(SSupplyDetails userDetails)
         {
             try
@@ -889,6 +822,34 @@ namespace SadnaExpress.DomainLayer.User
             }
         }
 
+        #endregion
+
+        #region Notifications
+
+        public List<Notification> GetNotifications(Guid userId)
+        {
+            if (members.ContainsKey(userId))
+                return members[userId].AwaitingNotification;
+            throw new Exception("Member with id " + userId + " does not exist");
+        }
+
+        public void MarkNotificationAsRead(Guid userID, Guid notificationID)
+        {
+            members[userID].MarkNotificationAsRead(notificationID);
+        }
+
+        #endregion
+
+        #region Helpers
+
+        public bool hasPermissions(Guid userID, Guid storeId, List<string> permissions)
+        {
+            if (members.ContainsKey(userID))
+                if (members[userID].hasPermissions(storeId, permissions))
+                    return true;
+            return false;
+        }
+
         private bool IsTSSystemManagerID(Guid userID)
         {
             if (members.ContainsKey(userID))
@@ -905,57 +866,26 @@ namespace SadnaExpress.DomainLayer.User
             return false;
         }
 
-        private void IsTsInitialized()
-        {
-            if (_isTSInitialized == false)
-                throw new Exception("Cannot preform any action because system trading is closed");
-        }
-
-        public void SetIsSystemInitialize(bool isInitialize)
-        {
-            _isTSInitialized = isInitialize;
-        }
-
-        public User GetUser(Guid userID)
-        {
-            if (current_Users.ContainsKey(userID))
-                return current_Users[userID];
-            throw new Exception("User with id " + userID + " does not exist");
-        }
-
-        public Member GetMember(Guid userID)
+        public bool isLoggedIn(Guid userID)
         {
             if (members.ContainsKey(userID))
-                return members[userID];
-
-            //members is not in members list so we should check in db
-            Member memberFromDb = DBHandler.Instance.GetMemberFromDBById(userID);
-
-            if (memberFromDb != null)
             {
-                if (memberFromDb is PromotedMember)
+                lock (members[userID])
                 {
-                    members.TryAdd(memberFromDb.UserId, (PromotedMember)memberFromDb);
-                    LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[memberFromDb.UserId]); //we need that each member will hold valid info on their superriors and appointers
+                    if (members[userID].LoggedIn)
+                        return true;
+                    throw new Exception("member need to login");
                 }
-                else
-                    members.TryAdd(memberFromDb.UserId, memberFromDb);
-                macs.TryAdd(memberFromDb.UserId, DBHandler.Instance.GetMacById(memberFromDb.UserId));
-
-                return members[memberFromDb.UserId];
             }
-
-            throw new Exception("Member with id " + userID + " does not exist");
+            throw new Exception("User need to register first");
         }
 
-        public Member GetMember(String email)
+        private Member IsMember(string email)
         {
-            foreach(Member member in members.Values) {
-                if (member.Email.Equals(email))
+            foreach (Member member in members.Values)
+                if (member.Email.ToLower() == email.ToLower())
                     return member;
-            }
 
-      
             //members is not in members list so we should check in db
             Member memberFromDb = DBHandler.Instance.GetMemberFromDBByEmail(email);
 
@@ -973,73 +903,7 @@ namespace SadnaExpress.DomainLayer.User
                 return members[memberFromDb.UserId];
             }
 
-            throw new Exception("Member with id " + email + " does not exist");
-        }
-    
-        public bool IsSystemInitialize()
-        {
-            return _isTSInitialized;
-        }
-
-        public int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID)
-        {
-            if (current_Users.ContainsKey(userID))
-                return current_Users[userID].ShoppingCart.GetItemQuantityInCart(storeID,itemID);
-            if (isLoggedIn(userID))
-                return members[userID].ShoppingCart.GetItemQuantityInCart(storeID, itemID);
-
-            throw new Exception("User with id " + userID + " does not exist");
-        }
-        
-        public string GetUserEmail(Guid userID)
-        {
-            if (members.ContainsKey(userID))
-                return members[userID].Email;
-            return guestEmail;
-
-        }
-
-        public ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID)
-        {
-            var member = GetMember(userID);
-            if (member is PromotedMember)
-            {
-                var promoted = (PromotedMember)member;
-                return promoted.Permission;
-            }
-            else
-            {
-                return new ConcurrentDictionary<Guid, List<string>>();
-            }
-
-        }
-
-        public List<int> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate)
-        {
-            isLoggedIn(userID);
-            if (members[userID].hasPermissions(Guid.Empty, new List<string> { "system manager permissions" }))
-            {
-                Logger.Instance.Info(userID, $" {nameof(UserFacade)} {nameof(GetSystemUserActivity)} system administrator requested to get System User Activity from {fromDate} to {toDate}");
-
-                return UserUsageData.Instance.GetUserUsageData(fromDate, toDate);
-            }
-
-            throw new Exception("User doesn't have permissions to preform this operation");
-        }
-
-        public void NotifyBuyerPurchase(Guid userID, DatabaseContext db=null)
-        {
-            NotificationNotifier.GetInstance().SendNotification(userID, purchaseNotificationForBuyer);
-            if (members.ContainsKey(userID))
-                members[userID].Update(new Notification(DateTime.Now, userID, purchaseNotificationForBuyer, userID), db);
-        }
-        
-        public void CreateSystemManager(Guid userID)
-        {
-            isLoggedIn(userID);
-            PromotedMember systemManager = members[userID].promoteToMember();
-            systemManager.createSystemManager();
-            members[userID] = systemManager;
+            throw new Exception($"There isn't a member with the email: {email}");
         }
 
         private void LoadPromotedMemberCoWorkersFromDB(PromotedMember pm) //LOAD all the tree of directive/appoint for the promoted member
@@ -1097,5 +961,139 @@ namespace SadnaExpress.DomainLayer.User
             
         }
 
+        public void CheckIsValidMemberOperation(Guid userID)
+        {
+            IsTsInitialized();
+            isLoggedIn(userID);
+        }
+
+        public string GetUserEmail(Guid userID)
+        {
+            if (members.ContainsKey(userID))
+                return members[userID].Email;
+            return guestEmail;
+
+        }
+
+        #endregion
+
+        #region Getters & Setters
+
+        public int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID)
+        {
+            if (current_Users.ContainsKey(userID))
+                return current_Users[userID].ShoppingCart.GetItemQuantityInCart(storeID, itemID);
+            if (isLoggedIn(userID))
+                return members[userID].ShoppingCart.GetItemQuantityInCart(storeID, itemID);
+
+            throw new Exception("User with id " + userID + " does not exist");
+        }
+
+        private void IsTsInitialized()
+        {
+            if (_isTSInitialized == false)
+                throw new Exception("Cannot preform any action because system trading is closed");
+        }
+
+        public void SetIsSystemInitialize(bool isInitialize)
+        {
+            _isTSInitialized = isInitialize;
+        }
+
+        public User GetUser(Guid userID)
+        {
+            if (current_Users.ContainsKey(userID))
+                return current_Users[userID];
+            throw new Exception("User with id " + userID + " does not exist");
+        }
+
+        public Member GetMember(Guid userID)
+        {
+            if (members.ContainsKey(userID))
+                return members[userID];
+
+            //members is not in members list so we should check in db
+            Member memberFromDb = DBHandler.Instance.GetMemberFromDBById(userID);
+
+            if (memberFromDb != null)
+            {
+                if (memberFromDb is PromotedMember)
+                {
+                    members.TryAdd(memberFromDb.UserId, (PromotedMember)memberFromDb);
+                    LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[memberFromDb.UserId]); //we need that each member will hold valid info on their superriors and appointers
+                }
+                else
+                    members.TryAdd(memberFromDb.UserId, memberFromDb);
+                macs.TryAdd(memberFromDb.UserId, DBHandler.Instance.GetMacById(memberFromDb.UserId));
+
+                return members[memberFromDb.UserId];
+            }
+
+            throw new Exception("Member with id " + userID + " does not exist");
+        }
+
+        public Member GetMember(String email)
+        {
+            foreach (Member member in members.Values)
+            {
+                if (member.Email.Equals(email))
+                    return member;
+            }
+
+
+            //members is not in members list so we should check in db
+            Member memberFromDb = DBHandler.Instance.GetMemberFromDBByEmail(email);
+
+            if (memberFromDb != null)
+            {
+                if (memberFromDb is PromotedMember)
+                {
+                    members.TryAdd(memberFromDb.UserId, (PromotedMember)memberFromDb);
+                    LoadPromotedMemberCoWorkersFromDB((PromotedMember)members[memberFromDb.UserId]); //we need that each member will hold valid info on their superriors and appointers
+                }
+                else
+                    members.TryAdd(memberFromDb.UserId, memberFromDb);
+                macs.TryAdd(memberFromDb.UserId, DBHandler.Instance.GetMacById(memberFromDb.UserId));
+
+                return members[memberFromDb.UserId];
+            }
+
+            throw new Exception("Member with id " + email + " does not exist");
+        }
+
+        public bool IsSystemInitialize()
+        {
+            return _isTSInitialized;
+        }
+
+        public ShoppingCart GetDetailsOnCart(Guid userID)
+        {
+            IsTsInitialized();
+            if (members.ContainsKey(userID))
+                return members[userID].ShoppingCart;
+            Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(GetDetailsOnCart) + " ask to displays his shopping cart");
+            return current_Users[userID].ShoppingCart;
+        }
+
+        public void SetPaymentService(IPaymentService paymentService)
+        {
+            this.paymentService = paymentService;
+        }
+
+        public void SetSupplierService(ISupplierService supplierService)
+        {
+            this.supplierService = supplierService;
+        }
+
+        #endregion
+
+        public void CleanUp()
+        {
+            current_Users.Clear();
+            members.Clear();
+            paymentService = null;
+            supplierService = null;
+            UserUsageData.Instance.UsersVisits = new ConcurrentBag<Visit>();
+        }
     }
 }

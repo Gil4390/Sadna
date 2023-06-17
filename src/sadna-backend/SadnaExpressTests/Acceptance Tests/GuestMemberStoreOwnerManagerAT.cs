@@ -413,7 +413,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void EditItemName_Good()
         {
             Task<Response> task = Task.Run(() => {
-                return proxyBridge.EditItemName(store5Owner, storeID5, itemID2, "bisli bbq");
+                return proxyBridge.EditItem(store5Owner, storeID5, itemID2, "bisli bbq", "food", 4.0, 20);
             });
 
             task.Wait();
@@ -426,7 +426,7 @@ namespace SadnaExpressTests.Acceptance_Tests
         public void EditItemCategory_Good()
         {
             Task<Response> task = Task.Run(() => {
-                return proxyBridge.EditItemCategory(store5Owner, storeID5, itemID2, "snacks");
+                return proxyBridge.EditItem(store5Owner, storeID5, itemID2, "bisli", "snacks", 4.0, 20);   
             });
 
             task.Wait();
@@ -435,11 +435,12 @@ namespace SadnaExpressTests.Acceptance_Tests
             int count = proxyBridge.GetItemsForClient(store5Founder, "", category:"snacks").Value.Count;
             Assert.AreEqual(1, count);
         }
+
         [TestMethod]
         public void EditItem_Bad()
         {
             Task<Response> task = Task.Run(() => {
-                return proxyBridge.EditItemName(store5Owner, storeID5, itemID2, "");
+                return proxyBridge.EditItem(store5Owner, storeID5, itemID2, "", "food", 4.0, 20);
             });
 
             task.Wait();
@@ -448,14 +449,15 @@ namespace SadnaExpressTests.Acceptance_Tests
             int count = proxyBridge.GetItemsForClient(store5Founder, "bisli").Value.Count;
             Assert.AreEqual(1, count);
         }
+
         [TestMethod]
         public void EditItemConcurrent_Good()
         {
             Task<Response> task1 = Task.Run(() => {
-                return proxyBridge.EditItemName(store5Owner, storeID5, itemID2, "aaa");
+                return proxyBridge.EditItem(store5Owner, storeID5, itemID2, "aaa", "food", 4.0, 20);
             });
             Task<Response> task2 = Task.Run(() => {
-                return proxyBridge.EditItemName(store5Owner, storeID5, itemID2, "bbb");
+                return proxyBridge.EditItem(store5Owner, storeID5, itemID2, "bbb", "food", 4.0, 20);
             });
 
             task1.Wait();

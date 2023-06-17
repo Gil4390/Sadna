@@ -137,15 +137,14 @@ namespace SadnaExpress.DomainLayer.Store
         public void EditItemQuantity(Guid itemID, int quantity)
         {
             Item item = GetItemById(itemID);
-            if (item.Quantity != quantity)
+         
+            lock (item)
             {
-                lock (item)
-                {
-                    if (items_quantity[item] + quantity < 0)
-                        throw new Exception("Edit item quantity failed, item quantity cant be negative");
-                    items_quantity[item] += quantity;
-                }
+                if (items_quantity[item] + quantity < 0)
+                    throw new Exception("Edit item quantity failed, item quantity cant be negative");
+                items_quantity[item] += quantity;
             }
+            
         }
         public void EditItemName(Guid itemID, string name)
         {

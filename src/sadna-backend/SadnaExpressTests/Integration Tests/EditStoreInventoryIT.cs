@@ -113,7 +113,7 @@ namespace SadnaExpressTests.Integration_Tests
 
 
             //Act
-            Response res = trading.EditItemQuantity(userID, storeID1, itemID1,187);
+            Response res = trading.EditItem(userID, storeID1, itemID1, "ipad 32", "electronic", 4000, 187);
 
             //Assert
             Assert.IsFalse(res.ErrorOccured);
@@ -130,8 +130,8 @@ namespace SadnaExpressTests.Integration_Tests
             //Arrange
             Guid id = trading.Enter().Value;
 
-            //Act
-            Response res = trading.EditItemQuantity(id, storeID1, itemID1, 187);
+            //Act 
+            Response res = trading.EditItem(id, storeID1, itemID1, "ipad 32", "electronic", 4000, 187);
 
             //Assert
             Assert.IsTrue(res.ErrorOccured);
