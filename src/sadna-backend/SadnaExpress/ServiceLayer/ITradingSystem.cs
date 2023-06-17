@@ -34,17 +34,12 @@ namespace SadnaExpress.ServiceLayer
         ResponseT<Guid> OpenNewStore(Guid userID, string storeName); //3.2
         Response WriteItemReview(Guid userID, Guid itemID, string reviewText); //3.3
         ResponseT<List<SReview>> GetItemReviews(Guid itemID);
-        ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID); //3.7 (not in this version)
-        ResponseT<List<ItemForOrder>> GetPurchasesInfoUserOnlu(Guid userID); //3.7 (not in this version)
+        ResponseT<Dictionary<Guid, List<Order>>> GetPurchasesInfoUser(Guid userID); //3.7 
+        ResponseT<List<ItemForOrder>> GetPurchasesOfUser(Guid userID); //3.7
 
-        //3.8 and 3.9 (not in this version)
         //4.1
         ResponseT<Guid> AddItemToStore(Guid userID, Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity);
         Response RemoveItemFromStore(Guid userID, Guid storeID, Guid itemID);
-        Response EditItemCategory(Guid userID, Guid storeID,  Guid itemID, string category);
-        Response EditItemPrice(Guid userID, Guid storeID,  Guid itemID, int price); 
-        Response EditItemName(Guid userID, Guid storeID,  Guid itemID, string name); 
-        Response EditItemQuantity(Guid userID, Guid storeID,  Guid itemID, int quantity);
         public Response EditItem(Guid userID, Guid storeID,  Guid itemID, string itemName, string itemCategory, double itemPrice,
             int quantity);
         //4.2 Discount policy
@@ -59,29 +54,14 @@ namespace SadnaExpress.ServiceLayer
         Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission);//4.5 + remove of 4.7
         // 4.7
         Response AddStoreManagerPermissions(Guid userID, Guid storeID, string userEmail, string permission);
-        Response RemoveStoreManager(Guid userID1, Guid storeID, Guid userID2); //4.8 (not in this version)
         Response CloseStore(Guid userID, Guid storeID); //4.9
         ResponseT<List<SMemberForStore>> GetEmployeeInfoInStore(Guid userID, Guid storeID);  //4.11
         ResponseT<List<ItemForOrder>> GetStorePurchases(Guid userID, Guid storeID);//4.13 
         Response RemoveUserMembership(Guid userID, string email); //6.2
         ResponseT<Dictionary<Guid, List<Order>>> GetAllStorePurchases(Guid userID);//6.4
         ResponseT<List<SMember>> GetMembers(Guid userID); //6.6
-        void CleanUp();
+       
         ResponseT<bool> InitializeTradingSystem(Guid userID);
-
-        //helpers
-        void SetPaymentService(IPaymentService paymentService);
-        void SetSupplierService(ISupplierService supplierService);
-        void SetIsSystemInitialize(bool isInitialize);
-        ResponseT<User> GetUser(Guid userID);
-        ResponseT<Member> GetMember(Guid userID);
-        ResponseT<Member> GetMember(String email);
-
-        ResponseT<Store> GetStore(Guid storeID);
-        ResponseT<Store> GetStore(String name);
-
-        void SetTSOrders(IOrders orders);
-        ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
 
         ResponseT<List<Notification>> GetNotifications(Guid userID);
         bool IsSystemInitialize();
@@ -92,15 +72,8 @@ namespace SadnaExpress.ServiceLayer
             string typeRes = default, double valueRes = default , string op= default, int opCond= default);
         Response RemoveCondition(Guid userID , Guid storeID ,int condID);
         
-        // this functions needs to notify to offline members their notifications.
-        public void getNotificationsForOfflineMembers();
-        
         ResponseT<List<SItem>> GetCartItems(Guid userID);
-        ResponseT<ConcurrentDictionary<Guid, Store>> GetStores();
-
-        ResponseT<List<Member>> GetStoreOwners();
-
-        ResponseT<List<Member>> GetStoreOwnerOfStores(List<Guid> stores);
+   
         ResponseT<List<Item>> GetItemsInStore(Guid userID,Guid storeId);
         ResponseT<bool> IsAdmin(Guid userID);
         ResponseT<Dictionary<Guid, SPermission>> GetMemberPermissions(Guid userID);
@@ -115,5 +88,21 @@ namespace SadnaExpress.ServiceLayer
         Response ReactToBid(Guid userID, Guid itemID, Guid bidID, string bidResponse);
         Response ReactToJobOffer(Guid userID, Guid storeID, Guid newEmpID, bool offerResponse);
         ResponseT<List<int>> GetSystemUserActivity(Guid userID, DateTime fromDate, DateTime toDate);
+
+        //helpers
+        void SetPaymentService(IPaymentService paymentService);
+        void SetSupplierService(ISupplierService supplierService);
+        void SetIsSystemInitialize(bool isInitialize);
+
+        void SetTSOrders(IOrders orders);
+        ResponseT<Item> GetItemByID(Guid storeID, Guid itemID);
+
+        ResponseT<User> GetUser(Guid userID);
+        ResponseT<Member> GetMember(Guid userID);
+        ResponseT<Member> GetMember(String email);
+        ResponseT<Store> GetStore(Guid storeID);
+        ResponseT<Store> GetStore(String name);
+
+        void CleanUp();
     }
 }

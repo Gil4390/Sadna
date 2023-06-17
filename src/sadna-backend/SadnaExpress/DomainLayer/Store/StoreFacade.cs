@@ -13,11 +13,14 @@ namespace SadnaExpress.DomainLayer.Store
 {
     public class StoreFacade : IStoreFacade
     {
+        #region Properties
         private ConcurrentDictionary<Guid, Store> stores;
         private ConcurrentBag<Review> reviews;
         private bool _isTSInitialized;
         private static IOrders _orders;
+        #endregion
 
+        #region Constructor
         public StoreFacade()
         {
             stores = new ConcurrentDictionary<Guid, Store>();
@@ -33,7 +36,9 @@ namespace SadnaExpress.DomainLayer.Store
             _orders = Orders.Instance;
             _isTSInitialized = false;
         }
+        #endregion
 
+        #region Store operations
         public Guid OpenNewStore(string storeName)
         {
             IsTsInitialized();
@@ -78,11 +83,89 @@ namespace SadnaExpress.DomainLayer.Store
             IsTsInitialized();
             return _orders.GetOrdersByStoreId(storeID);
         }
+
+        public Store GetStoreInfo(Guid storeId)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeId);
+            return stores[storeId];
+        }
+
+        public void EditItem(Guid storeID, Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeID);
+            stores[storeID].EditItemQuantity(itemID, quantity);
+            stores[storeID].EditItemName(itemID, itemName);
+            stores[storeID].EditItemPrice(itemID, itemPrice);
+            stores[storeID].EditItemCategory(itemID, itemCategory);
+
+            DBHandler.Instance.UpdateItemAfterEdit(stores[storeID], itemID, itemName, itemCategory, itemPrice);
+
+            Logger.Instance.Info(storeID, nameof(StoreFacade) + ": " + nameof(EditItem) + " edited item from store " + storeID + "- " + storeID);
+        }
+
+        public List<Item> GetItemsInStore(Guid storeId)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeId);
+            List<Item> items = new List<Item>();
+            foreach (Item item in GetStore(storeId).itemsInventory.items_quantity.Keys)
+            {
+                item.Quantity = GetStore(storeId).itemsInventory.items_quantity[item];
+                items.Add(item);
+            }
+            return items;
+        }
+
+        public Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeID);
+
+            String itemNameLock = String.Intern(itemName);
+            lock (itemNameLock)
+            {
+                var result = stores[storeID].AddItem(itemName, itemCategory, itemPrice, quantity);
+                // update store Item in DB
+
+                DBHandler.Instance.UpdateStoreInventory(stores[storeID]);
+
+                Logger.Instance.Info(storeID, nameof(StoreFacade) + ": " + nameof(AddItemToStore) + " added to store " + storeID + "- " + itemName + " form category " + itemCategory + ": " + itemPrice + "X" + quantity);
+                return result;
+            }
+        }
+
+        public void RemoveItemFromStore(Guid storeID, Guid itemId)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeID);
+            stores[storeID].RemoveItem(itemId);
+            DBHandler.Instance.UpdateAfterRemovingItem(stores[storeID], itemId);
+            Logger.Instance.Info(storeID, nameof(StoreFacade) + ": " + nameof(RemoveItemFromStore) + " removed from store " + storeID + "- " + itemId);
+        }
+
+        #endregion
+
+        #region Admin operations
         public Dictionary<Guid, List<Order>> GetAllStorePurchases()
         {
             IsTsInitialized();
             return _orders.GetStoreOrders();
         }
+        #endregion
+
+        #region Shopping operations
+
+        public void AddItemToCart(Guid storeID, Guid itemID, int quantity)
+        {
+            IsTsInitialized();
+            IsStoreExist(storeID);
+            if (!stores[storeID].Active)
+                throw new Exception($"store {stores[storeID].StoreName} is not active");
+            stores[storeID].AddItemToCart(itemID, quantity);
+        }
+
         public double PurchaseCart(DatabaseContext db, Dictionary<Guid, Dictionary<Guid, int>> items, ref List<ItemForOrder> itemForOrders, string email)
         {
             IsTsInitialized();
@@ -114,24 +197,6 @@ namespace SadnaExpress.DomainLayer.Store
             }
         }
 
-        public double GetItemAfterDiscount(Guid storeID, Item item)
-        {
-            return stores[storeID].GetItemAfterDiscount(item);
-        }
-
-        public List<Store> GetAllStoreInfo()
-        {
-            IsTsInitialized();
-            return stores.Values.ToList();
-        }
-
-        public Store GetStoreInfo(Guid storeId)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeId);
-            return stores[storeId];
-        }
-
         public void CheckPurchaseConditions(Dictionary<Guid, Dictionary<Guid, int>> items)
         {
             foreach (Guid storeID in items.Keys)
@@ -146,6 +211,30 @@ namespace SadnaExpress.DomainLayer.Store
             }
         }
 
+        public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
+        {
+            IsTsInitialized();
+            List<Item> allItems = new List<Item>();
+            updateStoresFromDB();
+            foreach (Store store in stores.Values)
+            {
+                lock (store)
+                {
+                    if (!store.Active)
+                        continue;
+                    if (ratingStore != -1 && store.StoreRating < ratingStore)
+                        continue;
+                    allItems.AddRange(store.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category));
+                }
+            }
+            Logger.Instance.Info(nameof(StoreFacade) + ": " + nameof(GetItemsByKeysWord));
+            return allItems;
+        }
+
+        public double GetItemAfterDiscount(Guid storeID, Item item)
+        {
+            return stores[storeID].GetItemAfterDiscount(item);
+        }
 
         public Dictionary<Guid, Dictionary<Item, double>> GetCartItems(Dictionary<Guid, Dictionary<Guid, int>> cart)
         {
@@ -167,7 +256,7 @@ namespace SadnaExpress.DomainLayer.Store
 
             return cartItems;
         }
-        
+
         public void AddItemToStores(DatabaseContext db, Dictionary<Guid, Dictionary<Guid, int>> items)
         {
             foreach (Guid storeID in items.Keys)
@@ -181,164 +270,9 @@ namespace SadnaExpress.DomainLayer.Store
             }
         }
 
-        public Guid AddItemToStore(Guid storeID, string itemName, string itemCategory, double itemPrice, int quantity)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
+        #endregion
 
-            String itemNameLock = String.Intern(itemName);
-            lock (itemNameLock)
-            {
-                var result = stores[storeID].AddItem(itemName, itemCategory, itemPrice, quantity);
-                // update store Item in DB
-                
-                DBHandler.Instance.UpdateStoreInventory(stores[storeID]);
-                
-                Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(AddItemToStore)+" added to store "+ storeID + "- "+itemName +" form category "+itemCategory + ": "+itemPrice+"X"+quantity);
-                return result;
-            }
-        }
-
-        public void RemoveItemFromStore(Guid storeID, Guid itemId)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
-            stores[storeID].RemoveItem(itemId);
-            DBHandler.Instance.UpdateAfterRemovingItem(stores[storeID], itemId);
-            Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(RemoveItemFromStore)+" removed from store "+ storeID + "- "+itemId);
-        }
-        
-        public void EditItemName(Guid storeID, Guid itemID, string name)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
-            stores[storeID].EditItemName(itemID, name);
-            DBHandler.Instance.UpdateItem(stores[storeID].GetItemById(itemID));
-            Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItemName)+" edited item from store "+ storeID + "- "+storeID + "- "+name);
-        }
-        
-        public void EditItemCategory(Guid storeID, Guid itemID, string category)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
-            stores[storeID].EditItemCategory(itemID, category);
-
-            //database update store // todo change this function name later
-            DBHandler.Instance.UpdateItem(stores[storeID].GetItemById(itemID));
-            Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItemCategory)+" edited category from store "+ storeID + "- "+storeID + "- "+category);
-
-        }
-        public void EditItemPrice(Guid storeID, Guid itemID, int price)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
-            stores[storeID].EditItemPrice(itemID, price);
-            DBHandler.Instance.UpdateItem(stores[storeID].GetItemById(itemID));
-
-            Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItemPrice)+" edited price from store "+ storeID + "- "+storeID + "- "+price);
-
-        }
-        public void EditItemQuantity(Guid storeID, Guid itemID, int quantity)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
-            stores[storeID].EditItemQuantity(itemID, quantity);
-
-            //DBHandler.Instance.UpdateStore(stores[storeID]);
-            DBHandler.Instance.UpdateStoreInventory(stores[storeID]);
-            Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItemQuantity)+" edited quantity from store "+ storeID + "- "+storeID + "- "+quantity);
-
-        }
-
-        public List<Item> GetItemsByKeysWord(string keyWords, int minPrice, int maxPrice, int ratingItem, string category, int ratingStore)
-        {
-            IsTsInitialized();
-            List<Item> allItems = new List<Item>();
-            updateStoresFromDB();
-            foreach (Store store in stores.Values)
-            {
-                lock (store)
-                {
-                    if (!store.Active)
-                        continue;
-                    if (ratingStore != -1 && store.StoreRating < ratingStore)
-                        continue;
-                    allItems.AddRange(store.GetItemsByKeysWord(keyWords, minPrice, maxPrice, ratingItem, category));
-                }
-            }
-            Logger.Instance.Info(nameof(StoreFacade)+": "+nameof(GetItemsByKeysWord));
-            return allItems;
-        }
-
-        public void updateStoresFromDB()
-        {
-            List<Guid> storeIds= DBHandler.Instance.GetTSStoreIds();
-
-            foreach(Guid storeId in storeIds)
-            {
-                if (stores.ContainsKey(storeId) == false)
-                {
-                    //pull from db
-                    stores.TryAdd(storeId,DBHandler.Instance.GetStoreById(storeId));
-                }
-            }
-        }
-
-        public void updateReviewsFromDB()
-        {
-            List<Guid> reviewsIds = DBHandler.Instance.GetTSReviewsIds();
-
-            foreach (Guid reviewId in reviewsIds)
-            {
-                var review = reviews.FirstOrDefault(rev => rev.ReviewID.Equals(reviewId));
-                if(review == null)
-                {
-                    //pull from db
-                    Review dbreview = DBHandler.Instance.GetReviewById(reviewId);
-                    if (stores.ContainsKey(dbreview.StoreID))
-                    {
-                        dbreview.Store = stores[dbreview.StoreID];
-                        dbreview.Item = stores[dbreview.StoreID].GetItemById(dbreview.ItemID);
-                    }
-                    reviews.Add(dbreview);
-                }
-            }
-        }
-
-        public void CleanUp()
-        {
-           stores.Clear();
-           _orders.CleanUp();
-           while (!reviews.IsEmpty)
-           {
-               reviews.TryTake(out _);
-           }
-        }
-
-        public ConcurrentDictionary<Guid, Store> GetStores()
-        {
-            return stores;
-        }
-
-        public void SetIsSystemInitialize(bool isInitialize)
-        {
-            _isTSInitialized = isInitialize;
-        }
-
-        private void IsTsInitialized()
-        {
-            if (_isTSInitialized == false)
-                throw new Exception("Cannot preform any action because system trading is closed");
-        }
-
-        private void IsStoreExist(Guid storeID)
-        {
-            if (!stores.ContainsKey(storeID))
-                updateStoresFromDB();
-            if (!stores.ContainsKey(storeID))
-                throw new Exception("Store with this id does not exist");
-        }
-      
+        #region Reviews
 
         public void WriteItemReview(Guid userID, Guid itemID, string reviewText)
         {
@@ -368,6 +302,7 @@ namespace SadnaExpress.DomainLayer.Store
             NotificationSystem.Instance.NotifyObservers(storeID, "User just added a review on item "+ store.GetItemById(itemID).Name+" at store "+ store.StoreName, userID);
             Logger.Instance.Info(userID, nameof(StoreFacade)+": "+nameof(WriteItemReview) + userID +" write review to store "+storeID+" on "+itemID+"- "+ reviewText);
         }
+
         public List<Review> GetItemReviews(Guid itemID)
         {
             Guid storeID = GetItemStoreId(itemID);
@@ -380,48 +315,9 @@ namespace SadnaExpress.DomainLayer.Store
             return reviewsOfItem;
         }
 
-        public void AddItemToCart(Guid storeID, Guid itemID, int quantity)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
-            if (!stores[storeID].Active)
-                throw new Exception($"store {stores[storeID].StoreName} is not active");
-            stores[storeID].AddItemToCart(itemID, quantity);
-        }
+        #endregion
 
-        public Item GetItemByID(Guid storeID, Guid itemID)
-        {
-            return stores[storeID].GetItemById(itemID);
-        }
-
-        public Store GetStore(Guid storeID)
-        {
-            IsStoreExist(storeID);
-            return stores[storeID];
-        }
-        public Store GetStore(String name)
-        {
-            foreach (Store store in stores.Values)
-                if (store.StoreName.Equals(name))
-                    return store;
-
-            throw new Exception("Store with this name does not exist");
-        }
-        private bool IsStoreNameExist(string storeName)
-        {
-            foreach (Store store in stores.Values)
-            {
-                if (store.StoreName.ToLower() == storeName.ToLower())
-                    return true;
-            }
-            return false;
-        }
-
-        public void SetTSOrders(IOrders orders)
-        {
-            _orders = orders;
-        }
-
+        #region Policies & Conditions
         public DiscountPolicy CreateSimplePolicy<T>(Guid store ,T level, int percent, DateTime startDate, DateTime endDate)
         {
             IsStoreExist(store);
@@ -444,33 +340,6 @@ namespace SadnaExpress.DomainLayer.Store
         {
             IsStoreExist(store);
             GetStore(store).RemovePolicy(discountPolicy , type);
-        }
-
-        public void EditItem(Guid storeID,Guid itemID, string itemName, string itemCategory, double itemPrice, int quantity)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeID);
-            stores[storeID].EditItemQuantity(itemID, quantity);
-            stores[storeID].EditItemName(itemID, itemName);
-            stores[storeID].EditItemPrice(itemID, itemPrice);
-            stores[storeID].EditItemCategory(itemID, itemCategory);
-
-            DBHandler.Instance.UpdateItemAfterEdit(stores[storeID], itemID, itemName, itemCategory, itemPrice);
-            
-            Logger.Instance.Info(storeID,nameof(StoreFacade)+": "+nameof(EditItem)+" edited item from store "+ storeID + "- "+storeID );
-        }
-
-        public List<Item> GetItemsInStore(Guid storeId)
-        {
-            IsTsInitialized();
-            IsStoreExist(storeId);
-            List<Item> items = new List<Item>();
-            foreach (Item item in GetStore(storeId).itemsInventory.items_quantity.Keys)
-            {
-                item.Quantity = GetStore(storeId).itemsInventory.items_quantity[item];
-                items.Add(item);
-            }
-            return items;
         }
 
         public Condition AddCondition(Guid store, string entity, string entityName, string type, object value,
@@ -501,6 +370,9 @@ namespace SadnaExpress.DomainLayer.Store
             return GetStore(store).GetAllConditions();
         }
 
+        #endregion
+
+        #region Helpers
         public Guid GetItemStoreId(Guid itemid)
         {
             updateStoresFromDB();
@@ -535,5 +407,112 @@ namespace SadnaExpress.DomainLayer.Store
 
         }
 
+        public Item GetItemByID(Guid storeID, Guid itemID)
+        {
+            return stores[storeID].GetItemById(itemID);
+        }
+
+        public Store GetStore(Guid storeID)
+        {
+            IsStoreExist(storeID);
+            return stores[storeID];
+        }
+
+        public Store GetStore(String name)
+        {
+            foreach (Store store in stores.Values)
+                if (store.StoreName.Equals(name))
+                    return store;
+
+            throw new Exception("Store with this name does not exist");
+        }
+
+        private bool IsStoreNameExist(string storeName)
+        {
+            foreach (Store store in stores.Values)
+            {
+                if (store.StoreName.ToLower() == storeName.ToLower())
+                    return true;
+            }
+            return false;
+        }
+
+        public void SetTSOrders(IOrders orders)
+        {
+            _orders = orders;
+        }
+
+        public void SetIsSystemInitialize(bool isInitialize)
+        {
+            _isTSInitialized = isInitialize;
+        }
+
+        private void IsTsInitialized()
+        {
+            if (_isTSInitialized == false)
+                throw new Exception("Cannot preform any action because system trading is closed");
+        }
+
+        public List<Store> GetAllStoreInfo()
+        {
+            IsTsInitialized();
+            return stores.Values.ToList();
+        }
+
+        public void updateStoresFromDB()
+        {
+            List<Guid> storeIds = DBHandler.Instance.GetTSStoreIds();
+
+            foreach (Guid storeId in storeIds)
+            {
+                if (stores.ContainsKey(storeId) == false)
+                {
+                    //pull from db
+                    stores.TryAdd(storeId, DBHandler.Instance.GetStoreById(storeId));
+                }
+            }
+        }
+
+        public void updateReviewsFromDB()
+        {
+            List<Guid> reviewsIds = DBHandler.Instance.GetTSReviewsIds();
+
+            foreach (Guid reviewId in reviewsIds)
+            {
+                var review = reviews.FirstOrDefault(rev => rev.ReviewID.Equals(reviewId));
+                if (review == null)
+                {
+                    //pull from db
+                    Review dbreview = DBHandler.Instance.GetReviewById(reviewId);
+                    if (stores.ContainsKey(dbreview.StoreID))
+                    {
+                        dbreview.Store = stores[dbreview.StoreID];
+                        dbreview.Item = stores[dbreview.StoreID].GetItemById(dbreview.ItemID);
+                    }
+                    reviews.Add(dbreview);
+                }
+            }
+        }
+
+        private void IsStoreExist(Guid storeID)
+        {
+            if (!stores.ContainsKey(storeID))
+                updateStoresFromDB();
+            if (!stores.ContainsKey(storeID))
+                throw new Exception("Store with this id does not exist");
+        }
+
+        public void CleanUp()
+        {
+            stores.Clear();
+            _orders.CleanUp();
+            while (!reviews.IsEmpty)
+            {
+                reviews.TryTake(out _);
+            }
+        }
+
+
+        #endregion
     }
 }
