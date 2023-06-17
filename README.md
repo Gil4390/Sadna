@@ -1,4 +1,4 @@
-# Sadna
+# Sadna Express
 
 Hello! welcome to Sadna Express, our trading system program.
 we are third year students in software engineering in Ben Gurion University, we wrote this project for "Sadna" course.
