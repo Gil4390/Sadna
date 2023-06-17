@@ -67,7 +67,7 @@ namespace SadnaExpress
                 try
                 {
                     state.stateFile(flag + ".json");
-
+                    validInitialization = false;
                 }
                 catch (Exception e)
                 {
@@ -244,7 +244,7 @@ namespace SadnaExpress
             }
 
             string StateFileConfig = ConfigurationManager.AppSettings["StateFileConfig"];
-            if (StateFileConfig==""|| StateFileConfig == "data" || StateFileConfig == "data2")
+            if (StateFileConfig==""|| StateFileConfig == "data" || StateFileConfig == "data2" || StateFileConfig == "dataBad")
             {
                 ApplicationOptions.StateFileConfig = StateFileConfig;
                 
