@@ -147,12 +147,12 @@ namespace SadnaExpressTests
         {
             public override string Handshake()
             {
-                Thread.Sleep(15000); // Wait for 15 seconds
+                Thread.Sleep(10000); // Wait for 15 seconds
                 return "OK";
             }
             public override  int Pay(double amount, SPaymentDetails transactionDetails)
             {
-                Thread.Sleep(15000); // Wait for 15 seconds
+                Thread.Sleep(10000); // Wait for 15 seconds
                 return 2;
             }
         }

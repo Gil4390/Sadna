@@ -129,7 +129,7 @@ useEffect(() => {
     handleAddModalClose();
     getStoreEmployees();
     setTimeout(() => {
-      alert("Permission will be added upon approve of all owners") 
+      alert("The request to add permissions was successful, the permissions will be added if all managers will approve") 
         }, 0);
   }
 

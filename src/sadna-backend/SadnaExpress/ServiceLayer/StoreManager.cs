@@ -147,24 +147,35 @@ namespace SadnaExpress.ServiceLayer
                                     cart.Add(basket.StoreID, basket.ItemsInBasket);
                                 // try to purchase the items. (the function update the quantity in the inventory in this function)
                                 double amount = storeFacade.PurchaseCart(db, cart, ref itemForOrders, userFacade.GetUserEmail(userID));
-                                int transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
+                                int transaction_payment_id = -1;
+                                try
+                                {
+                                    transaction_payment_id = userFacade.PlacePayment(amount, paymentDetails);
+                                }
+                                catch (Exception e)
+                                {
+                                    storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
+                                    throw new Exception(e.Message);
+                                }
                                 Dictionary<Guid, KeyValuePair<double, bool>> bids = userFacade.GetBidsOfUser(userID);
                                 foreach (ItemForOrder item in itemForOrders)
                                 {
                                     if (bids.ContainsKey(item.ItemID) && bids[item.ItemID].Value && bids[item.ItemID].Key < item.Price)
                                         item.Price = bids[item.ItemID].Key;
                                 }
-                                if (transaction_payment_id == -1)
+
+                                int transaction_supply_id = -1;
+                                try
                                 {
-                                    storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
-                                    throw new Exception("Payment operation failed");
+                                    transaction_supply_id = userFacade.PlaceSupply(usersDetail);
+
                                 }
-                                int transaction_supply_id = userFacade.PlaceSupply(usersDetail);
-                                if (transaction_supply_id == -1)
+                                catch (Exception e)
                                 {
                                     storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
                                     userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
-                                    throw new Exception("Supply operation failed");
+                                    throw new Exception(e.Message);
+
                                 }
                                 Orders.Instance.AddOrder(userID, itemForOrders, true, db);
 
