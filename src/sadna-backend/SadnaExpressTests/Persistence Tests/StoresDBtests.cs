@@ -62,11 +62,12 @@ namespace SadnaExpressTests.Persistence_Tests
             NotificationSystem.Instance.RegisterObserver(storeID, founder);
             Member memberBeforeOwner = new Member(storeOwnerDirectID, "RotemSela@gmail.com", "Rotem", "Sela",
                 "ShaY1787%$%");
+            userFacade.members.TryAdd(founder.UserId, founder);
             storeOwnerDirect = founder.AppointStoreOwner(storeID, memberBeforeOwner);
             NotificationSystem.Instance.RegisterObserver(storeID, storeOwnerDirect);
             storeOwnerAppoint = new Member(storeOwnerAppointID, "Tal@gmail.com", "Tal", "Galmor",
                 "ShaY1787%$%");
-            userFacade.members.TryAdd(founder.UserId, founder);
+            
             userFacade.members.TryAdd(storeOwnerAppoint.UserId, storeOwnerAppoint);
             userFacade.members.TryAdd(storeOwnerDirect.UserId, storeOwnerDirect);
             userFacade.members.TryAdd(memberBeforeOwner.UserId, memberBeforeOwner);
