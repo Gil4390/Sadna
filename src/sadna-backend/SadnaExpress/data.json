@@ -49,22 +49,6 @@
     }
   },
   {
-    "function": "AppointStoreOwner",
-    "params": {
-      "email": "user1@gmail.com",
-      "MemberEmail": "user2@gmail.com",
-      "storeName": "store1"
-    }
-  },
-  {
-    "function": "AppointStoreOwner",
-    "params": {
-      "email": "user2@gmail.com",
-      "MemberEmail": "user3@gmail.com",
-      "storeName": "store1"
-    }
-  },
-  {
     "function": "Logout",
     "params": {
       "email": "user1@gmail.com"
