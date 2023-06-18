@@ -57,6 +57,9 @@ supported initialization functions:
 - Logout(userId)
 - OpenNewStore(userId, StoreName)
 - AddItemToStore(userId, storeID, itemName, itemCategory, itemPrice, quantity)
+- AppointStoreManager(userId, storeID, anotherEmail)
+- AppointStoreOwner(userId, storeID, anotherEmail)
+- ReactToJobOffer(userId, storeID, userId2, react)
 
  # app.config
  
