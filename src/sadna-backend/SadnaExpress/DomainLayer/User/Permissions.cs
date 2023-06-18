@@ -46,17 +46,18 @@ namespace SadnaExpress.DomainLayer.User
             {
                 foreach (PromotedMember promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
                 {
-                    if (promotedMember.Equals(directSupervisor))
-                        decisions.Add(promotedMember.Email, "creator");
+                    PromotedMember pm = (PromotedMember)NotificationSystem.Instance.userFacade.GetMember(promotedMember.UserId);
+                    if (pm.Equals(directSupervisor))
+                        decisions.Add(pm.Email, "creator");
                     else
                     {
-                        decisions.Add(promotedMember.Email, "undecided");
-                        if (promotedMember.PermissionsOffers.ContainsKey(storeID))
-                            promotedMember.PermissionsOffers[storeID].Add(newOwner.UserId);
+                        decisions.Add(pm.Email, "undecided");
+                        if (pm.PermissionsOffers.ContainsKey(storeID))
+                            pm.PermissionsOffers[storeID].Add(newOwner.UserId);
                         else
-                            promotedMember.PermissionsOffers.TryAdd(storeID, new List<Guid> { newOwner.UserId });
+                            pm.PermissionsOffers.TryAdd(storeID, new List<Guid> { newOwner.UserId });
                     }
-                    DBHandler.Instance.UpdatePromotedMember(promotedMember);
+                    DBHandler.Instance.UpdatePromotedMember(pm);
                 }
                 newOwner.PenddingPermission.TryAdd(storeID, decisions);
                 NotificationSystem.Instance.NotifyObservers(storeID, $"You got an offer to make {newOwner.Email} to store owner", directSupervisor.UserId);
