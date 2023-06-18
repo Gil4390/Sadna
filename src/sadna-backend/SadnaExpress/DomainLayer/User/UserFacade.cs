@@ -14,6 +14,7 @@ using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.API.SignalR;
 using SadnaExpress.ServiceLayer.SModels;
 using System.Linq;
+using System.CodeDom;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -751,7 +752,15 @@ namespace SadnaExpress.DomainLayer.User
                     return paymentService.Handshake();
                 });
 
-                bool taskPaymentServiceCompletedSuccessfully = taskPaymentServiceHandshake.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && taskPaymentServiceHandshake.Result == "OK";
+                bool taskPaymentServiceCompletedSuccessfully = false;
+                try
+                {
+                    taskPaymentServiceCompletedSuccessfully = taskPaymentServiceHandshake.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && taskPaymentServiceHandshake.Result == "OK";
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception("failed to access the payment service");
+                }
 
                 if (taskPaymentServiceCompletedSuccessfully)
                 {
@@ -838,7 +847,16 @@ namespace SadnaExpress.DomainLayer.User
                     return supplierService.Handshake();
                 });
 
-                bool taskSupplyServiceCompletedSuccessfully = taskSupplyServiceHandshake.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && taskSupplyServiceHandshake.Result == "OK";
+                bool taskSupplyServiceCompletedSuccessfully = false;
+
+                try
+                {
+                    taskSupplyServiceCompletedSuccessfully = taskSupplyServiceHandshake.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && taskSupplyServiceHandshake.Result == "OK";
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("failed to access the supply service");
+                }
 
                 if (taskSupplyServiceCompletedSuccessfully)
                 {
