@@ -20,8 +20,7 @@ namespace SadnaExpress.DomainLayer.User
     public class UserFacade : IUserFacade
     {
         #region Properties
-
-        private const int MaxExternalServiceWaitTime = 10000; //10 seconds is 10,000 mili seconds
+        private const int MaxExternalServiceWaitTime = 5000; //5 seconds is 5,000 mili seconds
         private ConcurrentDictionary<Guid, User> current_Users; //users that are in the system and not login
         public ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private ConcurrentDictionary<Guid, string> macs;
@@ -743,11 +742,9 @@ namespace SadnaExpress.DomainLayer.User
                 });
 
                 if (task.Result == -1)
-                    throw new Exception("Error in payment details , please try again");
+                    throw new Exception("Payment process failed due to error in one of payment's detailes , please try again");
 
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result != -1;
-
-                if (isCompletedSuccessfully)
+                if (task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)))
                 {
                     int transaction_id = task.Result;
                     Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(PlacePayment) + "Place payment completed with amount of " + amount + " and " + transactionDetails);
@@ -755,13 +752,13 @@ namespace SadnaExpress.DomainLayer.User
                 }
                 else
                 {
-                    throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed.");
+                    throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed , please try again later");
                 }
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return -1;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -804,9 +801,10 @@ namespace SadnaExpress.DomainLayer.User
                     return supplierService.Supply(userDetails);
                 });
 
-                bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result != -1; ;
+                if (task.Result == -1)
+                    throw new Exception("Error in supllier details , please try again");
 
-                if (isCompletedSuccessfully)
+                if (task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)))
                 {
                     int transaction_id = task.Result;
                     Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(PlaceSupply) + "Place supply completed: " + userDetails + " , "); //add SSupplyDetails.toString();
@@ -820,7 +818,7 @@ namespace SadnaExpress.DomainLayer.User
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                return -1;
+                throw new Exception(ex.Message);
             }
         }
 

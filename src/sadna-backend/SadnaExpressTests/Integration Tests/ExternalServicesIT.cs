@@ -47,7 +47,8 @@ namespace SadnaExpressTests.Integration_Tests
             Task<string> task = Task.Run(async () =>
             {
                 Thread.Sleep(11000);
-                return "OK";
+                string res;
+                return res = paymentService.Handshake(); ;
             });
 
             bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(10000)) && task.Result == "OK"; ;
