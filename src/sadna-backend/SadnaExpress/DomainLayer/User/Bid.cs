@@ -44,8 +44,9 @@ namespace SadnaExpress.DomainLayer.User
             decisions = new Dictionary<PromotedMember, string>();
             foreach (PromotedMember promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
             {
-                decisions.Add(promotedMember, "undecided");
-                promotedMember.AddBid(this.storeID, this);
+                PromotedMember pm = (PromotedMember)NotificationSystem.Instance.userFacade.GetMember(promotedMember.UserId);
+                decisions.Add(pm, "undecided");
+                pm.AddBid(this.storeID, this);
             }
             NotificationSystem.Instance.NotifyObservers(storeID, $"You got an offer to change the price of {this.itemName} to {price}", this.user.UserId);
         }

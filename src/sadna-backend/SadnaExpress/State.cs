@@ -60,6 +60,7 @@ namespace SadnaExpress
             public string ItemQuantity { get; set; }
 
             public string Permission { get; set; }
+            public string react { get; set; }
 
         }
 
@@ -77,7 +78,6 @@ namespace SadnaExpress
             Guid userId;
             TradingSystem trading = new TradingSystem();
             trading.SetIsSystemInitialize(true);
-            trading.TestMode = true;
             string email = "";
             int expectedParamsCount = 0;
             string path = Path.Combine(Environment.CurrentDirectory, Path.Combine("..\\..",fileName));
@@ -295,7 +295,48 @@ namespace SadnaExpress
                         Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
                         break;
+                    case "ReactStoreOwner":
+                        expectedParamsCount = 4;
+                        checkExpectedParams(expectedParamsCount, parameters, function);
+                        email = parameters.email;
+                        if (string.IsNullOrEmpty(email))
+                        {
+                            Logger.Instance.Error("The email field is null in function " + (function));
+                            throw new Exception("The email field is null in function " + (function));
 
+                        }
+                        anotherEmail = parameters.MemberEmail;
+                        if (string.IsNullOrEmpty(anotherEmail))
+                        {
+                            Logger.Instance.Error("The anotherEmail field is null in function " + (function));
+                            throw new Exception("The anotherEmail field is null in function " + (function));
+
+                        }
+                        StoreName = parameters.StoreName;
+                        if (string.IsNullOrEmpty(StoreName))
+                        {
+                            Logger.Instance.Error("The StoreName field is null in function " + (function));
+                            throw new Exception("The StoreName field is null in function " + (function));
+
+                        }
+                        string strreact = parameters.react.ToLower();
+                        if (string.IsNullOrEmpty(strreact) || !(strreact.Equals("false") || strreact.Equals("true")))
+                        {
+                            Logger.Instance.Error("The StoreName field is null or illegal in function " + (function));
+                            throw new Exception("The StoreName field is null or illegal in function " + (function));
+
+                        }
+                        userId = members[email].UserId;
+                        Guid userId2 = members[anotherEmail].UserId;
+                        storeID = stores[StoreName].StoreID;
+                        bool react = strreact.Equals("true");
+                        res = trading.ReactToJobOffer(userId, storeID, userId2, react);
+                        if (res.ErrorOccured)
+                            throw new Exception(res.ErrorMessage);
+
+                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+
+                        break;
                     case "AddItemToStore":
                         expectedParamsCount = 6;
                         checkExpectedParams(expectedParamsCount, parameters, function);
@@ -395,7 +436,6 @@ namespace SadnaExpress
         {
             TradingSystem trading = TradingSystem.Instance;
             trading.SetIsSystemInitialize(true);
-            trading.TestMode = true;
             ConcurrentDictionary<Guid, Member> members = DBHandler.Instance.GetAllMembers();
 
             // 3 members register
@@ -421,16 +461,26 @@ namespace SadnaExpress
             Guid storeID = storesList[0].StoreID;
 
             List<String> permissions = new List<string>();
-            permissions.Add("founder permissions");
+            permissions.Add("owner permissions");
             foreach (Member member in list)
             {
                 // user2 has owner permissions
-                if (member.Email.Equals("user1@gmail.com"))
+                if (member.Email.Equals("user2@gmail.com"))
                 {
-                    if (!((PromotedMember)member).hasPermissions(storeID, permissions))
+                    if (!member.hasPermissions(storeID, permissions))
                     {
-                        Logger.Instance.Error("The user does not have the correct permissions");
-                        throw new Exception("The user does not have the correct permissions");
+                        Logger.Instance.Error($"The user {member.Email} does not have the correct permissions");
+                        throw new Exception($"The user {member.Email} does not have the correct permissions");
+
+                    }
+                }
+                // user3 has owner permissions
+                if (member.Email.Equals("user3@gmail.com"))
+                {
+                    if (!member.hasPermissions(storeID, permissions))
+                    {
+                        Logger.Instance.Error($"The user {member.Email} does not have the correct permissions");
+                        throw new Exception($"The user {member.Email} does not have the correct permissions");
 
                     }
                 }
@@ -442,7 +492,6 @@ namespace SadnaExpress
         {
             TradingSystem trading = TradingSystem.Instance;
             trading.SetIsSystemInitialize(true);
-            trading.TestMode = true;
             ConcurrentDictionary<Guid, Member> members = DBHandler.Instance.GetAllMembers();
 
             // 5 members register
@@ -481,10 +530,10 @@ namespace SadnaExpress
                 // user1 has system manager permissions
                 if (member.Email.Equals("user1@gmail.com"))
                 {
-                    if (!((PromotedMember)member).hasPermissions(Guid.Empty, permissionsSystemManager))
+                    if (!member.hasPermissions(Guid.Empty, permissionsSystemManager))
                     {
-                        Logger.Instance.Error("The user does not have the correct permissions");
-                        throw new Exception("The user does not have the correct permissions");
+                        Logger.Instance.Error($"The user {member.Email} does not have the correct permissions");
+                        throw new Exception($"The user {member.Email} does not have the correct permissions");
 
                     }
                 }
