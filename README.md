@@ -37,9 +37,7 @@ Currently there are 3 possible initial states for the system to start with:
     <ul> 
       <li> Registered users: U1, U2, U3 - members. </li>
       <li> U1 logs in and opens store S1. </li>
-      <li> U1 appoints U2 as S1 store owner. </li>
-      <li> U2 logs in and appoints U3 as S1 store owner. </li>
-      <li> U1, U2 logs out. </li>
+      <li> U1 logs out. </li>
     </ul>
   </li>
     <li> state2
