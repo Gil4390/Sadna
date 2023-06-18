@@ -38,39 +38,11 @@ namespace SadnaExpressTests
                 return "OK";
             }
 
-
             public virtual int Supply(SSupplyDetails userDetails)
             {
                 return 1000;
             }
             
-        }
-        public class Mock_Bad_PaymentService : Mock_PaymentService
-        {
-            public override int Pay(double amount, SPaymentDetails transactionDetails)
-            {
-                Thread.Sleep(11000); // Wait for 11 seconds
-                return -1; // Return true after waiting
-            }
-        }
-        public class Mock_Bad_Credit_Limit_Payment : Mock_PaymentService
-        {
-            public override int Pay(double amount, SPaymentDetails transactionDetails)
-            {
-                if (amount > 100) 
-                    return -1;
-                return 3;
-            }
-        }
-
-        public class Mock_5sec_PaymentService : Mock_PaymentService
-        {
-            public override int Pay(double amount, SPaymentDetails transactionDetails)
-            {
-                Thread.Sleep(5000); // Wait for 5 seconds
-                return 1; // Return true after waiting
-            }
-
         }
 
         public class Mock_Bad_SupplierService : Mock_SupplierService
@@ -93,15 +65,57 @@ namespace SadnaExpressTests
             }
         }
 
-        public class Mock_5sec_SupplierService : Mock_SupplierService
+        public class Mock_4sec_SupplierService : Mock_SupplierService
         {
             public override int Supply(SSupplyDetails userDetails)
             {
-                Thread.Sleep(5000); // Wait for 5 seconds
+                Thread.Sleep(4000); // Wait for 4 seconds
                 return 100; // Return true after waiting
             }
 
         }
+
+        public class Mock_bad_6sec_SupplierService : Mock_SupplierService
+        {
+            public override string Handshake()
+            {
+                Thread.Sleep(6000); // Wait for 15 seconds
+                return "OK";
+            }
+        }
+
+        public class Mock_bad_HandshakeFalse_SupplierService : Mock_SupplierService
+        {
+            public override string Handshake()
+            {
+                Thread.Sleep(3000); // Wait for 15 seconds
+                return "Not OK";
+            }
+        }
+
+        public class Mock_bad_BadHandshake_SupplierService : Mock_SupplierService
+        {
+            public override string Handshake()
+            {
+                Thread.Sleep(6000); // Wait for 6 seconds
+                return "OK";
+            }
+
+            public override int Supply(SSupplyDetails userDetails)
+            {
+                return 100; 
+            }
+        }
+
+        public class Mock_bad_BadSupply_SupplierService : Mock_SupplierService
+        {
+            public override int Supply(SSupplyDetails userDetails)
+            {
+                return -1;
+            }
+        }
+
+
 
         public class Mock_PaymentService : IPaymentService
         {
@@ -132,17 +146,124 @@ namespace SadnaExpressTests
                 return true;
             }
         }
+
+        public class Mock_Bad_PaymentService : Mock_PaymentService
+        {
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                Thread.Sleep(11000); // Wait for 11 seconds
+                return -1; // Return true after waiting
+            }
+        }
+
+        public class Mock_Bad_PaymentServicePayReturnError : Mock_PaymentService
+        {
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                Thread.Sleep(2000); // Wait for 11 seconds
+                return -1; // Return true after waiting
+            }
+        }
+
+        public class Mock_Bad_Credit_Limit_Payment : Mock_PaymentService
+        {
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                if (amount > 100)
+                    return -1;
+                return 3;
+            }
+        }
+
+        public class Mock_4sec_PaymentService : Mock_PaymentService
+        {
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                Thread.Sleep(4000); // Wait for 4 seconds
+                return 1; // Return true after waiting
+            }
+
+        }
+
         public class Mock_bad_PaymentService : Mock_PaymentService
         {
             public override string Handshake()
             {
                 return "NOT OK";
             }
+
             public override  int Pay(double amount, SPaymentDetails transactionDetails)
             {
                 return -1;
             }
+
+            public override bool Cancel_Pay(double amount, int transaction_id)
+            {
+                return false;
+            }
+
         }
+
+        public class Mock_bad_PaymentService_CancelPayToLong : Mock_PaymentService
+        {
+            public override string Handshake()
+            {
+                return "OK";
+            }
+
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                return 1;
+            }
+
+            public override bool Cancel_Pay(double amount, int transaction_id)
+            {
+                Thread.Sleep(6000); 
+                return true;
+            }
+        }
+
+        public class Mock_bad_PaymentService_CancelPayFalse : Mock_PaymentService
+        {
+            public override string Handshake()
+            {
+                return "OK";
+            }
+
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                return 1;
+            }
+
+            public override bool Cancel_Pay(double amount, int transaction_id)
+            {
+                Thread.Sleep(1000);
+                return false;
+            }
+        }
+
+        public class Mock_bad_BadHandshake_PaymentService : Mock_PaymentService
+        {
+            public override string Handshake()
+            {
+                Thread.Sleep(6000); // Wait for 6 seconds
+                return "OK";
+            }
+            public override int Pay(double amount, SPaymentDetails transactionDetails)
+            {
+                return 2;
+            }
+        }
+
+        public class Mock_bad_BadHandshakeFalse_PaymentService : Mock_PaymentService
+        {
+            public override string Handshake()
+            {
+                Thread.Sleep(2000); // Wait for 6 seconds
+                return "Not OK";
+            }
+        }
+
         public class Mock_bad_15sec_PaymentService : Mock_PaymentService
         {
             public override string Handshake()

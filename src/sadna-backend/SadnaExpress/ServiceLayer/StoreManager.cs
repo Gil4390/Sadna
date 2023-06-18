@@ -162,10 +162,18 @@ namespace SadnaExpress.ServiceLayer
                                 catch (Exception e)
                                 {
                                     storeFacade.AddItemToStores(db, cart); // because we update the inventory we need to return them to inventory.
-                                    userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
-                                    throw new Exception(e.Message);
+                                    try
+                                    {
+                                        userFacade.CancelPayment(amount, transaction_payment_id); // because we need to refund the user
+                                    }
+                                    catch (Exception e1)
+                                    {
+                                        throw new Exception($"Due to error in supply service cancel payment operation activated- {e1.Message}");
+                                    }
+                                    throw new Exception($"Supply service failed: {e.Message}");
 
                                 }
+
                                 Orders.Instance.AddOrder(userID, itemForOrders, true, db);
 
                                 // Notify to store owners
@@ -190,8 +198,8 @@ namespace SadnaExpress.ServiceLayer
                                 // here we know that the purchase wasn't completed successfully
                                 // so now we disregard the transaction and any changes made in the database
                                 transaction.Rollback();
-                                Logger.Instance.Error(ex.Message);
-                                return new ResponseT<List<ItemForOrder>>(ex.Message);
+                                Logger.Instance.Error($"Purchase failed: {ex.Message}");
+                                return new ResponseT<List<ItemForOrder>>($"Purchase failed: {ex.Message}");
                             }
 
                         }

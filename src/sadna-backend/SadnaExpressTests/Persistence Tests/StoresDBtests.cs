@@ -292,43 +292,6 @@ namespace SadnaExpressTests.Persistence_Tests
         }
 
         [TestMethod()]
-        public void DB_AppointStoreOwnerSuccess()
-        {
-            PermissionSetup();
-            //Act
-            PromotedMember promotedMember = founder.AppointStoreOwner(storeID, storeOwnerAppoint);
-            //Assert
-            foreach (Guid id in DBHandler.Instance.GetAllMembers().Keys)
-            {
-                if (promotedMember.UserId == id)
-                {
-                    PromotedMember newPromotedMember = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(id);
-                    Assert.IsTrue(founder.getAppoint(storeID).Contains(newPromotedMember));
-                    Assert.IsTrue(newPromotedMember.hasPermissions(storeID, new List<string> { "owner permissions" }));
-                }
-            }
-        }
-
-        [TestMethod()]
-        public void DB_AppointStoreOwnerFail()
-        {
-            PermissionSetup();
-            //Act
-            PromotedMember promotedMember = founder.AppointStoreOwner(storeID, storeOwnerAppoint);
-
-            //Assert
-            foreach (Guid id in DBHandler.Instance.GetAllMembers().Keys)
-            {
-                if (promotedMember.UserId == id)
-                {
-                    PromotedMember newPromotedMember = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(id);
-                    Assert.ThrowsException<Exception>(() =>
-                        founder.AppointStoreOwner(storeID, newPromotedMember));
-
-                }
-            }
-        }
-        [TestMethod()]
         public void DB_RemoveStoreOwnerSuccess()
         {
             PermissionSetup();

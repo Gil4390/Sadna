@@ -33,7 +33,7 @@ namespace SadnaExpressTests.Unit_Tests
         #region SetUp
 
         [TestInitialize]
-        public void SetUp()
+        public override void SetUp()
         {
             base.SetUp();
             members = new ConcurrentDictionary<Guid, Member>();
@@ -137,7 +137,32 @@ namespace SadnaExpressTests.Unit_Tests
             //Act & Assert
             Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(systemManagerid));
         }
-        
+
+        [TestMethod()]
+        public void UserFacadeInitializeTradingSystemCannotConnectToSupplyService_BadTest()
+        {
+            //Arrange
+            _userFacade.SetSupplierService(new Mock_bad_6sec_SupplierService());
+            _userFacade.SetIsSystemInitialize(false);
+            members[systemManagerid].LoggedIn = true;
+
+            //Act & Assert
+            Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(systemManagerid));
+        }
+
+        [TestMethod()]
+        public void UserFacadeInitializeTradingSystemCannotConnectToServices_BadTest()
+        {
+            //Arrange
+            _userFacade.SetPaymentService(new Mock_bad_15sec_PaymentService());
+            _userFacade.SetSupplierService(new Mock_bad_6sec_SupplierService());
+            _userFacade.SetIsSystemInitialize(false);
+            members[systemManagerid].LoggedIn = true;
+
+            //Act & Assert
+            Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(systemManagerid));
+        }
+
 
         #endregion
 
@@ -160,10 +185,10 @@ namespace SadnaExpressTests.Unit_Tests
         }
 
         [TestMethod()]
-        public void UserFacadePaymentServiceWait5Sec_HappyTest()
+        public void UserFacadePaymentServiceWait4Sec_HappyTest()
         {
             //Arrange
-            _userFacade.SetPaymentService(new Mock_5sec_PaymentService());
+            _userFacade.SetPaymentService(new Mock_4sec_PaymentService());
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             double amount = 500;
             //Act
@@ -181,10 +206,77 @@ namespace SadnaExpressTests.Unit_Tests
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");            
             double amount = 300;
             //Act & Assert
-            Assert.IsFalse(_userFacade.PlacePayment(amount,
-                transactionDetails)!=-1); //operation failes cause it takes to much time
+            Assert.ThrowsException<Exception>(() => _userFacade.PlacePayment(amount,
+                transactionDetails));
+             //operation failes cause it takes to much time
         }
 
+        [TestMethod()]
+        public void UserFacadePaymentServiceCancelPay_BadTest()
+        {
+            //Arrange
+            _userFacade.SetPaymentService(new Mock_bad_PaymentService_CancelPayToLong());
+           
+            double amount = 300;
+            //Act & Assert
+            Assert.ThrowsException<Exception>(() => _userFacade.CancelPayment(amount,
+                48));
+            //operation failes cause it takes to much time
+        }
+
+        [TestMethod()]
+        public void UserFacadePaymentServiceCancelPayBadHandshackFalse_BadTest()
+        {
+            //Arrange
+            _userFacade.SetPaymentService(new Mock_bad_PaymentService());
+
+            double amount = 300;
+            //Act & Assert
+            Assert.ThrowsException<Exception>(() => _userFacade.CancelPayment(amount,
+              48));
+            //operation failes cause it takes to much time
+        }
+
+        [TestMethod()]
+        public void UserFacadePaymentServiceCancelPayFalse_BadTest()
+        {
+            //Arrange
+            _userFacade.SetPaymentService(new Mock_bad_PaymentService_CancelPayFalse());
+
+            double amount = 300;
+            //Act & Assert
+            Assert.ThrowsException<Exception>(() => _userFacade.CancelPayment(amount,
+              48));
+            //operation failes cause it takes to much time
+        }
+
+
+        [TestMethod()]
+        public void UserFacadePaymentServiceCancelPayBadHandshake_BadTest()
+        {
+            //Arrange
+            _userFacade.SetPaymentService(new Mock_bad_BadHandshake_PaymentService());
+
+            double amount = 300;
+            //Act & Assert
+            Assert.ThrowsException<Exception>(() => _userFacade.CancelPayment(amount,
+                48));
+            //operation failes cause it takes to much time
+        }
+        
+
+        [TestMethod()]
+        public void UserFacadePaymentServiceCancelPay_HappyTest()
+        {
+            //Arrange
+            _userFacade.SetPaymentService(new Mock_PaymentService());
+            SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
+            double amount = 300;
+            //Act & Assert
+           Assert.IsTrue( _userFacade.CancelPayment(amount,
+                48));
+            //operation failes cause it takes to much time
+        }
         #endregion
 
         #region Supply Service Tests
@@ -208,7 +300,7 @@ namespace SadnaExpressTests.Unit_Tests
         public void UserFacadeSupplyServiceWait5Sec_HappyTest()
         {
             //Arrange
-            _userFacade.SetSupplierService(new Mock_5sec_SupplierService());
+            _userFacade.SetSupplierService(new Mock_4sec_SupplierService());
 
             //Act
             SSupplyDetails transactionDetails = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
@@ -226,11 +318,11 @@ namespace SadnaExpressTests.Unit_Tests
             
             //Act
             SSupplyDetails transactionDetails = new SSupplyDetails("Roy Kent","38 Tacher st.","Richmond","England","4284200");
-            bool value = _userFacade.PlaceSupply(transactionDetails) != -1;
-            //operation failes cause it takes to much time- returns false
 
             //Assert
-            Assert.IsFalse(value);
+            Assert.ThrowsException<Exception>(() => _userFacade.PlaceSupply(transactionDetails));
+            //operation failes cause it takes to much time
+          
         }
 
         #endregion
