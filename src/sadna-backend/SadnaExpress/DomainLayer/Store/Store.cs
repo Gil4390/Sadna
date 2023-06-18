@@ -162,7 +162,10 @@ namespace SadnaExpress.DomainLayer.Store
             Dictionary<Item, int> itemsBeforeDiscount = new Dictionary<Item, int>();
             foreach (Guid itemID in items.Keys)
             {
-                itemsBeforeDiscount.Add(GetItemById(itemID), items[itemID]);
+                if (ItemExist(itemID))
+                { 
+                    itemsBeforeDiscount.Add(GetItemById(itemID), items[itemID]);
+                }
             }
             Dictionary<Item, KeyValuePair<double, DateTime>> itemAfterDiscount =
                 new Dictionary<Item, KeyValuePair<double, DateTime>>();

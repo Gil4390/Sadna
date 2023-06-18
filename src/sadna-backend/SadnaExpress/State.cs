@@ -20,6 +20,7 @@ using System.Configuration;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
 using System.Data.SqlTypes;
 using SadnaExpress.DataLayer;using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 
 namespace SadnaExpress
@@ -86,324 +87,335 @@ namespace SadnaExpress
             foreach (FunctionParams functionParams in functionParamsList)
             {
                 string function = functionParams.function;
-                Params parameters = functionParams.@params;
-                switch (function)
+                try
                 {
-                    case "Register":
-                        userId = trading.Enter().Value;
-                        email = parameters.email;
-                        if (string.IsNullOrEmpty(email))
-                        {
-                           Logger.Instance.Error("The email field is null in function " + (function));
-                           throw new Exception("The email field is null in function " + (function));
+                    Params parameters = functionParams.@params;
+                    switch (function)
+                    {
+                        case "Register":
+                            userId = trading.Enter().Value;
+                            email = parameters.email;
+                            if (string.IsNullOrEmpty(email))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The email field is null in function " + (function));
 
-                        }
-                        string firstName = parameters.firstName;
-                        if (string.IsNullOrEmpty(firstName))
-                        {
-                            Logger.Instance.Error("The firstName field is null in function " + (function));
-                            throw new Exception("The firstName field is null in function " + (function));
-                        }
-                        string lastName = parameters.lastName;
-                        if (string.IsNullOrEmpty(lastName))
-                        {
-                            Logger.Instance.Error("The lastName field is null in function " + (function));
-                            throw new Exception("The lastName field is null in function " + (function));
-                        }
-                        string password = parameters.password;
-                        if (string.IsNullOrEmpty(password))
-                        {
-                            Logger.Instance.Error("The password field is null in function " + (function));
-                            throw new Exception("The password field is null in function " + (function));
-                        }
-                        Response res = trading.Register(userId, email, firstName, lastName, password);
-                        if (res.ErrorOccured)
-                            throw new Exception(res.ErrorMessage);
-                        Member member = trading.GetMember(email).Value;
-                        members.Add(email, member);
-                        expectedParamsCount = 4;
-                        checkExpectedParams(expectedParamsCount, parameters, function);
+                            }
+                            string firstName = parameters.firstName;
+                            if (string.IsNullOrEmpty(firstName))
+                            {
+                                Logger.Instance.Error("The firstName field is null in function " + (function));
+                                throw new Exception("The firstName field is null in function " + (function));
+                            }
+                            string lastName = parameters.lastName;
+                            if (string.IsNullOrEmpty(lastName))
+                            {
+                                Logger.Instance.Error("The lastName field is null in function " + (function));
+                                throw new Exception("The lastName field is null in function " + (function));
+                            }
+                            string password = parameters.password;
+                            if (string.IsNullOrEmpty(password))
+                            {
+                                Logger.Instance.Error("The password field is null in function " + (function));
+                                throw new Exception("The password field is null in function " + (function));
+                            }
+                            Response res = trading.Register(userId, email, firstName, lastName, password);
+                            if (res.ErrorOccured)
+                                throw new Exception(res.ErrorMessage);
+                            Member member = trading.GetMember(email).Value;
+                            members.Add(email, member);
+                            expectedParamsCount = 4;
+                            checkExpectedParams(expectedParamsCount, parameters, function);
 
-                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+                            Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
-                        break;
+                            break;
 
-                    case "CreateSystemManager":
-                        expectedParamsCount = 1;
-                        checkExpectedParams(expectedParamsCount, parameters, function);
-                        email = parameters.email;
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            Logger.Instance.Error("The email field is null in function " + (function));
-                            throw new Exception("The email field is null in function " + (function));
+                        case "CreateSystemManager":
+                            expectedParamsCount = 1;
+                            checkExpectedParams(expectedParamsCount, parameters, function);
+                            email = parameters.email;
+                            if (string.IsNullOrEmpty(email))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The email field is null in function " + (function));
 
-                        }
-                        userId = members[email].UserId;
-                        PromotedMember promotedMember = trading.GetMember(email).Value.promoteToMember();
-                        if (promotedMember == null) { 
-                            Logger.Instance.Error("unable to promoted this member");
-                            throw new Exception("unable to promoted this member");
+                            }
+                            userId = members[email].UserId;
+                            PromotedMember promotedMember = trading.GetMember(email).Value.promoteToMember();
+                            if (promotedMember == null)
+                            {
+                                Logger.Instance.Error("unable to promoted this member");
+                                throw new Exception("unable to promoted this member");
 
-                        }
-                        promotedMember.createSystemManager();
-                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+                            }
+                            promotedMember.createSystemManager();
+                            Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
-                        break;
+                            break;
 
-                    case "Login":
-                        expectedParamsCount = 2;
-                        checkExpectedParams(expectedParamsCount, parameters, function);
-                        userId = trading.Enter().Value;
-                        email = parameters.email;
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            Logger.Instance.Error("The email field is null in function " + (function));
-                            throw new Exception("The email field is null in function " + (function));
-                        }
-                        password = parameters.password;
-                        if (string.IsNullOrEmpty(password))
-                        {
-                            Logger.Instance.Error("The password field is null in function " + (function));
-                            throw new Exception("The password field is null in function " + (function));
-                        }
-                        ResponseT<Guid> response = trading.Login(userId, email, password);
-                        if (response.ErrorOccured)
-                            throw new Exception(response.ErrorMessage);
-                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+                        case "Login":
+                            expectedParamsCount = 2;
+                            checkExpectedParams(expectedParamsCount, parameters, function);
+                            userId = trading.Enter().Value;
+                            email = parameters.email;
+                            if (string.IsNullOrEmpty(email))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The email field is null in function " + (function));
+                            }
+                            password = parameters.password;
+                            if (string.IsNullOrEmpty(password))
+                            {
+                                Logger.Instance.Error("The password field is null in function " + (function));
+                                throw new Exception("The password field is null in function " + (function));
+                            }
+                            ResponseT<Guid> response = trading.Login(userId, email, password);
+                            if (response.ErrorOccured)
+                                throw new Exception(response.ErrorMessage);
+                            Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
-                        break;
+                            break;
 
-                    case "Logout":
-                        expectedParamsCount = 1;
-                        checkExpectedParams(expectedParamsCount, parameters, function);
-                        email = parameters.email;
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            Logger.Instance.Error("The email field is null in function " + (function));
-                            throw new Exception("The email field is null in function " + (function));
+                        case "Logout":
+                            expectedParamsCount = 1;
+                            checkExpectedParams(expectedParamsCount, parameters, function);
+                            email = parameters.email;
+                            if (string.IsNullOrEmpty(email))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The email field is null in function " + (function));
 
-                        }
-                        userId = members[email].UserId;
-                        response = trading.Logout(userId);
-                        if (response.ErrorOccured)
-                            throw new Exception(response.ErrorMessage);
-                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+                            }
+                            userId = members[email].UserId;
+                            response = trading.Logout(userId);
+                            if (response.ErrorOccured)
+                                throw new Exception(response.ErrorMessage);
+                            Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
-                        break;
+                            break;
 
-                    case "OpenNewStore":
-                        expectedParamsCount = 2;
-                        checkExpectedParams(expectedParamsCount, parameters, function);
-                        String StoreName = parameters.StoreName;
-                        if (string.IsNullOrEmpty(StoreName))
-                        {
-                            Logger.Instance.Error("The email field is null in function " + (function));
-                            throw new Exception("The StoreName field is null in function " + (function));
+                        case "OpenNewStore":
+                            expectedParamsCount = 2;
+                            checkExpectedParams(expectedParamsCount, parameters, function);
+                            String StoreName = parameters.StoreName;
+                            if (string.IsNullOrEmpty(StoreName))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The StoreName field is null in function " + (function));
 
-                        }
-                        email = parameters.email;
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            Logger.Instance.Error("The email field is null in function " + (function));
-                            throw new Exception("The email field is null in function " + (function));
+                            }
+                            email = parameters.email;
+                            if (string.IsNullOrEmpty(email))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The email field is null in function " + (function));
 
-                        }
-                        userId = members[email].UserId;
-                        response = trading.OpenNewStore(userId, StoreName);
-                        if (response.ErrorOccured)
-                            throw new Exception(response.ErrorMessage);
-                        Store store = trading.GetStore(StoreName).Value;
-                        stores.Add(StoreName, store);
-                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+                            }
+                            userId = members[email].UserId;
+                            response = trading.OpenNewStore(userId, StoreName);
+                            if (response.ErrorOccured)
+                                throw new Exception(response.ErrorMessage);
+                            Store store = trading.GetStore(StoreName).Value;
+                            stores.Add(StoreName, store);
+                            Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
-                        break;
+                            break;
 
-                    case "AppointStoreOwner":
-                        expectedParamsCount = 3;
-                        checkExpectedParams(expectedParamsCount, parameters, function);
-                        email = parameters.email;
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            Logger.Instance.Error("The email field is null in function " + (function));
-                            throw new Exception("The email field is null in function " + (function));
+                        case "AppointStoreOwner":
+                            expectedParamsCount = 3;
+                            checkExpectedParams(expectedParamsCount, parameters, function);
+                            email = parameters.email;
+                            if (string.IsNullOrEmpty(email))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The email field is null in function " + (function));
 
-                        }
-                        String anotherEmail = parameters.MemberEmail;
-                        if (string.IsNullOrEmpty(anotherEmail))
-                        {
-                            Logger.Instance.Error("The anotherEmail field is null in function " + (function));
-                            throw new Exception("The anotherEmail field is null in function " + (function));
+                            }
+                            String anotherEmail = parameters.MemberEmail;
+                            if (string.IsNullOrEmpty(anotherEmail))
+                            {
+                                Logger.Instance.Error("The anotherEmail field is null in function " + (function));
+                                throw new Exception("The anotherEmail field is null in function " + (function));
 
-                        }
-                        StoreName = parameters.StoreName;
-                        if (string.IsNullOrEmpty(StoreName))
-                        {
-                            Logger.Instance.Error("The StoreName field is null in function " + (function));
-                            throw new Exception("The StoreName field is null in function " + (function));
+                            }
+                            StoreName = parameters.StoreName;
+                            if (string.IsNullOrEmpty(StoreName))
+                            {
+                                Logger.Instance.Error("The StoreName field is null in function " + (function));
+                                throw new Exception("The StoreName field is null in function " + (function));
 
-                        }
-                        userId = members[email].UserId;
-                        anotherEmail = members[anotherEmail].Email;
-                        Guid storeID = stores[StoreName].StoreID;
-                        res = trading.AppointStoreOwner(userId, storeID, anotherEmail);
-                        if (res.ErrorOccured)
-                            throw new Exception(res.ErrorMessage);
+                            }
+                            userId = members[email].UserId;
+                            anotherEmail = members[anotherEmail].Email;
+                            Guid storeID = stores[StoreName].StoreID;
+                            res = trading.AppointStoreOwner(userId, storeID, anotherEmail);
+                            if (res.ErrorOccured)
+                                throw new Exception(res.ErrorMessage);
 
-                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+                            Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
-                        break;
+                            break;
 
-                    case "AppointStoreManager":
-                        expectedParamsCount = 4;
-                        checkExpectedParams(expectedParamsCount, parameters, function);
-                        email = parameters.email;
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            Logger.Instance.Error("The email field is null in function " + (function));
-                            throw new Exception("The email field is null in function " + (function));
+                        case "AppointStoreManager":
+                            expectedParamsCount = 4;
+                            checkExpectedParams(expectedParamsCount, parameters, function);
+                            email = parameters.email;
+                            if (string.IsNullOrEmpty(email))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The email field is null in function " + (function));
 
-                        }
-                        anotherEmail = parameters.MemberEmail;
-                        if (string.IsNullOrEmpty(anotherEmail))
-                        {
-                            Logger.Instance.Error("The anotherEmail field is null in function " + (function));
-                            throw new Exception("The anotherEmail field is null in function " + (function));
+                            }
+                            anotherEmail = parameters.MemberEmail;
+                            if (string.IsNullOrEmpty(anotherEmail))
+                            {
+                                Logger.Instance.Error("The anotherEmail field is null in function " + (function));
+                                throw new Exception("The anotherEmail field is null in function " + (function));
 
-                        }
-                        StoreName = parameters.StoreName;
-                        if (string.IsNullOrEmpty(StoreName))
-                        {
-                            Logger.Instance.Error("The StoreName field is null in function " + (function));
-                            throw new Exception("The StoreName field is null in function " + (function));
+                            }
+                            StoreName = parameters.StoreName;
+                            if (string.IsNullOrEmpty(StoreName))
+                            {
+                                Logger.Instance.Error("The StoreName field is null in function " + (function));
+                                throw new Exception("The StoreName field is null in function " + (function));
 
-                        }
-                        if (string.IsNullOrEmpty(parameters.Permission))
-                        {
-                            Logger.Instance.Error("The permission field is null in function " + (function));
-                            throw new Exception("The permission field is null in function " + (function));
+                            }
+                            if (string.IsNullOrEmpty(parameters.Permission))
+                            {
+                                Logger.Instance.Error("The permission field is null in function " + (function));
+                                throw new Exception("The permission field is null in function " + (function));
 
-                        }
-                        userId = members[email].UserId;
-                        anotherEmail = members[anotherEmail].Email;
-                        storeID = stores[StoreName].StoreID;
-                        res = trading.AppointStoreManager(userId, storeID, anotherEmail);
-                        if (res.ErrorOccured)
-                            throw new Exception(res.ErrorMessage);
-                        res = trading.AddStoreManagerPermissions(userId, storeID, anotherEmail, parameters.Permission);
-                        if (res.ErrorOccured)
-                            throw new Exception(res.ErrorMessage);
-                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+                            }
+                            userId = members[email].UserId;
+                            anotherEmail = members[anotherEmail].Email;
+                            storeID = stores[StoreName].StoreID;
+                            res = trading.AppointStoreManager(userId, storeID, anotherEmail);
+                            if (res.ErrorOccured)
+                                throw new Exception(res.ErrorMessage);
+                            res = trading.AddStoreManagerPermissions(userId, storeID, anotherEmail, parameters.Permission);
+                            if (res.ErrorOccured)
+                                throw new Exception(res.ErrorMessage);
+                            Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
-                        break;
-                    case "ReactStoreOwner":
-                        expectedParamsCount = 4;
-                        checkExpectedParams(expectedParamsCount, parameters, function);
-                        email = parameters.email;
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            Logger.Instance.Error("The email field is null in function " + (function));
-                            throw new Exception("The email field is null in function " + (function));
+                            break;
+                        case "ReactStoreOwner":
+                            expectedParamsCount = 4;
+                            checkExpectedParams(expectedParamsCount, parameters, function);
+                            email = parameters.email;
+                            if (string.IsNullOrEmpty(email))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The email field is null in function " + (function));
 
-                        }
-                        anotherEmail = parameters.MemberEmail;
-                        if (string.IsNullOrEmpty(anotherEmail))
-                        {
-                            Logger.Instance.Error("The anotherEmail field is null in function " + (function));
-                            throw new Exception("The anotherEmail field is null in function " + (function));
+                            }
+                            anotherEmail = parameters.MemberEmail;
+                            if (string.IsNullOrEmpty(anotherEmail))
+                            {
+                                Logger.Instance.Error("The anotherEmail field is null in function " + (function));
+                                throw new Exception("The anotherEmail field is null in function " + (function));
 
-                        }
-                        StoreName = parameters.StoreName;
-                        if (string.IsNullOrEmpty(StoreName))
-                        {
-                            Logger.Instance.Error("The StoreName field is null in function " + (function));
-                            throw new Exception("The StoreName field is null in function " + (function));
+                            }
+                            StoreName = parameters.StoreName;
+                            if (string.IsNullOrEmpty(StoreName))
+                            {
+                                Logger.Instance.Error("The StoreName field is null in function " + (function));
+                                throw new Exception("The StoreName field is null in function " + (function));
 
-                        }
-                        string strreact = parameters.react.ToLower();
-                        if (string.IsNullOrEmpty(strreact) || !(strreact.Equals("false") || strreact.Equals("true")))
-                        {
-                            Logger.Instance.Error("The StoreName field is null or illegal in function " + (function));
-                            throw new Exception("The StoreName field is null or illegal in function " + (function));
+                            }
+                            string strreact = parameters.react.ToLower();
+                            if (string.IsNullOrEmpty(strreact) || !(strreact.Equals("false") || strreact.Equals("true")))
+                            {
+                                Logger.Instance.Error("The StoreName field is null or illegal in function " + (function));
+                                throw new Exception("The StoreName field is null or illegal in function " + (function));
 
-                        }
-                        userId = members[email].UserId;
-                        Guid userId2 = members[anotherEmail].UserId;
-                        storeID = stores[StoreName].StoreID;
-                        bool react = strreact.Equals("true");
-                        res = trading.ReactToJobOffer(userId, storeID, userId2, react);
-                        if (res.ErrorOccured)
-                            throw new Exception(res.ErrorMessage);
+                            }
+                            userId = members[email].UserId;
+                            Guid userId2 = members[anotherEmail].UserId;
+                            storeID = stores[StoreName].StoreID;
+                            bool react = strreact.Equals("true");
+                            res = trading.ReactToJobOffer(userId, storeID, userId2, react);
+                            if (res.ErrorOccured)
+                                throw new Exception(res.ErrorMessage);
 
-                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+                            Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
-                        break;
-                    case "AddItemToStore":
-                        expectedParamsCount = 6;
-                        checkExpectedParams(expectedParamsCount, parameters, function);
-                        email = parameters.email;
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            Logger.Instance.Error("The email field is null in function " + (function));
-                            throw new Exception("The email field is null in function " + (function));
+                            break;
+                        case "AddItemToStore":
+                            expectedParamsCount = 6;
+                            checkExpectedParams(expectedParamsCount, parameters, function);
+                            email = parameters.email;
+                            if (string.IsNullOrEmpty(email))
+                            {
+                                Logger.Instance.Error("The email field is null in function " + (function));
+                                throw new Exception("The email field is null in function " + (function));
 
-                        }
-                        StoreName = parameters.StoreName;
-                        if (string.IsNullOrEmpty(StoreName))
-                        {
-                            Logger.Instance.Error("The StoreName field is null in function " + (function));
-                            throw new Exception("The StoreName field is null in function " + (function));
+                            }
+                            StoreName = parameters.StoreName;
+                            if (string.IsNullOrEmpty(StoreName))
+                            {
+                                Logger.Instance.Error("The StoreName field is null in function " + (function));
+                                throw new Exception("The StoreName field is null in function " + (function));
 
-                        }
-                        storeID = stores[StoreName].StoreID;
-                        userId = members[email].UserId;
-                        String itemName = parameters.ItemName;
-                        if (string.IsNullOrEmpty(itemName))
-                        {
-                            Logger.Instance.Error("The itemName field is null in function " + (function));
-                            throw new Exception("The itemName field is null in function " + (function));
+                            }
+                            storeID = stores[StoreName].StoreID;
+                            userId = members[email].UserId;
+                            String itemName = parameters.ItemName;
+                            if (string.IsNullOrEmpty(itemName))
+                            {
+                                Logger.Instance.Error("The itemName field is null in function " + (function));
+                                throw new Exception("The itemName field is null in function " + (function));
 
-                        }
-                        String itemCategory = parameters.ItemCategory;
-                        if (string.IsNullOrEmpty(itemCategory))
-                        {
-                            Logger.Instance.Error("The itemCategory field is null in function " + (function));
-                            throw new Exception("The itemCategory field is null in function " + (function));
+                            }
+                            String itemCategory = parameters.ItemCategory;
+                            if (string.IsNullOrEmpty(itemCategory))
+                            {
+                                Logger.Instance.Error("The itemCategory field is null in function " + (function));
+                                throw new Exception("The itemCategory field is null in function " + (function));
 
-                        }
+                            }
 
-                        double itemPrice;
-                        double.TryParse(parameters.ItemPrice, out itemPrice);
-                         if (itemPrice == 0) { 
-                            Logger.Instance.Error("The itemPrice field is 0 in function " + (function));
-                            throw new Exception("The itemPrice field is 0 in function " + (function));
+                            double itemPrice;
+                            double.TryParse(parameters.ItemPrice, out itemPrice);
+                            if (itemPrice == 0)
+                            {
+                                Logger.Instance.Error("The itemPrice field is 0 in function " + (function));
+                                throw new Exception("The itemPrice field is 0 in function " + (function));
 
                             }
 
 
-                        int quantity;
-                        int.TryParse(parameters.ItemQuantity, out quantity);
-                        if (quantity == 0) { 
-                            Logger.Instance.Error("The quantity field is 0 in function " + (function));
-                            throw new Exception("The quantity field is 0 in function " + (function));
+                            int quantity;
+                            int.TryParse(parameters.ItemQuantity, out quantity);
+                            if (quantity == 0)
+                            {
+                                Logger.Instance.Error("The quantity field is 0 in function " + (function));
+                                throw new Exception("The quantity field is 0 in function " + (function));
 
                             }
 
-                        res = trading.AddItemToStore(userId, storeID, itemName, itemCategory, itemPrice,
-                            quantity);
-                         if (res.ErrorOccured)
-                            throw new Exception(res.ErrorMessage);
-                        itemPrice = 0;
-                        quantity = 0;
-                        Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
+                            res = trading.AddItemToStore(userId, storeID, itemName, itemCategory, itemPrice,
+                                quantity);
+                            if (res.ErrorOccured)
+                                throw new Exception(res.ErrorMessage);
+                            itemPrice = 0;
+                            quantity = 0;
+                            Logger.Instance.Info("The parser for " + (function) + " function worked successfully.");
 
-                        break;
+                            break;
 
-                    default:
-                        Logger.Instance.Error("Invalid function name: " + (function));
-                        throw new Exception("Invalid function name: " + (function));
+                        default:
+                            Logger.Instance.Error("Invalid function name: " + (function));
+                            throw new Exception("Invalid function name: " + (function));
 
+                    }
                 }
-            }
+                catch (Exception e)
+                {
+                    Logger.Instance.Error($"An error eccor in {function}.");
+                    throw new Exception($"An error eccor in {function}.");
+                }
+            }            
         }
         public void checkExpectedParams(int expectedParamsCount, Params parameters, string function)
         {
