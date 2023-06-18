@@ -40,6 +40,10 @@ namespace SadnaExpress.DomainLayer.User
             this.storeID = storeID;
             this.ItemID = itemID;
             this.itemName = itemName;
+            if (price <= 0)
+            {
+                throw new Exception("offer must be greater than zero");
+            }
             this.price = price;
             decisions = new Dictionary<PromotedMember, string>();
             foreach (PromotedMember promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
