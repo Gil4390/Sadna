@@ -36,30 +36,44 @@ namespace SadnaExpress.ExternalServices
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                throw new Exception("failed to access the supply service");
             }
         }
 
         public object Send(Dictionary<string, string> content)
         {
-            var formData = new FormUrlEncodedContent(content);
-            var responseTask = client.PostAsync(address, formData);
-            var response = responseTask.Result;
-            var responseContentTask = response.Content.ReadAsStringAsync();
-            return responseContentTask.Result;
+            try
+            {
+                var formData = new FormUrlEncodedContent(content);
+                var responseTask = client.PostAsync(address, formData);
+                var response = responseTask.Result;
+                var responseContentTask = response.Content.ReadAsStringAsync();
+                return responseContentTask.Result;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("failed to access the supply service");
+            }
         }
 
         public string Handshake()
         {
-            var postContent = new Dictionary<string, string>
+            try
+            {
+                var postContent = new Dictionary<string, string>
             {
                 {"action_type","handshake"},
             };
-            var formData = new FormUrlEncodedContent(postContent);
-            var responseTask = client.PostAsync(address, formData);
-            var response = responseTask.Result;
-            var responseContentTask = response.Content.ReadAsStringAsync();
-            return responseContentTask.Result;
+                var formData = new FormUrlEncodedContent(postContent);
+                var responseTask = client.PostAsync(address, formData);
+                var response = responseTask.Result;
+                var responseContentTask = response.Content.ReadAsStringAsync();
+                return responseContentTask.Result;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("failed to access the supply service");
+            }
         }
 
         public int Supply(SSupplyDetails userDetails)
@@ -79,7 +93,7 @@ namespace SadnaExpress.ExternalServices
             }
             catch (Exception e)
             {
-                return -1;
+                throw new Exception("failed to access the supply service");
             }
         }
 
