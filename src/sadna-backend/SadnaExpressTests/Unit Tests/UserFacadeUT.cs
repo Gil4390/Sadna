@@ -13,7 +13,7 @@ using SadnaExpress.DataLayer;
 namespace SadnaExpressTests.Unit_Tests
 {
     [TestClass()]
-    public class UserFacadeUT
+    public class UserFacadeUT : TradingSystemUT
     {
         #region Properties
 
@@ -35,6 +35,7 @@ namespace SadnaExpressTests.Unit_Tests
         [TestInitialize]
         public void SetUp()
         {
+            base.SetUp();
             members = new ConcurrentDictionary<Guid, Member>();
             member = new Member(memberid, "AssiAzar@gmail.com", "shay", "kresner", "ShaY1787%$%");
             members.TryAdd(memberid, member);
@@ -58,7 +59,6 @@ namespace SadnaExpressTests.Unit_Tests
             userId1 = _userFacade.Enter();
             userId2 = _userFacade.Enter();
             NotificationSystem.Instance.userFacade = _userFacade;
-            NotificationNotifier.GetInstance().TestMood = true;
         }
 
         #endregion
@@ -126,6 +126,18 @@ namespace SadnaExpressTests.Unit_Tests
             Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(memberid));
         }
 
+        [TestMethod()]
+        public void UserFacadeInitializeTradingSystemCannotConnectToPaymentService_BadTest()
+        {
+            //Arrange
+            _userFacade.SetPaymentService(new Mock_bad_15sec_PaymentService());
+            _userFacade.SetIsSystemInitialize(false);
+            members[systemManagerid].LoggedIn = true;
+
+            //Act & Assert
+            Assert.ThrowsException<Exception>(() => _userFacade.InitializeTradingSystem(systemManagerid));
+        }
+        
 
         #endregion
 

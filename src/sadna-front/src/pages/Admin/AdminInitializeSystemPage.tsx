@@ -10,7 +10,7 @@ function AdminInitializeSystemPage(props) {
 
   useEffect(() => {
     if(response !=undefined){
-      response?.errorOccured ? alert(response?.errorMessage) : alert("System Initialized");
+      response?.errorOccured ? alert(response?.errorMessage) : alert("System Initialized Successfully");
     }
  }, [response])
 
