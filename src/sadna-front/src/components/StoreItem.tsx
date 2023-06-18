@@ -97,7 +97,7 @@ export function StoreItem(props) {
           setShowBidButton(false);
           props.setModified(Date.now());
           setTimeout(() => {
-            alert("Bid sended")
+            alert("Bid sent")
           }, 0);
         }
       }
