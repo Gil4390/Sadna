@@ -31,7 +31,7 @@ Running the clients:
 - Open a terminal and run npm install (if already installed, run npm install -f)
 - We will run npm start in the terminal
 - A client will open a web page for us
-- To run another client, open a new web page, enter the address according to the Host field in the app.config file like this: Host:3000
+- To run another client, open a new web page, enter the address according to the Host field in the app.config file like this: localhost:3000
 
 # app.config
  
