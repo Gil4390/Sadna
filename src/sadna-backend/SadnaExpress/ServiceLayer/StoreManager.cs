@@ -170,7 +170,7 @@ namespace SadnaExpress.ServiceLayer
                                     {
                                         throw new Exception($"Due to error in supply service cancel payment operation activated- {e1.Message}");
                                     }
-                                    throw new Exception($"Supply service failed: {e.Message}");
+                                    throw new Exception($"Supply service failed: {e.Message}. Payment cancelled!");
 
                                 }
 

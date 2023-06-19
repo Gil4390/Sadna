@@ -168,7 +168,7 @@ namespace SadnaExpressTests.Integration_Tests
         public void CheckBadConnectionToSupplyService_Fail()
         {
             trading.SetPaymentService(new Mock_PaymentService());
-            trading.SetSupplierService(new SupplierService("https://php-server-tr.000webhostapp.com/"));
+            trading.SetSupplierService(new SupplierService("https://php-server-try.000wehostapp.com/"));
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent", "38 Tacher st.", "Richmond", "England", "4284200");
             ResponseT<List<ItemForOrder>> res = trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
