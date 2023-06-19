@@ -2894,7 +2894,7 @@ namespace SadnaExpress.DataLayer
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception(DbErrorMessage + ", No internet Connection. Please check your network settings.");
+                        throw new Exception(DbErrorMessage + " or check your internet Connection");
                     }
                 }
             }

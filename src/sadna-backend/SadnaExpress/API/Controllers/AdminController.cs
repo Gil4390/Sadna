@@ -29,7 +29,7 @@ namespace SadnaExpress.API.Controllers
         [HttpGet]
         public IHttpActionResult IsSystemInitialize()
         {
-            return Ok(tradingSystem.IsSystemInitialize());
+            return Ok(new ResponseT<bool>(tradingSystem.IsSystemInitialize()));
         }
 
         [Route(APIConstants.AdminData.InitTradingSystem)]
