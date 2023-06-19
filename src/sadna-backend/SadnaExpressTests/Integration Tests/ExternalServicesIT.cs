@@ -26,8 +26,8 @@ namespace SadnaExpressTests.Integration_Tests
         public override void Setup()
         {
             base.Setup();
-            paymentService = new PaymentService("https://php-server-try.000webhostapp.com/");
-            supplierService = new SupplierService("https://php-server-try.000webhostapp.com/");
+            paymentService = new PaymentService("https://external-systems.000webhostapp.com/");
+            supplierService = new SupplierService("https://external-systems.000webhostapp.com/");
             trading.SetPaymentService(paymentService);
             trading.SetSupplierService(supplierService);
         }
@@ -154,7 +154,7 @@ namespace SadnaExpressTests.Integration_Tests
         [TestMethod]
         public void CheckBadConnectionToPaymentService_Fail()
         {
-            trading.SetPaymentService(new PaymentService("https://php-server-try.000wehostapp.com/"));
+            trading.SetPaymentService(new PaymentService("https://external-systems.000wehostapp.com/"));
             trading.SetSupplierService(new Mock_SupplierService());
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent", "38 Tacher st.", "Richmond", "England", "4284200");
@@ -168,7 +168,7 @@ namespace SadnaExpressTests.Integration_Tests
         public void CheckBadConnectionToSupplyService_Fail()
         {
             trading.SetPaymentService(new Mock_PaymentService());
-            trading.SetSupplierService(new SupplierService("https://php-server-try.000wehostapp.com/"));
+            trading.SetSupplierService(new SupplierService("https://external-systems.000wehostapp.com/"));
             SPaymentDetails transactionDetails = new SPaymentDetails("1122334455667788", "12", "27", "Tal Galmor", "444", "123456789");
             SSupplyDetails transactionDetailsSupply = new SSupplyDetails("Roy Kent", "38 Tacher st.", "Richmond", "England", "4284200");
             ResponseT<List<ItemForOrder>> res = trading.PurchaseCart(buyerID, transactionDetails, transactionDetailsSupply);
