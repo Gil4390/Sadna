@@ -27,7 +27,7 @@ const App:React.FC=()=>{
 
  const [id, setid] = useState<string>();
   //const [id, setid] = useLocalStorage("id", ""); //local storage (should do the same to isInit)
-
+  const [response, setResponse] = useState<ResponseT>();
   const [username, setUsername] = useState<string>();
   const [isInit, setisInit] = useState<boolean>(false);
   const [userType, setUserType] = useState("guest");

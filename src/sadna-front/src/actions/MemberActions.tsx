@@ -695,7 +695,7 @@ export function handleGetUserNotifications(UserID) {
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data.value)
+        return Promise.resolve(data)
     })
 }
 
