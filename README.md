@@ -99,15 +99,15 @@ Currently there are 3 possible initial states for the system to start with:
 </ul>
 
 supported initialization functions: 
-- Register(userId, email, firstName, lastName, password)
-- CreateSystemManager(email)
-- Login(userId, email, password)
-- Logout(userId)
-- OpenNewStore(userId, StoreName)
-- AddItemToStore(userId, storeID, itemName, itemCategory, itemPrice, quantity)
-- AppointStoreManager(userId, storeID, anotherEmail)
-- AppointStoreOwner(userId, storeID, anotherEmail)
-- ReactToJobOffer(userId, storeID, userId2, react)
+- <code>Register(userId, email, firstName, lastName, password)</code>
+- <code>CreateSystemManager(email)</code>
+- <code>Login(userId, email, password)</code>
+- <code>Logout(userId)</code>
+- <code>OpenNewStore(userId, StoreName)</code>
+- <code>AddItemToStore(userId, storeID, itemName, itemCategory, itemPrice, quantity)</code>
+- <code>AppointStoreManager(userId, storeID, anotherEmail)</code>
+- <code>AppointStoreOwner(userId, storeID, anotherEmail)</code>
+- <code>ReactToJobOffer(userId, storeID, userId2, react)</code>
 
 
 Documents can be found here:
