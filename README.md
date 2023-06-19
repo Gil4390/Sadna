@@ -46,7 +46,7 @@ appSettings:
 * <code>SignalRPort</code>: It specifies the port number for the Notifications and messages service. 
 * <code>PaymentServiceURL</code>: It represents the URL for the payment service.
 * <code>SupplierServiceURL</code>: It represents the URL for the supplier service.
-* <code>SystemManagerEmail</code>: It specifies the email address of the system manager.
+* <code>SystemManagerEmail</code>: It specifies the email address of the system manager - if there is no data file loading, that system manager will be set in the system if RunLoadData will be set to true.
 * <code>SystemManagerFirstName</code>: It represents the first name of the system manager.
 * <code>SystemManagerLastName</code>: It represents the last name of the system manager.
 * <code>SystemManagerPass</code>: It represents the password of the system manager.
