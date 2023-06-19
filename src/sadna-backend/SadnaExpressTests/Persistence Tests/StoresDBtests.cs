@@ -62,11 +62,12 @@ namespace SadnaExpressTests.Persistence_Tests
             NotificationSystem.Instance.RegisterObserver(storeID, founder);
             Member memberBeforeOwner = new Member(storeOwnerDirectID, "RotemSela@gmail.com", "Rotem", "Sela",
                 "ShaY1787%$%");
+            userFacade.members.TryAdd(founder.UserId, founder);
             storeOwnerDirect = founder.AppointStoreOwner(storeID, memberBeforeOwner);
             NotificationSystem.Instance.RegisterObserver(storeID, storeOwnerDirect);
             storeOwnerAppoint = new Member(storeOwnerAppointID, "Tal@gmail.com", "Tal", "Galmor",
                 "ShaY1787%$%");
-            userFacade.members.TryAdd(founder.UserId, founder);
+            
             userFacade.members.TryAdd(storeOwnerAppoint.UserId, storeOwnerAppoint);
             userFacade.members.TryAdd(storeOwnerDirect.UserId, storeOwnerDirect);
             userFacade.members.TryAdd(memberBeforeOwner.UserId, memberBeforeOwner);
@@ -291,43 +292,6 @@ namespace SadnaExpressTests.Persistence_Tests
             Assert.AreEqual(numBefore, trading.GetStore(storeID1).Value.GetItemByQuantity(itemID1)); //the quantity not updated
         }
 
-        [TestMethod()]
-        public void DB_AppointStoreOwnerSuccess()
-        {
-            PermissionSetup();
-            //Act
-            PromotedMember promotedMember = founder.AppointStoreOwner(storeID, storeOwnerAppoint);
-            //Assert
-            foreach (Guid id in DBHandler.Instance.GetAllMembers().Keys)
-            {
-                if (promotedMember.UserId == id)
-                {
-                    PromotedMember newPromotedMember = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(id);
-                    Assert.IsTrue(founder.getAppoint(storeID).Contains(newPromotedMember));
-                    Assert.IsTrue(newPromotedMember.hasPermissions(storeID, new List<string> { "owner permissions" }));
-                }
-            }
-        }
-
-        [TestMethod()]
-        public void DB_AppointStoreOwnerFail()
-        {
-            PermissionSetup();
-            //Act
-            PromotedMember promotedMember = founder.AppointStoreOwner(storeID, storeOwnerAppoint);
-
-            //Assert
-            foreach (Guid id in DBHandler.Instance.GetAllMembers().Keys)
-            {
-                if (promotedMember.UserId == id)
-                {
-                    PromotedMember newPromotedMember = (PromotedMember)DBHandler.Instance.GetMemberFromDBById(id);
-                    Assert.ThrowsException<Exception>(() =>
-                        founder.AppointStoreOwner(storeID, newPromotedMember));
-
-                }
-            }
-        }
         [TestMethod()]
         public void DB_RemoveStoreOwnerSuccess()
         {

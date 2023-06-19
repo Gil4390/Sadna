@@ -14,6 +14,7 @@ using SadnaExpress.ServiceLayer.Obj;
 using SadnaExpress.API.SignalR;
 using SadnaExpress.ServiceLayer.SModels;
 using System.Linq;
+using System.CodeDom;
 
 namespace SadnaExpress.DomainLayer.User
 {
@@ -22,7 +23,6 @@ namespace SadnaExpress.DomainLayer.User
         #region Properties
 
         private const int MaxExternalServiceWaitTime = 5000; //5 seconds is 5000 mili seconds
-
         private ConcurrentDictionary<Guid, User> current_Users; //users that are in the system and not login
         public ConcurrentDictionary<Guid, Member> members; //all the members that are registered to the system
         private ConcurrentDictionary<Guid, string> macs;
@@ -664,30 +664,38 @@ namespace SadnaExpress.DomainLayer.User
 
             if (_isTSInitialized)
                 throw new Exception("Trading system is already initialized");
+
             bool servicesConnected = false;
-            try //fort tal
+            try
             {
-                var task = Task.Run(() =>
+                var taskPaymentService = Task.Run(() =>
                 {
-                    return servicesConnected = paymentService.Handshake() == "OK" && supplierService.Handshake() == "OK";
+                    return paymentService.Handshake();
                 });
 
-                if ((task.Result == true & task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)))) { }
-                else
+                var taskSupplierService = Task.Run(() =>
                 {
-                    throw new Exception("Error in connecting to external services , please try again in a few minutes.");
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Communication with the external services is temporarily down, please try again in a few minutes");
+                    return supplierService.Handshake();
+                });
 
+                bool taskPaymentServiceCompletedSuccessfully = taskPaymentService.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && taskPaymentService.Result == "OK";
+
+                bool taskSupplierServiceCompletedSuccessfully = taskSupplierService.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && taskSupplierService.Result == "OK";
+
+                if (!taskPaymentServiceCompletedSuccessfully) { throw new Exception("connecting to payment external services failed "); }
+                if (!taskSupplierServiceCompletedSuccessfully) { throw new Exception("connecting to supply external services failed "); }
+
+                servicesConnected = true;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"System cannot be Initialized: external service communication error {ex}");
             }
 
             if (servicesConnected)
                 _isTSInitialized = true;
             else
-                throw new Exception("Trading system cannot be initialized");
+                throw new Exception("System cannot be Initialized");
 
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(InitializeTradingSystem) + "System Initialized");
             return servicesConnected;
@@ -730,6 +738,7 @@ namespace SadnaExpress.DomainLayer.User
         #endregion
 
         #region External Services operations
+
         public int PlacePayment(double amount, SPaymentDetails transactionDetails)
         {
             try
@@ -738,25 +747,41 @@ namespace SadnaExpress.DomainLayer.User
                     throw new TimeoutException("Details of payment isn't valid");
                 Logger.Instance.Info(nameof(paymentService) + ": request to preform a payment with details : " + transactionDetails);
 
-                var task = Task.Run(() =>
+                var taskPaymentServiceHandshake = Task.Run(() =>
                 {
-                    if (paymentService.Handshake() != "OK")
-                        throw new Exception("Communication with the external services is temporarily down, please try again in a few minutes");
-                    return paymentService.Pay(amount, transactionDetails);
+                    return paymentService.Handshake();
                 });
 
-                if (task.Result == -1)
-                    throw new Exception("Payment process failed due to error in one of payment's detailes , please try again");
-
-                if (task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)))
+                bool taskPaymentServiceCompletedSuccessfully = false;
+                try
                 {
-                    int transaction_id = task.Result;
+                    taskPaymentServiceCompletedSuccessfully = taskPaymentServiceHandshake.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && taskPaymentServiceHandshake.Result == "OK";
+                }
+                catch(Exception ex)
+                {
+                    throw new Exception("failed to access the payment service");
+                }
+
+                if (taskPaymentServiceCompletedSuccessfully)
+                {
+                    var taskPaymentServicePay = Task.Run(() =>
+                    {
+                        return paymentService.Pay(amount, transactionDetails);
+                    });
+
+                    bool taskPaymentServiceFinishedInGoodTime = taskPaymentServicePay.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime));
+                    if (!taskPaymentServiceFinishedInGoodTime) { throw new Exception("Payment external service action has taken longer than the maximum time allowed , please try again later"); }
+
+                    if (taskPaymentServicePay.Result == -1)
+                        throw new Exception("Payment process failed due to error in one of payment's detailes , please try again");
+
+                    int transaction_id = taskPaymentServicePay.Result;
                     Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(PlacePayment) + "Place payment completed with amount of " + amount + " and " + transactionDetails);
                     return transaction_id;
                 }
                 else
                 {
-                    throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed , please try again later");
+                   throw new Exception("connecting to payment external service failed, please try again"); 
                 }
             }
             catch (Exception ex)
@@ -768,25 +793,44 @@ namespace SadnaExpress.DomainLayer.User
 
         public bool CancelPayment(double amount, int transaction_id)
         {
-            var task = Task.Run(() =>
+            try
             {
-                if (paymentService.Handshake() != "OK")
-                    throw new Exception("Communication with the external services is temporarily down, please try again in a few minutes");
-                return paymentService.Cancel_Pay(amount, transaction_id);
-            });
-            if (task.Result == false)
-                throw new Exception("Error in payment details , please try again");
+              
+                Logger.Instance.Info($"{nameof(paymentService)} : request to preform a cancel payment operation of amount: {amount} and transaction Id {transaction_id}");
 
-            bool isCompletedSuccessfully = task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && task.Result != false;
+                var taskPaymentServiceHandshake = Task.Run(() =>
+                {
+                    return paymentService.Handshake();
+                });
 
-            if (isCompletedSuccessfully)
-            {
-                Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(CancelPayment) + "Cancel payment completed");
-                return true;
+                bool taskPaymentServiceCompletedSuccessfully = taskPaymentServiceHandshake.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && taskPaymentServiceHandshake.Result == "OK";
+
+                if (taskPaymentServiceCompletedSuccessfully)
+                {
+                    var taskPaymentServiceCancelPay = Task.Run(() =>
+                    {
+                        return paymentService.Cancel_Pay(amount, transaction_id);
+                    });
+
+                    bool taskPaymentServiceFinishedInGoodTime = taskPaymentServiceCancelPay.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime));
+                    if (!taskPaymentServiceFinishedInGoodTime) { throw new Exception("Payment external service cancel pay action has taken longer than the maximum time allowed ,please contact support center: 0543012364 "); }
+
+                    if (!taskPaymentServiceCancelPay.Result)
+                        throw new Exception("Cancel pay process failed ,please contact support center: 0543012364");
+
+                    bool transactionSuccess = taskPaymentServiceCancelPay.Result;
+                    Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(CancelPayment) + "Cancel payment completed");
+                    return transactionSuccess;
+                }
+                else
+                {
+                    throw new Exception($"payment service did not respond ,please contact support center: 0543012364");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                throw new TimeoutException("Payment external service action has taken longer than the maximum time allowed.");
+                Logger.Instance.Error(ex.Message);
+                throw new Exception(ex.Message);
             }
         }
 
@@ -795,28 +839,45 @@ namespace SadnaExpress.DomainLayer.User
             try
             {
                 if (!userDetails.ValidationSettings())
-                    throw new TimeoutException("Details of payment isn't valid");
-                Logger.Instance.Info(nameof(supplierService) + ": user: " + userDetails + " request to preform a supply for order: ");//add SSupplyDetails.toString();
-
-                var task = Task.Run(() =>
+                    throw new TimeoutException("Details of supply isn't valid");
+                Logger.Instance.Info(nameof(supplierService) + ": user: " + userDetails + " request to preform a supply for order: ");
+                
+                var taskSupplyServiceHandshake = Task.Run(() =>
                 {
-                    if (supplierService.Handshake() != "OK")
-                        throw new Exception("Communication with the external services is temporarily down, please try again in a few minutes");
-                    return supplierService.Supply(userDetails);
+                    return supplierService.Handshake();
                 });
 
-                if (task.Result == -1)
-                    throw new Exception("Error in supllier details , please try again");
+                bool taskSupplyServiceCompletedSuccessfully = false;
 
-                if (task.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)))
+                try
                 {
-                    int transaction_id = task.Result;
-                    Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(PlaceSupply) + "Place supply completed: " + userDetails + " , "); //add SSupplyDetails.toString();
+                    taskSupplyServiceCompletedSuccessfully = taskSupplyServiceHandshake.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime)) && taskSupplyServiceHandshake.Result == "OK";
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("failed to access the supply service");
+                }
+
+                if (taskSupplyServiceCompletedSuccessfully)
+                {
+                    var taskSupplyServicePay = Task.Run(() =>
+                    {
+                        return supplierService.Supply(userDetails);
+                    });
+
+                    bool taskSupplyServiceFinishedInGoodTime = taskSupplyServicePay.Wait(TimeSpan.FromMilliseconds(MaxExternalServiceWaitTime));
+                    if (!taskSupplyServiceFinishedInGoodTime) { throw new Exception("Supply external service action has taken longer than the maximum time allowed , please try again later"); }
+
+                    if (taskSupplyServicePay.Result == -1)
+                        throw new Exception("process failed due to error in one of suplly detailes , please try again");
+
+                    int transaction_id = taskSupplyServicePay.Result;
+                    Logger.Instance.Info(nameof(UserFacade) + ": " + nameof(PlaceSupply) + "Place supply completed: " + userDetails + " , ");
                     return transaction_id;
                 }
                 else
                 {
-                    throw new TimeoutException("Supply external service action has taken longer than the maximum time allowed.");
+                    throw new Exception("connecting to supply external service failed, please try again");
                 }
             }
             catch (Exception ex)

@@ -85,7 +85,7 @@ useEffect(() => {
     getStoreEmployees();
     handleEditModalClose();
     setTimeout(() => {
-      alert("Permissions edited suucessfully")
+      alert("Permissions edited successfully")
     }, 0);
   }
 
