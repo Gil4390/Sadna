@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SadnaExpress.DomainLayer.Store
 {
@@ -21,6 +22,7 @@ namespace SadnaExpress.DomainLayer.Store
         public int Rating {get => rating; set => rating = value;}
         
         private int quantity;
+        [NotMapped]
         public int Quantity {get => quantity; set => quantity = value;}
         
         public Guid InventoryID { get; set; } // added for dbcontext
