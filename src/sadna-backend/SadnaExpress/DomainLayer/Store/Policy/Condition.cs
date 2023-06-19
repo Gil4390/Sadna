@@ -301,7 +301,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
                         return Check();
                     break;
                 default:
-                    throw new Exception("Category or item are the one we can evaluate");
+                    return Check();
             }
             return true;
         }
@@ -404,7 +404,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             bool output;
             output = cond1.Evaluate(store, basket) || cond2.Evaluate(store, basket);
             if (cond1.message != null && cond2.message != null)
-                message = "("+ cond1.message + "and" + cond2.message + ")";
+                message = "("+ cond1.message + " and " + cond2.message + ")";
             else if (cond1.message != null)
                 message = "("+ cond1.message + ")";
             else if (cond2.message != null)
@@ -432,7 +432,7 @@ namespace SadnaExpress.DomainLayer.Store.Policy
             bool output;
             output = cond1.Evaluate(store, basket) && cond2.Evaluate(store, basket);
             if (cond1.message != null && cond2.message != null)
-                message = "(" + cond1.message + "and" + cond2.message + ")";
+                message = "(" + cond1.message + " and " + cond2.message + ")";
             return output;
         }
 

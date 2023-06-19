@@ -292,6 +292,7 @@ namespace SadnaExpress.ServiceLayer
                 DBHandler.Instance.CanConnectToDatabase();
                 userFacade.RemoveItemFromStore(userID, storeID);
                 storeFacade.RemoveItemFromStore(storeID, itemID);
+                userFacade.RemoveAllBidFromStore(storeID, itemID);
                 return new Response();
             }
             catch (Exception ex)

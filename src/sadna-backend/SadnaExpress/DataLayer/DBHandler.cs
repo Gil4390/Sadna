@@ -100,6 +100,7 @@ namespace SadnaExpress.DataLayer
                                 db.orders.RemoveRange(db.orders);
                                 db.ItemForOrders.RemoveRange(db.ItemForOrders);
                                 db.conditions.RemoveRange(db.conditions);
+                                db.policies.RemoveRange(db.policies);
                                 db.visits.RemoveRange(db.visits);
 
                                 db.SaveChanges(true);
@@ -1332,6 +1333,7 @@ namespace SadnaExpress.DataLayer
 
                                     // todo get store condition from DB
                                     List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(result.StoreID)).ToList();
+                                    condsFromDB.Sort((x, y) => x.ID.CompareTo(y.ID));
                                     result.PurchasePolicyCounter = 0;
                                     foreach (ConditionDB c in condsFromDB)
                                     {
@@ -1341,6 +1343,7 @@ namespace SadnaExpress.DataLayer
                                     // todo get all policies from DB
                                     result.DiscountPolicyCounter = 0;
                                     List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(result.StoreID) && c.Discriminator.Equals("Simple")).ToList();
+                                    simplePolFromDB.Sort((x, y) => x.ID.CompareTo(y.ID));
                                     foreach (PolicyDB pol in simplePolFromDB)
                                     {
                                         result.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
@@ -1350,6 +1353,7 @@ namespace SadnaExpress.DataLayer
                                         }
                                     }
                                     List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(result.StoreID) && c.Discriminator.Equals("Complex")).ToList();
+                                    complexPolFromDB.Sort((x, y) => x.ID.CompareTo(y.ID));
                                     foreach (PolicyDB pol in complexPolFromDB)
                                     {
                                         result.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);

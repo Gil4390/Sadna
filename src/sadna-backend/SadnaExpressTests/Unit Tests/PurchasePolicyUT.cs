@@ -371,7 +371,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             store.RemoveCondition(cond1.ID);
             //Assert
-            Assert.IsNull(store.GetPurchaseCond(cond1.ID));
+            Assert.ThrowsException<Exception>(() => store.GetPurchaseCond(cond1.ID));
             Assert.IsFalse(store.PurchasePolicyList.Contains(cond1));
         }
         
@@ -384,7 +384,7 @@ namespace SadnaExpressTests.Unit_Tests
             //Act
             store.RemoveCondition(cond2.ID);
             //Assert
-            Assert.IsNull(store.GetPurchaseCond(cond2.ID));
+            Assert.ThrowsException<Exception>(()=>store.GetPurchaseCond(cond2.ID));
         }
         
         [TestMethod]

@@ -482,9 +482,9 @@ namespace SadnaExpress.DomainLayer.Store
                         return result;
                     case "Category":
                         foreach (Item i in itemsInventory.items_quantity.Keys)
-                            if (i.Category == entityName)
+                            if (i.Category.ToLower() == entityName.ToLower())
                             {
-                                result = AddConditionHelper(entityName, type, value, dt, op, opCond);
+                                result = AddConditionHelper(i.Category, type, value, dt, op, opCond);
                                 if (result != null && addToDB)
                                 {
                                     ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
@@ -607,7 +607,7 @@ namespace SadnaExpress.DomainLayer.Store
                 if (cond.ID == condID)
                     return cond;
             }
-            return null;
+            throw new Exception($"The condition with id {condID} does not exist");
         }
         
         public void RemoveCondition(int condID)
