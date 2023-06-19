@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
+using Microsoft.Data.SqlClient;
+using SadnaExpress.DataLayer;
 
 namespace SadnaExpress.DataLayer
 {
@@ -73,13 +76,85 @@ namespace SadnaExpress.DataLayer
 
             base.OnModelCreating(modelBuilder);
         }
-        
+
+        public static bool onFunc = false;
+        public static bool CanConnect()
+        {
+            try
+            {
+                var connection = System.Configuration.ConfigurationManager.ConnectionStrings["MasterConnectionString"].ConnectionString;
+                using (var con = new SqlConnection(connection))
+                {
+                    con.Open();
+                    con.Close();
+                    DBHandler.Instance.internetRunning = true;
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                DBHandler.Instance.internetRunning = false;
+                return false;
+            }
+        }
         public DatabaseContext() : base()
         {
-            //Database.EnsureCreated();  //this line needs to be uncomment at the first time we create the db
+
+            if (onFunc)
+            {
+                // we deal with internet connection using retrying policy
+                // simply means when internet connection is back we update the db as neccessary
+                DBHandler.interntConnectionIsBack1 = false;
+                while (!DBHandler.interntConnectionIsBack1)
+                {
+                    DBHandler.interntConnectionIsBack1 = CanConnect();
+                }
+            }
         }
-        
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            lock (this)
+            {
+                DBHandler.interntConnectionIsBack2 = false;
+
+                try
+                {
+                    var result = base.SaveChanges(acceptAllChangesOnSuccess);
+                    DBHandler.interntConnectionIsBack2 = true;
+                    return result;
+                }
+                catch (Exception ex)
+                {
+
+                    // we deal with this bug using retrying policy
+                    // simply means when internet connection is back we update the db as neccessary
+                    while (!DBHandler.interntConnectionIsBack2)
+                    {
+
+                        DBHandler.interntConnectionIsBack2 = CanConnect();
+                        var result = 0;
+                        if (DBHandler.interntConnectionIsBack2)
+                        {
+                            try
+                            {
+                                result = base.SaveChanges(acceptAllChangesOnSuccess);
+                            }
+                            catch (Exception ex2)
+                            {
+
+                            }
+                            return result;
+                        }
+                    }
+                    DBHandler.interntConnectionIsBack2 = true;
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
     }
+
+}
 
 
     public class DatabaseTestsContext : DatabaseContext
@@ -105,15 +180,14 @@ namespace SadnaExpress.DataLayer
         }
     }
 
-    public static class DatabaseContextFactory
+public static class DatabaseContextFactory
+{
+    public static bool TestMode = false;
+    public static DatabaseContext ConnectToDatabase()
     {
-        public static bool TestMode = false;
-        public static DatabaseContext ConnectToDatabase()
-        {
-            if (!TestMode)
-                return new DatabaseContext();
-            else
-                return new DatabaseTestsContext();
-        }
+        if (!TestMode)
+            return new DatabaseContext();
+        else
+            return new DatabaseTestsContext();
     }
 }

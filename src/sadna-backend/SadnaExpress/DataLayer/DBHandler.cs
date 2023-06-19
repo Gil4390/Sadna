@@ -2878,24 +2878,48 @@ namespace SadnaExpress.DataLayer
         }
         #endregion
 
+        public static bool interntConnectionIsBack1 = true;
+        public static bool interntConnectionIsBack2 = true;
+        public bool internetRunning = false;
         public void CanConnectToDatabase()
         {
             if (!testMood)
             {
-                lock (this)
+                if (!internetRunning && (!interntConnectionIsBack1 || !interntConnectionIsBack2))
                 {
-                    try
+                    throw new Exception("still processing your last request, No internet Connection. Please check your network settings.");
+                }
+                else
+                {
+                    lock (this)
                     {
-                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        try
                         {
-                            db.Database.GetDbConnection().Open();
-                            db.Database.GetDbConnection().Close();
+                            if (!internetRunning)
+                            {
+                                using (var db = DatabaseContextFactory.ConnectToDatabase())
+                                {
+
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(DbErrorMessage + ", No internet Connection. Please check your network settings.");
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(DbErrorMessage + " or check your internet Connection");
-                    }
+                }
+            }
+        }
+
+        public void CanConnectToDatabaseThrowsExc()
+        {
+            if (!testMood)
+            {
+                DatabaseContext.CanConnect();
+                if (!internetRunning)
+                {
+                    throw new Exception(DbErrorMessage + ", No internet Connection. Please check your network settings.");
                 }
             }
         }
