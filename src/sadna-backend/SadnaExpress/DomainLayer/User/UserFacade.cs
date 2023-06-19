@@ -475,11 +475,30 @@ namespace SadnaExpress.DomainLayer.User
                         members[memID] = mem;
                 }
             }
-            NotificationSystem.Instance.NotifyObservers(StoreOwnersDeleted, storeID, "Yow where removed as store owner", userID);
+            NotificationSystem.Instance.NotifyObservers(StoreOwnersDeleted, storeID, "Yow where removed from store", userID);
             NotificationSystem.Instance.RemoveObservers(storeID, StoreOwnersDeleted);
 
 
             Logger.Instance.Info(userID, nameof(UserFacade) + ": " + nameof(RemoveStoreOwner) + " appoints " + storeOwnerID + " removed as store owner");
+        }
+
+        public void RemoveAllBidFromStore(Guid storeID, Guid itemID)
+        {
+            foreach (Member promotedMember in NotificationSystem.Instance.NotificationOfficials[storeID])
+            {
+                PromotedMember pm = (PromotedMember)GetMember(promotedMember.UserId);
+                if (!pm.BidsOffers.IsEmpty && pm.BidsOffers.ContainsKey(storeID))
+                {
+                    foreach (Bid bid in pm.BidsOffers[storeID])
+                    {
+                        if (bid.ItemID.Equals(itemID))
+                        {
+                            bid.CloseBid();
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         public void AppointStoreManager(Guid userID, Guid storeID, string email)

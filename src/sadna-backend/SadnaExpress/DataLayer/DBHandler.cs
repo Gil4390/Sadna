@@ -100,6 +100,7 @@ namespace SadnaExpress.DataLayer
                                 db.orders.RemoveRange(db.orders);
                                 db.ItemForOrders.RemoveRange(db.ItemForOrders);
                                 db.conditions.RemoveRange(db.conditions);
+                                db.policies.RemoveRange(db.policies);
                                 db.visits.RemoveRange(db.visits);
 
                                 db.SaveChanges(true);
