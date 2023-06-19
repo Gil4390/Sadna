@@ -1058,7 +1058,7 @@ namespace SadnaExpress.DataLayer
                                 pm.PermissionsOffersDB = pm.PermissionsOffersJson;
                                 pm.BidsOffersDB = pm.BidsOffersJson;
                                 pm.PenddingPermissionDB = pm.PenddingPermissionJson;
-
+                                pm.Discriminator = "PromotedMember";
                                 promotedMembers.Update(pm);
                                 db.SaveChanges(true);
                             }
