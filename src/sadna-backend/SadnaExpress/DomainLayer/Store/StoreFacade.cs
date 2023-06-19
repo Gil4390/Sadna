@@ -461,14 +461,17 @@ namespace SadnaExpress.DomainLayer.Store
 
         public void updateStoresFromDB()
         {
-            List<Guid> storeIds = DBHandler.Instance.GetTSStoreIds();
-
-            foreach (Guid storeId in storeIds)
+            lock (this)
             {
-                if (stores.ContainsKey(storeId) == false)
+                List<Guid> storeIds = DBHandler.Instance.GetTSStoreIds();
+
+                foreach (Guid storeId in storeIds)
                 {
-                    //pull from db
-                    stores.TryAdd(storeId, DBHandler.Instance.GetStoreById(storeId));
+                    if (stores.ContainsKey(storeId) == false)
+                    {
+                        //pull from db
+                        stores.TryAdd(storeId, DBHandler.Instance.GetStoreById(storeId));
+                    }
                 }
             }
         }
