@@ -53,6 +53,7 @@ namespace SadnaExpress
                 {
                     state.stateFile(flag + ".json");
                     state.checkFile1();
+                    //TradingSystem.Instance.SetIsSystemInitialize(false);
                 }
                 catch (Exception e)
                 {

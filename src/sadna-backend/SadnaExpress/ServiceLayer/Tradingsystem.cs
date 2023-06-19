@@ -321,15 +321,7 @@ namespace SadnaExpress.ServiceLayer
         #region User data
         public ResponseT<List<ItemForOrder>> GetPurchasesOfUser(Guid userID)
         {
-            List<ItemForOrder> list = new List<ItemForOrder>();
-            if (Orders.Instance.GetUserOrders().ContainsKey(userID))
-            {
-                foreach (Order order in Orders.Instance.GetUserOrders()[userID])
-                {
-                    list.AddRange(order.ListItems);
-                }
-            }
-            return new ResponseT<List<ItemForOrder>>(list);
+            return userManager.GetPurchasesOfUser(userID);
         }
 
         public ResponseT<List<Notification>> GetNotifications(Guid userID)

@@ -6,6 +6,7 @@ using SadnaExpress.DataLayer;
 using SadnaExpress.DomainLayer;
 using SadnaExpress.DomainLayer.Store;
 using SadnaExpress.DomainLayer.User;
+using SadnaExpress.ServiceLayer;
 using SadnaExpress.ServiceLayer.ServiceObjects;
 using SadnaExpress.ServiceLayer.SModels;
 using SadnaExpress.Services;
@@ -120,7 +121,27 @@ namespace SadnaExpress.ServiceLayer
                 return new Response(ex.Message);
             }
         }
-
+        public ResponseT<List<ItemForOrder>> GetPurchasesOfUser(Guid userID)
+        {
+            try
+            {
+                List<ItemForOrder> list = new List<ItemForOrder>();
+            userFacade.GetMember(userID);
+            if (Orders.Instance.GetUserOrders().ContainsKey(userID))
+            {
+                foreach (Order order in Orders.Instance.GetUserOrders()[userID])
+                {
+                    list.AddRange(order.ListItems);
+                }
+            }
+            return new ResponseT<List<ItemForOrder>>(list);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(userID, nameof(UserManager) + ": " + nameof(AppointStoreOwner) + ": " + ex.Message);
+                return new ResponseT<List<ItemForOrder>>(ex.Message);
+            }
+        }
         public Response AppointStoreOwner(Guid userID, Guid storeID, string userEmail)
         {
             try

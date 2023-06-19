@@ -193,7 +193,7 @@ function DiscountPoliciesPage(props) {
       else{
         GetDiscountPolicy();
         setTimeout(() => {
-          alert("New Policy dded successfully")
+          alert("New Policy added successfully")
         }, 0);
 
       }
@@ -224,9 +224,6 @@ function DiscountPoliciesPage(props) {
         setWhichCondInDiscount("");
         setcondValueInDiscount("")
         setShowModal(false);
-        setTimeout(() => {
-          alert("New condition added successfully")
-        }, 0);
       })
       .catch(error => alert(error));
   };
