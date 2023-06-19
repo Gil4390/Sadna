@@ -119,10 +119,11 @@ namespace SadnaExpress.ServiceLayer
             {
                 try
                 {
+                    DBHandler.Instance.CanConnectToDatabaseThrowsExc();
                     using (var db = DatabaseContextFactory.ConnectToDatabase())
                     {
-                        db.Database.GetDbConnection().Open();
-                        db.Database.GetDbConnection().Close();
+                        //db.Database.GetDbConnection().Open();
+                        //db.Database.GetDbConnection().Close();
                         using (var transaction = db.Database.BeginTransaction())
                         {
                             try

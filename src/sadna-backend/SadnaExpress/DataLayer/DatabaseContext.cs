@@ -8,6 +8,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using SadnaExpress.API.SignalR;
+using System.Runtime.CompilerServices;
+using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient;
+using SadnaExpress.Migrations;
+using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
+using Microsoft.Data.SqlClient;
 
 namespace SadnaExpress.DataLayer
 {
@@ -37,6 +46,7 @@ namespace SadnaExpress.DataLayer
         {
             var connection = System.Configuration.ConfigurationManager.ConnectionStrings["MasterConnectionString"].ConnectionString;
             optionsBuilder.UseSqlServer(connection);
+            //optionsBuilder.UseMySql("Server=MYSQL5047.site4now.net;Database=db_a995b0_sadnafi;Uid=a995b0_sadnafi;Pwd=Sadna123");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -73,12 +83,82 @@ namespace SadnaExpress.DataLayer
 
             base.OnModelCreating(modelBuilder);
         }
-        
+
+        public static bool onFunc = false;
+        public static bool CanConnect()
+        {
+            try
+            {
+                var connection = System.Configuration.ConfigurationManager.ConnectionStrings["MasterConnectionString"].ConnectionString;
+                using (var con = new SqlConnection(connection))
+                {
+                    con.Open();
+                    con.Close();
+                    DBHandler.Instance.internetRunning = true;
+                    return true;
+                }
+            }
+            catch(Exception)
+            {
+                DBHandler.Instance.internetRunning = false;
+                return false;
+            }
+        }
         public DatabaseContext() : base()
         {
-            //Database.EnsureCreated();  //this line needs to be uncomment at the first time we create the db
+
+            if (onFunc)
+            {
+                // we deal with internet connection using retrying policy
+                // simply means when internet connection is back we update the db as neccessary
+                DBHandler.interntConnectionIsBack1 = false;
+                while (!DBHandler.interntConnectionIsBack1)
+                {
+                    DBHandler.interntConnectionIsBack1 = CanConnect();
+                }
+            }
         }
-        
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            lock (this)
+            {
+                DBHandler.interntConnectionIsBack2 = false;
+
+                try
+                {
+                    var result = base.SaveChanges(acceptAllChangesOnSuccess);
+                    DBHandler.interntConnectionIsBack2 = true;
+                    return result;
+                }
+                catch (Exception ex)
+                {
+
+                    // we deal with this bug using retrying policy
+                    // simply means when internet connection is back we update the db as neccessary
+                    while (!DBHandler.interntConnectionIsBack2)
+                    {
+
+                        DBHandler.interntConnectionIsBack2 = CanConnect();
+                        var result = 0;
+                        if (DBHandler.interntConnectionIsBack2)
+                        {
+                            try
+                            {
+                                result = base.SaveChanges(acceptAllChangesOnSuccess);
+                            }
+                            catch (Exception ex2)
+                            {
+
+                            }
+                            return result;
+                        }
+                    }
+                    DBHandler.interntConnectionIsBack2 = true;
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
     }
 
 
@@ -108,10 +188,15 @@ namespace SadnaExpress.DataLayer
     public static class DatabaseContextFactory
     {
         public static bool TestMode = false;
-        public static DatabaseContext ConnectToDatabase()
+        public static DatabaseContext ConnectToDatabase(bool onFunc=true)
         {
             if (!TestMode)
-                return new DatabaseContext();
+            {
+                DatabaseContext.onFunc = onFunc;
+                DatabaseContext db = new DatabaseContext();
+                DatabaseContext.onFunc = false;
+                return db;
+            }
             else
                 return new DatabaseTestsContext();
         }

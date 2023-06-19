@@ -23,6 +23,7 @@ using System.Security.Cryptography;
 using SadnaExpress.DomainLayer.Store.Policy;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Threading;
 
 namespace SadnaExpress.DataLayer
 {
@@ -31,11 +32,11 @@ namespace SadnaExpress.DataLayer
         #region properties
         private static readonly object databaseLock = new object();
 
-        private readonly string DbErrorMessage="Unfortunatly connecting to the db faild, please try again in a few minutes";
+        private readonly string DbErrorMessage = "Unfortunatly connecting to the db faild, please try again in a few minutes";
 
         private bool testMood = false;
 
-        public bool TestMood{get=> testMood; set => testMood = value; }
+        public bool TestMood { get => testMood; set => testMood = value; }
 
         private static DBHandler instance = null;
         #endregion
@@ -334,7 +335,7 @@ namespace SadnaExpress.DataLayer
 
                                         #region load permission offer
                                         PromotedmemberExist.PermissionsOffers = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.PermissionsOffersDB);
-                        
+
                                         #endregion
 
                                         #region load bids offers
@@ -520,7 +521,7 @@ namespace SadnaExpress.DataLayer
                                         #region load permission offer
                                         ConcurrentDictionary<Guid, List<Member>> loadedPermissionOffer = new ConcurrentDictionary<Guid, List<Member>>();
                                         PromotedmemberExist.PermissionsOffers = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, List<Guid>>>(PromotedmemberExist.PermissionsOffersDB);
-                                       
+
                                         #endregion
 
                                         #region load bids offers
@@ -1058,7 +1059,7 @@ namespace SadnaExpress.DataLayer
                                 pm.PermissionsOffersDB = pm.PermissionsOffersJson;
                                 pm.BidsOffersDB = pm.BidsOffersJson;
                                 pm.PenddingPermissionDB = pm.PenddingPermissionJson;
-
+                                pm.Discriminator = "PromotedMember";
                                 promotedMembers.Update(pm);
                                 db.SaveChanges(true);
                             }
@@ -1384,94 +1385,94 @@ namespace SadnaExpress.DataLayer
         public ConcurrentDictionary<Guid, Store> GetAllStores()
         {
             ConcurrentDictionary<Guid, Store> result = null;
-                if (!testMood)
+            if (!testMood)
+            {
+                lock (this)
                 {
-                    lock (this)
+                    try
                     {
-                        try
+                        using (var db = DatabaseContextFactory.ConnectToDatabase())
                         {
-                            using (var db = DatabaseContextFactory.ConnectToDatabase())
+                            try
                             {
-                                try
+                                var allStores = db.Stores.ToList();
+                                result = new ConcurrentDictionary<Guid, Store>();
+                                foreach (Store s in allStores)
                                 {
-                                    var allStores = db.Stores.ToList();
-                                    result = new ConcurrentDictionary<Guid, Store>();
-                                    foreach (Store s in allStores)
+                                    // get store item_quantity
+
+                                    db.Entry(s.itemsInventory).State = EntityState.Detached;
+
+                                    var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(s.StoreID));
+                                    string quanity_ItemsDB = null;
+                                    if (inv != null)
+                                        quanity_ItemsDB = inv.Items_quantityDB;
+                                    if (quanity_ItemsDB != null) // add quantity item for store
                                     {
-                                        // get store item_quantity
+                                        ConcurrentDictionary<Guid, int> items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(quanity_ItemsDB);
 
-                                        db.Entry(s.itemsInventory).State = EntityState.Detached;
-
-                                        var inv = db.Inventories.FirstOrDefault(m => m.StoreID.Equals(s.StoreID));
-                                        string quanity_ItemsDB = null;
-                                        if (inv != null)
-                                            quanity_ItemsDB = inv.Items_quantityDB;
-                                        if (quanity_ItemsDB != null) // add quantity item for store
+                                        foreach (Guid id in items_quantityHelper.Keys)
                                         {
-                                            ConcurrentDictionary<Guid, int> items_quantityHelper = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, int>>(quanity_ItemsDB);
-
-                                            foreach (Guid id in items_quantityHelper.Keys)
-                                            {
-                                                Item item = db.Items.FirstOrDefault(m => m.ItemID.Equals(id));
-                                                s.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
-                                            }
+                                            Item item = db.Items.FirstOrDefault(m => m.ItemID.Equals(id));
+                                            s.itemsInventory.items_quantity.TryAdd(item, items_quantityHelper[id]);
                                         }
-
-                                        int saveStorePurchasePolicyCounter = s.PurchasePolicyCounter;
-                                        int saveStoreDiscountPolicyCounter = s.DiscountPolicyCounter;
-
-                                        // todo get store condition from DB
-                                        List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
-                                        s.PurchasePolicyCounter = 0;
-                                        foreach (ConditionDB c in condsFromDB)
-                                        {
-                                            s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
-                                        }
-
-                                        // todo get all policies from DB
-                                        s.DiscountPolicyCounter = 0;
-                                        List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Simple")).ToList();
-                                        foreach (PolicyDB pol in simplePolFromDB)
-                                        {
-                                            s.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
-                                            if (pol.activated)
-                                            {
-                                                s.AddPolicy(pol.ID, false);
-                                            }
-                                        }
-                                        List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Complex")).ToList();
-                                        foreach (PolicyDB pol in complexPolFromDB)
-                                        {
-                                            s.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);
-                                            if (pol.activated)
-                                            {
-                                                s.AddPolicy(pol.ID, false);
-                                            }
-                                        }
-
-
-                                        s.PurchasePolicyCounter = saveStorePurchasePolicyCounter;
-                                        s.DiscountPolicyCounter = saveStoreDiscountPolicyCounter;
-
-
-
-                                        result.TryAdd(s.StoreID, s);
                                     }
-                                }
-                                catch (Exception ex)
-                                {
-                                    //throw new Exception("failed to interact with stores table");
+
+                                    int saveStorePurchasePolicyCounter = s.PurchasePolicyCounter;
+                                    int saveStoreDiscountPolicyCounter = s.DiscountPolicyCounter;
+
+                                    // todo get store condition from DB
+                                    List<ConditionDB> condsFromDB = db.conditions.Where(c => c.StoreID.Equals(s.StoreID)).ToList();
+                                    s.PurchasePolicyCounter = 0;
+                                    foreach (ConditionDB c in condsFromDB)
+                                    {
+                                        s.AddCondition(c.EntityStr, c.EntityName, c.Type, c.Value, c.Dt, c.Op, c.OpCond, false, c.ID);
+                                    }
+
+                                    // todo get all policies from DB
+                                    s.DiscountPolicyCounter = 0;
+                                    List<PolicyDB> simplePolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Simple")).ToList();
+                                    foreach (PolicyDB pol in simplePolFromDB)
+                                    {
+                                        s.CreateSimplePolicy<string>(pol.simple_level, pol.simple_percent, pol.simple_startDate, pol.simple_endDate, false, pol.ID);
+                                        if (pol.activated)
+                                        {
+                                            s.AddPolicy(pol.ID, false);
+                                        }
+                                    }
+                                    List<PolicyDB> complexPolFromDB = db.policies.Where(c => c.StoreId.Equals(s.StoreID) && c.Discriminator.Equals("Complex")).ToList();
+                                    foreach (PolicyDB pol in complexPolFromDB)
+                                    {
+                                        s.CreateComplexPolicyFromDB(pol.complex_op, pol.ID, pol.complex_policys);
+                                        if (pol.activated)
+                                        {
+                                            s.AddPolicy(pol.ID, false);
+                                        }
+                                    }
+
+
+                                    s.PurchasePolicyCounter = saveStorePurchasePolicyCounter;
+                                    s.DiscountPolicyCounter = saveStoreDiscountPolicyCounter;
+
+
+
+                                    result.TryAdd(s.StoreID, s);
                                 }
                             }
+                            catch (Exception ex)
+                            {
+                                //throw new Exception("failed to interact with stores table");
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(DbErrorMessage);
-                        }
-                        return result;
                     }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(DbErrorMessage);
+                    }
+                    return result;
                 }
-                return new ConcurrentDictionary<Guid, Store>();
+            }
+            return new ConcurrentDictionary<Guid, Store>();
         }
 
         public List<Guid> GetTSStoreIds()
@@ -1875,7 +1876,7 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-       
+
         public void UpdateItemAfterEdit(Store store, Guid itemID, string itemName, string itemCategory, double itemPrice)
         {
             if (!testMood)
@@ -2116,8 +2117,8 @@ namespace SadnaExpress.DataLayer
         #region System init managment
         public bool LoadSystemInit()
         {
-            CanConnectToDatabase();
-
+            //CanConnectToDatabase();
+            CanConnectToDatabaseThrowsExc();
             if (!testMood)
             {
                 lock (this)
@@ -2230,7 +2231,7 @@ namespace SadnaExpress.DataLayer
         #endregion
 
         #region Orders managment
-        public void AddOrder(DatabaseContext db,Order newOrder)
+        public void AddOrder(DatabaseContext db, Order newOrder)
         {
             if (!testMood)
             {
@@ -2426,7 +2427,7 @@ namespace SadnaExpress.DataLayer
 
         public List<DomainLayer.Notification> GetNotifications(Guid userId)
         {
-            List<DomainLayer.Notification> result = new List<Notification>() ;
+            List<DomainLayer.Notification> result = new List<Notification>();
             if (!testMood)
             {
                 lock (this)
@@ -2466,7 +2467,7 @@ namespace SadnaExpress.DataLayer
 
         #region Condition managment
 
-        public void addCond( ConditionDB cond, Store store)
+        public void addCond(ConditionDB cond, Store store)
         {
             if (!testMood)
             {
@@ -2554,7 +2555,7 @@ namespace SadnaExpress.DataLayer
                 }
             }
         }
-        
+
         public int GetCond(int condID, Guid storeID)
         {
             if (!testMood)
@@ -2798,7 +2799,7 @@ namespace SadnaExpress.DataLayer
                             }
                             try
                             {
-                                guest = visits.FirstOrDefault(v => v.UserID.Equals(newVisit.UserID) && v.VisitDate.Equals(todayStr)&&v.Role.Equals(newVisit.Role));
+                                guest = visits.FirstOrDefault(v => v.UserID.Equals(newVisit.UserID) && v.VisitDate.Equals(todayStr) && v.Role.Equals(newVisit.Role));
                                 if (guest != null) //member already entered today with that role, no need to make more changes
                                 {
                                     return;
@@ -2810,19 +2811,19 @@ namespace SadnaExpress.DataLayer
                                     db.SaveChanges(true);
                                 }
                             }
-                            catch 
+                            catch
                             {
                                 throw new Exception(DbErrorMessage);
                             }
-                           
+
                         }
                     }
                     catch (Exception ex)
                     {
                         throw new Exception(DbErrorMessage);
                     }
-                   
-                }           
+
+                }
             }
         }
 
@@ -2878,24 +2879,48 @@ namespace SadnaExpress.DataLayer
         }
         #endregion
 
+        public static bool interntConnectionIsBack1 = true;
+        public static bool interntConnectionIsBack2 = true;
+        public bool internetRunning = false;
         public void CanConnectToDatabase()
         {
             if (!testMood)
             {
-                lock (this)
+                if (!internetRunning && (!interntConnectionIsBack1 || !interntConnectionIsBack2))
                 {
-                    try
+                    throw new Exception("still processing your last request, No internet Connection. Please check your network settings.");
+                }
+                else
+                {
+                    lock (this)
                     {
-                        using (var db = DatabaseContextFactory.ConnectToDatabase())
+                        try
                         {
-                            db.Database.GetDbConnection().Open();
-                            db.Database.GetDbConnection().Close();
+                            if (!internetRunning)
+                            {
+                                using (var db = DatabaseContextFactory.ConnectToDatabase())
+                                {
+
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(DbErrorMessage + ", No internet Connection. Please check your network settings.");
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(DbErrorMessage + ", No internet Connection. Please check your network settings.");
-                    }
+                }
+            }
+        }
+
+        public void CanConnectToDatabaseThrowsExc()
+        {
+            if (!testMood)
+            {
+                DatabaseContext.CanConnect();
+                if (!internetRunning)
+                {
+                    throw new Exception(DbErrorMessage + ", No internet Connection. Please check your network settings.");
                 }
             }
         }

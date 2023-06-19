@@ -583,14 +583,17 @@ namespace SadnaExpress.DomainLayer.User
 
         public Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID)
         {
-            IsTsInitialized();
-
-            if (members.ContainsKey(userID))
+            lock (this)
             {
-                isLoggedIn(userID);
-                return members[userID].GetBidsOfUser();
+                IsTsInitialized();
+
+                if (members.ContainsKey(userID))
+                {
+                    isLoggedIn(userID);
+                    return members[userID].GetBidsOfUser();
+                }
+                return current_Users[userID].GetBidsOfUser();
             }
-            return current_Users[userID].GetBidsOfUser();
         }
 
         public void CloseStore(Guid userID, Guid storeID)
