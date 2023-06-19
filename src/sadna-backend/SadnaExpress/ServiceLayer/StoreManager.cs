@@ -217,6 +217,7 @@ namespace SadnaExpress.ServiceLayer
         {
             try
             {
+                DBHandler.Instance.CanConnectToDatabase();
                 Dictionary<Guid, Dictionary<Guid, int>> cart = new Dictionary<Guid, Dictionary<Guid, int>>();
                 ShoppingCart shoppingCart = userFacade.GetDetailsOnCart(userId);
                 if (shoppingCart.Baskets.Count == 0)
