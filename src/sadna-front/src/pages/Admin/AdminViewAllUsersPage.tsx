@@ -39,38 +39,40 @@ const AdminViewAllUsersPage = (props) => {
   };
 
   return (
-    <Table striped bordered hover>
-      <Exit id={props.id}/>
-      <thead>
-        <tr>
-          <th>User ID</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Email</th>
-          <th>LoggedIn</th>
-          <th>Permissions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {members.map((member) => (
-          <tr key={member.id}>
-            <td>{member.id}</td>
-            <td>{member.firstName}</td>
-            <td>{member.lastName}</td>
-            <td>{member.email}</td>
-            <td>{member.loggedIn ? "Logged-In" : "Offline"}</td>
-            <td>{member.permissions?.map((p) => (
-              <div key={p}> {p} </div>
-            ))}</td>
-            <td>
-              <Button variant="danger" onClick={() => handleClickRemoveMember(member.email)}>
-                Remove
-              </Button>
-            </td>
+    <div style={{paddingBottom: "4rem"}}>
+      <Table striped bordered hover>
+        <Exit id={props.id}/>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>LoggedIn</th>
+            <th>Permissions</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {members.map((member) => (
+            <tr key={member.id}>
+              <td>{member.id}</td>
+              <td>{member.firstName}</td>
+              <td>{member.lastName}</td>
+              <td>{member.email}</td>
+              <td>{member.loggedIn ? "Logged-In" : "Offline"}</td>
+              <td>{member.permissions?.map((p) => (
+                <div key={p}> {p} </div>
+              ))}</td>
+              <td>
+                <Button variant="danger" onClick={() => handleClickRemoveMember(member.email)}>
+                  Remove
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
   );
 };
 
