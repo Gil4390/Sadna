@@ -39,6 +39,10 @@ namespace SadnaExpress.DomainLayer.User
             //check the new owner not have already permissions
             if (newOwner.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
                 throw new Exception("The member is already store owner");
+            //check the new owner not have already permissions
+
+            if (!directSupervisor.hasPermissions(storeID, new List<string> { "founder permissions", "owner permissions" }))
+                throw new Exception("The member not have permissions to appoint store owner");
 
             //add to all owners in store the owner to permissionsoffer and build the list of pendding permission for the member
             Dictionary<string, string> decisions = new Dictionary<string, string>();
@@ -199,7 +203,14 @@ namespace SadnaExpress.DomainLayer.User
                     AppointStoreOwner(storeID, appointer, manager);
                 }
                 else
+                {
+                    if(!appointer.hasPermissions(storeID,
+                        new List<string> { "founder permissions", "owner permissions", "edit manager permissions" }))
+                    throw new Exception("You don't have the permisiion to edit the permissions");
+                    if (appointer.Equals(manager))
+                        throw new Exception("You can't edit your's permissions");
                     pmember.addPermission(storeID, permission);
+                }
             }
         }
 

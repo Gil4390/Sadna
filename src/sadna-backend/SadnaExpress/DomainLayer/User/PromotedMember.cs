@@ -182,8 +182,6 @@ namespace SadnaExpress.DomainLayer.User
          * system manager permissions
          * edit manager permissions
          * get store history
-         * add new owner
-         * remove owner
          * add new manager
          * get employees info
          * product management permissions
