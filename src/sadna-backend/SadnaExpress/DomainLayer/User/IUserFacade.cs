@@ -59,7 +59,7 @@ namespace SadnaExpress.DomainLayer.User
         int GetItemQuantityInCart(Guid userID, Guid storeID, Guid itemID);
         public bool IsUserAdmin(Guid userID);
         string GetUserEmail(Guid userID);
-
+        void RemoveAllBidFromStore(Guid storeID, Guid itemID);
         ConcurrentDictionary<Guid, List<String>> GetMemberPermissions(Guid userID);
         void MarkNotificationAsRead(Guid userID, Guid notificationID);
 
