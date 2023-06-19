@@ -30,6 +30,11 @@ The state configuration file for the Sadna Trading System is a JSON file contain
 # example:
 ![image](https://github.com/Gil4390/Sadna/assets/76035272/75c7dc29-a937-4f2d-b57b-6fd3905e5bf0)
 
+in order to run the system from the init file you must set the following settings in app.config:
+![image](https://github.com/Gil4390/Sadna/assets/80397780/c92c9455-2628-46d2-a870-c274e810499c)
+
+and choose either "data" or "data2" for the field StateFileConfig
+
 Currently there are 3 possible initial states for the system to start with:
 <ul>
   <li> empty state </li>
