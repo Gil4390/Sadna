@@ -3,17 +3,25 @@ import { ListGroup, Button } from 'react-bootstrap';
 import { handleGetUserNotifications, handleMarkNotificationAsRead } from '../../actions/MemberActions.tsx';
 import { Notification } from '../../models/Notification.tsx';
 import Exit from '../Exit.tsx';
+import { ResponseT } from '../../models/Response.tsx';
 
 function MessagesPage(props) {
   const [messages, setMessages] = useState<Notification[]>([]);
+  const [response, setResponse] = useState<ResponseT>();
 
   
   const getUserNotifications = ()=>{
     handleGetUserNotifications(props.id).then(
       value => {
         console.log(value);
-        
-        setMessages(value as Notification[]);
+        setResponse(value as ResponseT);
+
+        if (value.errorOccured){
+          alert(value.errorMessage);
+        }
+        else{
+          setMessages(value.value as Notification[]);
+        }
       })
       .catch(error => alert(error));
     }
@@ -53,7 +61,7 @@ function MessagesPage(props) {
       <Exit id={props.id}/>
       <h1>My Notifications</h1>
       <ListGroup>
-      {messages.length===0? (<div className="row align-items-center my-5">  You don't have any messages </div>):(messages.map((message, index) => (
+      {messages?.length===0? (<div className="row align-items-center my-5">  You don't have any messages </div>):(messages?.map((message, index) => (
           <ListGroup.Item key={index} variant={message.read ? "light" : "warning"}>
             <div className="d-flex justify-content-between">
               <div>{message.message}</div>

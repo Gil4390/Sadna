@@ -9,7 +9,7 @@ function SystemNotInit(props) {
     
         <div className="row align-items-center my-5" style={{textAlign:"center"}}>   
         <h2>
-          Unfortunately System is not avialble now
+          Unfortunately System is not available now
         </h2>
     </div >
    </div >
