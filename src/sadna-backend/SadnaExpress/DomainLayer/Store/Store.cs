@@ -484,7 +484,7 @@ namespace SadnaExpress.DomainLayer.Store
                         foreach (Item i in itemsInventory.items_quantity.Keys)
                             if (i.Category == entityName)
                             {
-                                result = AddConditionHelper(entityStr, type, value, dt, op, opCond);
+                                result = AddConditionHelper(entityName, type, value, dt, op, opCond);
                                 if (result != null && addToDB)
                                 {
                                     ConditionDB cond = new ConditionDB { UniqueID = Guid.NewGuid(), ID = result.ID, EntityStr = entityStr, EntityName = entityName, Type = type, Op = op, Dt = dt, OpCond = opCond, Value = value.ToString(), StoreID = this.storeID };
@@ -510,52 +510,45 @@ namespace SadnaExpress.DomainLayer.Store
             if (entity == null)
                 throw new Exception("entity must be not null");   
             Condition cond;
-            try
+            switch (type)
             {
-                int intValue = int.Parse($"{val}");
-                if (intValue < 0)
-                    throw new Exception("value must be positive");
-                switch (type)
-                {
-                    case "min value":
-                        cond = new ValueCondition<T>(entity, intValue, "min");
-                        return checkNotInList(cond,dt, op, opCond);
-                    case "max value":
-                        cond = new ValueCondition<T>(entity, intValue, "max");
-                        return checkNotInList(cond,dt, op, opCond);
-                    case "min quantity":
-                        cond = new QuantityCondition<T>(entity, intValue, "min");
-                        return checkNotInList(cond,dt, op, opCond);
-                    case "max quantity":
-                        cond = new QuantityCondition<T>(entity, intValue, "max");
-                        return checkNotInList(cond,dt, op, opCond);
-                }
+                case "min value":
+                    cond = new ValueCondition<T>(entity, int.Parse($"{val}"), "min");
+                    return checkNotInList(cond,dt, op, opCond);
+                case "max value":
+                    cond = new ValueCondition<T>(entity, int.Parse($"{val}"), "max");
+                    return checkNotInList(cond,dt, op, opCond);
+                case "min quantity":
+                    cond = new QuantityCondition<T>(entity, int.Parse($"{val}"), "min");
+                    return checkNotInList(cond,dt, op, opCond);
+                case "max quantity":
+                    cond = new QuantityCondition<T>(entity, int.Parse($"{val}"), "max");
+                    return checkNotInList(cond,dt, op, opCond);
+                case "before date":
+                    cond = new TimeCondition<T>(entity, DateTime.Parse((string)val), "before");
+                    return checkNotInList(cond,dt, op, opCond);
+                case "after date":
+                    cond = new TimeCondition<T>(entity, DateTime.Parse((string)val), "after");
+                    return checkNotInList(cond,dt, op, opCond);
+                default:
+                    throw new Exception($"the condition type {type} not exist");
             }
-            catch (Exception e){}
-            
-            try
-            {
-                switch (type)
-                {
-                    case "before date":
-                        cond = new TimeCondition<T>(entity, DateTime.Parse((string)val), "before");
-                        return checkNotInList(cond,dt, op, opCond);
-                    case "after date":
-                        cond = new TimeCondition<T>(entity, DateTime.Parse((string)val), "after");
-                        return checkNotInList(cond,dt, op, opCond);
-                    default:
-                        throw new Exception($"the condition type {type} not exist");
-                }
-            }
-            catch (Exception e){}
-            return null;
         }
         
         private Condition checkNotInList(Condition c , DateTime dt=default, string op=default , int opCond=default)
         {
+            bool exist = false;
             if (dt != default)
             {
-                if (PurchasePolicyList.Contains(c))
+                foreach (var cond in PurchasePolicyList)
+                {
+                    if (cond.Equals(c))
+                    {
+                        exist = true;
+                        break;
+                    }
+                }
+                if (PurchasePolicyList.Contains(c) || exist)
                     throw new Exception("the condition already exist");
                 if (!string.IsNullOrEmpty(op))
                     c = AddSimplePurchaseCondition(c, GetPurchaseCond(opCond), op);
@@ -564,8 +557,19 @@ namespace SadnaExpress.DomainLayer.Store
 
             }
             else
-                if (!condDiscountPolicies.ContainsKey(c))
-                    condDiscountPolicies.Add(c, false);
+            {
+                foreach (var cond in condDiscountPolicies.Keys)
+                {
+                    if (cond.Equals(c))
+                    {
+                        exist = true;
+                        break;
+                    }
+                }
+                if (condDiscountPolicies.ContainsKey(c) || exist)
+                    throw new Exception("the condition already exist");
+                condDiscountPolicies.Add(c, false);
+            }
             c.ID = PurchasePolicyCounter;
             PurchasePolicyCounter++;
             return c;

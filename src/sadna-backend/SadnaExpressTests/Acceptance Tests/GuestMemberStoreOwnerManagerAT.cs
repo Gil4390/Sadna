@@ -1116,10 +1116,10 @@ namespace SadnaExpressTests.Acceptance_Tests
             Response response1 = proxyBridge.AppointStoreOwner(store5Manager, storeID5, "logmail2@gmail.com");
             Assert.IsTrue(response1.ErrorOccured); //no permissions yet
 
-            Response response2 = proxyBridge.AddStoreManagerPermissions(store5Founder, storeID5, "storeManagerMail2@gmail.com", "add new owner");
+            Response response2 = proxyBridge.AddStoreManagerPermissions(store5Founder, storeID5, "storeManagerMail2@gmail.com", "add new manager");
             Assert.IsFalse(response2.ErrorOccured); //error not occured 
 
-            Response response3 = proxyBridge.AppointStoreOwner(store5Manager, storeID5, "logmail2@gmail.com");
+            Response response3 = proxyBridge.AppointStoreManager(store5Manager, storeID5, "logmail2@gmail.com");
             Assert.IsFalse(response3.ErrorOccured); //now he has permissions
 
         }

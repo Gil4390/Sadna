@@ -27,6 +27,8 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public QuantityCondition(T entity, int Quantity , string minmax)
         {
             this.entity = entity;
+            if (Quantity < 0)
+                throw new Exception("Quantity must be positive");
             this.Quantity = Quantity;
             this.minmax = minmax;
         }
@@ -153,6 +155,8 @@ namespace SadnaExpress.DomainLayer.Store.Policy
         public ValueCondition(T entity, double minPrice, string minmax)
         {
             this.entity = entity;
+            if (minPrice < 0)
+                throw new Exception("value must be positive");
             this.minPrice = minPrice;
             this.minmax = minmax;
         }
