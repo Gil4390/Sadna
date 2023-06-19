@@ -73,7 +73,7 @@ const ManageItemsPage = (props) => {
   }
 
   const isValidQuantity = (quantity) =>{
-    return quantity >= 0 && quantity <= 10000;
+    return quantity >= -100000 && quantity <= 10000;
   }
 
   const handleAddItem = (event) => {
@@ -158,7 +158,7 @@ const ManageItemsPage = (props) => {
     }
     else if(!isValidQuantity(editedItem?.quantity))
     {
-      setEditItemMessage(messagePrefix + "Item price should be in range 0-10000");
+      setEditItemMessage(messagePrefix + "Item price should be in range -10000 to 10000");
     }
     else
     {
