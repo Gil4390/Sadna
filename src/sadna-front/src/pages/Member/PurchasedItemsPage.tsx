@@ -64,8 +64,13 @@ const PurchasedItemsPage = (props) => {
 
   const getUserPurchases = ()=>{
     handleGetPurchasesOfUser(props.id).then(
-      value => {   
-        setPurchases(value as ItemForOrder[]);
+      value => {  
+        if (value.errorOccured){
+          alert(value.errorMessage);
+        }
+        else{
+          setPurchases(value.value as ItemForOrder[]);
+        }
       })
       .catch(error => alert(error));
   }

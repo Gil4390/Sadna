@@ -37,7 +37,7 @@ export function StoreInfo(props) {
     if(closeStoreResponse !=undefined){
       response?.errorOccured ? alert(response?.errorMessage) : setRefreshStore(refreshStore+1);
       setTimeout(() => {
-        alert("Store closer successfully")
+        alert("Store closed successfully")
       }, 0);
     }
  }, [closeStoreResponse])

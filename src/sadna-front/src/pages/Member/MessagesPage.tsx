@@ -15,13 +15,12 @@ function MessagesPage(props) {
       value => {
         console.log(value);
         setResponse(value as ResponseT);
-        
-        if (response.errorOccured) {
-          alert(response?.errorMessage);
-          setMessages([]);
+
+        if (value.errorOccured){
+          alert(value.errorMessage);
         }
         else{
-          setMessages(response?.value as Notification[]);
+          setMessages(value.value as Notification[]);
         }
       })
       .catch(error => alert(error));
