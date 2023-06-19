@@ -691,7 +691,7 @@ namespace SadnaExpress.DomainLayer.User
             }
             catch(Exception ex)
             {
-                throw new Exception($"System cannot be Initialized: external service communication error {ex}");
+                throw new Exception($"System cannot be Initialized: external service communication error {ex.Message}");
             }
 
             if (servicesConnected)
