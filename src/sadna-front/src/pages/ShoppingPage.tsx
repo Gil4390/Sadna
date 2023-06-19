@@ -17,10 +17,17 @@ function ShoppingPage(props) {
     handleSearchItems(props.id).then(
       value => {
         setAllItems([]);
-        setAllItems(value as Item[]);
+
+        if (value.errorOccured){
+          alert(value.errorMessage);
+        }
+        else{
+          setAllItems(value.value as Item[]);
+
+        }
       })
       .catch(error => alert(error));
-  }
+  }
 
   const handleItemModified = (val) => {
     setModified(val);

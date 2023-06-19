@@ -260,29 +260,30 @@ namespace SadnaExpress.ServiceLayer
             try
             {
                 DBHandler.Instance.CanConnectToDatabase();
+                ResponseT<List<Item>> res = storeManager.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category,
+                ratingStore);
+                if (res.ErrorOccured)
+                    throw new Exception(res.ErrorMessage);
+                List<SItem> items = new List<SItem>();
+                foreach (Item item in res.Value)
+                {
+                    Guid itemStoreid = storeManager.GetItemStoreId(item.ItemID);
+                    bool inStock = storeManager.GetStore(itemStoreid).Value.GetItemByQuantity(item.ItemID) > 0;
+                    int countInCart = storeManager.GetItemQuantityInCart(userID, itemStoreid, item.ItemID).Value;
+                    double priceDiscount = storeManager.GetItemAfterDiscount(itemStoreid, item);
+                    if (!userManager.GetBidsOfUser(userID).ContainsKey(item.ItemID))
+                        items.Add(new SItem(item, priceDiscount, itemStoreid, inStock, countInCart));
+                    else
+                        items.Add(new SItem(item, priceDiscount, userManager.GetBidsOfUser(userID)[item.ItemID], itemStoreid, inStock, countInCart));
+                }
+
+                return new ResponseT<List<SItem>>(items);
             }
             catch(Exception ex)
             {
                 Logger.Instance.Error(userID, nameof(TradingSystem) + ": " + nameof(GetItemsForClient) + ": " + ex.Message);
-                return new ResponseT<List<SItem>>(new List<SItem>());
+                return new ResponseT<List<SItem>>(ex.Message);
             }
-            ResponseT<List<Item>> res= storeManager.GetItemsByKeysWord(userID, keyWords, minPrice, maxPrice, ratingItem, category,
-                ratingStore);
-
-            List<SItem> items = new List<SItem>();
-            foreach (Item item in res.Value)
-            {
-                Guid itemStoreid= storeManager.GetItemStoreId(item.ItemID);
-                bool inStock = storeManager.GetStore(itemStoreid).Value.GetItemByQuantity(item.ItemID) > 0;
-                int countInCart = storeManager.GetItemQuantityInCart(userID,itemStoreid, item.ItemID).Value;
-                double priceDiscount = storeManager.GetItemAfterDiscount(itemStoreid, item);
-                if (!userManager.GetBidsOfUser(userID).ContainsKey(item.ItemID))
-                    items.Add(new SItem(item, priceDiscount, itemStoreid, inStock, countInCart));
-                else
-                    items.Add(new SItem(item, priceDiscount, userManager.GetBidsOfUser(userID)[item.ItemID], itemStoreid, inStock, countInCart));
-            }
-
-            return new ResponseT<List<SItem>>(items);
         }
 
         public Response AddItemToCart(Guid userID, Guid storeID, Guid itemID, int itemAmount)

@@ -118,7 +118,7 @@ export function handleSearchItems(userID,keyWord="", minPrice=0, maxPrice=-1, ra
         if (!response.ok) {
             return Promise.reject(data.error);
         }
-        return Promise.resolve(data.value)
+        return Promise.resolve(data)
     })
 }
 
