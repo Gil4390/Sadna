@@ -41,20 +41,20 @@ The file is in Json format,  you can change the key values that will fit to your
 Here is a breakdown of the fields in the file:
 
 appSettings:
-* Host: It specifies the host name or IP address of the server.
-* ApiPort: It defines the port number for the API service.
-* SignalRPort: It specifies the port number for the Notifications and messages service. 
-* PaymentServiceURL: It represents the URL for the payment service.
-* SupplierServiceURL: It represents the URL for the supplier service.
-* SystemManagerEmail: It specifies the email address of the system manager.
-* SystemManagerFirstName: It represents the first name of the system manager.
-* SystemManagerLastName: It represents the last name of the system manager.
-* SystemManagerPass: It represents the password of the system manager.
-* InitTradingSystem: It is a boolean value indicating whether the trading system should be initialized when running it.
-* StartWithCleanDB: It is a boolean value indicating whether the system should start with a clean database.
-* RunLoadData: It is a boolean value indicating whether to load data into the system.
-* StateFileConfig: It represents the configuration for the state file.
-* TestDB: It specifies the connection string for the test database
+* <code>Host</code>: It specifies the host name or IP address of the server.
+* <code>ApiPort</code>: It defines the port number for the API service.
+* <code>SignalRPort</code>: It specifies the port number for the Notifications and messages service. 
+* <code>PaymentServiceURL</code>: It represents the URL for the payment service.
+* <code>SupplierServiceURL</code>: It represents the URL for the supplier service.
+* <code>SystemManagerEmail</code>: It specifies the email address of the system manager.
+* <code>SystemManagerFirstName</code>: It represents the first name of the system manager.
+* <code>SystemManagerLastName</code>: It represents the last name of the system manager.
+* <code>SystemManagerPass</code>: It represents the password of the system manager.
+* <code>InitTradingSystem</code>: It is a boolean value indicating whether the trading system should be initialized when running it.
+* <code>StartWithCleanDB</code>: It is a boolean value indicating whether the system should start with a clean database.
+* <code>RunLoadData</code>: It is a boolean value indicating whether to load data into the system.
+* <code>StateFileConfig</code>: It represents the configuration for the state file.
+* <code>TestDB</code>: It specifies the connection string for the test database
 
 connectionStrings:
 * name: It represents the name of the remote database.
