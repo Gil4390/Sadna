@@ -572,7 +572,7 @@ namespace SadnaExpress.DataLayer
                                     }
 
                                     result = memberExist;
-
+                                    result.LoggedIn = false;
                                     memberExist.PenddingPermission = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, Dictionary<string, string>>>(memberExist.PenddingPermissionDB);
 
                                     #region load shopping cart
