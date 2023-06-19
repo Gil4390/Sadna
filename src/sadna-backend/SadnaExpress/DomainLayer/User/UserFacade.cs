@@ -633,8 +633,10 @@ namespace SadnaExpress.DomainLayer.User
 
                     members.TryRemove(memberToRemove.UserId, out memberToRemove);
                     DBHandler.Instance.RemoveMember(memberToRemove.UserId);
+                    User guest = new User(memberToRemove);
                     if (memberToRemove.LoggedIn)
-                        current_Users.TryAdd(memberToRemove.UserId, new User(memberToRemove));
+                        current_Users.TryAdd(memberToRemove.UserId, guest);
+                    NotificationSystem.Instance.NotifyObserver(guest, Guid.NewGuid(), "You were removed as a member!");
                 }
             }
             else
@@ -895,7 +897,7 @@ namespace SadnaExpress.DomainLayer.User
         {
             if (members.ContainsKey(userId))
                 return members[userId].AwaitingNotification;
-            throw new Exception("Member with id " + userId + " does not exist");
+            throw new Exception("Member does not exist");
         }
 
         public void MarkNotificationAsRead(Guid userID, Guid notificationID)
@@ -1094,7 +1096,7 @@ namespace SadnaExpress.DomainLayer.User
                 return members[memberFromDb.UserId];
             }
 
-            throw new Exception("Member with id " + userID + " does not exist");
+            throw new Exception("Member does not exist");
         }
 
         public Member GetMember(String email)

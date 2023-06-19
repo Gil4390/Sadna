@@ -33,7 +33,8 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult Logout([FromBody] ClientRequest request)
         {
-            return Ok(tradingSystem.Logout(request.userID));
+            Response res = tradingSystem.Logout(request.userID);
+            return Ok(res);
         }
 
         #endregion
@@ -154,15 +155,16 @@ namespace SadnaExpress.API.Controllers
         }
         
         [Route(APIConstants.MemberData.addCondition)]
-        [ResponseType(typeof(ResponseT<Condition>))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
         public IHttpActionResult AddCondition([FromBody] ConditionRequest request)
         {
-            ResponseT<Condition> a = tradingSystem.AddCondition(request.userID,request.storeID, request.entity, request.entityName,
+            Response a = (Response)tradingSystem.AddCondition(request.userID,request.storeID, request.entity, request.entityName,
                 request.type, request.value, DateTime.MaxValue, request.entityRes, request.entityNameRes,
                 request.typeRes,
                 request.valueRes, request.op, request.opCond);
-            return Ok(a);
+            Response res = new Response(a.ErrorMessage);
+            return Ok(res);
         }
 
         [Route(APIConstants.MemberData.addConditionForDiscount)]
@@ -170,9 +172,11 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult AddConditionForDiscount([FromBody] ConditionRequest request)
         {
-            return Ok(tradingSystem.AddCondition(request.userID,request.storeID, request.entity, request.entityName,
+            Response a = tradingSystem.AddCondition(request.userID, request.storeID, request.entity, request.entityName,
                 request.type, request.value, new DateTime(), request.entityRes, request.entityNameRes, request.typeRes,
-                request.valueRes , request.op,request.opCond));
+                request.valueRes, request.op, request.opCond);
+            Response res = new Response(a.ErrorMessage);
+            return Ok(res);
         }
         
         [Route(APIConstants.MemberData.removeCondition)]
@@ -188,18 +192,18 @@ namespace SadnaExpress.API.Controllers
         [HttpPost]
         public IHttpActionResult CreateSimplePolicy([FromBody] PolicyRequest request)
         {
-            ResponseT<DiscountPolicy> a =tradingSystem.CreateSimplePolicy(request.userID,request.storeID, request.level, request.percent, request.startDate,
+            Response a = tradingSystem.CreateSimplePolicy(request.userID,request.storeID, request.level, request.percent, request.startDate,
                 request.endDate);
             return Ok(new Response(a.ErrorMessage));
         }
         
         [Route(APIConstants.MemberData.createComplexPolicy)]
-        [ResponseType(typeof(SPolicy[]))]
+        [ResponseType(typeof(Response))]
         [HttpPost]
         public IHttpActionResult CreateComplexPolicy([FromBody] ComplexConditionRequest request)
         {
-            tradingSystem.CreateComplexPolicy(request.userID,request.storeID,request.op, request.policys);
-            return Ok(tradingSystem.GetAllPolicy(request.userID , request.storeID));
+            Response res = tradingSystem.CreateComplexPolicy(request.userID,request.storeID,request.op, request.policys);
+            return Ok(new Response(res.ErrorMessage));
         }
         
         [Route(APIConstants.MemberData.addPolicy)]

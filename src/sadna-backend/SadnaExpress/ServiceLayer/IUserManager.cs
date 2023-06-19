@@ -18,7 +18,7 @@ namespace SadnaExpress.ServiceLayer
         Response Register(Guid userID, string email, string firstName, string lastName, string password); //1.3
         ResponseT<Guid> Login(Guid userID, string email, string password); //1.4
         ResponseT<Guid> Logout(Guid userID); //3.1
-
+        ResponseT<List<ItemForOrder>> GetPurchasesOfUser(Guid userID);
         ResponseT<SBid[]> GetBidsInStore(Guid userID, Guid storeID); //4.2
         Dictionary<Guid, KeyValuePair<double, bool>> GetBidsOfUser(Guid userID);
         Response RemovePermission(Guid userID, Guid storeID, string userEmail, string permission); //4.5 + remove of 4.7
