@@ -89,19 +89,26 @@ namespace SadnaExpress.ServiceLayer
 
         public void Setup()
         {
-            //load is system init
-            bool isInit = DBHandler.Instance.LoadSystemInit();
-            storeManager.SetIsSystemInitialize(isInit);
-            userManager.SetIsSystemInitialize(isInit);
+            try
+            {
+                //load is system init
+                bool isInit = DBHandler.Instance.LoadSystemInit();
+                storeManager.SetIsSystemInitialize(isInit);
+                userManager.SetIsSystemInitialize(isInit);
 
-            // load all orders from db
-            Orders.Instance.LoadOrdersFromDB();
+                // load all orders from db
+                Orders.Instance.LoadOrdersFromDB();
 
-            //load NotificationSystemList of Officials employees
-            NotificationSystem.Instance.LoadNotificationOfficialsFromDB();
+                //load NotificationSystemList of Officials employees
+                NotificationSystem.Instance.LoadNotificationOfficialsFromDB();
 
-            //load visits list in UserUsageData 
-            UserUsageData.Instance.LoadVisitsData();
+                //load visits list in UserUsageData 
+                UserUsageData.Instance.LoadVisitsData();
+            }
+            catch(Exception ex)
+            {
+                Logger.Instance.Info($"Trading system did not initialized correctly: {ex.Message}");
+            }
         }
 
         #region System init

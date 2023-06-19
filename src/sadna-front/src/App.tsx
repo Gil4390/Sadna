@@ -27,9 +27,14 @@ const App:React.FC=()=>{
 
  const [id, setid] = useState<string>();
   //const [id, setid] = useLocalStorage("id", ""); //local storage (should do the same to isInit)
+
+  const [enterRequest, setEnterRequest] = useState<ResponseT>();
+
   const [response, setResponse] = useState<ResponseT>();
+
   const [username, setUsername] = useState<string>();
   const [isInit, setisInit] = useState<boolean>(false);
+  const [isInitrequest, setisInitRequest] = useState<ResponseT>();
   const [userType, setUserType] = useState("guest");
   const [login, setLogin] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<string[]>([]);
@@ -62,11 +67,29 @@ const App:React.FC=()=>{
 
   useEffect(() => {
     //if(id ===""){
-      handleIsSystemInit().then(value => {setisInit(value);}).catch(error => alert(error));
-      handleEnter().then(value => {setid(value);}).catch(error => alert(error)); 
+      handleIsSystemInit().then(value => {setisInitRequest(value as ResponseT);}).catch(error => alert(error));
+      handleEnter().then(value => {setEnterRequest(value as ResponseT);}).catch(error => alert(error)); 
    // }
  }, [])
 
+ 
+ useEffect(() => {
+  if(isInitrequest!=undefined){
+    if(isInitrequest.errorOccured)
+      alert(isInitrequest.errorMessage);
+    else
+      setisInit(isInitrequest.value as boolean);
+  }
+}, [isInitrequest])
+
+useEffect(() => {
+if(enterRequest!=undefined){
+  if(enterRequest.errorOccured)
+    alert(enterRequest.errorMessage);
+  else
+  setid(enterRequest.value as string);
+}
+}, [enterRequest])
 
  useEffect(() => {
   if (login){

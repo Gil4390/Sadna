@@ -86,6 +86,7 @@ namespace SadnaExpress
             }
             if (validInitialization)
             {
+                TradingSystem tradingSystem = TradingSystem.Instance; //create instance of the trading system
 
                 //start the api server
                 ServerServiceHost serverServiceHost = new ServerServiceHost();
@@ -94,7 +95,6 @@ namespace SadnaExpress
                 //start the signalR server
                 SignalRServiceHost signalRServiceHost = new SignalRServiceHost();
                 signalRServiceHost.Start();
-
 
             }
             else

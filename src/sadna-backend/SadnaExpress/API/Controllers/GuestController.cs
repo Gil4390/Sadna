@@ -36,7 +36,7 @@ namespace SadnaExpress.API.Controllers
         {
             ResponseT<Guid> res = tradingSystem.Enter();
             
-            return Ok(res.Value);
+            return Ok(res);
         }
 
         [Route(APIConstants.GuestData.exit)]
