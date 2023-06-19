@@ -78,8 +78,8 @@ and choose either "data" or "data2" for the field StateFileConfig
 
 Currently there are 3 possible initial states for the system to start with:
 <ul>
-  <li> empty state </li>
-  <li> state1 
+  <li> empty state  - ""</li>
+  <li> state1  - "data"
     <ul> 
       <li> Registered users: U1, U2, U3 - members. </li>
       <li> U1 logs in and opens store S1. </li>
@@ -88,7 +88,7 @@ Currently there are 3 possible initial states for the system to start with:
       <li> U1, U2 logs out. </li>
     </ul>
   </li>
-    <li> state2
+    <li> state2 - "data2"
     <ul> 
       <li> Registered users: U1 - admin, U2, U3, U4, U5 - members. </li>
       <li> U2 logs in and opens store store1. </li>
