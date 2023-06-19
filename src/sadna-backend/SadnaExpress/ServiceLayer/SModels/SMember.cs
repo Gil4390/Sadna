@@ -48,7 +48,7 @@ namespace SadnaExpress.ServiceLayer.SModels
             Approvers = new List<string>();
             // make the approve list
             DidApprove = true;
-            if (member.PenddingPermission.Count > 0)
+            if (member.PenddingPermission.Count > 0 && member.PenddingPermission.ContainsKey(storeID))
             {
                 foreach (string pm in member.PenddingPermission[storeID].Keys)
                 {
