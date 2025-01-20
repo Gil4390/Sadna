@@ -1,7 +1,102 @@
 # Sadna Express
 
-Hello! welcome to Sadna Express, our trading system program.
-we are third year students in software engineering in Ben Gurion University, we wrote this project for "Sadna" course.
+This project is a **C# and React-based trading system** designed to provide a comprehensive marketplace platform for users. It implements a modular and scalable architecture that integrates with external services for payments and supplies.
+
+## Table of Contents
+- [Features](#features)
+- [Technical Architecture](#technical-architecture)
+- [System Components](#system-components)
+- [Performance and Testing](#performance-and-testing)
+
+---
+
+## Features
+
+### User Management
+- Supports Guests, Members, Store Owners, and Managers.
+- Registration, login, and profile management.
+- Secure password handling and email validation protocols.
+
+### Marketplace Functionality
+- Browse stores and search for products using filters.
+- Create and manage shopping carts.
+- Store Owners can manage inventory and define store policies.
+
+### Store Management
+- Store creation and ownership delegation.
+- Advanced role-based permissions system.
+
+### Transaction Handling
+- Comprehensive purchase workflows with discount and purchase policy validation.
+- Integration with external payment and supply services.
+
+### Notifications
+- Real-time notifications via **SignalR** for events such as purchases and reviews.
+- Offline notifications stored for later retrieval.
+
+### Bidding System
+- Allows negotiation through item bidding.
+- Supports counter-offers and bid approval workflows.
+
+### Analytics and Logging
+- Tracks user and system activity for audits.
+- Provides revenue reports and activity insights.
+
+### Robust Policy Management
+- Implements complex discount and purchase conditions (e.g., value- and quantity-based rules).
+
+---
+
+## Technical Architecture
+
+### Backend (C#)
+- Built around a singleton **TradingSystem** core component.
+- Includes microservices for Payments, Supplies, and Notifications.
+- Persistent layers for data storage (users, orders, items, policies).
+
+### Frontend (React)
+- Organized into modular components: actions, hooks, models, and pages.
+- Provides a responsive and intuitive interface for users.
+
+---
+
+## System Components
+
+### Core Modules
+1. **User Management**
+   - Handles user registration, login, and profile updates.
+2. **Store Management**
+   - Manages store creation, inventory, and policies.
+3. **Transaction Processing**
+   - Integrates external services for payments and supplies.
+4. **Notification System**
+   - Powered by SignalR for real-time updates.
+5. **Bidding Workflow**
+   - Facilitates item negotiation between users and store owners.
+
+### Data Persistence
+- Stores information on users, stores, items, orders, and policies in a structured database.
+
+### Microservices
+- **PaymentService**: Handles payment transactions.
+- **SupplierService**: Manages supply chain operations.
+- **SignalR Notification**: Ensures real-time notifications and updates.
+
+---
+
+## Performance and Testing
+
+### Load Testing
+- Evaluated search functionality, shopping cart operations, and checkout processes.
+- Ensures high throughput with minimal error rates.
+
+### Stress Testing
+- Validates system resilience under peak load conditions with up to 300 concurrent users.
+
+### Key Metrics
+- **High Throughput**: Consistently processes user actions with negligible delays.
+- **Error Handling**: Minimal errors under high load scenarios.
+
 
 # Team members:
 
